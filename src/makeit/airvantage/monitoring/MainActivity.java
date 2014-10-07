@@ -48,8 +48,8 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
     private ServiceListener serviceListener = new ServiceListener(this);
 
     private SharedPreferences prefs;
-    
-	private Button registerBt;
+
+    private Button registerBt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,11 +74,11 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 
         registerBt = (Button) findViewById(R.id.register_bt);
         registerBt.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				register();
-			}
-		});
+            @Override
+            public void onClick(View view) {
+                register();
+            }
+        });
         updateRegisterVisbility(prefs);
 
         boolean isServiceRunning = isServiceRunning();
@@ -102,83 +102,74 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
             }
         });
     }
-    
+
     protected void register() {
-    	// Is there a token available in the local storage?
-    	// Yes
-    	//-- Is the token still valid?
-    	//-- Yes
-    	//---- Register the system
-    	//-- No
-    	//---- Refresh token
-    	//---- Register the system
-    	// No
-    	//-- Get a new token
-		// Open authorization activity
-		Intent intent = new Intent(this, AuthorizationActivity.class);
-		startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION);
-    	//-- Register the system
+        // Is there a token available in the local storage?
+        // Yes
+        // -- Is the token still valid?
+        // -- Yes
+        // ---- Register the system
+        // -- No
+        // ---- Refresh token
+        // ---- Register the system
+        // No
+        // -- Get a new token
+        // Open authorization activity
+        Intent intent = new Intent(this, AuthorizationActivity.class);
+        startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION);
+        // -- Register the system
     }
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		switch (requestCode) {
-		case (AuthorizationActivity.REQUEST_AUTHORIZATION): {
-			if (resultCode == Activity.RESULT_OK) {
-				String token = data.getStringExtra(AuthorizationActivity.TOKEN);
-		        final String serverHost = prefs.getString(this.getString(R.string.pref_server_key), null);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+        case (AuthorizationActivity.REQUEST_AUTHORIZATION): {
+            if (resultCode == Activity.RESULT_OK) {
+                String token = data.getStringExtra(AuthorizationActivity.TOKEN);
+                final String serverHost = prefs.getString(this.getString(R.string.pref_server_key), null);
 
-				AsyncTask<String, Void, Boolean> registerTask = new AsyncTask<String, Void, Boolean>() {
-					protected Boolean doInBackground(String... params) {
-						try {
-							AirVantageClient client = new AirVantageClient(
-									serverHost,
-									params[0]);
-							net.airvantage.model.System system = new net.airvantage.model.System();
-							net.airvantage.model.System.Gateway gateway = new net.airvantage.model.System.Gateway();
-							gateway.serialNumber = phoneUniqueId;
-							system.gateway = gateway;
-							system.state = "READY";
-							client.create(system);
-							return true;
-						} catch (IOException e) {
-							Log.e(MainActivity.class.getName(),
-									"Error when trying to get current user", e);
-							return false;
-						}
-					}
-				};
+                AsyncTask<String, Void, Boolean> registerTask = new AsyncTask<String, Void, Boolean>() {
+                    protected Boolean doInBackground(String... params) {
+                        try {
+                            AirVantageClient client = new AirVantageClient(serverHost, params[0]);
+                            net.airvantage.model.System system = new net.airvantage.model.System();
+                            net.airvantage.model.System.Gateway gateway = new net.airvantage.model.System.Gateway();
+                            gateway.serialNumber = phoneUniqueId;
+                            system.gateway = gateway;
+                            system.state = "READY";
+                            client.create(system);
+                            return true;
+                        } catch (IOException e) {
+                            Log.e(MainActivity.class.getName(), "Error when trying to get current user", e);
+                            return false;
+                        }
+                    }
+                };
 
-				registerTask.execute(token);
-				try {
-					if (registerTask.get()) {
-						prefs.edit().putBoolean(this.getString(R.string.pref_show_register_key), false).commit();
-						Toast.makeText(getBaseContext(),
-								"System registered on AirVantage.", Toast.LENGTH_SHORT)
-								.show();
-					}
-					else {
-						Toast.makeText(getBaseContext(),
-								"An error occured when registering system.", Toast.LENGTH_SHORT)
-								.show();
-					}
-				} catch (InterruptedException e) {
-					Log.e(MainActivity.class.getName(), "Error", e);
-					Toast.makeText(getBaseContext(),
-							"An error occured when registering system.", Toast.LENGTH_SHORT)
-							.show();
-				} catch (ExecutionException e) {
-					Log.e(MainActivity.class.getName(), "Error", e);
-					Toast.makeText(getBaseContext(),
-							"An error occured when registering system.", Toast.LENGTH_SHORT)
-							.show();
-				}
-			}
-			break;
-		}
-		}
-	}
+                registerTask.execute(token);
+                try {
+                    if (registerTask.get()) {
+                        prefs.edit().putBoolean(this.getString(R.string.pref_show_register_key), false).commit();
+                        Toast.makeText(getBaseContext(), "System registered on AirVantage.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getBaseContext(), "An error occured when registering system.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                } catch (InterruptedException e) {
+                    Log.e(MainActivity.class.getName(), "Error", e);
+                    Toast.makeText(getBaseContext(), "An error occured when registering system.", Toast.LENGTH_SHORT)
+                            .show();
+                } catch (ExecutionException e) {
+                    Log.e(MainActivity.class.getName(), "Error", e);
+                    Toast.makeText(getBaseContext(), "An error occured when registering system.", Toast.LENGTH_SHORT)
+                            .show();
+                }
+            }
+            break;
+        }
+        }
+    }
 
     @Override
     protected void onDestroy() {
@@ -270,7 +261,6 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 
     };
 
-
     // Preferences
 
     @Override
@@ -303,14 +293,13 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
         updateRegisterVisbility(prefs);
     }
 
-	private void updateRegisterVisbility(SharedPreferences prefs) {
-		boolean showRegister = prefs.getBoolean(this.getString(R.string.pref_show_register_key), true);
+    private void updateRegisterVisbility(SharedPreferences prefs) {
+        boolean showRegister = prefs.getBoolean(this.getString(R.string.pref_show_register_key), true);
         if (showRegister) {
-        	registerBt.setVisibility(View.VISIBLE);
+            registerBt.setVisibility(View.VISIBLE);
+        } else {
+            registerBt.setVisibility(View.GONE);
         }
-        else {
-        	registerBt.setVisibility(View.GONE);
-        }
-	}
-    
+    }
+
 }

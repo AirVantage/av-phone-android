@@ -31,359 +31,322 @@ import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.OkHttpClient;
 
 public class AirVantageClient {
-	
-	private static final String APIS = "/api/v1";
 
-	private final String access_token;
+    private static final String APIS = "/api/v1";
 
-	private final String server;
+    private final String access_token;
 
-	public static String buildAuthorizationURL(String server, String clientId) {
-		return "https://" + server + "/api/oauth/authorize?client_id="
-				+ clientId
-				+ "&response_type=code&redirect_uri=oauth://airvantage";
-	}
-	
-	public static String buildImplicitFlowURL(String server, String clientId) {
-		
-		return "https://" + server + "/api/oauth/authorize?client_id="
-				+ clientId
-				+ "&response_type=token&redirect_uri=oauth://airvantage";
-	}
+    private final String server;
 
-	public static AirVantageClient build(final String server, final String clientId,
-			final String clientSecret, final String code) throws IOException {
-		OkHttpClient client = new OkHttpClient();
+    public static String buildAuthorizationURL(String server, String clientId) {
+        return "https://" + server + "/api/oauth/authorize?client_id=" + clientId
+                + "&response_type=code&redirect_uri=oauth://airvantage";
+    }
 
-		// Create request for remote resource.
-		HttpURLConnection connection = client.open(new URL("https://" + server
-				+ "/api/oauth/token?grant_type=authorization_code&code=" + code
-				+ "&client_id=" + clientId + "&client_secret=" + clientSecret
-				+ "&redirect_uri=oauth://airvantage"));
-		InputStream is = connection.getInputStream();
-		InputStreamReader isr = new InputStreamReader(is);
+    public static String buildImplicitFlowURL(String server, String clientId) {
 
-		// Deserialize HTTP response to concrete type.
-		Gson gson = new Gson();
-		AccessToken token = gson.fromJson(isr, AccessToken.class);
+        return "https://" + server + "/api/oauth/authorize?client_id=" + clientId
+                + "&response_type=token&redirect_uri=oauth://airvantage";
+    }
 
-		return new AirVantageClient(server, token.access_token);
-	}
+    public static AirVantageClient build(final String server, final String clientId, final String clientSecret,
+            final String code) throws IOException {
+        OkHttpClient client = new OkHttpClient();
 
-	private String buildEndpoint(String api) {
-		return "https://" + server + APIS + api + "?access_token="
-				+ access_token;
-	}
+        // Create request for remote resource.
+        HttpURLConnection connection = client.open(new URL("https://" + server
+                + "/api/oauth/token?grant_type=authorization_code&code=" + code + "&client_id=" + clientId
+                + "&client_secret=" + clientSecret + "&redirect_uri=oauth://airvantage"));
+        InputStream is = connection.getInputStream();
+        InputStreamReader isr = new InputStreamReader(is);
 
-	public AirVantageClient(String server, String token) {
-		this.server = server;
-		this.access_token = token;
-	}
+        // Deserialize HTTP response to concrete type.
+        Gson gson = new Gson();
+        AccessToken token = gson.fromJson(isr, AccessToken.class);
 
-	public User getCurrentUser() throws IOException {
-		OkHttpClient client = new OkHttpClient();
+        return new AirVantageClient(server, token.access_token);
+    }
 
-		// Create request for remote resource.
-		HttpURLConnection connection = client.open(new URL(
-				buildEndpoint("/users/current")));
-		InputStream is = connection.getInputStream();
-		Log.d(AirVantageClient.class.getName(), "User URL: "
-				+ buildEndpoint("/users/current"));
+    private String buildEndpoint(String api) {
+        return "https://" + server + APIS + api + "?access_token=" + access_token;
+    }
 
-		InputStreamReader isr = new InputStreamReader(is);
+    public AirVantageClient(String server, String token) {
+        this.server = server;
+        this.access_token = token;
+    }
 
-		// Deserialize HTTP response to concrete type.
-		Gson gson = new Gson();
-		return gson.fromJson(isr, User.class);
-	}
+    public User getCurrentUser() throws IOException {
+        OkHttpClient client = new OkHttpClient();
 
-	public void expire() throws IOException {
-		InputStream is = null;
-		try {
-			OkHttpClient client = new OkHttpClient();
+        // Create request for remote resource.
+        HttpURLConnection connection = client.open(new URL(buildEndpoint("/users/current")));
+        InputStream is = connection.getInputStream();
+        Log.d(AirVantageClient.class.getName(), "User URL: " + buildEndpoint("/users/current"));
 
-			// Create request for remote resource.
-			HttpURLConnection connection = client.open(new URL(
-					server + "/api/oauth/expire?access_token="
-							+ access_token));
-			is = connection.getInputStream();
-		} finally {
-			// Clean up.
-			if (is != null)
-				is.close();
-		}
-	}
+        InputStreamReader isr = new InputStreamReader(is);
 
-	public net.airvantage.model.System getSystem(String uid)
-			throws IOException {
-		InputStream is = null;
-		try {
-			Gson gson = new Gson();
-			OkHttpClient client = new OkHttpClient();
+        // Deserialize HTTP response to concrete type.
+        Gson gson = new Gson();
+        return gson.fromJson(isr, User.class);
+    }
 
-			// Create request for remote resource.
-			HttpURLConnection connection = client
-					.open(new URL(
-							buildEndpoint("/systems")
-									+ "&fields=uid,name,commStatus,lastCommDate,data&uid="
-									+ uid));
-			connection.addRequestProperty("Cache-Control", "no-cache");
+    public void expire() throws IOException {
+        InputStream is = null;
+        try {
+            OkHttpClient client = new OkHttpClient();
 
-			Log.d(AirVantageClient.class.getName(), "Systems URL: "
-					+ buildEndpoint("/systems") + "&fields=uid,name,data&uid="
-					+ uid);
-			is = connection.getInputStream();
+            // Create request for remote resource.
+            HttpURLConnection connection = client.open(new URL(server + "/api/oauth/expire?access_token="
+                    + access_token));
+            is = connection.getInputStream();
+        } finally {
+            // Clean up.
+            if (is != null)
+                is.close();
+        }
+    }
 
-			InputStreamReader isr = new InputStreamReader(is);
+    public net.airvantage.model.System getSystem(String uid) throws IOException {
+        InputStream is = null;
+        try {
+            Gson gson = new Gson();
+            OkHttpClient client = new OkHttpClient();
 
-			// Deserialize HTTP response to concrete type.
-			List<net.airvantage.model.System> items = gson.fromJson(isr,
-					SystemsList.class).items;
-			if (items.size() > 0)
-				return items.get(0);
-			else
-				return null;
-		} finally {
-			// Clean up.
-			if (is != null)
-				is.close();
-		}
-	}
+            // Create request for remote resource.
+            HttpURLConnection connection = client.open(new URL(buildEndpoint("/systems")
+                    + "&fields=uid,name,commStatus,lastCommDate,data&uid=" + uid));
+            connection.addRequestProperty("Cache-Control", "no-cache");
 
-	public List<Alert> getUnacknowledgedAlerts(String systemUid)
-			throws IOException {
-		InputStream is = null;
-		try {
-			Gson gson = new Gson();
-			OkHttpClient client = new OkHttpClient();
+            Log.d(AirVantageClient.class.getName(), "Systems URL: " + buildEndpoint("/systems")
+                    + "&fields=uid,name,data&uid=" + uid);
+            is = connection.getInputStream();
 
-			// Create request for remote resource.
-			HttpURLConnection connection = client.open(new URL(
-					buildEndpoint("/privates/alerts/groups")
-							+ "&acknowledged=false&target=" + systemUid));
-			connection.addRequestProperty("Cache-Control", "no-cache");
+            InputStreamReader isr = new InputStreamReader(is);
 
-			Log.d(AirVantageClient.class.getName(), "Systems URL: "
-					+ buildEndpoint("/privates/alerts/groups") + "&target="
-					+ systemUid);
-			is = connection.getInputStream();
+            // Deserialize HTTP response to concrete type.
+            List<net.airvantage.model.System> items = gson.fromJson(isr, SystemsList.class).items;
+            if (items.size() > 0)
+                return items.get(0);
+            else
+                return null;
+        } finally {
+            // Clean up.
+            if (is != null)
+                is.close();
+        }
+    }
 
-			InputStreamReader isr = new InputStreamReader(is);
+    public List<Alert> getUnacknowledgedAlerts(String systemUid) throws IOException {
+        InputStream is = null;
+        try {
+            Gson gson = new Gson();
+            OkHttpClient client = new OkHttpClient();
 
-			// Deserialize HTTP response to concrete type.
-			return gson.fromJson(isr, AlertsList.class).items;
-		} finally {
-			// Clean up.
-			if (is != null)
-				is.close();
-		}
-	}
+            // Create request for remote resource.
+            HttpURLConnection connection = client.open(new URL(buildEndpoint("/privates/alerts/groups")
+                    + "&acknowledged=false&target=" + systemUid));
+            connection.addRequestProperty("Cache-Control", "no-cache");
 
-	public List<Datapoint> getLast24Hours(String systemUid, String data)
-			throws IOException {
-		InputStream is = null;
-		try {
-			Gson gson = new Gson();
-			OkHttpClient client = new OkHttpClient();
+            Log.d(AirVantageClient.class.getName(), "Systems URL: " + buildEndpoint("/privates/alerts/groups")
+                    + "&target=" + systemUid);
+            is = connection.getInputStream();
 
-			// Create request for remote resource.
-			HttpURLConnection connection = client
-					.open(new URL(
-							buildEndpoint("/systems/" + systemUid + "/data/"
-									+ data + "/aggregated")
-									+ "&fn=mean&from="
-									+ (System.currentTimeMillis() - 23 * 60 * 60 * 1000)
-									+ "&to="
-									+ (System.currentTimeMillis() + 1 * 60 * 60 * 1000)));
-			connection.addRequestProperty("Cache-Control", "no-cache");
+            InputStreamReader isr = new InputStreamReader(is);
 
-			Log.d(AirVantageClient.class.getName(),
-					"Systems URL: "
-							+ buildEndpoint("/systems/" + systemUid + "/data/"
-									+ data + "/aggregated")
-							+ "fn=mean&from="
-							+ (System.currentTimeMillis() - 23 * 60 * 60 * 1000)
-							+ "&to="
-							+ (System.currentTimeMillis() + 1 * 60 * 60 * 1000));
-			is = connection.getInputStream();
+            // Deserialize HTTP response to concrete type.
+            return gson.fromJson(isr, AlertsList.class).items;
+        } finally {
+            // Clean up.
+            if (is != null)
+                is.close();
+        }
+    }
 
-			InputStreamReader isr = new InputStreamReader(is);
+    public List<Datapoint> getLast24Hours(String systemUid, String data) throws IOException {
+        InputStream is = null;
+        try {
+            Gson gson = new Gson();
+            OkHttpClient client = new OkHttpClient();
 
-			// Deserialize HTTP response to concrete type.
-			Type collectionType = new TypeToken<List<Datapoint>>() {
-			}.getType();
-			return gson.fromJson(isr, collectionType);
-		} finally {
-			// Clean up.
-			if (is != null)
-				is.close();
-		}
-	}
+            // Create request for remote resource.
+            HttpURLConnection connection = client.open(new URL(buildEndpoint("/systems/" + systemUid + "/data/" + data
+                    + "/aggregated")
+                    + "&fn=mean&from="
+                    + (System.currentTimeMillis() - 23 * 60 * 60 * 1000)
+                    + "&to="
+                    + (System.currentTimeMillis() + 1 * 60 * 60 * 1000)));
+            connection.addRequestProperty("Cache-Control", "no-cache");
 
-	public Map<String, Integer> getLast24HoursOccurences(String systemUid,
-			String data) throws IOException {
-		InputStream is = null;
-		try {
-			OkHttpClient client = new OkHttpClient();
+            Log.d(AirVantageClient.class.getName(), "Systems URL: "
+                    + buildEndpoint("/systems/" + systemUid + "/data/" + data + "/aggregated") + "fn=mean&from="
+                    + (System.currentTimeMillis() - 23 * 60 * 60 * 1000) + "&to="
+                    + (System.currentTimeMillis() + 1 * 60 * 60 * 1000));
+            is = connection.getInputStream();
 
-			// Create request for remote resource.
-			HttpURLConnection connection = client
-					.open(new URL(
-							buildEndpoint("/systems/" + systemUid + "/data/"
-									+ data + "/aggregated")
-									+ "&fn=occ&interval=24hour&from="
-									+ (System.currentTimeMillis() - 23 * 60 * 60 * 1000)
-									+ "&to="
-									+ (System.currentTimeMillis() + 1 * 60 * 60 * 1000)));
-			connection.addRequestProperty("Cache-Control", "no-cache");
+            InputStreamReader isr = new InputStreamReader(is);
 
-			Log.d(AirVantageClient.class.getName(), "Systems URL: "
-					+ buildEndpoint("/systems/" + systemUid + "/data/" + data
-							+ "/aggregated") + "&fn=occ&interval=24hour&from="
-					+ (System.currentTimeMillis() - 23 * 60 * 60 * 1000)
-					+ "&to="
-					+ (System.currentTimeMillis() + 1 * 60 * 60 * 1000));
-			is = connection.getInputStream();
+            // Deserialize HTTP response to concrete type.
+            Type collectionType = new TypeToken<List<Datapoint>>() {
+            }.getType();
+            return gson.fromJson(isr, collectionType);
+        } finally {
+            // Clean up.
+            if (is != null)
+                is.close();
+        }
+    }
 
-			Map<String, Integer> values = new HashMap<String, Integer>();
-			try {
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(is));
-				StringBuilder sb = new StringBuilder();
-				String line = null;
+    public Map<String, Integer> getLast24HoursOccurences(String systemUid, String data) throws IOException {
+        InputStream is = null;
+        try {
+            OkHttpClient client = new OkHttpClient();
 
-				while ((line = reader.readLine()) != null) {
-					sb.append(line);
-				}
+            // Create request for remote resource.
+            HttpURLConnection connection = client.open(new URL(buildEndpoint("/systems/" + systemUid + "/data/" + data
+                    + "/aggregated")
+                    + "&fn=occ&interval=24hour&from="
+                    + (System.currentTimeMillis() - 23 * 60 * 60 * 1000)
+                    + "&to="
+                    + (System.currentTimeMillis() + 1 * 60 * 60 * 1000)));
+            connection.addRequestProperty("Cache-Control", "no-cache");
 
-				is.close();
-				JSONArray json = new JSONArray(sb.toString());
-				JSONObject jsonValues = json.getJSONObject(0).getJSONObject(
-						"value");
-				for (int i = 0; i < jsonValues.names().length(); i++) {
-					values.put(jsonValues.names().getString(i).trim(),
-							jsonValues.getInt(jsonValues.names().getString(i)));
-				}
-			} catch (JSONException e) {
-				Log.e(AirVantageClient.class.getName(), "Error in json", e);
-			}
+            Log.d(AirVantageClient.class.getName(), "Systems URL: "
+                    + buildEndpoint("/systems/" + systemUid + "/data/" + data + "/aggregated")
+                    + "&fn=occ&interval=24hour&from=" + (System.currentTimeMillis() - 23 * 60 * 60 * 1000) + "&to="
+                    + (System.currentTimeMillis() + 1 * 60 * 60 * 1000));
+            is = connection.getInputStream();
 
-			return values;
-		} finally {
-			// Clean up.
-			if (is != null)
-				is.close();
-		}
-	}
+            Map<String, Integer> values = new HashMap<String, Integer>();
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                StringBuilder sb = new StringBuilder();
+                String line = null;
 
-	public List<net.airvantage.model.System> getSystems()
-			throws IOException {
-		InputStream is = null;
-		try {
-			Gson gson = new Gson();
-			OkHttpClient client = new OkHttpClient();
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
 
-			// Create request for remote resource.
-			HttpURLConnection connection = client.open(new URL(
-					buildEndpoint("/systems")
-							+ "&fields=uid,name,commStatus,lastCommDate,data"));
-			connection.addRequestProperty("Cache-Control", "no-cache");
+                is.close();
+                JSONArray json = new JSONArray(sb.toString());
+                JSONObject jsonValues = json.getJSONObject(0).getJSONObject("value");
+                for (int i = 0; i < jsonValues.names().length(); i++) {
+                    values.put(jsonValues.names().getString(i).trim(),
+                            jsonValues.getInt(jsonValues.names().getString(i)));
+                }
+            } catch (JSONException e) {
+                Log.e(AirVantageClient.class.getName(), "Error in json", e);
+            }
 
-			Log.d(AirVantageClient.class.getName(), "Systems URL: "
-					+ buildEndpoint("/systems") + "&fields=uid,name,data");
-			is = connection.getInputStream();
+            return values;
+        } finally {
+            // Clean up.
+            if (is != null)
+                is.close();
+        }
+    }
 
-			InputStreamReader isr = new InputStreamReader(is);
+    public List<net.airvantage.model.System> getSystems() throws IOException {
+        InputStream is = null;
+        try {
+            Gson gson = new Gson();
+            OkHttpClient client = new OkHttpClient();
 
-			// Deserialize HTTP response to concrete type.
-			return gson.fromJson(isr, SystemsList.class).items;
-		} finally {
-			// Clean up.
-			if (is != null)
-				is.close();
-		}
-	}
+            // Create request for remote resource.
+            HttpURLConnection connection = client.open(new URL(buildEndpoint("/systems")
+                    + "&fields=uid,name,commStatus,lastCommDate,data"));
+            connection.addRequestProperty("Cache-Control", "no-cache");
 
-	public String reboot(String systemUid) throws IOException {
+            Log.d(AirVantageClient.class.getName(), "Systems URL: " + buildEndpoint("/systems")
+                    + "&fields=uid,name,data");
+            is = connection.getInputStream();
 
-		OutputStream out = null;
-		InputStream in = null;
-		try {
-			Gson gson = new Gson();
-			OkHttpClient client = new OkHttpClient();
-			String body = "{\"requestConnection\" : \"true\", \"systems\" : {\"uids\" : [\""
-					+ systemUid + "\"]}}";
+            InputStreamReader isr = new InputStreamReader(is);
 
-			// Create request for remote resource.
-			HttpURLConnection connection = client.open(new URL(
-					buildEndpoint("/operations/systems/reboot")));
-			connection.addRequestProperty("Cache-Control", "no-cache");
-			connection.addRequestProperty("Content-Type", "application/json");
-			// Write the request.
-			connection.setRequestMethod("POST");
-			out = connection.getOutputStream();
-			out.write(body.getBytes());
-			out.close();
+            // Deserialize HTTP response to concrete type.
+            return gson.fromJson(isr, SystemsList.class).items;
+        } finally {
+            // Clean up.
+            if (is != null)
+                is.close();
+        }
+    }
 
-			// Read the response.
-			if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-				throw new IOException("Unexpected HTTP response: "
-						+ connection.getResponseCode() + " "
-						+ connection.getResponseMessage());
-			}
-			in = connection.getInputStream();
+    public String reboot(String systemUid) throws IOException {
 
-			InputStreamReader isr = new InputStreamReader(in);
+        OutputStream out = null;
+        InputStream in = null;
+        try {
+            Gson gson = new Gson();
+            OkHttpClient client = new OkHttpClient();
+            String body = "{\"requestConnection\" : \"true\", \"systems\" : {\"uids\" : [\"" + systemUid + "\"]}}";
 
-			// Deserialize HTTP response to concrete type.
-			return gson.fromJson(isr, OperationResult.class).operationUid;
-		} finally {
-			// Clean up.
-			if (out != null)
-				out.close();
-			if (in != null)
-				in.close();
-		}
-	}
+            // Create request for remote resource.
+            HttpURLConnection connection = client.open(new URL(buildEndpoint("/operations/systems/reboot")));
+            connection.addRequestProperty("Cache-Control", "no-cache");
+            connection.addRequestProperty("Content-Type", "application/json");
+            // Write the request.
+            connection.setRequestMethod("POST");
+            out = connection.getOutputStream();
+            out.write(body.getBytes());
+            out.close();
 
-	public net.airvantage.model.System create(net.airvantage.model.System system) throws IOException {
+            // Read the response.
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                throw new IOException("Unexpected HTTP response: " + connection.getResponseCode() + " "
+                        + connection.getResponseMessage());
+            }
+            in = connection.getInputStream();
 
-		OutputStream out = null;
-		InputStream in = null;
-		try {
-			Gson gson = new Gson();
-			String body = gson.toJson(system);
-			OkHttpClient client = new OkHttpClient();
+            InputStreamReader isr = new InputStreamReader(in);
 
-			// Create request for remote resource.
-			HttpURLConnection connection = client.open(new URL(
-					buildEndpoint("/systems")));
-			connection.addRequestProperty("Cache-Control", "no-cache");
-			connection.addRequestProperty("Content-Type", "application/json");
-			// Write the request.
-			connection.setRequestMethod("POST");
-			out = connection.getOutputStream();
-			out.write(body.getBytes());
-			out.close();
+            // Deserialize HTTP response to concrete type.
+            return gson.fromJson(isr, OperationResult.class).operationUid;
+        } finally {
+            // Clean up.
+            if (out != null)
+                out.close();
+            if (in != null)
+                in.close();
+        }
+    }
 
-			// Read the response.
-			if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-				throw new IOException("Unexpected HTTP response: "
-						+ connection.getResponseCode() + " "
-						+ connection.getResponseMessage());
-			}
-			in = connection.getInputStream();
+    public net.airvantage.model.System create(net.airvantage.model.System system) throws IOException {
 
-			InputStreamReader isr = new InputStreamReader(in);
+        OutputStream out = null;
+        InputStream in = null;
+        try {
+            Gson gson = new Gson();
+            String body = gson.toJson(system);
+            OkHttpClient client = new OkHttpClient();
 
-			// Deserialize HTTP response to concrete type.
-			return gson.fromJson(isr, net.airvantage.model.System.class);
-		} finally {
-			// Clean up.
-			if (out != null)
-				out.close();
-			if (in != null)
-				in.close();
-		}
-	}
+            // Create request for remote resource.
+            HttpURLConnection connection = client.open(new URL(buildEndpoint("/systems")));
+            connection.addRequestProperty("Cache-Control", "no-cache");
+            connection.addRequestProperty("Content-Type", "application/json");
+            // Write the request.
+            connection.setRequestMethod("POST");
+            out = connection.getOutputStream();
+            out.write(body.getBytes());
+            out.close();
+
+            // Read the response.
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                throw new IOException("Unexpected HTTP response: " + connection.getResponseCode() + " "
+                        + connection.getResponseMessage());
+            }
+            in = connection.getInputStream();
+
+            InputStreamReader isr = new InputStreamReader(in);
+
+            // Deserialize HTTP response to concrete type.
+            return gson.fromJson(isr, net.airvantage.model.System.class);
+        } finally {
+            // Clean up.
+            if (out != null)
+                out.close();
+            if (in != null)
+                in.close();
+        }
+    }
 }
