@@ -3,7 +3,6 @@ package com.sierrawireless.avphone.service;
 import java.util.List;
 import java.util.Map;
 
-
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -15,6 +14,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -68,18 +68,24 @@ public class MonitoringService extends Service {
 
     @Override
     public void onCreate() {
-        // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
+
+        // Display a notification icon
+
+        // Create an intent to start the activity when clicking the notification
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification notification = new Notification.Builder(this.getApplicationContext()) //
                 .setContentTitle(getText(R.string.notif_title)) //
                 .setContentText(getText(R.string.notif_desc)) //
                 .setSmallIcon(R.drawable.ic_notif) //
                 .setOngoing(true) //
-                .setContentIntent(contentIntent) //
+                .setContentIntent(resultPendingIntent) //
                 .build();
 
-        // Send the notification.
         startForeground(NOTIFICATION, notification);
 
         telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -125,7 +131,7 @@ public class MonitoringService extends Service {
                     data.setRssi(((CellInfoGsm) cellInfo).getCellSignalStrength().getDbm());
                 } else if (cellInfo instanceof CellInfoWcdma) {
                     // RSSI ?
-                    data.setRssi(((CellInfoWcdma) cellInfo).getCellSignalStrength().getDbm());
+                    // data.setRssi(((CellInfoWcdma) cellInfo).getCellSignalStrength().getDbm());
                 } else if (cellInfo instanceof CellInfoLte) {
                     data.setRsrp(((CellInfoLte) cellInfo).getCellSignalStrength().getDbm());
                 }
