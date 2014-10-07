@@ -1,12 +1,13 @@
-package makeit.airvantage.monitoring;
+package com.sierrawireless.avphone;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import makeit.airvantage.monitoring.service.LogMessage;
-import makeit.airvantage.monitoring.service.MonitoringService;
-import makeit.airvantage.monitoring.service.MonitoringService.ServiceBinder;
-import makeit.airvantage.monitoring.service.NewData;
+import com.sierrawireless.avphone.service.LogMessage;
+import com.sierrawireless.avphone.service.MonitoringService;
+import com.sierrawireless.avphone.service.NewData;
+import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder;
+
 import net.airvantage.utils.AirVantageClient;
 import android.app.Activity;
 import android.app.ActivityManager;

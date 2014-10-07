@@ -1,4 +1,4 @@
-package makeit.airvantage.monitoring;
+package com.sierrawireless.avphone;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;

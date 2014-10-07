@@ -1,10 +1,10 @@
-package makeit.airvantage.monitoring.service;
+package com.sierrawireless.avphone.service;
 
 import android.content.Intent;
 
 public class LogMessage extends Intent {
 
-    public static final String LOG_EVENT = "makeit.av.monitoring.event.log";
+    public static final String LOG_EVENT = "com.sierrawireless.avphone.event.log";
 
     // keys used for broadcasting log events
     private static final String LOG = "log";

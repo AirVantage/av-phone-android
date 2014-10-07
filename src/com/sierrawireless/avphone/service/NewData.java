@@ -1,11 +1,11 @@
-package makeit.airvantage.monitoring.service;
+package com.sierrawireless.avphone.service;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 public class NewData extends Intent {
 
-    public static final String NEW_DATA = "makeit.av.monitoring.newdata";
+    public static final String NEW_DATA = "com.sierrawireless.avphone.newdata";
 
     // keys used for broadcasting new data events
     private static final String NEW_DATA_PREFIX = "newdata.";

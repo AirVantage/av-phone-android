@@ -1,10 +1,8 @@
-package makeit.airvantage.monitoring.service;
+package com.sierrawireless.avphone.service;
 
 import java.util.List;
 import java.util.Map;
 
-import makeit.airvantage.monitoring.MainActivity;
-import makeit.airvantage.monitoring.R;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -36,6 +34,8 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.sierrawireless.avphone.MainActivity;
+import com.sierrawireless.avphone.R;
 
 public class MonitoringService extends Service {
 

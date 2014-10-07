@@ -1,12 +1,13 @@
-package makeit.airvantage.monitoring;
+package com.sierrawireless.avphone;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import makeit.airvantage.monitoring.service.LogMessage;
-import makeit.airvantage.monitoring.service.NewData;
+import com.sierrawireless.avphone.service.LogMessage;
+import com.sierrawireless.avphone.service.NewData;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

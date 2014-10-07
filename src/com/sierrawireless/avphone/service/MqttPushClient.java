@@ -1,4 +1,4 @@
-package makeit.airvantage.monitoring.service;
+package com.sierrawireless.avphone.service;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;

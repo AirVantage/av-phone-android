@@ -1,4 +1,4 @@
-package makeit.airvantage.monitoring.service;
+package com.sierrawireless.avphone.service;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

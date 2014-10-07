@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">AV Phone</string>
+    <string name="app_name">AV Phone Demo</string>
     <string name="action_settings">Settings</string>
     <string name="started_since">Service started since</string>
     <string name="phone_id">Phone ID</string>

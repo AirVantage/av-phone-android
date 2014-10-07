@@ -1,4 +1,4 @@
-package makeit.airvantage.monitoring;
+package com.sierrawireless.avphone;
 
 import net.airvantage.utils.AirVantageClient;
 import android.app.Activity;
