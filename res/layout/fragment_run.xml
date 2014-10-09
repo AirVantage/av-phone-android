@@ -55,25 +55,10 @@
 
                 <TextView
                     style="@style/ItemLabel"
-                    android:text="@string/rssi" />
+                    android:text="@string/signal_strength" />
 
                 <TextView
-                    android:id="@+id/rssi_value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
-
-                <TextView
-                    style="@style/ItemLabel"
-                    android:text="@string/rsrp" />
-
-                <TextView
-                    android:id="@+id/rsrp_value"
+                    android:id="@+id/signal_strength_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/no_value" />

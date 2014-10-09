@@ -60,11 +60,9 @@ public class DataViewUpdater extends BroadcastReceiver {
 
     public void setNewData(NewData data) {
         if (data.getRssi() != null) {
-            findView(R.id.rssi_value).setText(data.getRssi() + " dBm");
-        }
-
-        if (data.getRsrp() != null) {
-            findView(R.id.rsrp_value).setText(data.getRsrp() + " dBm");
+            findView(R.id.signal_strength_value).setText(data.getRssi() + " dBm (RSSI)");
+        } else if (data.getRsrp() != null) {
+            findView(R.id.signal_strength_value).setText(data.getRsrp() + " dBm (RSRP)");
         }
 
         if (data.getBatteryLevel() != null) {
