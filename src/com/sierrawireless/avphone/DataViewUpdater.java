@@ -5,23 +5,26 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import com.sierrawireless.avphone.service.LogMessage;
-import com.sierrawireless.avphone.service.NewData;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 
-public class ServiceListener extends BroadcastReceiver {
+import com.sierrawireless.avphone.service.LogMessage;
+import com.sierrawireless.avphone.service.NewData;
+
+/**
+ * A component in charge of listening for service events (new data, logs) and updating the view accordingly.
+ */
+public class DataViewUpdater extends BroadcastReceiver {
 
     private DateFormat hourFormat = new SimpleDateFormat("HH:mm:ss", Locale.FRENCH);
 
-    private final MainActivity activity;
+    private final View view;
 
-    public ServiceListener(MainActivity activity) {
-        this.activity = activity;
+    public DataViewUpdater(View view) {
+        this.view = view;
     }
 
     @Override
@@ -47,7 +50,7 @@ public class ServiceListener extends BroadcastReceiver {
     public void setStartedSince(Long startedSince) {
         TextView startedTextView = findView(R.id.started_since);
         if (startedSince != null) {
-            startedTextView.setText(activity.getString(R.string.started_since) + " "
+            startedTextView.setText(view.getContext().getString(R.string.started_since) + " "
                     + new SimpleDateFormat("dd/MM HH:mm:ss", Locale.FRENCH).format(new Date(startedSince)));
             startedTextView.setVisibility(View.VISIBLE);
         } else {
@@ -103,7 +106,7 @@ public class ServiceListener extends BroadcastReceiver {
     }
 
     private TextView findView(int id) {
-        return (TextView) activity.findViewById(id);
+        return (TextView) view.findViewById(id);
     }
 
 }
