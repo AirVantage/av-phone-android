@@ -100,6 +100,21 @@
 
                 <TextView
                     style="@style/ItemLabel"
+                    android:text="@string/imei" />
+
+                <TextView
+                    android:id="@+id/imei_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    style="@style/ItemLabel"
                     android:text="@string/bytes_sent" />
 
                 <TextView
@@ -215,6 +230,22 @@
                     android:layout_height="wrap_content"
                     android:text="@string/no_value" />
             </TableRow>
+            
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    style="@style/ItemLabel"
+                    android:text="@string/android_version" />
+
+                <TextView
+                    android:id="@+id/androidversion_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_value" />
+            </TableRow>
+            
         </TableLayout>
 
         <TextView

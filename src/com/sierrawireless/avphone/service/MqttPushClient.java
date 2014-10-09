@@ -97,6 +97,10 @@ public class MqttPushClient {
             values.put("phone.operator", Collections.singletonList(new DataValue(timestamp, data.getOperator())));
         }
 
+        if (data.getImei() != null) {
+            values.put("phone.imei", Collections.singletonList(new DataValue(timestamp, data.getImei())));
+        }
+
         if (data.getNetworkType() != null) {
             values.put("phone.service", Collections.singletonList(new DataValue(timestamp, data.getNetworkType())));
             // hack for data mapping
@@ -139,6 +143,13 @@ public class MqttPushClient {
 
         if (data.getMemoryUsage() != null) {
             values.put("phone.memoryusage", Collections.singletonList(new DataValue(timestamp, data.getMemoryUsage())));
+        }
+
+        if (data.getAndroidVersion() != null) {
+            values.put("phone.androidversion",
+                    Collections.singletonList(new DataValue(timestamp, data.getAndroidVersion())));
+            // values.put("_FIRMWARE_VERSION", Collections.singletonList(new DataValue(timestamp,
+            // data.getAndroidVersion())));
         }
 
         return gson.toJson(Collections.singletonList(values));

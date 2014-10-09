@@ -14,6 +14,7 @@ public class NewData extends Intent {
     private static final String BATTERY_KEY = NEW_DATA_PREFIX + "battery";
     private static final String OPERATOR_KEY = NEW_DATA_PREFIX + "operator";
     private static final String NETWORK_TYPE_KEY = NEW_DATA_PREFIX + "networktype";
+    private static final String IMEI_KEY = NEW_DATA_PREFIX + "imei";
     private static final String LATITUDE_KEY = NEW_DATA_PREFIX + "latitude";
     private static final String LONGITUDE_KEY = NEW_DATA_PREFIX + "longitude";
     private static final String BYTES_SENT_KEY = NEW_DATA_PREFIX + "bytessent";
@@ -21,6 +22,7 @@ public class NewData extends Intent {
     private static final String ACTIVE_WIFI_KEY = NEW_DATA_PREFIX + "activewifi";
     private static final String RUNNING_APPS_KEY = NEW_DATA_PREFIX + "runningapps";
     private static final String MEMORY_USAGE_KEY = NEW_DATA_PREFIX + "memory";
+    private static final String ANDROID_VERSION_KEY = NEW_DATA_PREFIX + "androidversion";
 
     public NewData() {
         super(NEW_DATA);
@@ -54,6 +56,16 @@ public class NewData extends Intent {
     public void setOperator(String operator) {
         if (operator != null) {
             this.putExtra(OPERATOR_KEY, operator);
+        }
+    }
+
+    public String getImei() {
+        return (String) this.getExtras().get(IMEI_KEY);
+    }
+
+    public void setImei(String imei) {
+        if (imei != null) {
+            this.putExtra(IMEI_KEY, imei);
         }
     }
 
@@ -145,6 +157,16 @@ public class NewData extends Intent {
     public void setMemoryUsage(Float memoryUsage) {
         if (memoryUsage != null && memoryUsage > 0F) {
             this.putExtra(MEMORY_USAGE_KEY, memoryUsage);
+        }
+    }
+
+    public String getAndroidVersion() {
+        return (String) this.getExtras().get(ANDROID_VERSION_KEY);
+    }
+
+    public void setAndroidVersion(String version) {
+        if (version != null) {
+            this.putExtra(ANDROID_VERSION_KEY, version);
         }
     }
 

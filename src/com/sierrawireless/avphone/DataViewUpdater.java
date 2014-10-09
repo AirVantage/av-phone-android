@@ -73,6 +73,10 @@ public class DataViewUpdater extends BroadcastReceiver {
             findView(R.id.operator_value).setText(data.getOperator());
         }
 
+        if (data.getImei() != null) {
+            findView(R.id.imei_value).setText(data.getImei());
+        }
+
         if (data.getNetworkType() != null) {
             findView(R.id.network_type_value).setText(data.getNetworkType());
         }
@@ -100,6 +104,10 @@ public class DataViewUpdater extends BroadcastReceiver {
 
         if (data.isWifiActive() != null) {
             findView(R.id.wifi_value).setText(data.isWifiActive() ? "On" : "Off");
+        }
+
+        if (data.getAndroidVersion() != null) {
+            findView(R.id.androidversion_value).setText(data.getAndroidVersion());
         }
     }
 

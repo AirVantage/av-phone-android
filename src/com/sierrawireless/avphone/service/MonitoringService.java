@@ -24,6 +24,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.TrafficStats;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.CellInfo;
@@ -137,6 +138,10 @@ public class MonitoringService extends Service {
                 }
             }
 
+            if (telephonyManager.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
+                data.setImei(telephonyManager.getDeviceId());
+            }
+
             data.setOperator(telephonyManager.getNetworkOperatorName());
 
             switch (telephonyManager.getNetworkType()) {
@@ -169,8 +174,8 @@ public class MonitoringService extends Service {
             }
 
             data.setActiveWifi(connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected());
-
             data.setRunningApps(activityManager.getRunningAppProcesses().size());
+            data.setAndroidVersion(Build.VERSION.RELEASE);
 
             MemoryInfo mi = new MemoryInfo();
             activityManager.getMemoryInfo(mi);

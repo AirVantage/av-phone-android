@@ -12,12 +12,14 @@
     <string name="longitude">Longitude</string>
     <string name="operator">Operator</string>
     <string name="network_type">Network type</string>
+    <string name="imei">IMEI</string>
     <string name="battery_level">Battery level</string>
     <string name="bytes_sent">Bytes sent</string>
     <string name="bytes_received">Bytes received</string>
     <string name="active_wifi">Wi-Fi</string>
     <string name="running_apps">Running applications</string>
     <string name="memory_usage">Memory usage</string>
+    <string name="android_version">Android version</string>
     <string name="no_value">-</string>
     <string name="register">Register</string>
 
