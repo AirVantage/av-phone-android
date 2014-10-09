@@ -33,6 +33,10 @@
     
     <string name="pref_server_key">pref_server_key</string>
     <string name="pref_server">AirVantage server</string>
+    <string name="pref_server_na">NA</string>
+    <string name="pref_server_na_value">na.airvantage.net</string>
+    <string name="pref_server_eu">EU</string>
+    <string name="pref_server_eu_value">eu.airvantage.net</string>
     
     <string name="pref_period_key">pref_period_key</string>
     <string name="pref_period">Push data period</string>
@@ -42,10 +46,9 @@
     
     <!-- default values -->
     <string name="pref_password_default">12345</string>
-    <string name="pref_server_default">na.airvantage.net</string>
+    
     <string name="pref_period_default">2</string>
     <string name="pref_client_id_default">54d4faa5343d49fba03f2a2ec1f210b9</string>
-    
     <string name="invalid_prefs">Invalid parameters</string>
     <string name="prefs_missing">Some application parameters are missing</string>
 
