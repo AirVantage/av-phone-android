@@ -23,6 +23,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.TrafficStats;
+import android.os.BatteryManager;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -41,8 +42,6 @@ import com.sierrawireless.avphone.R;
 public class MonitoringService extends Service {
 
     private static final String LOGTAG = "MonitoringService";
-
-    private BatteryChangeListener batteryListener = new BatteryChangeListener();
 
     // system services
     private TelephonyManager telephonyManager;
@@ -92,8 +91,6 @@ public class MonitoringService extends Service {
         telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        this.registerReceiver(batteryListener, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
         startedSince = System.currentTimeMillis();
     }
@@ -181,12 +178,21 @@ public class MonitoringService extends Service {
             activityManager.getMemoryInfo(mi);
             data.setMemoryUsage((float) ((mi.totalMem - mi.availMem) / ((Long) mi.totalMem).doubleValue()));
 
-            data.setBatteryLevel(batteryListener.getBatteryLevel());
+            // battery level
+            IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+            Intent batteryStatus = this.registerReceiver(null, ifilter);
+            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            data.setBatteryLevel(level / (float) scale);
+
+            // location
             if (location != null && location.getTime() != lastLocation) {
                 data.setLatitude(location.getLatitude());
                 data.setLongitude(location.getLongitude());
                 lastLocation = location.getTime();
             }
+
+            // bytes sent/received
             data.setBytesReceived(TrafficStats.getMobileRxBytes());
             data.setBytesSent(TrafficStats.getMobileTxBytes());
 
@@ -220,9 +226,6 @@ public class MonitoringService extends Service {
                 Log.e(LOGTAG, "error", e);
             }
         }
-
-        // unregister listeners
-        this.unregisterReceiver(batteryListener);
 
         // Cancel the persistent notification.
         stopForeground(true);
