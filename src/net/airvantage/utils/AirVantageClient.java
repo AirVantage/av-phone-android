@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +16,11 @@ import java.util.Map;
 import net.airvantage.model.AccessToken;
 import net.airvantage.model.Alert;
 import net.airvantage.model.AlertsList;
+import net.airvantage.model.ApplicationData;
 import net.airvantage.model.ApplicationsList;
 import net.airvantage.model.Datapoint;
 import net.airvantage.model.OperationResult;
+import net.airvantage.model.Protocol;
 import net.airvantage.model.SystemsList;
 import net.airvantage.model.User;
 
@@ -33,8 +36,7 @@ import com.squareup.okhttp.OkHttpClient;
 
 public class AirVantageClient {
 
-	// FIXME(pht) should be HTTPS in "production"
-	private static final String SCHEME = "http://";
+	private static final String SCHEME = "https://";
 
 	private static final String APIS = "/api/v1";
 
@@ -251,14 +253,28 @@ public class AirVantageClient {
 	}
 
 	public List<net.airvantage.model.System> getSystems() throws IOException {
+		return getSystems(null);
+	}
+
+	public List<net.airvantage.model.System> getSystems(String name) throws IOException {
 		InputStream is = null;
 		try {
 			Gson gson = new Gson();
 			OkHttpClient client = new OkHttpClient();
 
 			// Create request for remote resource.
-			HttpURLConnection connection = client.open(new URL(buildEndpoint("/systems")
-					+ "&fields=uid,name,commStatus,lastCommDate,data"));
+			String urlString = buildEndpoint("/systems")
+					+ "&fields=uid,name,commStatus,lastCommDate,data";
+			if (name != null) {
+				urlString += "&name=" + name;
+			}
+
+			URL url = new URL(urlString);
+
+
+			HttpURLConnection connection = client.open(url);
+
+
 			connection.addRequestProperty("Cache-Control", "no-cache");
 
 			Log.d(AirVantageClient.class.getName(), "Systems URL: " + buildEndpoint("/systems")
@@ -303,7 +319,7 @@ public class AirVantageClient {
 				is.close();
 		}
 	}
-	
+
 	public String reboot(String systemUid) throws IOException {
 
 		OutputStream out = null;
@@ -382,6 +398,75 @@ public class AirVantageClient {
 		}
 	}
 
+	public void setApplicationData(String applicationUid, ApplicationData data) throws IOException {
+		OutputStream out = null;
+		InputStream in = null;
+		try {
+			Gson gson = new Gson();
+			String body = gson.toJson(Arrays.asList(data));
+			OkHttpClient client = new OkHttpClient();
+
+			// Create request for remote resource.
+			URL url = new URL(buildEndpoint("/applications/" + applicationUid + "/data"));
+			HttpURLConnection connection = client.open(url);
+			connection.addRequestProperty("Cache-Control", "no-cache");
+			connection.addRequestProperty("Content-Type", "application/json");
+			// Write the request.
+			connection.setRequestMethod("PUT");
+			out = connection.getOutputStream();
+			out.write(body.getBytes());
+			out.close();
+
+			// Read the response.
+			if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+				throw new IOException("Unexpected HTTP response: " + connection.getResponseCode() + " "
+						+ connection.getResponseMessage());
+			}
+
+		} finally {
+			// Clean up.
+			if (out != null)
+				out.close();
+			if (in != null)
+				in.close();
+		}
+	}
+
+
+	public void setApplicationCommunication(String applicationUid, List<Protocol> protocols) throws IOException {
+		OutputStream out = null;
+		InputStream in = null;
+		try {
+			Gson gson = new Gson();
+			String body = gson.toJson(protocols);
+			OkHttpClient client = new OkHttpClient();
+
+			// Create request for remote resource.
+			URL url = new URL(buildEndpoint("/applications/" + applicationUid + "/communication"));
+			HttpURLConnection connection = client.open(url);
+			connection.addRequestProperty("Cache-Control", "no-cache");
+			connection.addRequestProperty("Content-Type", "application/json");
+			// Write the request.
+			connection.setRequestMethod("PUT");
+			out = connection.getOutputStream();
+			out.write(body.getBytes());
+			out.close();
+
+			// Read the response.
+			if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+				throw new IOException("Unexpected HTTP response: " + connection.getResponseCode() + " "
+						+ connection.getResponseMessage());
+			}
+
+		} finally {
+			// Clean up.
+			if (out != null)
+				out.close();
+			if (in != null)
+				in.close();
+		}
+	}
+
 	public net.airvantage.model.System createSystem(net.airvantage.model.System system) throws IOException {
 
 		OutputStream out = null;
@@ -421,4 +506,6 @@ public class AirVantageClient {
 				in.close();
 		}
 	}
+
+
 }

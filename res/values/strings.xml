@@ -22,7 +22,8 @@
     <string name="android_version">Android version</string>
     <string name="no_value">-</string>
     <string name="register">Register</string>
-
+    <string name="update_data">Update data</string>
+    
     <!-- Notifications -->
     <string name="notif_title">Phone monitoring</string>
     <string name="notif_desc">Pushing data to AirVantage</string>
@@ -38,6 +39,18 @@
     <string name="pref_server_na_value">na.airvantage.net</string>
     <string name="pref_server_eu">EU</string>
     <string name="pref_server_eu_value">eu.airvantage.net</string>
+    
+    <string name="pref_custom1_label_key">pref_data_custom1</string>
+    <string name="pref_custom1_label">Custom Data 1</string>
+    <string name="pref_custom1_label_default">Printed page count</string>
+    
+    <string name="pref_custom2_label_key">pref_data_custom2</string>
+    <string name="pref_custom2_label">Custom Data 2</string>
+    <string name="pref_custom2_label_default">Ink level</string>
+    
+    <string name="pref_custom3_label_key">pref_data_custom3</string>
+    <string name="pref_custom3_label">Custom Data 3</string>
+    <string name="pref_custom3_label_default">Printing</string>
     
     <string name="pref_period_key">pref_period_key</string>
     <string name="pref_period">Push data period</string>

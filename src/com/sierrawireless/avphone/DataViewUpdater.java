@@ -109,6 +109,8 @@ public class DataViewUpdater extends BroadcastReceiver {
         if (data.getAndroidVersion() != null) {
             findView(R.id.androidversion_value).setText(data.getAndroidVersion());
         }
+        
+        
     }
 
     private TextView findView(int id) {
