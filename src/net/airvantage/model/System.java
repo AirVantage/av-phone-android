@@ -32,11 +32,4 @@ public class System {
         public String type;
     }
 
-    public static class Application {
-        public String uid;
-        public String name;
-        public String revision;
-        public String type;
-        public String category;
-    }
 }
