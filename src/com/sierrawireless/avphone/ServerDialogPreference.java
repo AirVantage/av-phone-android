@@ -1,6 +1,7 @@
 package com.sierrawireless.avphone;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.View;
@@ -8,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 /**
  * A preference to enter a server host value.
@@ -54,11 +54,16 @@ public class ServerDialogPreference extends DialogPreference {
         return layout;
     }
 
-    // Attach persisted values to Dialog
     @Override
-    protected void onBindDialogView(View view) {
-        super.onBindDialogView(view);
-        editText.setText(getPersistedString("EditText"), TextView.BufferType.NORMAL);
+    protected Object onGetDefaultValue(TypedArray a, int index) {
+        return a.getString(index);
+    }
+
+    @Override
+    protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
+        String value = restoreValue ? getPersistedString((String) defaultValue) : (String) defaultValue;
+        editText.setText(value);
+        persistString(value);
     }
 
     // Persist value and disassemble views
