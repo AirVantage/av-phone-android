@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 
 public class MqttPushClient {
 
-    private static final String LOGTAG = "MqttPushClient";
+    private static final String LOGTAG = MqttPushClient.class.getName();
 
     private MqttClient client;
     private MqttConnectOptions opt;
@@ -59,14 +59,19 @@ public class MqttPushClient {
         }
     }
 
-    public void push(NewData data) throws MqttException, UnsupportedEncodingException {
+    public void push(NewData data) throws MqttException {
         if (client.isConnected()) {
             Log.i(LOGTAG, "Pushing data to the server : " + data);
             String message = this.convertToJson(data);
 
             Log.d(LOGTAG, "Rest content : " + message);
 
-            MqttMessage msg = new MqttMessage(message.getBytes("UTF-8"));
+            MqttMessage msg = null;
+            try {
+                msg = new MqttMessage(message.getBytes("UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                // won't happen, UTF-8 is available
+            }
             msg.setQos(0);
 
             this.client.publish(opt.getUserName() + "/messages/json", msg);
@@ -152,6 +157,11 @@ public class MqttPushClient {
             // data.getAndroidVersion())));
         }
 
+        if (data.isAlarmActivated() != null) {
+            values.put("avep_demo.alarm_status",
+                    Collections.singletonList(new DataValue(timestamp, data.isAlarmActivated())));
+        }
+
         // FIXME(pht) this would just be to test customizing the thing
         // custom1 is a value that should go up
         if (data.getBytesSent() != null) {
@@ -165,7 +175,7 @@ public class MqttPushClient {
         if (data.isWifiActive() != null) {
             values.put("phone.custom3", Collections.singletonList(new DataValue(timestamp, data.isWifiActive())));
         }
-        
+
         return gson.toJson(Collections.singletonList(values));
     }
 

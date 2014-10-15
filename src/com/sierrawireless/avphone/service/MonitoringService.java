@@ -41,7 +41,7 @@ import com.sierrawireless.avphone.R;
 
 public class MonitoringService extends Service {
 
-    private static final String LOGTAG = "MonitoringService";
+    private static final String LOGTAG = MonitoringService.class.getName();
 
     // system services
     private TelephonyManager telephonyManager;
@@ -112,7 +112,7 @@ public class MonitoringService extends Service {
 
             final LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             final String locationProvider = locManager.getBestProvider(new Criteria(), true);
-            Log.d(LOGTAG, "Location provider : " + locationProvider);
+            Log.d(LOGTAG, "Location provider: " + locationProvider);
 
             Location location = null;
             if (locationProvider != null) {
@@ -229,6 +229,21 @@ public class MonitoringService extends Service {
 
         // Cancel the persistent notification.
         stopForeground(true);
+    }
+
+    public void sendAlarmEvent(boolean activated) {
+        NewData data = new NewData();
+        data.setAlarmActivated(activated);
+
+        // save alarm state
+        lastData.putExtras(data.getExtras());
+
+        try {
+            client.push(data);
+        } catch (MqttException e) {
+            // TODO display something
+            Log.e(LOGTAG, "Could not push the alarm event", e);
+        }
     }
 
     // Service binding

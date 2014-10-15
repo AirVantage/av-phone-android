@@ -18,12 +18,15 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
+import android.widget.ToggleButton;
 
 import com.sierrawireless.avphone.service.LogMessage;
 import com.sierrawireless.avphone.service.MonitoringService;
@@ -31,6 +34,8 @@ import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder;
 import com.sierrawireless.avphone.service.NewData;
 
 public class RunFragment extends Fragment implements OnSharedPreferenceChangeListener {
+
+    private static final String LOGTAG = RunFragment.class.getName();
 
     private DataViewUpdater viewUpdater;
 
@@ -59,15 +64,11 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         prefs.registerOnSharedPreferenceChangeListener(this);
 
+        // Start/stop switch
         boolean isServiceRunning = isServiceRunning();
 
         Switch serviceSwitch = (Switch) view.findViewById(R.id.service_switch);
         serviceSwitch.setChecked(isServiceRunning);
-
-        if (isServiceRunning) {
-            connectToService();
-        }
-
         serviceSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
             @Override
@@ -79,6 +80,14 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
                 }
             }
         });
+
+        if (isServiceRunning) {
+            connectToService();
+        }
+
+        // Alarm button
+        ToggleButton alarmButton = (ToggleButton) view.findViewById(R.id.alarm_button);
+        alarmButton.setOnClickListener(onAlarmClick);
 
         return view;
     }
@@ -135,7 +144,7 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
 
         disconnectFromService();
 
-        viewUpdater.setStartedSince(null);
+        viewUpdater.onStop();
     }
 
     // Service binding
@@ -153,18 +162,20 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
     }
 
     boolean bound = false;
+    MonitoringService service;
     ServiceConnection connection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName arg0, IBinder binder) {
-            MonitoringService service = ((ServiceBinder) binder).getService();
-            viewUpdater.setStartedSince(service.getStartedSince());
-            viewUpdater.setNewData(service.getLastData());
-            viewUpdater.setLogMessage(service.getLastLog(), service.getLastRun());
+            Log.d(LOGTAG, "Connected to the monitoring service");
+            service = ((ServiceBinder) binder).getService();
+            viewUpdater.onStart(service.getStartedSince(), service.getLastData(), service.getLastLog(),
+                    service.getLastRun());
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
+            Log.d(LOGTAG, "Disconnected from the monitoring service");
             bound = false;
         }
 
@@ -186,5 +197,18 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
         super.onDestroy();
         disconnectFromService();
     }
+
+    // Alarm button
+
+    OnClickListener onAlarmClick = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            Log.d(LOGTAG, "On alarm button click");
+            if (bound && service != null) {
+                service.sendAlarmEvent(((ToggleButton) v).isChecked());
+            }
+        }
+    };
 
 }
