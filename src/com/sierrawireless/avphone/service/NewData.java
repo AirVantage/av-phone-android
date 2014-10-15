@@ -24,6 +24,8 @@ public class NewData extends Intent {
     private static final String MEMORY_USAGE_KEY = NEW_DATA_PREFIX + "memory";
     private static final String ANDROID_VERSION_KEY = NEW_DATA_PREFIX + "androidversion";
 
+    private static final String ALARM_KEY = NEW_DATA_PREFIX + "alarm";
+
     public NewData() {
         super(NEW_DATA);
         this.putExtras(new Bundle());
@@ -167,6 +169,16 @@ public class NewData extends Intent {
     public void setAndroidVersion(String version) {
         if (version != null) {
             this.putExtra(ANDROID_VERSION_KEY, version);
+        }
+    }
+
+    public Boolean isAlarmActivated() {
+        return (Boolean) this.getExtras().get(ALARM_KEY);
+    }
+
+    public void setAlarmActivated(Boolean activated) {
+        if (activated != null) {
+            this.putExtra(ALARM_KEY, activated.booleanValue());
         }
     }
 

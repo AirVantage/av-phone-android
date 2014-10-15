@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.sierrawireless.avphone.service.LogMessage;
 import com.sierrawireless.avphone.service.NewData;
@@ -37,7 +38,23 @@ public class DataViewUpdater extends BroadcastReceiver {
         }
     }
 
-    public void setLogMessage(String log, Long timestamp) {
+    public void onStart(Long startedSince, NewData lastData, String logMsg, Long lastRun) {
+        this.setStartedSince(startedSince);
+        this.setNewData(lastData);
+        this.setLogMessage(logMsg, lastRun);
+
+        // activate alarm button
+        view.findViewById(R.id.alarm_button).setEnabled(true);
+    }
+
+    public void onStop() {
+        this.setStartedSince(null);
+
+        // deactivate alarm button
+        view.findViewById(R.id.alarm_button).setEnabled(false);
+    }
+
+    private void setLogMessage(String log, Long timestamp) {
         TextView logView = findView(R.id.service_log);
         if (log != null) {
             logView.setText(hourFormat.format(timestamp != null ? new Date(timestamp) : new Date()) + " - " + log);
@@ -47,7 +64,7 @@ public class DataViewUpdater extends BroadcastReceiver {
         }
     }
 
-    public void setStartedSince(Long startedSince) {
+    private void setStartedSince(Long startedSince) {
         TextView startedTextView = findView(R.id.started_since);
         if (startedSince != null) {
             startedTextView.setText(view.getContext().getString(R.string.started_since) + " "
@@ -58,7 +75,7 @@ public class DataViewUpdater extends BroadcastReceiver {
         }
     }
 
-    public void setNewData(NewData data) {
+    private void setNewData(NewData data) {
         if (data.getRssi() != null) {
             findView(R.id.signal_strength_value).setText(data.getRssi() + " dBm (RSSI)");
         } else if (data.getRsrp() != null) {
@@ -108,6 +125,10 @@ public class DataViewUpdater extends BroadcastReceiver {
 
         if (data.getAndroidVersion() != null) {
             findView(R.id.androidversion_value).setText(data.getAndroidVersion());
+        }
+
+        if (data.isAlarmActivated() != null) {
+            ((ToggleButton) view.findViewById(R.id.alarm_button)).setChecked(data.isAlarmActivated());
         }
     }
 

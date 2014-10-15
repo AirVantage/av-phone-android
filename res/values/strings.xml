@@ -22,6 +22,7 @@
     <string name="android_version">Android version</string>
     <string name="no_value">-</string>
     <string name="register">Register</string>
+    <string name="alarm">Activate alarm</string>
 
     <!-- Notifications -->
     <string name="notif_title">Phone monitoring</string>
