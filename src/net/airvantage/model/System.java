@@ -1,6 +1,9 @@
 package net.airvantage.model;
 
 import java.util.Collection;
+import java.util.Map;
+
+import com.sierrawireless.model.MqttCommunication;
 
 public class System {
     public String uid;
@@ -15,6 +18,7 @@ public class System {
     public Gateway gateway;
     public Data data;
     public Collection<Application> applications;
+	public Map<String, MqttCommunication> communication;
 
     public static class Data {
         public Double rssi;

@@ -26,12 +26,6 @@ public class NewData extends Intent {
 
     private static final String ALARM_KEY = NEW_DATA_PREFIX + "alarm";
 
-    // FIXME(pht) still needed ?
-    public static final String CUSTOM_0 = NEW_DATA_PREFIX + "custom.0";
-    public static final String CUSTOM_1 = NEW_DATA_PREFIX + "custom.1";
-    public static final String CUSTOM_2 = NEW_DATA_PREFIX + "custom.2";
-    
-
     public NewData() {
         super(NEW_DATA);
         this.putExtras(new Bundle());

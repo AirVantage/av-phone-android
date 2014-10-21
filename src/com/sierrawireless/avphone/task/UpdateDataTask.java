@@ -2,31 +2,41 @@ package com.sierrawireless.avphone.task;
 
 import java.io.IOException;
 
+import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Application;
-import net.airvantage.utils.AirVantageClient;
+import net.airvantage.model.AvError;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.model.CustomData;
 
-public class UpdateDataTask extends RegisterSystemTask {
+public class UpdateDataTask extends AsyncTask<Object, Void, AvError> {
 
-	public UpdateDataTask(AirVantageClient client, String serialNumber, CustomData customData) {
-		super(client, serialNumber, customData);
+	private IApplicationClient appClient;
+
+	public UpdateDataTask(IApplicationClient appClient) {
+		this.appClient = appClient;
 	}
 
 	@Override
-	protected Boolean doInBackground(String... params) {
+	protected AvError doInBackground(Object... params) {
 
 		try {
-			Application application = ensureApplicationExists();
+			
+			String serialNumber = (String) params[0];
+			CustomData customData = (CustomData) params[1];
+			
+			Application application = appClient.ensureApplicationExists(serialNumber);
 
-			setApplicationData(application.uid);
+			appClient.setApplicationData(application.uid, customData);
 
-			return true;
+			return null;
+		} catch (AirVantageException e) {
+			return e.getError();
 		} catch (IOException e) {
-			Log.e(MainActivity.class.getName(), "Error when trying to updat application data", e);
-			return false;
+			Log.e(MainActivity.class.getName(), "Error when trying to update application data", e);
+			return new AvError("unknown.error");
 		}
 
 	}

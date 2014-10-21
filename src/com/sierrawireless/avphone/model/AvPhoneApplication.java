@@ -14,31 +14,14 @@ import net.airvantage.model.Setting;
 
 public class AvPhoneApplication {
 
-	public static Application createApplication() {
-
-		/*
-		 * <app:application
-		 * xmlns:app="http://www.sierrawireless.com/airvantage/application/1.0"
-		 * type="makeit.avphone" name="Android Phone Monitoring" revision="0.1">
-		 * 
-		 * <capabilities> <communication> <protocol comm-id="SERIAL"
-		 * type="MQTT"> </protocol> </communication>
-		 * 
-		 * 
-		 * </capabilities>
-		 * 
-		 * </app:application>
-		 */
-
+	public static Application createApplication(String serialNumber) {
 		Application application = new Application();
-
-		application.type = "makeit.avphone";
-		application.name = "Android Phone Demo";
-		application.revision = "0.1";
-
+		application.name = AvPhoneApplication.appName(serialNumber);
+		application.type = AvPhoneApplication.appType(serialNumber);
+		application.revision = "0.0.0";
 		return application;
 	}
-
+	
 	public static List<Protocol> createProtocols() {
 		Protocol mqtt = new Protocol();
 		mqtt.type = "MQTT";
@@ -46,7 +29,7 @@ public class AvPhoneApplication {
 		return Arrays.asList(mqtt);
 	}
 
-	public static ApplicationData createApplicationData(CustomData customData) {
+	public static List<ApplicationData> createApplicationData(CustomData customData) {
 		/*
 		 * <data> <encoding type="MQTT"> <asset default-label="Android Phone"
 		 * id="phone"> <setting default-label="RSSI" path="rssi" type="int"/>
@@ -100,8 +83,16 @@ public class AvPhoneApplication {
 		
 		applicationData.data.add(asset);
 		
-		return applicationData;
+		return Arrays.asList(applicationData);
 
+	}
+
+	public static String appName(String serialNumber) {
+		return "av_phone_demo_" + serialNumber;
+	}
+
+	public static String appType(String serialNumber) {
+		return "av.phone.demo." + serialNumber;
 	}
 
 }
