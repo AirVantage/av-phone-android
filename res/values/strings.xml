@@ -40,17 +40,30 @@
     <string name="pref_server_na_value">na.airvantage.net</string>
     <string name="pref_server_eu">EU</string>
     <string name="pref_server_eu_value">eu.airvantage.net</string>
+    
     <string name="pref_custom1_label_key">pref_data_custom1</string>
-    <string name="pref_custom1_label">Custom Data 1</string>
-    <string name="pref_custom1_label_default">Printed page count</string>
+    <string name="pref_custom1_label">Custom Data 1 (Up)</string>
+    <string name="pref_custom1_label_default">A4 pages printed</string>
     
     <string name="pref_custom2_label_key">pref_data_custom2</string>
-    <string name="pref_custom2_label">Custom Data 2</string>
-    <string name="pref_custom2_label_default">Ink level</string>
+    <string name="pref_custom2_label">Custom Data 2 (Up)</string>
+    <string name="pref_custom2_label_default">A6 pages printed</string>
     
     <string name="pref_custom3_label_key">pref_data_custom3</string>
-    <string name="pref_custom3_label">Custom Data 3</string>
-    <string name="pref_custom3_label_default">Printing</string>
+    <string name="pref_custom3_label">Custom Data 3 (Down)</string>
+    <string name="pref_custom3_label_default">Black ink level</string>
+    
+    <string name="pref_custom4_label_key">pref_data_custom4</string>
+    <string name="pref_custom4_label">Custom Data 4 (Down)</string>
+    <string name="pref_custom4_label_default">Color ink level</string>
+    
+    <string name="pref_custom5_label_key">pref_data_custom5</string>
+    <string name="pref_custom5_label">Custom Data 5 (String)</string>
+    <string name="pref_custom5_label_default">Black Cartridge SN</string>
+    
+    <string name="pref_custom6_label_key">pref_data_custom6</string>
+    <string name="pref_custom6_label">Custom Data 6 (String)</string>
+    <string name="pref_custom6_label_default">Color Cartridge SN</string>
     
     <string name="pref_period_key">pref_period_key</string>
     <string name="pref_period">Push data period</string>

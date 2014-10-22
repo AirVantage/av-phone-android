@@ -162,20 +162,14 @@ public class MqttPushClient {
                     Collections.singletonList(new DataValue(timestamp, data.isAlarmActivated())));
         }
 
-        // FIXME(pht) this would just be to test customizing the thing
-        // custom1 is a value that should go up
-        if (data.getBytesSent() != null) {
-            values.put("phone.custom1", Collections.singletonList(new DataValue(timestamp, data.getBytesSent())));
-        }
-        // custom2 is a value that changes
-        if (data.getBatteryLevel() != null) {
-            values.put("phone.custom2", Collections.singletonList(new DataValue(timestamp, data.getBatteryLevel())));
-        }
-        // custom3 is a boolean value
-        if (data.isWifiActive() != null) {
-            values.put("phone.custom3", Collections.singletonList(new DataValue(timestamp, data.isWifiActive())));
-        }
+        values.put("phone.custom.up.1", Collections.singletonList(new DataValue(timestamp, data.getCustomIntUp1())));
+        values.put("phone.custom.up.2", Collections.singletonList(new DataValue(timestamp, data.getCustomIntUp2())));
+        values.put("phone.custom.down.1", Collections.singletonList(new DataValue(timestamp, data.getCustomIntDown1())));
+        values.put("phone.custom.down.2", Collections.singletonList(new DataValue(timestamp, data.getCustomIntDown2())));
+        values.put("phone.custom.str.1", Collections.singletonList(new DataValue(timestamp, data.getCustomStr1())));
+        values.put("phone.custom.str.2", Collections.singletonList(new DataValue(timestamp, data.getCustomStr2())));
 
+        
         return gson.toJson(Collections.singletonList(values));
     }
 

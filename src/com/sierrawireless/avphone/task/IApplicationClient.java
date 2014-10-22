@@ -5,13 +5,13 @@ import java.io.IOException;
 import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Application;
 
-import com.sierrawireless.avphone.model.CustomData;
+import com.sierrawireless.avphone.model.CustomDataLabels;
 
 public interface IApplicationClient {
 
 	public abstract Application ensureApplicationExists(String serialNumber) throws IOException, AirVantageException;
 
-	public abstract void setApplicationData(String applicationUid, CustomData customData) throws IOException,
+	public abstract void setApplicationData(String applicationUid, CustomDataLabels customData) throws IOException,
 			AirVantageException;
 
 	public abstract Application createApplication(String serialNumber) throws IOException, AirVantageException;

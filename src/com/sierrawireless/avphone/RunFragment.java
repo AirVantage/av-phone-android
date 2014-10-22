@@ -25,8 +25,10 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.sierrawireless.avphone.model.CustomDataLabels;
 import com.sierrawireless.avphone.service.LogMessage;
 import com.sierrawireless.avphone.service.MonitoringService;
 import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder;
@@ -48,9 +50,15 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		view = inflater.inflate(R.layout.fragment_run, container, false);
-
-		alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
 		viewUpdater = new DataViewUpdater(view);
+
+		prefUtils = new PreferenceUtils(this);
+		prefUtils.addListener(this);
+
+		CustomDataLabels customLabels = prefUtils.getCustomDataLabels();
+		setCustomDataLabels(customLabels);
+		
+		alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
 
 		// register service listener
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(viewUpdater,
@@ -58,8 +66,6 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(viewUpdater,
 				new IntentFilter(LogMessage.LOG_EVENT));
 
-		prefUtils = new PreferenceUtils(this);
-		prefUtils.addListener(this);
 
 		// Preferences
 
@@ -128,6 +134,27 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
 		this.connectToService();
 	}
 
+	protected void setCustomDataLabels(CustomDataLabels customLabels) {
+		TextView labelView = (TextView) view.findViewById(R.id.run_custom1_label);
+		labelView.setText(customLabels.customUp1Label);
+		
+		labelView = (TextView) view.findViewById(R.id.run_custom2_label);
+		labelView.setText(customLabels.customUp2Label);
+		
+		labelView = (TextView) view.findViewById(R.id.run_custom3_label);
+		labelView.setText(customLabels.customDown1Label);
+		
+		labelView = (TextView) view.findViewById(R.id.run_custom4_label);
+		labelView.setText(customLabels.customDown2Label);
+		
+		labelView = (TextView) view.findViewById(R.id.run_custom5_label);
+		labelView.setText(customLabels.customStr1Label);
+		
+		labelView = (TextView) view.findViewById(R.id.run_custom6_label);
+		labelView.setText(customLabels.customStr2Label);
+		
+	}
+	
 	private void stopMonitoringService() {
 
 		Intent intent = new Intent(getActivity(), MonitoringService.class);

@@ -54,6 +54,101 @@
                 android:layout_height="wrap_content" >
 
                 <TextView
+                    android:id="@+id/run_custom1_label"
+                    style="@style/ItemLabel" />
+
+                <TextView
+                    android:id="@+id/run_custom1_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/run_custom2_label"
+                    style="@style/ItemLabel" />
+
+                <TextView
+                    android:id="@+id/run_custom2_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/run_custom3_label"
+                    style="@style/ItemLabel" />
+
+                <TextView
+                    android:id="@+id/run_custom3_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/run_custom4_label"
+                    style="@style/ItemLabel" />
+
+                <TextView
+                    android:id="@+id/run_custom4_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/run_custom5_label"
+                    style="@style/ItemLabel" />
+
+                <TextView
+                    android:id="@+id/run_custom5_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/run_custom6_label"
+                    style="@style/ItemLabel" />
+
+                <TextView
+                    android:id="@+id/run_custom6_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray" />
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
                     style="@style/ItemLabel"
                     android:text="@string/signal_strength" />
 
@@ -230,7 +325,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/no_value" />
             </TableRow>
-            
+
             <TableRow
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" >
@@ -245,7 +340,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/no_value" />
             </TableRow>
-            
         </TableLayout>
 
         <TextView
@@ -254,7 +348,7 @@
             android:layout_height="wrap_content"
             android:gravity="right"
             android:textSize="12sp" />
-        
+
         <TableRow
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
@@ -267,12 +361,11 @@
                 android:id="@+id/alarm_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:enabled="false"
                 android:checked="false"
+                android:enabled="false"
                 android:textOff="OFF"
                 android:textOn="ON" />
         </TableRow>
-        
     </LinearLayout>
 
 </LinearLayout>

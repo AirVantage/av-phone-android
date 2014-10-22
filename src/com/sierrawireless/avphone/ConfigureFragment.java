@@ -20,7 +20,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sierrawireless.avphone.model.CustomData;
+import com.sierrawireless.avphone.model.CustomDataLabels;
 import com.sierrawireless.avphone.task.ApplicationClient;
 import com.sierrawireless.avphone.task.IApplicationClient;
 import com.sierrawireless.avphone.task.ISystemClient;
@@ -40,6 +40,9 @@ public class ConfigureFragment extends Fragment {
 	private EditText customData1EditText;
 	private EditText customData2EditText;
 	private EditText customData3EditText;
+	private EditText customData4EditText;
+	private EditText customData5EditText;
+	private EditText customData6EditText;
 
 	private View updateDataBt;
 
@@ -82,6 +85,12 @@ public class ConfigureFragment extends Fragment {
 				R.string.pref_custom2_label_default);
 		customData3EditText = buildCustomLabelEditText(view, R.id.custom3_value, R.string.pref_custom3_label_key,
 				R.string.pref_custom3_label_default);
+		customData4EditText = buildCustomLabelEditText(view, R.id.custom4_value, R.string.pref_custom4_label_key,
+				R.string.pref_custom4_label_default);
+		customData5EditText = buildCustomLabelEditText(view, R.id.custom5_value, R.string.pref_custom5_label_key,
+				R.string.pref_custom5_label_default);
+		customData6EditText = buildCustomLabelEditText(view, R.id.custom6_value, R.string.pref_custom6_label_key,
+				R.string.pref_custom6_label_default);
 
 		return view;
 	}
@@ -226,11 +235,14 @@ public class ConfigureFragment extends Fragment {
 		}
 	}
 
-	protected CustomData getCustomData() {
-		CustomData customData = new CustomData();
-		customData.custom1 = customData1EditText.getText().toString();
-		customData.custom2 = customData2EditText.getText().toString();
-		customData.custom3 = customData3EditText.getText().toString();
+	protected CustomDataLabels getCustomData() {
+		CustomDataLabels customData = new CustomDataLabels();
+		customData.customUp1Label = customData1EditText.getText().toString();
+		customData.customUp2Label = customData2EditText.getText().toString();
+		customData.customDown1Label = customData3EditText.getText().toString();
+		customData.customDown2Label = customData4EditText.getText().toString();
+		customData.customStr1Label = customData5EditText.getText().toString();
+		customData.customStr2Label = customData6EditText.getText().toString();
 		return customData;
 	}
 

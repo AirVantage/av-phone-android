@@ -9,7 +9,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.sierrawireless.avphone.MainActivity;
-import com.sierrawireless.avphone.model.CustomData;
+import com.sierrawireless.avphone.model.CustomDataLabels;
 
 public class RegisterSystemTask extends AsyncTask<Object, Integer, AvError> {
 
@@ -29,7 +29,7 @@ public class RegisterSystemTask extends AsyncTask<Object, Integer, AvError> {
 
 			String serialNumber = (String) params[0];
 			String mqttPassword = (String) params[1];
-			CustomData customData = (CustomData) params[2];
+			CustomDataLabels customData = (CustomDataLabels) params[2];
 			
 			Application application = this.applicationClient.ensureApplicationExists(serialNumber);
 			

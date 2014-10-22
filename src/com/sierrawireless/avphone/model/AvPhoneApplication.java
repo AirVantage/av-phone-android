@@ -29,7 +29,7 @@ public class AvPhoneApplication {
 		return Arrays.asList(mqtt);
 	}
 
-	public static List<ApplicationData> createApplicationData(CustomData customData) {
+	public static List<ApplicationData> createApplicationData(CustomDataLabels customData) {
 		/*
 		 * <data> <encoding type="MQTT"> <asset default-label="Android Phone"
 		 * id="phone"> <setting default-label="RSSI" path="rssi" type="int"/>
@@ -71,9 +71,12 @@ public class AvPhoneApplication {
 		asset.data.add(new Setting("phone.runningapps", "Running applications", "int"));
 		asset.data.add(new Setting("phone.activewifi", "Active Wi-Fi", "boolean"));
 
-		asset.data.add(new Setting("phone.custom1", customData.custom1, "int"));
-		asset.data.add(new Setting("phone.custom2", customData.custom2, "int"));
-		asset.data.add(new Setting("phone.custom3", customData.custom3, "boolean"));
+		asset.data.add(new Setting("phone.custom.up.1", customData.customUp1Label, "int"));
+		asset.data.add(new Setting("phone.custom.up.2", customData.customUp2Label, "int"));
+		asset.data.add(new Setting("phone.custom.down.1", customData.customDown1Label, "int"));
+		asset.data.add(new Setting("phone.custom.down.2", customData.customDown2Label, "int"));
+		asset.data.add(new Setting("phone.custom.str.1", customData.customStr1Label, "string"));
+		asset.data.add(new Setting("phone.custom.str.2", customData.customStr2Label, "string"));
 		
 		Command c = new Command("phone.notify", "Notify");
 		Parameter p = new Parameter("message", "string");

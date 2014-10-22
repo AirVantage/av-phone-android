@@ -1,5 +1,7 @@
 package com.sierrawireless.avphone.service;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -66,6 +68,8 @@ public class MonitoringService extends Service {
     /* the date of the last location reading */
     private long lastLocation;
 
+	private CustomDataSource customDataSource;
+
     @Override
     public void onCreate() {
 
@@ -92,6 +96,8 @@ public class MonitoringService extends Service {
         activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
+        customDataSource = new CustomDataSource(new java.util.Date());
+        
         startedSince = System.currentTimeMillis();
     }
 
@@ -196,6 +202,17 @@ public class MonitoringService extends Service {
             data.setBytesReceived(TrafficStats.getMobileRxBytes());
             data.setBytesSent(TrafficStats.getMobileTxBytes());
 
+            // Custom data
+            data.setCustomIntUp1(customDataSource.getCustomIntUp1());
+            data.setCustomIntUp2(customDataSource.getCustomIntUp2());
+            data.setCustomIntDown1(customDataSource.getCustomIntDown1());
+            data.setCustomIntDown2(customDataSource.getCustomIntDown2());
+            data.setCustomStr1(customDataSource.getCustomStr1());
+            data.setCustomStr2(customDataSource.getCustomStr2());
+            
+            
+            customDataSource.next(new Date());
+            
             // save new data values
             lastData.putExtras(data.getExtras());
 

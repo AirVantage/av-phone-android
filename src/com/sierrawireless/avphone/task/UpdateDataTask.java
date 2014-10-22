@@ -9,7 +9,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.sierrawireless.avphone.MainActivity;
-import com.sierrawireless.avphone.model.CustomData;
+import com.sierrawireless.avphone.model.CustomDataLabels;
 
 public class UpdateDataTask extends AsyncTask<Object, Void, AvError> {
 
@@ -25,7 +25,7 @@ public class UpdateDataTask extends AsyncTask<Object, Void, AvError> {
 		try {
 			
 			String serialNumber = (String) params[0];
-			CustomData customData = (CustomData) params[1];
+			CustomDataLabels customData = (CustomDataLabels) params[1];
 			
 			Application application = appClient.ensureApplicationExists(serialNumber);
 
