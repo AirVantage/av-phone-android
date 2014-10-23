@@ -4,6 +4,7 @@ import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +48,24 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
 
     private PreferenceUtils prefUtils;
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+    
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        // TODO Auto-generated method stub
+        super.onHiddenChanged(hidden);
+    }
+    
+    @Override
+    public void onInflate(Activity activity, AttributeSet attrs, Bundle savedInstanceState) {
+        // TODO Auto-generated method stub
+        super.onInflate(activity, attrs, savedInstanceState);
+    }
+    
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -133,24 +153,24 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
         this.connectToService();
     }
 
-    protected void setCustomDataLabels(CustomDataLabels customLabels) {
+    protected void setCustomDataLabels(CustomDataLabels customDataLabels) {
         TextView labelView = (TextView) view.findViewById(R.id.run_custom1_label);
-        labelView.setText(customLabels.customUp1Label);
+        labelView.setText(customDataLabels.customUp1Label);
 
         labelView = (TextView) view.findViewById(R.id.run_custom2_label);
-        labelView.setText(customLabels.customUp2Label);
+        labelView.setText(customDataLabels.customUp2Label);
 
         labelView = (TextView) view.findViewById(R.id.run_custom3_label);
-        labelView.setText(customLabels.customDown1Label);
+        labelView.setText(customDataLabels.customDown1Label);
 
         labelView = (TextView) view.findViewById(R.id.run_custom4_label);
-        labelView.setText(customLabels.customDown2Label);
+        labelView.setText(customDataLabels.customDown2Label);
 
         labelView = (TextView) view.findViewById(R.id.run_custom5_label);
-        labelView.setText(customLabels.customStr1Label);
+        labelView.setText(customDataLabels.customStr1Label);
 
         labelView = (TextView) view.findViewById(R.id.run_custom6_label);
-        labelView.setText(customLabels.customStr2Label);
+        labelView.setText(customDataLabels.customStr2Label);
 
     }
 
@@ -210,6 +230,9 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
             stopMonitoringService();
             startMonitoringService();
         }
+        
+        setCustomDataLabels(prefUtils.getCustomDataLabels());
+        
     }
 
     @Override
@@ -230,5 +253,6 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
             }
         }
     };
+
 
 }

@@ -1,5 +1,7 @@
 package com.sierrawireless.avphone;
 
+import com.sierrawireless.avphone.model.CustomDataLabels;
+
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.ActionBar.TabListener;
@@ -20,6 +22,8 @@ import android.view.MenuItem;
 public class MainActivity extends FragmentActivity implements TabListener {
 
     private ViewPager viewPager;
+    private RunFragment runFragment;
+    private ConfigureFragment configureFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +42,9 @@ public class MainActivity extends FragmentActivity implements TabListener {
         actionBar.addTab(actionBar.newTab().setText(getString(R.string.run_tab)).setTabListener(this));
         actionBar.addTab(actionBar.newTab().setText(getString(R.string.configure_tab)).setTabListener(this));
 
+        runFragment = new RunFragment();
+        configureFragment = new ConfigureFragment();
+        
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
             @Override
@@ -90,9 +97,9 @@ public class MainActivity extends FragmentActivity implements TabListener {
 
             switch (index) {
             case 0:
-                return new RunFragment();
+                return runFragment;
             case 1:
-                return new ConfigureFragment();
+                return configureFragment;
             }
 
             return null;

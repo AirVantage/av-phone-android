@@ -1,5 +1,8 @@
 package com.sierrawireless.avphone;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.airvantage.model.AvError;
 import net.airvantage.utils.AirVantageClient;
 import net.airvantage.utils.AvPhonePrefs;
@@ -95,10 +98,10 @@ public class ConfigureFragment extends Fragment {
         return view;
     }
 
-    private EditText buildCustomLabelEditText(View view, int id, final int prefKey, int labelDefaultKey) {
+    private EditText buildCustomLabelEditText(View view, int id, final int prefKeyId, int labelDefaultKeyId) {
         EditText res = (EditText) view.findViewById(id);
 
-        res.setText(prefUtils.getString(prefKey, labelDefaultKey));
+        res.setText(prefUtils.getPreference(prefKeyId, labelDefaultKeyId));
 
         res.addTextChangedListener(new TextWatcher() {
 
@@ -112,7 +115,7 @@ public class ConfigureFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                prefUtils.setString(prefKey, s.toString());
+                prefUtils.setPreference(prefKeyId, s.toString());
                 updateDataBt.setEnabled(true);
             }
         });
@@ -189,7 +192,7 @@ public class ConfigureFragment extends Fragment {
 
         RegisterSystemTask registerTask = new RegisterSystemTask(appClient, systemClient);
 
-        registerTask.execute(PHONE_UNIQUE_ID, prefs.password, getCustomData());
+        registerTask.execute(PHONE_UNIQUE_ID, prefs.password, getCustomDataLabels());
         try {
 
             AvError error = registerTask.get();
@@ -214,7 +217,7 @@ public class ConfigureFragment extends Fragment {
 
         UpdateDataTask updateDataTask = new UpdateDataTask(appClient);
 
-        updateDataTask.execute(PHONE_UNIQUE_ID, getCustomData());
+        updateDataTask.execute(PHONE_UNIQUE_ID, getCustomDataLabels());
         try {
 
             AvError error = updateDataTask.get();
@@ -234,7 +237,7 @@ public class ConfigureFragment extends Fragment {
         }
     }
 
-    protected CustomDataLabels getCustomData() {
+    protected CustomDataLabels getCustomDataLabels() {
         CustomDataLabels customData = new CustomDataLabels();
         customData.customUp1Label = customData1EditText.getText().toString();
         customData.customUp2Label = customData2EditText.getText().toString();

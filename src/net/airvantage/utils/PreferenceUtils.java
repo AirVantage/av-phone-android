@@ -23,7 +23,6 @@ public class PreferenceUtils {
      * keeping references to activities is not safe.
      */
     public PreferenceUtils(Fragment fragment) {
-
         this.fragment = fragment;
         PreferenceManager.setDefaultValues(getActivity(), R.xml.preferences, false);
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -43,12 +42,19 @@ public class PreferenceUtils {
         return res;
     }
 
-    public String getString(int prefKey, int defaultValueKey) {
-        return prefs.getString(fragment.getString(prefKey), fragment.getString(defaultValueKey));
+    public String getPreference(int prefKeyId, int defaultValueKeyId) {
+        String prefKey = getActivity().getString(prefKeyId);
+        if (prefKey.equals("false")) {
+            System.out.println("WTF ?");
+        }
+        String defaultValueKey = getActivity().getString(defaultValueKeyId);
+        return prefs.getString(prefKey, defaultValueKey);
     }
 
-    public void setString(int prefKey, String value) {
-        prefs.edit().putString(fragment.getString(prefKey), value);
+    public void setPreference(int prefKeyId, String value) {
+        String prefKey = getActivity().getString(prefKeyId);
+        prefs.edit().putString(prefKey, value).commit();
+        
     }
 
     public void showMissingPrefsDialog() {
@@ -66,12 +72,12 @@ public class PreferenceUtils {
 
     public CustomDataLabels getCustomDataLabels() {
         CustomDataLabels labels = new CustomDataLabels();
-        labels.customUp1Label = getString(R.id.custom1_value, R.string.pref_custom1_label_default);
-        labels.customUp2Label = getString(R.id.custom2_value, R.string.pref_custom2_label_default);
-        labels.customDown1Label = getString(R.id.custom3_value, R.string.pref_custom3_label_default);
-        labels.customDown2Label = getString(R.id.custom4_value, R.string.pref_custom4_label_default);
-        labels.customStr1Label = getString(R.id.custom5_value, R.string.pref_custom5_label_default);
-        labels.customStr2Label = getString(R.id.custom6_value, R.string.pref_custom6_label_default);
+        labels.customUp1Label = getPreference(R.string.pref_custom1_label_key, R.string.pref_custom1_label_default);
+        labels.customUp2Label = getPreference(R.string.pref_custom2_label_key, R.string.pref_custom2_label_default);
+        labels.customDown1Label = getPreference(R.string.pref_custom3_label_key, R.string.pref_custom3_label_default);
+        labels.customDown2Label = getPreference(R.string.pref_custom4_label_key, R.string.pref_custom4_label_default);
+        labels.customStr1Label = getPreference(R.string.pref_custom5_label_key, R.string.pref_custom5_label_default);
+        labels.customStr2Label = getPreference(R.string.pref_custom6_label_key, R.string.pref_custom6_label_default);
 
         return labels;
     }
