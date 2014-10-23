@@ -13,42 +13,41 @@ import com.sierrawireless.avphone.model.CustomDataLabels;
 
 public class RegisterSystemTask extends AsyncTask<Object, Integer, AvError> {
 
-	private IApplicationClient applicationClient;
+    private IApplicationClient applicationClient;
 
-	private ISystemClient systemClient;
+    private ISystemClient systemClient;
 
-	public RegisterSystemTask(IApplicationClient applicationClient, ISystemClient systemClient) {
-		this.applicationClient = applicationClient;
-		this.systemClient = systemClient;
-	}
+    public RegisterSystemTask(IApplicationClient applicationClient, ISystemClient systemClient) {
+        this.applicationClient = applicationClient;
+        this.systemClient = systemClient;
+    }
 
-	@Override
-	protected AvError doInBackground(Object... params) {
+    @Override
+    protected AvError doInBackground(Object... params) {
 
-		try {
+        try {
 
-			String serialNumber = (String) params[0];
-			String mqttPassword = (String) params[1];
-			CustomDataLabels customData = (CustomDataLabels) params[2];
-			
-			Application application = this.applicationClient.ensureApplicationExists(serialNumber);
-			
-			net.airvantage.model.System system = this.systemClient.getSystem(serialNumber);
-			if (system == null) {
-				system = systemClient.createSystem(serialNumber, mqttPassword, application.uid);
-			}
+            String serialNumber = (String) params[0];
+            String mqttPassword = (String) params[1];
+            CustomDataLabels customData = (CustomDataLabels) params[2];
 
-			this.applicationClient.setApplicationData(application.uid, customData);
+            Application application = this.applicationClient.ensureApplicationExists(serialNumber);
 
-			return null;
-		} catch (AirVantageException e) {
-			return e.getError();
-		} catch (IOException e) {
-			Log.e(MainActivity.class.getName(), "Error when trying to get current user", e);
-			return new AvError("unkown.error");
-		}
+            net.airvantage.model.System system = this.systemClient.getSystem(serialNumber);
+            if (system == null) {
+                system = systemClient.createSystem(serialNumber, mqttPassword, application.uid);
+            }
 
-	}
+            this.applicationClient.setApplicationData(application.uid, customData);
 
+            return null;
+        } catch (AirVantageException e) {
+            return e.getError();
+        } catch (IOException e) {
+            Log.e(MainActivity.class.getName(), "Error when trying to get current user", e);
+            return new AvError("unkown.error");
+        }
+
+    }
 
 }

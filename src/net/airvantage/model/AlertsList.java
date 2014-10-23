@@ -1,4 +1,4 @@
 package net.airvantage.model;
 
-public class AlertsList extends EntityList<Alert>{
+public class AlertsList extends EntityList<Alert> {
 }

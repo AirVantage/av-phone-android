@@ -1,5 +1,5 @@
 package com.sierrawireless.model;
 
 public class MqttCommunication {
-	public String password;
+    public String password;
 }

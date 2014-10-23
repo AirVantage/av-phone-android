@@ -68,7 +68,7 @@ public class MonitoringService extends Service {
     /* the date of the last location reading */
     private long lastLocation;
 
-	private CustomDataSource customDataSource;
+    private CustomDataSource customDataSource;
 
     @Override
     public void onCreate() {
@@ -97,7 +97,7 @@ public class MonitoringService extends Service {
         connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
         customDataSource = new CustomDataSource(new java.util.Date());
-        
+
         startedSince = System.currentTimeMillis();
     }
 
@@ -209,10 +209,9 @@ public class MonitoringService extends Service {
             data.setCustomIntDown2(customDataSource.getCustomIntDown2());
             data.setCustomStr1(customDataSource.getCustomStr1());
             data.setCustomStr2(customDataSource.getCustomStr2());
-            
-            
+
             customDataSource.next(new Date());
-            
+
             // save new data values
             lastData.putExtras(data.getExtras());
 

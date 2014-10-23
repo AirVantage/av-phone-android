@@ -169,7 +169,6 @@ public class MqttPushClient {
         values.put("phone.custom.str.1", Collections.singletonList(new DataValue(timestamp, data.getCustomStr1())));
         values.put("phone.custom.str.2", Collections.singletonList(new DataValue(timestamp, data.getCustomStr2())));
 
-        
         return gson.toJson(Collections.singletonList(values));
     }
 

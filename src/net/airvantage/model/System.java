@@ -18,7 +18,7 @@ public class System {
     public Gateway gateway;
     public Data data;
     public Collection<Application> applications;
-	public Map<String, MqttCommunication> communication;
+    public Map<String, MqttCommunication> communication;
 
     public static class Data {
         public Double rssi;

@@ -30,220 +30,219 @@ import com.sierrawireless.avphone.task.UpdateDataTask;
 
 public class ConfigureFragment extends Fragment {
 
-	public static final String PHONE_UNIQUE_ID = Build.SERIAL;
+    public static final String PHONE_UNIQUE_ID = Build.SERIAL;
 
-	private static final int CONTEXT_REGISTER = 0;
-	private static final int CONTEXT_UPDATE_DATA = 1;
+    private static final int CONTEXT_REGISTER = 0;
+    private static final int CONTEXT_UPDATE_DATA = 1;
 
-	private Button registerBt;
+    private Button registerBt;
 
-	private EditText customData1EditText;
-	private EditText customData2EditText;
-	private EditText customData3EditText;
-	private EditText customData4EditText;
-	private EditText customData5EditText;
-	private EditText customData6EditText;
+    private EditText customData1EditText;
+    private EditText customData2EditText;
+    private EditText customData3EditText;
+    private EditText customData4EditText;
+    private EditText customData5EditText;
+    private EditText customData6EditText;
 
-	private View updateDataBt;
+    private View updateDataBt;
 
-	private View view;
+    private View view;
 
-	private PreferenceUtils prefUtils;
+    private PreferenceUtils prefUtils;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		view = inflater.inflate(R.layout.fragment_configure, container, false);
+        view = inflater.inflate(R.layout.fragment_configure, container, false);
 
-		// phone identifier
-		((TextView) view.findViewById(R.id.phoneid_value)).setText(PHONE_UNIQUE_ID);
+        // phone identifier
+        ((TextView) view.findViewById(R.id.phoneid_value)).setText(PHONE_UNIQUE_ID);
 
-		// Register button
-		registerBt = (Button) view.findViewById(R.id.register_bt);
-		registerBt.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				onRegisterClicked();
-			}
-		});
+        // Register button
+        registerBt = (Button) view.findViewById(R.id.register_bt);
+        registerBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onRegisterClicked();
+            }
+        });
 
-		updateDataBt = (Button) view.findViewById(R.id.update_data_bt);
-		updateDataBt.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				onUpdateDataClicked();
-			}
-		});
-		updateDataBt.setEnabled(false);
+        updateDataBt = (Button) view.findViewById(R.id.update_data_bt);
+        updateDataBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onUpdateDataClicked();
+            }
+        });
+        updateDataBt.setEnabled(false);
 
-		prefUtils = new PreferenceUtils(this);
-		
-		// Fields for custom data
-		customData1EditText = buildCustomLabelEditText(view, R.id.custom1_value, R.string.pref_custom1_label_key,
-				R.string.pref_custom1_label_default);
-		customData2EditText = buildCustomLabelEditText(view, R.id.custom2_value, R.string.pref_custom2_label_key,
-				R.string.pref_custom2_label_default);
-		customData3EditText = buildCustomLabelEditText(view, R.id.custom3_value, R.string.pref_custom3_label_key,
-				R.string.pref_custom3_label_default);
-		customData4EditText = buildCustomLabelEditText(view, R.id.custom4_value, R.string.pref_custom4_label_key,
-				R.string.pref_custom4_label_default);
-		customData5EditText = buildCustomLabelEditText(view, R.id.custom5_value, R.string.pref_custom5_label_key,
-				R.string.pref_custom5_label_default);
-		customData6EditText = buildCustomLabelEditText(view, R.id.custom6_value, R.string.pref_custom6_label_key,
-				R.string.pref_custom6_label_default);
+        prefUtils = new PreferenceUtils(this);
 
-		return view;
-	}
+        // Fields for custom data
+        customData1EditText = buildCustomLabelEditText(view, R.id.custom1_value, R.string.pref_custom1_label_key,
+                R.string.pref_custom1_label_default);
+        customData2EditText = buildCustomLabelEditText(view, R.id.custom2_value, R.string.pref_custom2_label_key,
+                R.string.pref_custom2_label_default);
+        customData3EditText = buildCustomLabelEditText(view, R.id.custom3_value, R.string.pref_custom3_label_key,
+                R.string.pref_custom3_label_default);
+        customData4EditText = buildCustomLabelEditText(view, R.id.custom4_value, R.string.pref_custom4_label_key,
+                R.string.pref_custom4_label_default);
+        customData5EditText = buildCustomLabelEditText(view, R.id.custom5_value, R.string.pref_custom5_label_key,
+                R.string.pref_custom5_label_default);
+        customData6EditText = buildCustomLabelEditText(view, R.id.custom6_value, R.string.pref_custom6_label_key,
+                R.string.pref_custom6_label_default);
 
-	private EditText buildCustomLabelEditText(View view, int id, final int prefKey, int labelDefaultKey) {
-		EditText res = (EditText) view.findViewById(id);
+        return view;
+    }
 
-		res.setText(prefUtils.getString(prefKey, labelDefaultKey));
+    private EditText buildCustomLabelEditText(View view, int id, final int prefKey, int labelDefaultKey) {
+        EditText res = (EditText) view.findViewById(id);
 
-		res.addTextChangedListener(new TextWatcher() {
+        res.setText(prefUtils.getString(prefKey, labelDefaultKey));
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-			}
+        res.addTextChangedListener(new TextWatcher() {
 
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-			}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
-			@Override
-			public void afterTextChanged(Editable s) {
-				prefUtils.setString(prefKey, s.toString());
-				updateDataBt.setEnabled(true);
-			}
-		});
-		return res;
-	}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-	private boolean checkCredentials() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                prefUtils.setString(prefKey, s.toString());
+                updateDataBt.setEnabled(true);
+            }
+        });
+        return res;
+    }
 
-		AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
-		
-		if (!prefs.checkCredentials()) {
-			prefUtils.showMissingPrefsDialog();
-			return false;
-		}
-		
-		return true;
+    private boolean checkCredentials() {
 
-	}
+        AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
 
-	protected void onRegisterClicked() {
-		if (checkCredentials()) {
-			Intent intent = new Intent(getActivity(), AuthorizationActivity.class);
-			intent.putExtra(AuthorizationActivity.AUTHORIZATION_CONTEXT, CONTEXT_REGISTER);
-			startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION);
-		}
-	}
+        if (!prefs.checkCredentials()) {
+            prefUtils.showMissingPrefsDialog();
+            return false;
+        }
 
-	private void onUpdateDataClicked() {
-		if (checkCredentials()) {
-			Intent intent = new Intent(getActivity(), AuthorizationActivity.class);
-			intent.putExtra(AuthorizationActivity.AUTHORIZATION_CONTEXT, CONTEXT_UPDATE_DATA);
-			startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION);
-		}
-	}
+        return true;
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		switch (requestCode) {
-		case (AuthorizationActivity.REQUEST_AUTHORIZATION): {
-			if (resultCode == Activity.RESULT_OK) {
-				String token = data.getStringExtra(AuthorizationActivity.TOKEN);
+    }
 
-				int request = data.getExtras().getInt(AuthorizationActivity.AUTHORIZATION_CONTEXT);
-				if (request == ConfigureFragment.CONTEXT_REGISTER) {
-					registerSystem(token);
-				} else if (request == ConfigureFragment.CONTEXT_UPDATE_DATA) {
-					updateData(token);
-				}
+    protected void onRegisterClicked() {
+        if (checkCredentials()) {
+            Intent intent = new Intent(getActivity(), AuthorizationActivity.class);
+            intent.putExtra(AuthorizationActivity.AUTHORIZATION_CONTEXT, CONTEXT_REGISTER);
+            startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION);
+        }
+    }
 
-			}
-			break;
-		}
-		}
-	}
+    private void onUpdateDataClicked() {
+        if (checkCredentials()) {
+            Intent intent = new Intent(getActivity(), AuthorizationActivity.class);
+            intent.putExtra(AuthorizationActivity.AUTHORIZATION_CONTEXT, CONTEXT_UPDATE_DATA);
+            startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION);
+        }
+    }
 
-	private void toast(String message) {
-		Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-	}
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+        case (AuthorizationActivity.REQUEST_AUTHORIZATION): {
+            if (resultCode == Activity.RESULT_OK) {
+                String token = data.getStringExtra(AuthorizationActivity.TOKEN);
 
-	
-	private void toastError(Exception e, String label, String message) {
-		Log.e(MainActivity.class.getName(), label, e);
-		toast(message);
-	}
+                int request = data.getExtras().getInt(AuthorizationActivity.AUTHORIZATION_CONTEXT);
+                if (request == ConfigureFragment.CONTEXT_REGISTER) {
+                    registerSystem(token);
+                } else if (request == ConfigureFragment.CONTEXT_UPDATE_DATA) {
+                    updateData(token);
+                }
 
-	private void registerSystem(String token) {
+            }
+            break;
+        }
+        }
+    }
 
-		AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
-		
-		AirVantageClient client = new AirVantageClient(prefs.serverHost, token);
+    private void toast(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
 
-		IApplicationClient appClient = new ApplicationClient(client);
-		ISystemClient systemClient = new SystemClient(client);
-		
-		RegisterSystemTask registerTask = new RegisterSystemTask(appClient, systemClient);
+    private void toastError(Exception e, String label, String message) {
+        Log.e(MainActivity.class.getName(), label, e);
+        toast(message);
+    }
 
-		registerTask.execute(PHONE_UNIQUE_ID, prefs.password, getCustomData());
-		try {
-			
-			AvError error = registerTask.get(); 
-			
-			if (error != null) {
-				toast("An error occured when registering system.");
-			} else {
-				toast("System registered on AirVantage.");
-			}
-		} catch (Exception e) {
-			toastError(e, "Error", "An error occured when registering system.");
-		}
-	}
+    private void registerSystem(String token) {
 
-	private void updateData(String token) {
-		
-		AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
-		
-		AirVantageClient client = new AirVantageClient(prefs.serverHost, token);
+        AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
 
-		IApplicationClient appClient = new ApplicationClient(client);
-		
-		UpdateDataTask updateDataTask = new UpdateDataTask(appClient);
+        AirVantageClient client = new AirVantageClient(prefs.serverHost, token);
 
-		updateDataTask.execute(PHONE_UNIQUE_ID, getCustomData());
-		try {
-			
-			AvError error = updateDataTask.get();
-			
-			if (error == null) {
-				toast( "Data updated on AirVantage.");
-				updateDataBt.setEnabled(false);
-			} else {
-				if (error.systemAlreadyExists(error)) {
-					toast("Sorry, the system is already registered in another company.");
-				} else {
-					toast("An error occured when updating data : " + error.error);
-				}
-			}
-		} catch (Exception e) {
-			toastError(e, "Error", "An error occured when updating data.");
-		}
-	}
+        IApplicationClient appClient = new ApplicationClient(client);
+        ISystemClient systemClient = new SystemClient(client);
 
-	protected CustomDataLabels getCustomData() {
-		CustomDataLabels customData = new CustomDataLabels();
-		customData.customUp1Label = customData1EditText.getText().toString();
-		customData.customUp2Label = customData2EditText.getText().toString();
-		customData.customDown1Label = customData3EditText.getText().toString();
-		customData.customDown2Label = customData4EditText.getText().toString();
-		customData.customStr1Label = customData5EditText.getText().toString();
-		customData.customStr2Label = customData6EditText.getText().toString();
-		return customData;
-	}
+        RegisterSystemTask registerTask = new RegisterSystemTask(appClient, systemClient);
+
+        registerTask.execute(PHONE_UNIQUE_ID, prefs.password, getCustomData());
+        try {
+
+            AvError error = registerTask.get();
+
+            if (error != null) {
+                toast("An error occured when registering system.");
+            } else {
+                toast("System registered on AirVantage.");
+            }
+        } catch (Exception e) {
+            toastError(e, "Error", "An error occured when registering system.");
+        }
+    }
+
+    private void updateData(String token) {
+
+        AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
+
+        AirVantageClient client = new AirVantageClient(prefs.serverHost, token);
+
+        IApplicationClient appClient = new ApplicationClient(client);
+
+        UpdateDataTask updateDataTask = new UpdateDataTask(appClient);
+
+        updateDataTask.execute(PHONE_UNIQUE_ID, getCustomData());
+        try {
+
+            AvError error = updateDataTask.get();
+
+            if (error == null) {
+                toast("Data updated on AirVantage.");
+                updateDataBt.setEnabled(false);
+            } else {
+                if (error.systemAlreadyExists(error)) {
+                    toast("Sorry, the system is already registered in another company.");
+                } else {
+                    toast("An error occured when updating data : " + error.error);
+                }
+            }
+        } catch (Exception e) {
+            toastError(e, "Error", "An error occured when updating data.");
+        }
+    }
+
+    protected CustomDataLabels getCustomData() {
+        CustomDataLabels customData = new CustomDataLabels();
+        customData.customUp1Label = customData1EditText.getText().toString();
+        customData.customUp2Label = customData2EditText.getText().toString();
+        customData.customDown1Label = customData3EditText.getText().toString();
+        customData.customDown2Label = customData4EditText.getText().toString();
+        customData.customStr1Label = customData5EditText.getText().toString();
+        customData.customStr2Label = customData6EditText.getText().toString();
+        return customData;
+    }
 
 }

@@ -21,11 +21,11 @@ public class AuthorizationActivity extends Activity {
 
     // A way to know *why* the authorization was required
     public static final String AUTHORIZATION_CONTEXT = "context";
-    
+
     private WebView webview;
 
     @SuppressLint("SetJavaScriptEnabled")
-	@Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authorization);
@@ -90,15 +90,15 @@ public class AuthorizationActivity extends Activity {
     }
 
     private void sendToken(String token) {
-    	
-    	Intent queryIntent = getIntent();
-    	
+
+        Intent queryIntent = getIntent();
+
         Intent resultIntent = new Intent();
         resultIntent.putExtra(TOKEN, token);
-        
+
         int context = queryIntent.getExtras().getInt(AUTHORIZATION_CONTEXT);
         resultIntent.putExtra(AUTHORIZATION_CONTEXT, context);
-        
+
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }

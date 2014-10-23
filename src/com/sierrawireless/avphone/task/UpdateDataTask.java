@@ -13,32 +13,32 @@ import com.sierrawireless.avphone.model.CustomDataLabels;
 
 public class UpdateDataTask extends AsyncTask<Object, Void, AvError> {
 
-	private IApplicationClient appClient;
+    private IApplicationClient appClient;
 
-	public UpdateDataTask(IApplicationClient appClient) {
-		this.appClient = appClient;
-	}
+    public UpdateDataTask(IApplicationClient appClient) {
+        this.appClient = appClient;
+    }
 
-	@Override
-	protected AvError doInBackground(Object... params) {
+    @Override
+    protected AvError doInBackground(Object... params) {
 
-		try {
-			
-			String serialNumber = (String) params[0];
-			CustomDataLabels customData = (CustomDataLabels) params[1];
-			
-			Application application = appClient.ensureApplicationExists(serialNumber);
+        try {
 
-			appClient.setApplicationData(application.uid, customData);
+            String serialNumber = (String) params[0];
+            CustomDataLabels customData = (CustomDataLabels) params[1];
 
-			return null;
-		} catch (AirVantageException e) {
-			return e.getError();
-		} catch (IOException e) {
-			Log.e(MainActivity.class.getName(), "Error when trying to update application data", e);
-			return new AvError("unknown.error");
-		}
+            Application application = appClient.ensureApplicationExists(serialNumber);
 
-	}
+            appClient.setApplicationData(application.uid, customData);
+
+            return null;
+        } catch (AirVantageException e) {
+            return e.getError();
+        } catch (IOException e) {
+            Log.e(MainActivity.class.getName(), "Error when trying to update application data", e);
+            return new AvError("unknown.error");
+        }
+
+    }
 
 }
