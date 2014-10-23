@@ -11,6 +11,7 @@ import net.airvantage.model.Data;
 import net.airvantage.model.Parameter;
 import net.airvantage.model.Protocol;
 import net.airvantage.model.Setting;
+import net.airvantage.model.Variable;
 
 public class AvPhoneApplication {
 
@@ -54,24 +55,25 @@ public class AvPhoneApplication {
         Data asset = new Data("phone", "Phone", "node");
         asset.data = new ArrayList<net.airvantage.model.Data>();
 
-        asset.data.add(new Setting("phone.rssi", "RSSI", "int"));
-        asset.data.add(new Setting("phone.service", "Service type", "string"));
-        asset.data.add(new Setting("phone.operator", "Operator", "string"));
-        asset.data.add(new Setting("phone.latitude", "Latitude", "double"));
-        asset.data.add(new Setting("phone.longitude", "Longitude", "double"));
-        asset.data.add(new Setting("phone.batterylevel", "Battery level", "double"));
-        asset.data.add(new Setting("phone.bytesreceived", "Bytes received", "double"));
-        asset.data.add(new Setting("phone.bytessent", "Bytes sent", "double"));
-        asset.data.add(new Setting("phone.memoryusage", "Memory usage", "double"));
-        asset.data.add(new Setting("phone.runningapps", "Running applications", "int"));
-        asset.data.add(new Setting("phone.activewifi", "Active Wi-Fi", "boolean"));
+        asset.data.add(new Variable("phone.rssi", "RSSI", "int"));
+        asset.data.add(new Variable("phone.service", "Service type", "string"));
+        asset.data.add(new Variable("phone.operator", "Operator", "string"));
+        asset.data.add(new Variable("phone.latitude", "Latitude", "double"));
+        asset.data.add(new Variable("phone.longitude", "Longitude", "double"));
+        asset.data.add(new Variable("phone.batterylevel", "Battery level", "double"));
+        asset.data.add(new Variable("phone.bytesreceived", "Bytes received", "double"));
+        asset.data.add(new Variable("phone.bytessent", "Bytes sent", "double"));
+        asset.data.add(new Variable("phone.memoryusage", "Memory usage", "double"));
+        asset.data.add(new Variable("phone.runningapps", "Running applications", "int"));
+        asset.data.add(new Variable("phone.activewifi", "Active Wi-Fi", "boolean"));
+        asset.data.add(new Variable("phone.alarm", "Active alarm", "boolean"));
 
-        asset.data.add(new Setting("phone.custom.up.1", customData.customUp1Label, "int"));
-        asset.data.add(new Setting("phone.custom.up.2", customData.customUp2Label, "int"));
-        asset.data.add(new Setting("phone.custom.down.1", customData.customDown1Label, "int"));
-        asset.data.add(new Setting("phone.custom.down.2", customData.customDown2Label, "int"));
-        asset.data.add(new Setting("phone.custom.str.1", customData.customStr1Label, "string"));
-        asset.data.add(new Setting("phone.custom.str.2", customData.customStr2Label, "string"));
+        asset.data.add(new Variable("phone.custom.up.1", customData.customUp1Label, "int"));
+        asset.data.add(new Variable("phone.custom.up.2", customData.customUp2Label, "int"));
+        asset.data.add(new Variable("phone.custom.down.1", customData.customDown1Label, "int"));
+        asset.data.add(new Variable("phone.custom.down.2", customData.customDown2Label, "int"));
+        asset.data.add(new Variable("phone.custom.str.1", customData.customStr1Label, "string"));
+        asset.data.add(new Variable("phone.custom.str.2", customData.customStr2Label, "string"));
 
         Command c = new Command("phone.notify", "Notify");
         Parameter p = new Parameter("message", "string");

@@ -7,10 +7,10 @@ import java.util.List;
 
 import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Application;
+import net.airvantage.model.MqttCommunication;
 import net.airvantage.utils.AirVantageClient;
 import net.airvantage.utils.Utils;
 
-import com.sierrawireless.model.MqttCommunication;
 
 public class SystemClient implements ISystemClient {
 

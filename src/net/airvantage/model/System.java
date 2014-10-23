@@ -3,7 +3,6 @@ package net.airvantage.model;
 import java.util.Collection;
 import java.util.Map;
 
-import com.sierrawireless.model.MqttCommunication;
 
 public class System {
     public String uid;

@@ -1,4 +1,4 @@
-package com.sierrawireless.model;
+package net.airvantage.model;
 
 public class MqttCommunication {
     public String password;
