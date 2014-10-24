@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.sierrawireless.avphone.model.CustomDataLabels;
 import com.sierrawireless.avphone.service.LogMessage;
 import com.sierrawireless.avphone.service.NewData;
 

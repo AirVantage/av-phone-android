@@ -34,6 +34,7 @@ public class SystemClient implements ISystemClient {
         net.airvantage.model.AvSystem.Gateway gateway = new net.airvantage.model.AvSystem.Gateway();
         gateway.serialNumber = serialNumber;
         gateway.imei = imei;
+        
         system.gateway = gateway;
 
         system.state = "READY";

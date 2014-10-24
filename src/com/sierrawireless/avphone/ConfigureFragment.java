@@ -22,24 +22,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sierrawireless.avphone.model.AvPhoneApplication;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 import com.sierrawireless.avphone.task.AlertRuleClient;
 import com.sierrawireless.avphone.task.ApplicationClient;
 import com.sierrawireless.avphone.task.IAlertRuleClient;
 import com.sierrawireless.avphone.task.IApplicationClient;
 import com.sierrawireless.avphone.task.ISystemClient;
-import com.sierrawireless.avphone.task.RegisterSystemTask;
+import com.sierrawireless.avphone.task.SyncWithAvTask;
 import com.sierrawireless.avphone.task.SystemClient;
-import com.sierrawireless.avphone.task.UpdateDataTask;
 
 public class ConfigureFragment extends Fragment {
 
     public static final String PHONE_UNIQUE_ID = Build.SERIAL;
 
-    private static final int CONTEXT_REGISTER = 0;
-    private static final int CONTEXT_UPDATE_DATA = 1;
-
-    private Button registerBt;
+    private Button syncBt;
 
     private EditText customData1EditText;
     private EditText customData2EditText;
@@ -47,8 +44,6 @@ public class ConfigureFragment extends Fragment {
     private EditText customData4EditText;
     private EditText customData5EditText;
     private EditText customData6EditText;
-
-    private View updateDataBt;
 
     private View view;
 
@@ -63,22 +58,13 @@ public class ConfigureFragment extends Fragment {
         ((TextView) view.findViewById(R.id.phoneid_value)).setText(PHONE_UNIQUE_ID);
 
         // Register button
-        registerBt = (Button) view.findViewById(R.id.register_bt);
-        registerBt.setOnClickListener(new View.OnClickListener() {
+        syncBt = (Button) view.findViewById(R.id.sync_bt);
+        syncBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onRegisterClicked();
             }
         });
-
-        updateDataBt = (Button) view.findViewById(R.id.update_data_bt);
-        updateDataBt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onUpdateDataClicked();
-            }
-        });
-        updateDataBt.setEnabled(false);
 
         prefUtils = new PreferenceUtils(this);
 
@@ -117,7 +103,6 @@ public class ConfigureFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 prefUtils.setPreference(prefKeyId, s.toString());
-                updateDataBt.setEnabled(true);
             }
         });
         return res;
@@ -139,15 +124,6 @@ public class ConfigureFragment extends Fragment {
     protected void onRegisterClicked() {
         if (checkCredentials()) {
             Intent intent = new Intent(getActivity(), AuthorizationActivity.class);
-            intent.putExtra(AuthorizationActivity.AUTHORIZATION_CONTEXT, CONTEXT_REGISTER);
-            startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION);
-        }
-    }
-
-    private void onUpdateDataClicked() {
-        if (checkCredentials()) {
-            Intent intent = new Intent(getActivity(), AuthorizationActivity.class);
-            intent.putExtra(AuthorizationActivity.AUTHORIZATION_CONTEXT, CONTEXT_UPDATE_DATA);
             startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION);
         }
     }
@@ -159,14 +135,7 @@ public class ConfigureFragment extends Fragment {
         case (AuthorizationActivity.REQUEST_AUTHORIZATION): {
             if (resultCode == Activity.RESULT_OK) {
                 String token = data.getStringExtra(AuthorizationActivity.TOKEN);
-
-                int request = data.getExtras().getInt(AuthorizationActivity.AUTHORIZATION_CONTEXT);
-                if (request == ConfigureFragment.CONTEXT_REGISTER) {
-                    registerSystem(token);
-                } else if (request == ConfigureFragment.CONTEXT_UPDATE_DATA) {
-                    updateData(token);
-                }
-
+                syncWithAv(token);
             }
             break;
         }
@@ -182,7 +151,7 @@ public class ConfigureFragment extends Fragment {
         toast(message);
     }
 
-    private void registerSystem(String token) {
+    private void syncWithAv(String token) {
 
         AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
 
@@ -191,8 +160,8 @@ public class ConfigureFragment extends Fragment {
         IApplicationClient appClient = new ApplicationClient(client);
         ISystemClient systemClient = new SystemClient(client);
         IAlertRuleClient alertRuleClient = new AlertRuleClient(client);
-        
-        RegisterSystemTask registerTask = new RegisterSystemTask(appClient, systemClient, alertRuleClient);
+
+        SyncWithAvTask syncTask = new SyncWithAvTask(appClient, systemClient, alertRuleClient);
 
         // try to get the IMEI for GSM phones
         String imei = null;
@@ -201,48 +170,27 @@ public class ConfigureFragment extends Fragment {
             imei = telManager.getDeviceId();
         }
 
-        registerTask.execute(PHONE_UNIQUE_ID, imei, prefs.password, getCustomDataLabels());
+        syncTask.execute(PHONE_UNIQUE_ID, imei, prefs.password, getCustomDataLabels());
         try {
 
-            AvError error = registerTask.get();
+            AvError error = syncTask.get();
 
             if (error != null) {
-                toast("An error occured when registering system.");
-            } else {
-                toast("System registered on AirVantage.");
-            }
-        } catch (Exception e) {
-            toastError(e, "Error", "An error occured when registering system.");
-        }
-    }
-
-    private void updateData(String token) {
-
-        AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
-
-        AirVantageClient client = new AirVantageClient(prefs.serverHost, token);
-
-        IApplicationClient appClient = new ApplicationClient(client);
-
-        UpdateDataTask updateDataTask = new UpdateDataTask(appClient);
-
-        updateDataTask.execute(PHONE_UNIQUE_ID, getCustomDataLabels());
-        try {
-
-            AvError error = updateDataTask.get();
-
-            if (error == null) {
-                toast("Data updated on AirVantage.");
-                updateDataBt.setEnabled(false);
-            } else {
-                if (error.systemAlreadyExists(error)) {
-                    toast("Sorry, the system is already registered in another company.");
+                if (error.systemAlreadyExists()) {
+                    toast("Error : A system already exists with this serial number (maybe in another company.)");
+                } else if (error.applicationAlreadyUsed()) {
+                    toast("Error : An application with type " + AvPhoneApplication.appType(PHONE_UNIQUE_ID)
+                            + " already exists (maybe in another company)");
+                } else if (error.tooManyAlerRules()){
+                    toast("Error : There are too many alert rules registered in your company.");
                 } else {
-                    toast("An error occured when updating data : " + error.error);
+                    toast("Error : Unexpected error (" + error.error + ").");
                 }
+            } else {
+                toast("Synchronized with airvantage.");
             }
         } catch (Exception e) {
-            toastError(e, "Error", "An error occured when updating data.");
+            toastError(e, "Error", "An error occured when synchronizing with AirVantage.");
         }
     }
 

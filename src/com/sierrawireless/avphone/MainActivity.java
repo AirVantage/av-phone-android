@@ -1,7 +1,5 @@
 package com.sierrawireless.avphone;
 
-import com.sierrawireless.avphone.model.CustomDataLabels;
-
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.ActionBar.TabListener;

@@ -20,6 +20,7 @@ import net.airvantage.model.AlertRuleList;
 import net.airvantage.model.AlertsList;
 import net.airvantage.model.ApplicationData;
 import net.airvantage.model.ApplicationsList;
+import net.airvantage.model.AvSystem;
 import net.airvantage.model.Datapoint;
 import net.airvantage.model.OperationResult;
 import net.airvantage.model.Protocol;
@@ -254,13 +255,12 @@ public class AirVantageClient implements IAirVantageClient {
         return gson.fromJson(new InputStreamReader(in), net.airvantage.model.AvSystem.class);
     }
 
-    public String reboot(String systemUid) throws IOException, AirVantageException {
-        URL url = new URL(buildEndpoint("/operations/systems/reboot"));
-        String body = "{\"requestConnection\" : \"true\", \"systems\" : {\"uids\" : [\"" + systemUid + "\"]}}";
-        InputStream in = sendString("POST", url, body);
-        return gson.fromJson(new InputStreamReader(in), OperationResult.class).operationUid;
+    @Override
+    public void updateSystem(AvSystem system) throws IOException, AirVantageException{
+        URL url = new URL(buildEndpoint("/systems/") + system.uid);
+        put(url, system);
     }
-
+    
     public List<net.airvantage.model.Application> getApplications(String type) throws IOException, AirVantageException {
         URL url = new URL(buildEndpoint("/applications") + "&type=" + type + "&fields=uid,name,revision,type,category");
         InputStream in = this.get(url);
@@ -273,7 +273,7 @@ public class AirVantageClient implements IAirVantageClient {
         }
     }
 
-    public net.airvantage.model.Application createApp(net.airvantage.model.Application application) throws IOException,
+    public net.airvantage.model.Application createApplication(net.airvantage.model.Application application) throws IOException,
             AirVantageException {
         URL url = new URL(buildEndpoint("/applications"));
         InputStream in = post(url, application);

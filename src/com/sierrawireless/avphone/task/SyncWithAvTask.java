@@ -5,13 +5,14 @@ import java.io.IOException;
 import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Application;
 import net.airvantage.model.AvError;
+import net.airvantage.model.AvSystem;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 
-public class RegisterSystemTask extends AsyncTask<Object, Integer, AvError> {
+public class SyncWithAvTask extends AsyncTask<Object, Integer, AvError> {
 
     private IApplicationClient applicationClient;
 
@@ -19,7 +20,7 @@ public class RegisterSystemTask extends AsyncTask<Object, Integer, AvError> {
 
     private IAlertRuleClient alertRuleClient;
 
-    public RegisterSystemTask(IApplicationClient applicationClient, ISystemClient systemClient,
+    public SyncWithAvTask(IApplicationClient applicationClient, ISystemClient systemClient,
             IAlertRuleClient alertRuleClient) {
         this.applicationClient = applicationClient;
         this.systemClient = systemClient;
@@ -50,6 +51,10 @@ public class RegisterSystemTask extends AsyncTask<Object, Integer, AvError> {
 
             this.applicationClient.setApplicationData(application.uid, customData);
 
+            if (!hasApplication(system, application)) {
+                this.applicationClient.addApplication(system, application);
+            }
+            
             return null;
         } catch (AirVantageException e) {
             return e.getError();
@@ -58,6 +63,18 @@ public class RegisterSystemTask extends AsyncTask<Object, Integer, AvError> {
             return new AvError("unkown.error");
         }
 
+    }
+
+    private boolean hasApplication(AvSystem system, Application application) {
+        boolean found = false;
+        if (system.applications != null) {
+            for (Application app : system.applications) {
+                if (app.uid.equals(application.uid)) {
+                    found = true;
+                }
+            }
+        }
+        return found;
     }
 
 }

@@ -14,7 +14,6 @@ import net.airvantage.model.Condition;
 import net.airvantage.model.Data;
 import net.airvantage.model.Parameter;
 import net.airvantage.model.Protocol;
-import net.airvantage.model.Setting;
 import net.airvantage.model.Variable;
 
 public class AvPhoneApplication {
