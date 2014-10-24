@@ -28,14 +28,15 @@ public class RegisterSystemTask extends AsyncTask<Object, Integer, AvError> {
         try {
 
             String serialNumber = (String) params[0];
-            String mqttPassword = (String) params[1];
-            CustomDataLabels customData = (CustomDataLabels) params[2];
+            String imei = (String) params[1];
+            String mqttPassword = (String) params[2];
+            CustomDataLabels customData = (CustomDataLabels) params[3];
 
             Application application = this.applicationClient.ensureApplicationExists(serialNumber);
 
             net.airvantage.model.System system = this.systemClient.getSystem(serialNumber);
             if (system == null) {
-                system = systemClient.createSystem(serialNumber, mqttPassword, application.uid);
+                system = systemClient.createSystem(serialNumber, imei, mqttPassword, application.uid);
             }
 
             this.applicationClient.setApplicationData(application.uid, customData);

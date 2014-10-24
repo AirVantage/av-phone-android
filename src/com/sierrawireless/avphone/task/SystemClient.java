@@ -11,7 +11,6 @@ import net.airvantage.model.MqttCommunication;
 import net.airvantage.utils.AirVantageClient;
 import net.airvantage.utils.Utils;
 
-
 public class SystemClient implements ISystemClient {
 
     private AirVantageClient client;
@@ -27,14 +26,15 @@ public class SystemClient implements ISystemClient {
     }
 
     @Override
-    public net.airvantage.model.System createSystem(String serialNumber, String mqttPassword, String applicationUid)
-            throws IOException, AirVantageException {
+    public net.airvantage.model.System createSystem(String serialNumber, String imei, String mqttPassword,
+            String applicationUid) throws IOException, AirVantageException {
         net.airvantage.model.System system = new net.airvantage.model.System();
 
         // FIXME(pht) this will break if the gateway already exits.
         // We should look for gateway first, and use uid if it exists.
         net.airvantage.model.System.Gateway gateway = new net.airvantage.model.System.Gateway();
         gateway.serialNumber = serialNumber;
+        gateway.imei = imei;
         system.gateway = gateway;
 
         system.state = "READY";
@@ -48,6 +48,8 @@ public class SystemClient implements ISystemClient {
 
         system.communication = new HashMap<String, MqttCommunication>();
         system.communication.put("mqtt", mqtt);
+
+        system.type = "Android";
 
         return client.createSystem(system);
     }

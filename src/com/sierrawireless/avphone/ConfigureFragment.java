@@ -1,17 +1,16 @@
 package com.sierrawireless.avphone;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.airvantage.model.AvError;
 import net.airvantage.utils.AirVantageClient;
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -192,7 +191,14 @@ public class ConfigureFragment extends Fragment {
 
         RegisterSystemTask registerTask = new RegisterSystemTask(appClient, systemClient);
 
-        registerTask.execute(PHONE_UNIQUE_ID, prefs.password, getCustomDataLabels());
+        // try to get the IMEI for GSM phones
+        String imei = null;
+        TelephonyManager telManager = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+        if (telManager != null && telManager.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
+            imei = telManager.getDeviceId();
+        }
+
+        registerTask.execute(PHONE_UNIQUE_ID, imei, prefs.password, getCustomDataLabels());
         try {
 
             AvError error = registerTask.get();

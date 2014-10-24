@@ -8,7 +8,7 @@ public interface ISystemClient {
 
     net.airvantage.model.System getSystem(String serialNumber) throws IOException, AirVantageException;
 
-    net.airvantage.model.System createSystem(String serialNumber, String mqttPassword, String applicationUid)
-            throws IOException, AirVantageException;
+    net.airvantage.model.System createSystem(String serialNumber, String imei, String mqttPassword,
+            String applicationUid) throws IOException, AirVantageException;
 
 }
