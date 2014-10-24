@@ -4,7 +4,6 @@ import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -18,7 +17,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,24 +46,6 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
 
     private PreferenceUtils prefUtils;
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
-    
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        // TODO Auto-generated method stub
-        super.onHiddenChanged(hidden);
-    }
-    
-    @Override
-    public void onInflate(Activity activity, AttributeSet attrs, Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
-        super.onInflate(activity, attrs, savedInstanceState);
-    }
-    
-    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -230,9 +210,9 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
             stopMonitoringService();
             startMonitoringService();
         }
-        
+
         setCustomDataLabels(prefUtils.getCustomDataLabels());
-        
+
     }
 
     @Override
@@ -253,6 +233,5 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
             }
         }
     };
-
 
 }
