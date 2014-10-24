@@ -29,4 +29,8 @@
         <item name="android:textStyle">bold</item>
     </style>   
 
+    <style name="EditableItem" parent="AppTheme">
+        <item name="android:textColor">@color/textcolor</item>
+    </style>
+    
 </resources>

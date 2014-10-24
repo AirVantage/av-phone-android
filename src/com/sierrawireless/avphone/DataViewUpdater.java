@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.sierrawireless.avphone.model.CustomDataLabels;
 import com.sierrawireless.avphone.service.LogMessage;
 import com.sierrawireless.avphone.service.NewData;
 
@@ -129,6 +130,41 @@ public class DataViewUpdater extends BroadcastReceiver {
 
         if (data.isAlarmActivated() != null) {
             ((ToggleButton) view.findViewById(R.id.alarm_button)).setChecked(data.isAlarmActivated());
+        }
+
+        setCustomDataValues(data);
+
+    }
+
+    private void setCustomDataValues(NewData data) {
+        if (data.getCustomIntUp1() != null) {
+            TextView valueView = (TextView) view.findViewById(R.id.run_custom1_value);
+            valueView.setText(String.valueOf(data.getCustomIntUp1()));
+        }
+
+        if (data.getCustomIntUp2() != null) {
+            TextView valueView = (TextView) view.findViewById(R.id.run_custom2_value);
+            valueView.setText(String.valueOf(data.getCustomIntUp2()));
+        }
+
+        if (data.getCustomIntDown1() != null) {
+            TextView valueView = (TextView) view.findViewById(R.id.run_custom3_value);
+            valueView.setText(String.valueOf(data.getCustomIntDown1()));
+        }
+
+        if (data.getCustomIntDown2() != null) {
+            TextView valueView = (TextView) view.findViewById(R.id.run_custom4_value);
+            valueView.setText(String.valueOf(data.getCustomIntDown2()));
+        }
+
+        if (data.getCustomStr1() != null) {
+            TextView valueView = (TextView) view.findViewById(R.id.run_custom5_value);
+            valueView.setText(String.valueOf(data.getCustomStr1()));
+        }
+
+        if (data.getCustomStr2() != null) {
+            TextView valueView = (TextView) view.findViewById(R.id.run_custom6_value);
+            valueView.setText(String.valueOf(data.getCustomStr2()));
         }
     }
 

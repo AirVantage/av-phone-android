@@ -1,13 +1,13 @@
 package com.sierrawireless.avphone;
 
+import net.airvantage.utils.AvPhonePrefs;
+import net.airvantage.utils.PreferenceUtils;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -15,7 +15,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -26,8 +25,10 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.sierrawireless.avphone.model.CustomDataLabels;
 import com.sierrawireless.avphone.service.LogMessage;
 import com.sierrawireless.avphone.service.MonitoringService;
 import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder;
@@ -39,19 +40,25 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
 
     private DataViewUpdater viewUpdater;
 
-    private SharedPreferences prefs;
-
     private AlarmManager alarmManager;
 
     private View view;
+
+    private PreferenceUtils prefUtils;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_run, container, false);
+        viewUpdater = new DataViewUpdater(view);
+
+        prefUtils = new PreferenceUtils(this);
+        prefUtils.addListener(this);
+
+        CustomDataLabels customLabels = prefUtils.getCustomDataLabels();
+        setCustomDataLabels(customLabels);
 
         alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-        viewUpdater = new DataViewUpdater(view);
 
         // register service listener
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(viewUpdater,
@@ -60,9 +67,6 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
                 new IntentFilter(LogMessage.LOG_EVENT));
 
         // Preferences
-        PreferenceManager.setDefaultValues(getActivity(), R.xml.preferences, false);
-        prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        prefs.registerOnSharedPreferenceChangeListener(this);
 
         // Start/stop switch
         boolean isServiceRunning = isServiceRunning();
@@ -106,32 +110,48 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
         Intent intent = new Intent(getActivity(), MonitoringService.class);
         intent.putExtra(MonitoringService.DEVICE_ID, ConfigureFragment.PHONE_UNIQUE_ID);
 
-        String serverHost = prefs.getString(this.getString(R.string.pref_server_key), null);
-        String password = prefs.getString(this.getString(R.string.pref_password_key), null);
-        String period = prefs.getString(this.getString(R.string.pref_period_key), null);
+        AvPhonePrefs avPrefs = prefUtils.getAvPhonePrefs();
 
-        if (password == null || password.isEmpty() || serverHost == null || serverHost.isEmpty()) {
-            new AlertDialog.Builder(getActivity()).setTitle(R.string.invalid_prefs).setMessage(R.string.prefs_missing)
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
-                        }
-                    }).show();
+        if (!avPrefs.checkCredentials()) {
+
+            prefUtils.showMissingPrefsDialog();
+
             Switch serviceSwitch = (Switch) view.findViewById(R.id.service_switch);
             serviceSwitch.setChecked(false);
             return;
         }
-        intent.putExtra(MonitoringService.SERVER_HOST, serverHost);
-        intent.putExtra(MonitoringService.PASSWORD, password);
+
+        intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost);
+        intent.putExtra(MonitoringService.PASSWORD, avPrefs.password);
 
         PendingIntent pendingIntent = PendingIntent.getService(getActivity(), 0, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
-
         // registering our pending intent with alarm manager
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, Integer.valueOf(period) * 60 * 1000,
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, Integer.valueOf(avPrefs.period) * 60 * 1000,
                 pendingIntent);
 
         this.connectToService();
+    }
+
+    protected void setCustomDataLabels(CustomDataLabels customDataLabels) {
+        TextView labelView = (TextView) view.findViewById(R.id.run_custom1_label);
+        labelView.setText(customDataLabels.customUp1Label);
+
+        labelView = (TextView) view.findViewById(R.id.run_custom2_label);
+        labelView.setText(customDataLabels.customUp2Label);
+
+        labelView = (TextView) view.findViewById(R.id.run_custom3_label);
+        labelView.setText(customDataLabels.customDown1Label);
+
+        labelView = (TextView) view.findViewById(R.id.run_custom4_label);
+        labelView.setText(customDataLabels.customDown2Label);
+
+        labelView = (TextView) view.findViewById(R.id.run_custom5_label);
+        labelView.setText(customDataLabels.customStr1Label);
+
+        labelView = (TextView) view.findViewById(R.id.run_custom6_label);
+        labelView.setText(customDataLabels.customStr2Label);
+
     }
 
     private void stopMonitoringService() {
@@ -190,6 +210,9 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
             stopMonitoringService();
             startMonitoringService();
         }
+
+        setCustomDataLabels(prefUtils.getCustomDataLabels());
+
     }
 
     @Override

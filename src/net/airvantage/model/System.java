@@ -1,6 +1,8 @@
 package net.airvantage.model;
 
 import java.util.Collection;
+import java.util.Map;
+
 
 public class System {
     public String uid;
@@ -15,6 +17,7 @@ public class System {
     public Gateway gateway;
     public Data data;
     public Collection<Application> applications;
+    public Map<String, MqttCommunication> communication;
 
     public static class Data {
         public Double rssi;
@@ -32,11 +35,4 @@ public class System {
         public String type;
     }
 
-    public static class Application {
-        public String uid;
-        public String name;
-        public String revision;
-        public String type;
-        public String category;
-    }
 }

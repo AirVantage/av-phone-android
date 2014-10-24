@@ -34,13 +34,124 @@
         android:paddingTop="0dp"
         android:text="@string/register" />
 
-    <!--
-         <TextView android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Design Games Screen"
-        android:textSize="20dp"
-        android:layout_centerInParent="true"/>
-    -->
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
 
+        <TextView
+            android:labelFor="@+id/custom1_value"
+            style="@style/ItemLabel"
+            android:text="@string/pref_custom1_label" />
+
+        <EditText
+            android:inputType="textMultiLine"
+            style="@style/EditableItem"
+            android:id="@+id/custom1_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        
+    </TableRow>
+
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:labelFor="@+id/custom2_value"
+            style="@style/ItemLabel"
+            android:text="@string/pref_custom2_label" />
+
+        <EditText
+            android:inputType="textMultiLine"
+            style="@style/EditableItem"
+            android:id="@+id/custom2_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        
+    </TableRow>
+    
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:labelFor="@+id/custom3_value"
+            style="@style/ItemLabel"
+            android:text="@string/pref_custom3_label" />
+
+        <EditText
+            android:inputType="textMultiLine"
+            style="@style/EditableItem"
+            android:id="@+id/custom3_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        
+    </TableRow>
+
+        <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:labelFor="@+id/custom4_value"
+            style="@style/ItemLabel"
+            android:text="@string/pref_custom4_label" />
+
+        <EditText
+            android:inputType="textMultiLine"
+            style="@style/EditableItem"
+            android:id="@+id/custom4_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        
+    </TableRow>
+    
+
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:labelFor="@+id/custom5_value"
+            style="@style/ItemLabel"
+            android:text="@string/pref_custom5_label" />
+
+        <EditText
+            android:inputType="textMultiLine"
+            style="@style/EditableItem"
+            android:id="@+id/custom5_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        
+    </TableRow>
+    
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:labelFor="@+id/custom4_value"
+            style="@style/ItemLabel"
+            android:text="@string/pref_custom4_label" />
+
+        <EditText
+            android:inputType="textMultiLine"
+            style="@style/EditableItem"
+            android:id="@+id/custom6_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        
+    </TableRow>
+    
+        
+    <Button
+        android:id="@+id/update_data_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:paddingBottom="0dp"
+        android:paddingTop="0dp"
+        android:text="@string/update_data" />
+    
 </LinearLayout>

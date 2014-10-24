@@ -1,6 +1,7 @@
 package com.sierrawireless.avphone;
 
 import net.airvantage.utils.AirVantageClient;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,10 +16,15 @@ public class AuthorizationActivity extends Activity {
 
     public static final String TOKEN = "token";
     public static final String AUTHORIZATION_CODE = "auth_code";
+
     public static final int REQUEST_AUTHORIZATION = 1;
+
+    // A way to know *why* the authorization was required
+    public static final String AUTHORIZATION_CONTEXT = "context";
 
     private WebView webview;
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,8 +90,15 @@ public class AuthorizationActivity extends Activity {
     }
 
     private void sendToken(String token) {
+
+        Intent queryIntent = getIntent();
+
         Intent resultIntent = new Intent();
         resultIntent.putExtra(TOKEN, token);
+
+        int context = queryIntent.getExtras().getInt(AUTHORIZATION_CONTEXT);
+        resultIntent.putExtra(AUTHORIZATION_CONTEXT, context);
+
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }

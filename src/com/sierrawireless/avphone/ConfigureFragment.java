@@ -1,38 +1,61 @@
 package com.sierrawireless.avphone;
 
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-
+import net.airvantage.model.AvError;
 import net.airvantage.utils.AirVantageClient;
+import net.airvantage.utils.AvPhonePrefs;
+import net.airvantage.utils.PreferenceUtils;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.telephony.TelephonyManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ConfigureFragment extends Fragment implements OnSharedPreferenceChangeListener {
+import com.sierrawireless.avphone.model.CustomDataLabels;
+import com.sierrawireless.avphone.task.ApplicationClient;
+import com.sierrawireless.avphone.task.IApplicationClient;
+import com.sierrawireless.avphone.task.ISystemClient;
+import com.sierrawireless.avphone.task.RegisterSystemTask;
+import com.sierrawireless.avphone.task.SystemClient;
+import com.sierrawireless.avphone.task.UpdateDataTask;
+
+public class ConfigureFragment extends Fragment {
 
     public static final String PHONE_UNIQUE_ID = Build.SERIAL;
 
+    private static final int CONTEXT_REGISTER = 0;
+    private static final int CONTEXT_UPDATE_DATA = 1;
+
     private Button registerBt;
 
-    private SharedPreferences prefs;
+    private EditText customData1EditText;
+    private EditText customData2EditText;
+    private EditText customData3EditText;
+    private EditText customData4EditText;
+    private EditText customData5EditText;
+    private EditText customData6EditText;
+
+    private View updateDataBt;
+
+    private View view;
+
+    private PreferenceUtils prefUtils;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_configure, container, false);
+        view = inflater.inflate(R.layout.fragment_configure, container, false);
 
         // phone identifier
         ((TextView) view.findViewById(R.id.phoneid_value)).setText(PHONE_UNIQUE_ID);
@@ -42,33 +65,89 @@ public class ConfigureFragment extends Fragment implements OnSharedPreferenceCha
         registerBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                register();
+                onRegisterClicked();
             }
         });
 
-        // Preferences
-        PreferenceManager.setDefaultValues(getActivity(), R.xml.preferences, false);
-        prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        prefs.registerOnSharedPreferenceChangeListener(this);
+        updateDataBt = (Button) view.findViewById(R.id.update_data_bt);
+        updateDataBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onUpdateDataClicked();
+            }
+        });
+        updateDataBt.setEnabled(false);
+
+        prefUtils = new PreferenceUtils(this);
+
+        // Fields for custom data
+        customData1EditText = buildCustomLabelEditText(view, R.id.custom1_value, R.string.pref_custom1_label_key,
+                R.string.pref_custom1_label_default);
+        customData2EditText = buildCustomLabelEditText(view, R.id.custom2_value, R.string.pref_custom2_label_key,
+                R.string.pref_custom2_label_default);
+        customData3EditText = buildCustomLabelEditText(view, R.id.custom3_value, R.string.pref_custom3_label_key,
+                R.string.pref_custom3_label_default);
+        customData4EditText = buildCustomLabelEditText(view, R.id.custom4_value, R.string.pref_custom4_label_key,
+                R.string.pref_custom4_label_default);
+        customData5EditText = buildCustomLabelEditText(view, R.id.custom5_value, R.string.pref_custom5_label_key,
+                R.string.pref_custom5_label_default);
+        customData6EditText = buildCustomLabelEditText(view, R.id.custom6_value, R.string.pref_custom6_label_key,
+                R.string.pref_custom6_label_default);
 
         return view;
     }
 
-    protected void register() {
-        // Is there a token available in the local storage?
-        // Yes
-        // -- Is the token still valid?
-        // -- Yes
-        // ---- Register the system
-        // -- No
-        // ---- Refresh token
-        // ---- Register the system
-        // No
-        // -- Get a new token
-        // Open authorization activity
-        Intent intent = new Intent(getActivity(), AuthorizationActivity.class);
-        startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION);
-        // -- Register the system
+    private EditText buildCustomLabelEditText(View view, int id, final int prefKeyId, int labelDefaultKeyId) {
+        EditText res = (EditText) view.findViewById(id);
+
+        res.setText(prefUtils.getPreference(prefKeyId, labelDefaultKeyId));
+
+        res.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                prefUtils.setPreference(prefKeyId, s.toString());
+                updateDataBt.setEnabled(true);
+            }
+        });
+        return res;
+    }
+
+    private boolean checkCredentials() {
+
+        AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
+
+        if (!prefs.checkCredentials()) {
+            prefUtils.showMissingPrefsDialog();
+            return false;
+        }
+
+        return true;
+
+    }
+
+    protected void onRegisterClicked() {
+        if (checkCredentials()) {
+            Intent intent = new Intent(getActivity(), AuthorizationActivity.class);
+            intent.putExtra(AuthorizationActivity.AUTHORIZATION_CONTEXT, CONTEXT_REGISTER);
+            startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION);
+        }
+    }
+
+    private void onUpdateDataClicked() {
+        if (checkCredentials()) {
+            Intent intent = new Intent(getActivity(), AuthorizationActivity.class);
+            intent.putExtra(AuthorizationActivity.AUTHORIZATION_CONTEXT, CONTEXT_UPDATE_DATA);
+            startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION);
+        }
     }
 
     @Override
@@ -78,54 +157,101 @@ public class ConfigureFragment extends Fragment implements OnSharedPreferenceCha
         case (AuthorizationActivity.REQUEST_AUTHORIZATION): {
             if (resultCode == Activity.RESULT_OK) {
                 String token = data.getStringExtra(AuthorizationActivity.TOKEN);
-                final String serverHost = prefs.getString(this.getString(R.string.pref_server_key), null);
 
-                AsyncTask<String, Void, Boolean> registerTask = new AsyncTask<String, Void, Boolean>() {
-                    protected Boolean doInBackground(String... params) {
-                        try {
-                            AirVantageClient client = new AirVantageClient(serverHost, params[0]);
-                            net.airvantage.model.System system = new net.airvantage.model.System();
-                            net.airvantage.model.System.Gateway gateway = new net.airvantage.model.System.Gateway();
-                            gateway.serialNumber = PHONE_UNIQUE_ID;
-                            system.gateway = gateway;
-                            system.state = "READY";
-                            client.create(system);
-                            return true;
-                        } catch (IOException e) {
-                            Log.e(MainActivity.class.getName(), "Error when trying to get current user", e);
-                            return false;
-                        }
-                    }
-                };
-
-                registerTask.execute(token);
-                try {
-                    if (registerTask.get()) {
-                        Toast.makeText(getActivity(), "System registered on AirVantage.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(getActivity(), "An error occured when registering system.", Toast.LENGTH_SHORT)
-                                .show();
-                    }
-                } catch (InterruptedException e) {
-                    Log.e(MainActivity.class.getName(), "Error", e);
-                    Toast.makeText(getActivity(), "An error occured when registering system.", Toast.LENGTH_SHORT)
-                            .show();
-                } catch (ExecutionException e) {
-                    Log.e(MainActivity.class.getName(), "Error", e);
-                    Toast.makeText(getActivity(), "An error occured when registering system.", Toast.LENGTH_SHORT)
-                            .show();
+                int request = data.getExtras().getInt(AuthorizationActivity.AUTHORIZATION_CONTEXT);
+                if (request == ConfigureFragment.CONTEXT_REGISTER) {
+                    registerSystem(token);
+                } else if (request == ConfigureFragment.CONTEXT_UPDATE_DATA) {
+                    updateData(token);
                 }
+
             }
             break;
         }
         }
     }
 
-    // Preferences
+    private void toast(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        // TODO
+    private void toastError(Exception e, String label, String message) {
+        Log.e(MainActivity.class.getName(), label, e);
+        toast(message);
+    }
+
+    private void registerSystem(String token) {
+
+        AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
+
+        AirVantageClient client = new AirVantageClient(prefs.serverHost, token);
+
+        IApplicationClient appClient = new ApplicationClient(client);
+        ISystemClient systemClient = new SystemClient(client);
+
+        RegisterSystemTask registerTask = new RegisterSystemTask(appClient, systemClient);
+
+        // try to get the IMEI for GSM phones
+        String imei = null;
+        TelephonyManager telManager = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+        if (telManager != null && telManager.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
+            imei = telManager.getDeviceId();
+        }
+
+        registerTask.execute(PHONE_UNIQUE_ID, imei, prefs.password, getCustomDataLabels());
+        try {
+
+            AvError error = registerTask.get();
+
+            if (error != null) {
+                toast("An error occured when registering system.");
+            } else {
+                toast("System registered on AirVantage.");
+            }
+        } catch (Exception e) {
+            toastError(e, "Error", "An error occured when registering system.");
+        }
+    }
+
+    private void updateData(String token) {
+
+        AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
+
+        AirVantageClient client = new AirVantageClient(prefs.serverHost, token);
+
+        IApplicationClient appClient = new ApplicationClient(client);
+
+        UpdateDataTask updateDataTask = new UpdateDataTask(appClient);
+
+        updateDataTask.execute(PHONE_UNIQUE_ID, getCustomDataLabels());
+        try {
+
+            AvError error = updateDataTask.get();
+
+            if (error == null) {
+                toast("Data updated on AirVantage.");
+                updateDataBt.setEnabled(false);
+            } else {
+                if (error.systemAlreadyExists(error)) {
+                    toast("Sorry, the system is already registered in another company.");
+                } else {
+                    toast("An error occured when updating data : " + error.error);
+                }
+            }
+        } catch (Exception e) {
+            toastError(e, "Error", "An error occured when updating data.");
+        }
+    }
+
+    protected CustomDataLabels getCustomDataLabels() {
+        CustomDataLabels customData = new CustomDataLabels();
+        customData.customUp1Label = customData1EditText.getText().toString();
+        customData.customUp2Label = customData2EditText.getText().toString();
+        customData.customDown1Label = customData3EditText.getText().toString();
+        customData.customDown2Label = customData4EditText.getText().toString();
+        customData.customStr1Label = customData5EditText.getText().toString();
+        customData.customStr2Label = customData6EditText.getText().toString();
+        return customData;
     }
 
 }
