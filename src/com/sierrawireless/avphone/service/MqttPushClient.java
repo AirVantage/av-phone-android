@@ -162,12 +162,26 @@ public class MqttPushClient {
                     Collections.singletonList(new DataValue(timestamp, data.isAlarmActivated())));
         }
 
-        values.put("phone.custom.up.1", Collections.singletonList(new DataValue(timestamp, data.getCustomIntUp1())));
-        values.put("phone.custom.up.2", Collections.singletonList(new DataValue(timestamp, data.getCustomIntUp2())));
-        values.put("phone.custom.down.1", Collections.singletonList(new DataValue(timestamp, data.getCustomIntDown1())));
-        values.put("phone.custom.down.2", Collections.singletonList(new DataValue(timestamp, data.getCustomIntDown2())));
-        values.put("phone.custom.str.1", Collections.singletonList(new DataValue(timestamp, data.getCustomStr1())));
-        values.put("phone.custom.str.2", Collections.singletonList(new DataValue(timestamp, data.getCustomStr2())));
+        if (data.getCustomIntUp1() != null) {
+            values.put("phone.custom.up.1", Collections.singletonList(new DataValue(timestamp, data.getCustomIntUp1())));
+        }
+        if (data.getCustomIntUp2() != null) {
+            values.put("phone.custom.up.2", Collections.singletonList(new DataValue(timestamp, data.getCustomIntUp2())));
+        }
+        if (data.getCustomIntDown1() != null) {
+            values.put("phone.custom.down.1",
+                    Collections.singletonList(new DataValue(timestamp, data.getCustomIntDown1())));
+        }
+        if (data.getCustomIntDown2() != null) {
+            values.put("phone.custom.down.2",
+                    Collections.singletonList(new DataValue(timestamp, data.getCustomIntDown2())));
+        }
+        if (data.getCustomStr1() != null) {
+            values.put("phone.custom.str.1", Collections.singletonList(new DataValue(timestamp, data.getCustomStr1())));
+        }
+        if (data.getCustomStr2() != null) {
+            values.put("phone.custom.str.2", Collections.singletonList(new DataValue(timestamp, data.getCustomStr2())));
+        }
 
         return gson.toJson(Collections.singletonList(values));
     }
