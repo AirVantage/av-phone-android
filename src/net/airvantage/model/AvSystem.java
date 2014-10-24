@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 
-public class System {
+public class AvSystem {
     public String uid;
     public String name;
     public String commStatus;

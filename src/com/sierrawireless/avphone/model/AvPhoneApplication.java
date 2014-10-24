@@ -2,11 +2,15 @@ package com.sierrawireless.avphone.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import net.airvantage.model.AlertRule;
 import net.airvantage.model.Application;
 import net.airvantage.model.ApplicationData;
 import net.airvantage.model.Command;
+import net.airvantage.model.Condition;
 import net.airvantage.model.Data;
 import net.airvantage.model.Parameter;
 import net.airvantage.model.Protocol;
@@ -14,6 +18,8 @@ import net.airvantage.model.Setting;
 import net.airvantage.model.Variable;
 
 public class AvPhoneApplication {
+
+    private static final String PHONE_ALARM_DATA_ID = "phone.alarm";
 
     public static Application createApplication(String serialNumber) {
         Application application = new Application();
@@ -66,7 +72,7 @@ public class AvPhoneApplication {
         asset.data.add(new Variable("phone.memoryusage", "Memory usage", "double"));
         asset.data.add(new Variable("phone.runningapps", "Running applications", "int"));
         asset.data.add(new Variable("phone.activewifi", "Active Wi-Fi", "boolean"));
-        asset.data.add(new Variable("phone.alarm", "Active alarm", "boolean"));
+        asset.data.add(new Variable(PHONE_ALARM_DATA_ID, "Active alarm", "boolean"));
 
         asset.data.add(new Variable("phone.custom.up.1", customData.customUp1Label, "int"));
         asset.data.add(new Variable("phone.custom.up.2", customData.customUp2Label, "int"));
@@ -93,6 +99,38 @@ public class AvPhoneApplication {
 
     public static String appType(String serialNumber) {
         return "av.phone.demo." + serialNumber;
+    }
+
+    public static String alertRuleName(String serialNumber) {
+        return "AV Phone rule " + serialNumber;
+    }
+    
+    public static AlertRule createAlertRule(String serialNumber, String systemUid, String applicationUid) {
+        AlertRule rule = new AlertRule();
+        
+        rule.active = true;
+        rule.name = alertRuleName(serialNumber);
+        rule.eventType = "event.system.incoming.communication";
+        
+        Condition sysCondition = new Condition();
+        sysCondition.eventProperty = "system.uid";
+        sysCondition.operator = "EQUALS";
+        sysCondition.value = systemUid;
+        
+        Condition alarmCondition = new Condition();
+        alarmCondition.eventProperty = "communication.data.value";
+        alarmCondition.eventPropertyKey = PHONE_ALARM_DATA_ID;
+        alarmCondition.operator = "EQUALS";
+        alarmCondition.value = "true";
+        
+        rule.conditions = Arrays.asList(sysCondition, alarmCondition);
+        
+        Map<String, String> metadata = new HashMap<String, String>();
+        metadata.put("condition_1_application", applicationUid);
+        
+        rule.metadata = metadata;
+        
+        return rule;
     }
 
 }

@@ -210,9 +210,9 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
             stopMonitoringService();
             startMonitoringService();
         }
-
+        
         setCustomDataLabels(prefUtils.getCustomDataLabels());
-
+        
     }
 
     @Override
@@ -233,5 +233,6 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
             }
         }
     };
+
 
 }

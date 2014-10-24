@@ -132,7 +132,7 @@
         <TextView
             android:labelFor="@+id/custom4_value"
             style="@style/ItemLabel"
-            android:text="@string/pref_custom4_label" />
+            android:text="@string/pref_custom6_label" />
 
         <EditText
             android:inputType="textMultiLine"

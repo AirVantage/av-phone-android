@@ -23,7 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sierrawireless.avphone.model.CustomDataLabels;
+import com.sierrawireless.avphone.task.AlertRuleClient;
 import com.sierrawireless.avphone.task.ApplicationClient;
+import com.sierrawireless.avphone.task.IAlertRuleClient;
 import com.sierrawireless.avphone.task.IApplicationClient;
 import com.sierrawireless.avphone.task.ISystemClient;
 import com.sierrawireless.avphone.task.RegisterSystemTask;
@@ -188,8 +190,9 @@ public class ConfigureFragment extends Fragment {
 
         IApplicationClient appClient = new ApplicationClient(client);
         ISystemClient systemClient = new SystemClient(client);
-
-        RegisterSystemTask registerTask = new RegisterSystemTask(appClient, systemClient);
+        IAlertRuleClient alertRuleClient = new AlertRuleClient(client);
+        
+        RegisterSystemTask registerTask = new RegisterSystemTask(appClient, systemClient, alertRuleClient);
 
         // try to get the IMEI for GSM phones
         String imei = null;
