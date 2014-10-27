@@ -158,7 +158,7 @@ public class MqttPushClient {
         }
 
         if (data.isAlarmActivated() != null) {
-            values.put("avep_demo.alarm_status",
+            values.put("phone.alarm",
                     Collections.singletonList(new DataValue(timestamp, data.isAlarmActivated())));
         }
 

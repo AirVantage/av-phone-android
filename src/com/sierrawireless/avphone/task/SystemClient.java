@@ -11,6 +11,7 @@ import net.airvantage.model.MqttCommunication;
 import net.airvantage.utils.AirVantageClient;
 import net.airvantage.utils.Utils;
 
+
 public class SystemClient implements ISystemClient {
 
     private AirVantageClient client;
@@ -20,21 +21,20 @@ public class SystemClient implements ISystemClient {
     }
 
     @Override
-    public net.airvantage.model.System getSystem(String serialNumber) throws IOException, AirVantageException {
-        List<net.airvantage.model.System> systems = client.getSystems(serialNumber);
+    public net.airvantage.model.AvSystem getSystem(String serialNumber) throws IOException, AirVantageException {
+        List<net.airvantage.model.AvSystem> systems = client.getSystems(serialNumber);
         return Utils.first(systems);
     }
 
     @Override
-    public net.airvantage.model.System createSystem(String serialNumber, String imei, String mqttPassword,
-            String applicationUid) throws IOException, AirVantageException {
-        net.airvantage.model.System system = new net.airvantage.model.System();
+    public net.airvantage.model.AvSystem createSystem(String serialNumber, String imei, String mqttPassword, String applicationUid)
+            throws IOException, AirVantageException {
+        net.airvantage.model.AvSystem system = new net.airvantage.model.AvSystem();
 
-        // FIXME(pht) this will break if the gateway already exits.
-        // We should look for gateway first, and use uid if it exists.
-        net.airvantage.model.System.Gateway gateway = new net.airvantage.model.System.Gateway();
+        net.airvantage.model.AvSystem.Gateway gateway = new net.airvantage.model.AvSystem.Gateway();
         gateway.serialNumber = serialNumber;
         gateway.imei = imei;
+        
         system.gateway = gateway;
 
         system.state = "READY";
@@ -48,7 +48,6 @@ public class SystemClient implements ISystemClient {
 
         system.communication = new HashMap<String, MqttCommunication>();
         system.communication.put("mqtt", mqtt);
-
         system.type = "Android";
 
         return client.createSystem(system);

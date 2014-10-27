@@ -91,13 +91,8 @@ public class AuthorizationActivity extends Activity {
 
     private void sendToken(String token) {
 
-        Intent queryIntent = getIntent();
-
         Intent resultIntent = new Intent();
         resultIntent.putExtra(TOKEN, token);
-
-        int context = queryIntent.getExtras().getInt(AUTHORIZATION_CONTEXT);
-        resultIntent.putExtra(AUTHORIZATION_CONTEXT, context);
 
         setResult(Activity.RESULT_OK, resultIntent);
         finish();

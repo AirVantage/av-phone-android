@@ -1,13 +1,15 @@
 package com.sierrawireless.avphone.task;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Application;
 import net.airvantage.model.ApplicationData;
+import net.airvantage.model.AvSystem;
 import net.airvantage.model.Protocol;
-import net.airvantage.utils.AirVantageClient;
+import net.airvantage.utils.IAirVantageClient;
 import net.airvantage.utils.Utils;
 
 import com.sierrawireless.avphone.model.AvPhoneApplication;
@@ -15,9 +17,9 @@ import com.sierrawireless.avphone.model.CustomDataLabels;
 
 public class ApplicationClient implements IApplicationClient {
 
-    private AirVantageClient client;
+    private IAirVantageClient client;
 
-    public ApplicationClient(AirVantageClient client) {
+    public ApplicationClient(IAirVantageClient client) {
         this.client = client;
     }
 
@@ -46,13 +48,47 @@ public class ApplicationClient implements IApplicationClient {
     @Override
     public Application createApplication(String serialNumber) throws IOException, AirVantageException {
         Application application = AvPhoneApplication.createApplication(serialNumber);
-        return client.createApp(application);
+        return client.createApplication(application);
     }
 
     @Override
     public void setApplicationCommunication(String applicationUid) throws IOException, AirVantageException {
         List<Protocol> protocols = AvPhoneApplication.createProtocols();
         client.setApplicationCommunication(applicationUid, protocols);
+    }
+    
+    @Override
+    public void addApplication(AvSystem system, Application application) throws IOException, AirVantageException {
+        client.updateSystem(systemWithApplication(system, application));
+    }
+
+    protected AvSystem systemWithApplication(AvSystem system, Application appToAdd) {
+        
+        AvSystem res = new AvSystem();
+        res.uid = system.uid;
+        res.applications = new ArrayList<Application>();
+        
+        boolean appAlreadyLinked = false;
+        
+        if (system.applications != null) {
+            for (Application systemApp : system.applications) {
+                Application resApp = new Application();
+                resApp.uid = systemApp.uid;
+                res.applications.add(resApp);
+                if (resApp.uid == appToAdd.uid) {
+                    appAlreadyLinked = true;
+                }
+            }
+        }
+        if (!appAlreadyLinked) {
+            Application addedApp = new Application();
+            addedApp.uid = appToAdd.uid;
+            res.applications.add(addedApp);
+        }
+        
+        return res;
+        
+        
     }
 
 }

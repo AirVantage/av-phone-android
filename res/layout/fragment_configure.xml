@@ -24,32 +24,28 @@
             android:text="@string/no_value" />
     </TableRow>
 
-    <Button
-        android:id="@+id/register_bt"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:paddingBottom="0dp"
-        android:paddingTop="0dp"
-        android:text="@string/register" />
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/darker_gray" />
 
     <TableRow
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" >
 
         <TextView
-            android:labelFor="@+id/custom1_value"
             style="@style/ItemLabel"
+            android:labelFor="@+id/custom1_value"
             android:text="@string/pref_custom1_label" />
 
         <EditText
-            android:inputType="textMultiLine"
-            style="@style/EditableItem"
             android:id="@+id/custom1_value"
+            style="@style/EditableItem"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine" />
     </TableRow>
 
     <TableRow
@@ -57,101 +53,101 @@
         android:layout_height="wrap_content" >
 
         <TextView
-            android:labelFor="@+id/custom2_value"
             style="@style/ItemLabel"
+            android:labelFor="@+id/custom2_value"
             android:text="@string/pref_custom2_label" />
 
         <EditText
-            android:inputType="textMultiLine"
-            style="@style/EditableItem"
             android:id="@+id/custom2_value"
+            style="@style/EditableItem"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine" />
     </TableRow>
-    
+
     <TableRow
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" >
 
         <TextView
-            android:labelFor="@+id/custom3_value"
             style="@style/ItemLabel"
+            android:labelFor="@+id/custom3_value"
             android:text="@string/pref_custom3_label" />
 
         <EditText
-            android:inputType="textMultiLine"
-            style="@style/EditableItem"
             android:id="@+id/custom3_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        
-    </TableRow>
-
-        <TableRow
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:labelFor="@+id/custom4_value"
-            style="@style/ItemLabel"
-            android:text="@string/pref_custom4_label" />
-
-        <EditText
-            android:inputType="textMultiLine"
             style="@style/EditableItem"
-            android:id="@+id/custom4_value"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine" />
     </TableRow>
-    
 
     <TableRow
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" >
 
         <TextView
-            android:labelFor="@+id/custom5_value"
             style="@style/ItemLabel"
+            android:labelFor="@+id/custom4_value"
+            android:text="@string/pref_custom4_label" />
+
+        <EditText
+            android:id="@+id/custom4_value"
+            style="@style/EditableItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            style="@style/ItemLabel"
+            android:labelFor="@+id/custom5_value"
             android:text="@string/pref_custom5_label" />
 
         <EditText
-            android:inputType="textMultiLine"
-            style="@style/EditableItem"
             android:id="@+id/custom5_value"
+            style="@style/EditableItem"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine" />
     </TableRow>
-    
+
     <TableRow
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" >
 
         <TextView
-            android:labelFor="@+id/custom4_value"
             style="@style/ItemLabel"
-            android:text="@string/pref_custom4_label" />
+            android:labelFor="@+id/custom6_value"
+            android:text="@string/pref_custom6_label" />
 
         <EditText
-            android:inputType="textMultiLine"
-            style="@style/EditableItem"
             android:id="@+id/custom6_value"
+            style="@style/EditableItem"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine" />
     </TableRow>
-    
-        
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/darker_gray" />
+
     <Button
-        android:id="@+id/update_data_bt"
+        android:id="@+id/sync_bt"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         android:paddingBottom="0dp"
         android:paddingTop="0dp"
-        android:text="@string/update_data" />
-    
+        android:text="@string/sync" />
+
 </LinearLayout>

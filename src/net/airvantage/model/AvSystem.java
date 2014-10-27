@@ -1,10 +1,10 @@
 package net.airvantage.model;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 
-public class System {
+public class AvSystem {
     public String uid;
     public String name;
     public String commStatus;
@@ -16,7 +16,7 @@ public class System {
     public String syncStatus;
     public Gateway gateway;
     public Data data;
-    public Collection<Application> applications;
+    public List<Application> applications;
     public Map<String, MqttCommunication> communication;
 
     public static class Data {

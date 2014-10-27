@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Application;
+import net.airvantage.model.AvSystem;
 
 import com.sierrawireless.avphone.model.CustomDataLabels;
 
@@ -16,5 +17,7 @@ public interface IApplicationClient {
     Application createApplication(String serialNumber) throws IOException, AirVantageException;
 
     void setApplicationCommunication(String applicationUid) throws IOException, AirVantageException;
+
+    void addApplication(AvSystem system, Application application) throws IOException, AirVantageException;
 
 }

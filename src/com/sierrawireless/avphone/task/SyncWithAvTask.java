@@ -5,21 +5,26 @@ import java.io.IOException;
 import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Application;
 import net.airvantage.model.AvError;
+import net.airvantage.model.AvSystem;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 
-public class RegisterSystemTask extends AsyncTask<Object, Integer, AvError> {
+public class SyncWithAvTask extends AsyncTask<Object, Integer, AvError> {
 
     private IApplicationClient applicationClient;
 
     private ISystemClient systemClient;
 
-    public RegisterSystemTask(IApplicationClient applicationClient, ISystemClient systemClient) {
+    private IAlertRuleClient alertRuleClient;
+
+    public SyncWithAvTask(IApplicationClient applicationClient, ISystemClient systemClient,
+            IAlertRuleClient alertRuleClient) {
         this.applicationClient = applicationClient;
         this.systemClient = systemClient;
+        this.alertRuleClient = alertRuleClient;
     }
 
     @Override
@@ -34,13 +39,22 @@ public class RegisterSystemTask extends AsyncTask<Object, Integer, AvError> {
 
             Application application = this.applicationClient.ensureApplicationExists(serialNumber);
 
-            net.airvantage.model.System system = this.systemClient.getSystem(serialNumber);
+            net.airvantage.model.AvSystem system = this.systemClient.getSystem(serialNumber);
             if (system == null) {
                 system = systemClient.createSystem(serialNumber, imei, mqttPassword, application.uid);
             }
 
+            net.airvantage.model.AlertRule alertRule = this.alertRuleClient.getAlertRule(serialNumber);
+            if (alertRule == null) {
+                this.alertRuleClient.createAlertRule(serialNumber, system.uid, application.uid);
+            }
+
             this.applicationClient.setApplicationData(application.uid, customData);
 
+            if (!hasApplication(system, application)) {
+                this.applicationClient.addApplication(system, application);
+            }
+            
             return null;
         } catch (AirVantageException e) {
             return e.getError();
@@ -49,6 +63,18 @@ public class RegisterSystemTask extends AsyncTask<Object, Integer, AvError> {
             return new AvError("unkown.error");
         }
 
+    }
+
+    private boolean hasApplication(AvSystem system, Application application) {
+        boolean found = false;
+        if (system.applications != null) {
+            for (Application app : system.applications) {
+                if (app.uid.equals(application.uid)) {
+                    found = true;
+                }
+            }
+        }
+        return found;
     }
 
 }
