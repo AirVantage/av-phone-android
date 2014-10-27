@@ -107,20 +107,17 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
     }
 
     private void startMonitoringService() {
-        Intent intent = new Intent(getActivity(), MonitoringService.class);
-        intent.putExtra(MonitoringService.DEVICE_ID, ConfigureFragment.PHONE_UNIQUE_ID);
-
         AvPhonePrefs avPrefs = prefUtils.getAvPhonePrefs();
 
         if (!avPrefs.checkCredentials()) {
-
             prefUtils.showMissingPrefsDialog();
-
             Switch serviceSwitch = (Switch) view.findViewById(R.id.service_switch);
             serviceSwitch.setChecked(false);
             return;
         }
 
+        Intent intent = new Intent(getActivity(), MonitoringService.class);
+        intent.putExtra(MonitoringService.DEVICE_ID, ConfigureFragment.PHONE_UNIQUE_ID);
         intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost);
         intent.putExtra(MonitoringService.PASSWORD, avPrefs.password);
 
@@ -204,8 +201,8 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
     // Preferences
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        if (isServiceRunning()) {
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String changedPrefKey) {
+        if (isServiceRunning() && prefUtils.isMonitoringPreference(changedPrefKey)) {
             // restart
             stopMonitoringService();
             startMonitoringService();
