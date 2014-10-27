@@ -224,7 +224,7 @@ public class AirVantageClient implements IAirVantageClient {
     }
 
     public net.airvantage.model.AvSystem getSystem(String uid) throws IOException, AirVantageException {
-        URL url = new URL(buildEndpoint("/systems") + "&fields=uid,name,commStatus,lastCommDate,data&uid=" + uid);
+        URL url = new URL(buildEndpoint("/systems") + "&fields=uid,name,commStatus,lastCommDate,data,applications&uid=" + uid);
         InputStream in = get(url);
         List<net.airvantage.model.AvSystem> items = gson.fromJson(new InputStreamReader(in), SystemsList.class).items;
         if (items.size() > 0) {
@@ -239,7 +239,7 @@ public class AirVantageClient implements IAirVantageClient {
     }
 
     public List<net.airvantage.model.AvSystem> getSystems(String name) throws IOException, AirVantageException {
-        String urlString = buildEndpoint("/systems") + "&fields=uid,name,commStatus,lastCommDate,data";
+        String urlString = buildEndpoint("/systems") + "&fields=uid,name,commStatus,lastCommDate,data,applications";
         if (name != null) {
             urlString += "&name=" + name;
         }

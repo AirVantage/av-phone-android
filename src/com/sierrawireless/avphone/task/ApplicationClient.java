@@ -70,12 +70,14 @@ public class ApplicationClient implements IApplicationClient {
         
         boolean appAlreadyLinked = false;
         
-        for (Application systemApp : system.applications) {
-            Application resApp = new Application();
-            resApp.uid = systemApp.uid;
-            res.applications.add(resApp);
-            if (resApp.uid == appToAdd.uid) {
-                appAlreadyLinked = true;
+        if (system.applications != null) {
+            for (Application systemApp : system.applications) {
+                Application resApp = new Application();
+                resApp.uid = systemApp.uid;
+                res.applications.add(resApp);
+                if (resApp.uid == appToAdd.uid) {
+                    appAlreadyLinked = true;
+                }
             }
         }
         if (!appAlreadyLinked) {
