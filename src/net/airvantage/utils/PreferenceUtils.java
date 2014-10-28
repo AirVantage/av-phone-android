@@ -82,4 +82,14 @@ public class PreferenceUtils {
         return labels;
     }
 
+    private String getString(int key) {
+        return getActivity().getString(key);
+    }
+    
+    public boolean isMonitoringPreference(String changedPrefKey) {
+        return (getString(R.string.pref_password_key).equals(changedPrefKey) ||
+                getString(R.string.pref_server_key).equals(changedPrefKey) ||
+                getString(R.string.pref_period_key).equals(changedPrefKey));
+    }
+
 }
