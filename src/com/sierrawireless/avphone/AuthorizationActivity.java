@@ -18,18 +18,23 @@ public class AuthorizationActivity extends Activity {
     public static final String AUTHORIZATION_CODE = "auth_code";
 
     public static final int REQUEST_AUTHORIZATION = 1;
+    public static final int EXPIRE_TOKEN = 2;
 
     // A way to know *why* the authorization was required
     public static final String AUTHORIZATION_CONTEXT = "context";
 
     private WebView webview;
 
-    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authorization);
 
+        openAuthorizationPage();
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private void openAuthorizationPage() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String serverHost = prefs.getString(this.getString(R.string.pref_server_key), null);
         String clientId = prefs.getString(this.getString(R.string.pref_client_id_key), null);

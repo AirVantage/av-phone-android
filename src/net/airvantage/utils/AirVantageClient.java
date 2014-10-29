@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import net.airvantage.model.AlertRuleList;
 import net.airvantage.model.AlertsList;
 import net.airvantage.model.ApplicationData;
 import net.airvantage.model.ApplicationsList;
+import net.airvantage.model.AvError;
 import net.airvantage.model.AvSystem;
 import net.airvantage.model.Datapoint;
 import net.airvantage.model.OperationResult;
@@ -53,31 +55,19 @@ public class AirVantageClient implements IAirVantageClient {
     private OkHttpClient client;
 
     public static String buildAuthorizationURL(String server, String clientId) {
+        // FIXME(pht) hardcoding clientid for connection
+        clientId = "cd757a11e2cc42ba81bae65c10bdd49e";
+     
         return SCHEME + server + "/api/oauth/authorize?client_id=" + clientId
                 + "&response_type=code&redirect_uri=oauth://airvantage";
     }
 
     public static String buildImplicitFlowURL(String server, String clientId) {
+        // FIXME(pht) hardcoding clientid for connection
+        clientId = "cd757a11e2cc42ba81bae65c10bdd49e";
+     
         return SCHEME + server + "/api/oauth/authorize?client_id=" + clientId
                 + "&response_type=token&redirect_uri=oauth://airvantage";
-    }
-
-    public static IAirVantageClient build(final String server, final String clientId, final String clientSecret,
-            final String code) throws IOException {
-        OkHttpClient client = new OkHttpClient();
-
-        // Create request for remote resource.
-        HttpURLConnection connection = client.open(new URL(SCHEME + server
-                + "/api/oauth/token?grant_type=authorization_code&code=" + code + "&client_id=" + clientId
-                + "&client_secret=" + clientSecret + "&redirect_uri=oauth://airvantage"));
-        InputStream is = connection.getInputStream();
-        InputStreamReader isr = new InputStreamReader(is);
-
-        // Deserialize HTTP response to concrete type.
-        Gson gson = new Gson();
-        AccessToken token = gson.fromJson(isr, AccessToken.class);
-
-        return new AirVantageClient(server, token.access_token);
     }
 
     public AirVantageClient(String server, String token) {
@@ -110,6 +100,11 @@ public class AirVantageClient implements IAirVantageClient {
             Log.e(AirVantageClient.class.getName(), "AirVantage Error : " + error.error + "," + error.errorParameters);
 
             throw new AirVantageException(error);
+        } else if (connection.getResponseCode() == HttpURLConnection.HTTP_FORBIDDEN) {
+            String method = connection.getRequestMethod();
+            String url = connection.getURL().toString();
+            AvError error = new AvError(AvError.FORBIDDEN, Arrays.asList(method, url));
+            throw new AirVantageException(error);
         } else {
             throw new IOException("Unexpected HTTP response: " + connection.getResponseCode() + " "
                     + connection.getResponseMessage());
@@ -130,7 +125,6 @@ public class AirVantageClient implements IAirVantageClient {
             connection.setRequestMethod(method);
             out = connection.getOutputStream();
             out.write(bodyString.getBytes());
-
             return readResponse(connection);
 
         } finally {
