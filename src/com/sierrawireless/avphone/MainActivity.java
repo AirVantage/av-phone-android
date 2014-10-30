@@ -20,8 +20,6 @@ import android.view.MenuItem;
 public class MainActivity extends FragmentActivity implements TabListener {
 
     private ViewPager viewPager;
-    private RunFragment runFragment;
-    private ConfigureFragment configureFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +38,6 @@ public class MainActivity extends FragmentActivity implements TabListener {
         actionBar.addTab(actionBar.newTab().setText(getString(R.string.run_tab)).setTabListener(this));
         actionBar.addTab(actionBar.newTab().setText(getString(R.string.configure_tab)).setTabListener(this));
 
-        runFragment = new RunFragment();
-        configureFragment = new ConfigureFragment();
-        
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
             @Override
@@ -95,9 +90,9 @@ public class MainActivity extends FragmentActivity implements TabListener {
 
             switch (index) {
             case 0:
-                return runFragment;
+                return new RunFragment();
             case 1:
-                return configureFragment;
+                return new ConfigureFragment();
             }
 
             return null;

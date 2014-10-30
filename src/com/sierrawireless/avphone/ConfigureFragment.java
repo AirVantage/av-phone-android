@@ -37,7 +37,7 @@ public class ConfigureFragment extends Fragment {
     public static final String PHONE_UNIQUE_ID = Build.SERIAL;
 
     private Button syncBt;
-
+    
     private EditText customData1EditText;
     private EditText customData2EditText;
     private EditText customData3EditText;
@@ -65,7 +65,7 @@ public class ConfigureFragment extends Fragment {
                 onRegisterClicked();
             }
         });
-
+        
         prefUtils = new PreferenceUtils(this);
 
         // Fields for custom data
@@ -183,6 +183,20 @@ public class ConfigureFragment extends Fragment {
                             + " already exists (maybe in another company)");
                 } else if (error.tooManyAlerRules()){
                     toast("Error : There are too many alert rules registered in your company.");
+                } else if (error.cantCreateApplication()) {
+                    toast("Error : You don't have the right to create application. Contact your administrator");
+                } else if (error.cantCreateSystem()) {
+                        toast("Error : You don't have the right to create a system. Contact your administrator");
+                } else if (error.cantCreateAlertRule()) {
+                    toast("Error : You don't have the right to create an alert rule. Contact your administrator");
+                } else if (error.cantUpdateApplication()) {
+                    toast("Error : You don't have the right to update an application. Contact your administrator");
+                } else if (error.cantUpdateSystem()) {
+                    toast("Error : You don't have the right to update a system. Contact your administrator");
+                } else if (error.forbidden()) {
+                    String method = error.errorParameters.get(0);
+                    String url = error.errorParameters.get(1);
+                    toast("Error : You are not allowed to " + method + " on URL " + url);
                 } else {
                     toast("Error : Unexpected error (" + error.error + ").");
                 }

@@ -5,11 +5,11 @@ import java.util.List;
 
 public class AvError {
 
-    private static final Object SYSTEM_EXISTS = "system.not.unique.identifiers";
-    private static final Object GATEWAY_EXISTS = "gateway.not.unique.identifiers";
-
-    private static final Object APPLICATION_TYPE_EXISTS = "application.type.already.used";
-    private static final String ALERT_RULES_TOO_MANY = "alert.rule.too.many";
+    public static final Object SYSTEM_EXISTS = "system.not.unique.identifiers";
+    public static final Object GATEWAY_EXISTS = "gateway.not.unique.identifiers";
+    public static final String FORBIDDEN = "forbidden";
+    public static final Object APPLICATION_TYPE_EXISTS = "application.type.already.used";
+    public static final String ALERT_RULES_TOO_MANY = "alert.rule.too.many";
     
     public String error;
     public List<String> errorParameters;
@@ -36,4 +36,40 @@ public class AvError {
     public boolean tooManyAlerRules() {
         return (ALERT_RULES_TOO_MANY.equals(error));
     }
+    
+    public boolean forbidden() {
+        return FORBIDDEN.equals(error);
+    }
+    
+    public boolean cantCreateApplication() {
+        return isForbiddenAction("POST", "application");
+    }
+
+    public boolean cantCreateSystem() {
+        return isForbiddenAction("POST", "system");
+    }
+
+    public boolean cantCreateAlertRule() {
+        return isForbiddenAction("POST", "alerts/rules");
+    }
+    
+    public boolean cantUpdateApplication() {
+        return isForbiddenAction("PUT", "application");
+    }
+    
+    public boolean cantUpdateSystem() {
+        return isForbiddenAction("PUT", "system");
+    }
+    
+    
+    protected boolean isForbiddenAction(String method, String entity) {
+        if (forbidden()) {
+            String requestMethod = errorParameters.get(0);
+            String requestUrl = errorParameters.get(1);
+            return method.equalsIgnoreCase(requestMethod) && requestUrl.contains(entity);
+        } else {
+            return false;
+        }
+    }
+
 }

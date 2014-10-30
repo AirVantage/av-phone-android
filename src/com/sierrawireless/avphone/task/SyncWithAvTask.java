@@ -59,7 +59,7 @@ public class SyncWithAvTask extends AsyncTask<Object, Integer, AvError> {
         } catch (AirVantageException e) {
             return e.getError();
         } catch (IOException e) {
-            Log.e(MainActivity.class.getName(), "Error when trying to get current user", e);
+            Log.e(MainActivity.class.getName(), "Error when trying to synchronize with server", e);
             return new AvError("unkown.error");
         }
 

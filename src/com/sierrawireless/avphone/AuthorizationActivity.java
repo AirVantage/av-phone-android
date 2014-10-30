@@ -24,12 +24,16 @@ public class AuthorizationActivity extends Activity {
 
     private WebView webview;
 
-    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authorization);
 
+        openAuthorizationPage();
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private void openAuthorizationPage() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String serverHost = prefs.getString(this.getString(R.string.pref_server_key), null);
         String clientId = prefs.getString(this.getString(R.string.pref_client_id_key), null);
