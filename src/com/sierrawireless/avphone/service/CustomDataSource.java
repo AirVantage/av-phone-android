@@ -41,11 +41,11 @@ public class CustomDataSource {
     }
 
     private void updateStr1() {
-        customStr1 = "SN" + lastTick / 10000;
+        customStr1 = "SN" + (lastTick / 10000);
     }
 
     private void updateStr2() {
-        customStr2 = "SN" + ((int) (lastTick + Math.random() * 42000)) / 1000;
+        customStr2 = "SN" + ((lastTick / 10000) + ((int) Math.random() * 4200));
     }
 
     public Integer getCustomIntUp1() {
