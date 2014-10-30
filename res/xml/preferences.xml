@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-     <com.sierrawireless.avphone.ServerDialogPreference
+     <com.sierrawireless.avphone.preference.ServerDialogPreference
         android:defaultValue="@string/pref_server_na_value"
         android:key="@string/pref_server_key"
         android:summary=""
         android:title="@string/pref_server" />
     
-    <EditTextPreference
-        android:defaultValue="@string/pref_client_id_default"
+    <com.sierrawireless.avphone.preference.ClientIdPreference
+        android:defaultValue="@string/pref_client_id_na"
         android:key="@string/pref_client_id_key"
         android:summary=""
+        android:dependency="@string/pref_server_key"
         android:title="@string/pref_client_id" />
     
     <EditTextPreference
