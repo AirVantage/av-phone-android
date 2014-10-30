@@ -55,17 +55,11 @@ public class AirVantageClient implements IAirVantageClient {
     private OkHttpClient client;
 
     public static String buildAuthorizationURL(String server, String clientId) {
-        // FIXME(pht) hardcoding clientid for connection
-        clientId = "cd757a11e2cc42ba81bae65c10bdd49e";
-     
         return SCHEME + server + "/api/oauth/authorize?client_id=" + clientId
                 + "&response_type=code&redirect_uri=oauth://airvantage";
     }
 
     public static String buildImplicitFlowURL(String server, String clientId) {
-        // FIXME(pht) hardcoding clientid for connection
-        clientId = "cd757a11e2cc42ba81bae65c10bdd49e";
-     
         return SCHEME + server + "/api/oauth/authorize?client_id=" + clientId
                 + "&response_type=token&redirect_uri=oauth://airvantage";
     }

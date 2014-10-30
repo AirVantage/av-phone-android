@@ -18,7 +18,6 @@ public class AuthorizationActivity extends Activity {
     public static final String AUTHORIZATION_CODE = "auth_code";
 
     public static final int REQUEST_AUTHORIZATION = 1;
-    public static final int EXPIRE_TOKEN = 2;
 
     // A way to know *why* the authorization was required
     public static final String AUTHORIZATION_CONTEXT = "context";

@@ -22,7 +22,6 @@
     <string name="android_version">Android version</string>
     <string name="no_value">-</string>
     <string name="sync">Sync with AirVantage</string>
-    <string name="logout">Logout</string>
     <string name="alarm">Activate alarm</string>
     <string name="update_data">Update data</string>
 
