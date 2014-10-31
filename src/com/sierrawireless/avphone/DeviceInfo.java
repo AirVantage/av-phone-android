@@ -16,7 +16,7 @@ public class DeviceInfo {
     public static String getUniqueId(Context context) {
 
         String identifier = Build.SERIAL;
-        if (identifier == null || identifier.startsWith("123456789")) {
+        if (identifier == null || identifier.equalsIgnoreCase("123456789ABCD")) {
             // from IMEI
             String deviceId = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
             identifier = hash(deviceId);
