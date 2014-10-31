@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.airvantage.model.AccessToken;
 import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Alert;
 import net.airvantage.model.AlertRule;
@@ -24,7 +23,6 @@ import net.airvantage.model.ApplicationsList;
 import net.airvantage.model.AvError;
 import net.airvantage.model.AvSystem;
 import net.airvantage.model.Datapoint;
-import net.airvantage.model.OperationResult;
 import net.airvantage.model.Protocol;
 import net.airvantage.model.SystemsList;
 import net.airvantage.model.User;
@@ -212,7 +210,8 @@ public class AirVantageClient implements IAirVantageClient {
     }
 
     public net.airvantage.model.AvSystem getSystem(String uid) throws IOException, AirVantageException {
-        URL url = new URL(buildEndpoint("/systems") + "&fields=uid,name,commStatus,lastCommDate,data,applications&uid=" + uid);
+        URL url = new URL(buildEndpoint("/systems") + "&fields=uid,name,commStatus,lastCommDate,data,applications&uid="
+                + uid);
         InputStream in = get(url);
         List<net.airvantage.model.AvSystem> items = gson.fromJson(new InputStreamReader(in), SystemsList.class).items;
         if (items.size() > 0) {
@@ -244,11 +243,11 @@ public class AirVantageClient implements IAirVantageClient {
     }
 
     @Override
-    public void updateSystem(AvSystem system) throws IOException, AirVantageException{
+    public void updateSystem(AvSystem system) throws IOException, AirVantageException {
         URL url = new URL(buildEndpoint("/systems/") + system.uid);
         put(url, system);
     }
-    
+
     public List<net.airvantage.model.Application> getApplications(String type) throws IOException, AirVantageException {
         URL url = new URL(buildEndpoint("/applications") + "&type=" + type + "&fields=uid,name,revision,type,category");
         InputStream in = this.get(url);
@@ -261,8 +260,8 @@ public class AirVantageClient implements IAirVantageClient {
         }
     }
 
-    public net.airvantage.model.Application createApplication(net.airvantage.model.Application application) throws IOException,
-            AirVantageException {
+    public net.airvantage.model.Application createApplication(net.airvantage.model.Application application)
+            throws IOException, AirVantageException {
         URL url = new URL(buildEndpoint("/applications"));
         InputStream in = post(url, application);
         return gson.fromJson(new InputStreamReader(in), net.airvantage.model.Application.class);
@@ -282,21 +281,17 @@ public class AirVantageClient implements IAirVantageClient {
 
     @Override
     public AlertRule getAlertRule(String name) throws IOException, AirVantageException {
-        
-        String str = Uri.parse(buildEndpoint("/alerts/rules"))
-        .buildUpon()
-        .appendQueryParameter("access_token", access_token)
-        .appendQueryParameter("fields", "uid,name")
-        .appendQueryParameter("name", name)
-        .build()
-        .toString();
-        
+
+        String str = Uri.parse(buildEndpoint("/alerts/rules")).buildUpon()
+                .appendQueryParameter("access_token", access_token).appendQueryParameter("fields", "uid,name")
+                .appendQueryParameter("name", name).build().toString();
+
         URL url = new URL(str);
-        
+
         String s = url.toString();
-        
+
         System.out.println(s);
-        
+
         InputStream in = get(url);
         AlertRuleList rules = gson.fromJson(new InputStreamReader(in), AlertRuleList.class);
         return Utils.first(rules.items);
