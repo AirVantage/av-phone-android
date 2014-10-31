@@ -7,7 +7,6 @@ import net.airvantage.utils.PreferenceUtils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
@@ -34,10 +33,8 @@ import com.sierrawireless.avphone.task.SystemClient;
 
 public class ConfigureFragment extends Fragment {
 
-    public static final String PHONE_UNIQUE_ID = Build.SERIAL;
-
     private Button syncBt;
-    
+
     private EditText customData1EditText;
     private EditText customData2EditText;
     private EditText customData3EditText;
@@ -49,13 +46,16 @@ public class ConfigureFragment extends Fragment {
 
     private PreferenceUtils prefUtils;
 
+    private String deviceId;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_configure, container, false);
 
         // phone identifier
-        ((TextView) view.findViewById(R.id.phoneid_value)).setText(PHONE_UNIQUE_ID);
+        deviceId = DeviceInfo.getUniqueId(this.getActivity());
+        ((TextView) view.findViewById(R.id.phoneid_value)).setText(deviceId);
 
         // Register button
         syncBt = (Button) view.findViewById(R.id.sync_bt);
@@ -65,7 +65,7 @@ public class ConfigureFragment extends Fragment {
                 onRegisterClicked();
             }
         });
-        
+
         prefUtils = new PreferenceUtils(this);
 
         // Fields for custom data
@@ -170,7 +170,7 @@ public class ConfigureFragment extends Fragment {
             imei = telManager.getDeviceId();
         }
 
-        syncTask.execute(PHONE_UNIQUE_ID, imei, prefs.password, getCustomDataLabels());
+        syncTask.execute(deviceId, imei, prefs.password, getCustomDataLabels());
         try {
 
             AvError error = syncTask.get();
@@ -179,14 +179,14 @@ public class ConfigureFragment extends Fragment {
                 if (error.systemAlreadyExists()) {
                     toast("Error : A system already exists with this serial number (maybe in another company.)");
                 } else if (error.applicationAlreadyUsed()) {
-                    toast("Error : An application with type " + AvPhoneApplication.appType(PHONE_UNIQUE_ID)
+                    toast("Error : An application with type " + AvPhoneApplication.appType(deviceId)
                             + " already exists (maybe in another company)");
-                } else if (error.tooManyAlerRules()){
+                } else if (error.tooManyAlerRules()) {
                     toast("Error : There are too many alert rules registered in your company.");
                 } else if (error.cantCreateApplication()) {
                     toast("Error : You don't have the right to create application. Contact your administrator");
                 } else if (error.cantCreateSystem()) {
-                        toast("Error : You don't have the right to create a system. Contact your administrator");
+                    toast("Error : You don't have the right to create a system. Contact your administrator");
                 } else if (error.cantCreateAlertRule()) {
                     toast("Error : You don't have the right to create an alert rule. Contact your administrator");
                 } else if (error.cantUpdateApplication()) {

@@ -46,6 +46,8 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
 
     private PreferenceUtils prefUtils;
 
+    private String deviceId;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -54,6 +56,8 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
 
         prefUtils = new PreferenceUtils(this);
         prefUtils.addListener(this);
+
+        deviceId = DeviceInfo.getUniqueId(this.getActivity());
 
         CustomDataLabels customLabels = prefUtils.getCustomDataLabels();
         setCustomDataLabels(customLabels);
@@ -117,7 +121,7 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
         }
 
         Intent intent = new Intent(getActivity(), MonitoringService.class);
-        intent.putExtra(MonitoringService.DEVICE_ID, ConfigureFragment.PHONE_UNIQUE_ID);
+        intent.putExtra(MonitoringService.DEVICE_ID, deviceId);
         intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost);
         intent.putExtra(MonitoringService.PASSWORD, avPrefs.password);
 
@@ -207,9 +211,9 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
             stopMonitoringService();
             startMonitoringService();
         }
-        
+
         setCustomDataLabels(prefUtils.getCustomDataLabels());
-        
+
     }
 
     @Override
@@ -230,6 +234,5 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
             }
         }
     };
-
 
 }
