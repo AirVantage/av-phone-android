@@ -1,4 +1,4 @@
-package com.sierrawireless.avphone;
+package com.sierrawireless.avphone.preference;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+
+import com.sierrawireless.avphone.R;
 
 /**
  * A preference to enter a server host value.
@@ -71,7 +73,9 @@ public class ServerDialogPreference extends DialogPreference {
     protected void onDialogClosed(boolean positiveresult) {
         super.onDialogClosed(positiveresult);
         if (positiveresult && shouldPersist()) {
+
             persistString(editText.getText().toString());
+            notifyDependencyChange(false);
         }
 
         ((ViewGroup) editText.getParent()).removeView(editText);
@@ -80,5 +84,9 @@ public class ServerDialogPreference extends DialogPreference {
         ((ViewGroup) layout.getParent()).removeView(layout);
 
         notifyChanged();
+    }
+
+    public String getText() {
+        return editText.getText().toString();
     }
 }

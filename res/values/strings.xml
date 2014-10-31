@@ -70,12 +70,13 @@
     
     <string name="pref_client_id_key">pref_client_id_key</string>
     <string name="pref_client_id">Client ID</string>
+    <string name="pref_client_id_na">54d4faa5343d49fba03f2a2ec1f210b9</string>
+    <string name="pref_client_id_eu">cd757a11e2cc42ba81bae65c10bdd49e</string>
     
     <!-- default values -->
     <string name="pref_password_default">12345</string>
     
     <string name="pref_period_default">2</string>
-    <string name="pref_client_id_default">54d4faa5343d49fba03f2a2ec1f210b9</string>
     <string name="invalid_prefs">Invalid parameters</string>
     <string name="prefs_missing">Some application parameters are missing</string>
 
