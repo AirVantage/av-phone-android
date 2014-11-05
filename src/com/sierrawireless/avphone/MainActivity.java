@@ -14,12 +14,19 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.sierrawireless.avphone.auth.AuthenticationManager;
+import com.sierrawireless.avphone.auth.IAuthenticationManager;
+import com.sierrawireless.avphone.task.AsyncTaskFactory;
+import com.sierrawireless.avphone.task.IAsyncTaskFactory;
+
 /**
  * The main activity, in charge of displaying the tab view
  */
-public class MainActivity extends FragmentActivity implements TabListener {
+public class MainActivity extends FragmentActivity implements TabListener, LoginListener {
 
     private ViewPager viewPager;
+    private TabsPagerAdapter tabsPageAdapter;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,16 +34,15 @@ public class MainActivity extends FragmentActivity implements TabListener {
         setContentView(R.layout.activity_main);
 
         viewPager = (ViewPager) findViewById(R.id.pager);
-        final ActionBar actionBar = getActionBar();
-        TabsPagerAdapter mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
+        actionBar = getActionBar();
+        tabsPageAdapter = new TabsPagerAdapter(getSupportFragmentManager());
 
-        viewPager.setAdapter(mAdapter);
+        viewPager.setAdapter(tabsPageAdapter);
         actionBar.setHomeButtonEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         // Adding Tabs
-        actionBar.addTab(actionBar.newTab().setText(getString(R.string.run_tab)).setTabListener(this));
-        actionBar.addTab(actionBar.newTab().setText(getString(R.string.configure_tab)).setTabListener(this));
+        actionBar.addTab(actionBar.newTab().setText(getString(R.string.home_tab)).setTabListener(this));
 
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
@@ -77,22 +83,57 @@ public class MainActivity extends FragmentActivity implements TabListener {
         return true;
     }
 
-    // Tabs
+    @Override
+    public void OnLoginChanged(boolean logged) {
+        if (logged) {
+            if (actionBar.getTabCount() == 1) {
+                actionBar.addTab(actionBar.newTab().setText(getString(R.string.run_tab)).setTabListener(this));
+                actionBar.addTab(actionBar.newTab().setText(getString(R.string.configure_tab)).setTabListener(this));
+            }
+            this.tabsPageAdapter.setLogged(logged);
+            this.tabsPageAdapter.notifyDataSetChanged();
+            this.viewPager.setCurrentItem(1);
+        } else {
+            if (actionBar.getTabCount() == 3) {
+                actionBar.removeTabAt(2);
+                actionBar.removeTabAt(1);
+            }
+            this.tabsPageAdapter.setLogged(false);
+            this.tabsPageAdapter.notifyDataSetChanged();
+            this.viewPager.setCurrentItem(0);
+        }
+    }
 
     class TabsPagerAdapter extends FragmentPagerAdapter {
 
+        public boolean logged = false;
+
+        private IAsyncTaskFactory taskFactory;
+        private IAuthenticationManager authManager;
+
         public TabsPagerAdapter(FragmentManager fm) {
             super(fm);
+
+            taskFactory = new AsyncTaskFactory(MainActivity.this);
+            authManager = new AuthenticationManager();
+
+        }
+
+        public void setLogged(boolean logged) {
+            this.logged = logged;
         }
 
         @Override
         public Fragment getItem(int index) {
 
             switch (index) {
-            case 0:
-                return new RunFragment();
+            case 0: {
+                return makeHomeFragment();
+            }
             case 1:
-                return new ConfigureFragment();
+                return Fragment.instantiate(MainActivity.this, RunFragment.class.getName());
+            case 2:
+                return makeConfigureFragment();
             }
 
             return null;
@@ -100,8 +141,31 @@ public class MainActivity extends FragmentActivity implements TabListener {
 
         @Override
         public int getCount() {
-            return 2; // number of tabs
+            if (!logged) {
+                return 1;
+            } else {
+                return 3;
+            }
         }
+
+        protected HomeFragment makeHomeFragment() {
+            HomeFragment fragment = (HomeFragment) Fragment
+                    .instantiate(MainActivity.this, HomeFragment.class.getName());
+            fragment.setTaskFactory(taskFactory);
+            fragment.setAuthManager(authManager);
+            fragment.addLoginListener(MainActivity.this);
+            return fragment;
+        }
+
+        protected ConfigureFragment makeConfigureFragment() {
+            ConfigureFragment fragment = (ConfigureFragment) Fragment.instantiate(MainActivity.this,
+                    ConfigureFragment.class.getName());
+            
+            fragment.setTaskFactory(taskFactory);
+            fragment.setAuthenticationManager(authManager);
+            return fragment;
+        }
+
     }
 
     @Override

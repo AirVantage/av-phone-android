@@ -1,6 +1,5 @@
 package com.sierrawireless.avphone.service;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +9,6 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
@@ -60,24 +58,27 @@ public class MqttPushClient {
     }
 
     public void push(NewData data) throws MqttException {
-        if (client.isConnected()) {
-            Log.i(LOGTAG, "Pushing data to the server : " + data);
-            String message = this.convertToJson(data);
-
-            Log.d(LOGTAG, "Rest content : " + message);
-
-            MqttMessage msg = null;
-            try {
-                msg = new MqttMessage(message.getBytes("UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                // won't happen, UTF-8 is available
-            }
-            msg.setQos(0);
-
-            this.client.publish(opt.getUserName() + "/messages/json", msg);
-        }
+        
+//        FIXME(pht) !!! RENABLE BEFORE THE END
+//        if (client.isConnected()) {
+//            Log.i(LOGTAG, "Pushing data to the server : " + data);
+//            String message = this.convertToJson(data);
+//
+//            Log.d(LOGTAG, "Rest content : " + message);
+//
+//            MqttMessage msg = null;
+//            try {
+//                msg = new MqttMessage(message.getBytes("UTF-8"));
+//            } catch (UnsupportedEncodingException e) {
+//                // won't happen, UTF-8 is available
+//            }
+//            msg.setQos(0);
+//
+//            this.client.publish(opt.getUserName() + "/messages/json", msg);
+//        }
     }
 
+    // FIXME(pht) not used because the method on top is commented out
     private String convertToJson(NewData data) {
         long timestamp = System.currentTimeMillis();
 

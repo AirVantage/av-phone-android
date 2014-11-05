@@ -52,11 +52,6 @@ public class AirVantageClient implements IAirVantageClient {
 
     private OkHttpClient client;
 
-    public static String buildAuthorizationURL(String server, String clientId) {
-        return SCHEME + server + "/api/oauth/authorize?client_id=" + clientId
-                + "&response_type=code&redirect_uri=oauth://airvantage";
-    }
-
     public static String buildImplicitFlowURL(String server, String clientId) {
         return SCHEME + server + "/api/oauth/authorize?client_id=" + clientId
                 + "&response_type=token&redirect_uri=oauth://airvantage";
@@ -302,6 +297,12 @@ public class AirVantageClient implements IAirVantageClient {
         URL url = new URL(buildEndpoint("/alerts/rules"));
         InputStream in = post(url, alertRule);
         return gson.fromJson(new InputStreamReader(in), AlertRule.class);
+    }
+    
+    @Override
+    public void logout() throws IOException, AirVantageException {
+        URL url = new URL(SCHEME + server + "/api/oauth/expire?access_token=" + access_token);
+        get(url);
     }
 
 }

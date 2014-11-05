@@ -26,4 +26,5 @@ public interface IAirVantageClient {
 
     void updateSystem(AvSystem system) throws IOException, AirVantageException;
 
+    void logout() throws IOException, AirVantageException;
 }

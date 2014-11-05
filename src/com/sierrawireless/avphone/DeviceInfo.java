@@ -52,4 +52,13 @@ public class DeviceInfo {
         }
         return null;
     }
+
+    public static String getIMEI(Context context) {
+        String imei = null;
+        TelephonyManager telManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (telManager != null && telManager.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
+            imei = telManager.getDeviceId();
+        }
+        return imei;
+    }
 }

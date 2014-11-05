@@ -2,8 +2,11 @@
 <resources>
 
     <string name="app_name">AV Phone Demo</string>
+    
+    <string name="home_tab">Home</string>
     <string name="run_tab">Run</string>
     <string name="configure_tab">Configure</string>
+    
     <string name="action_settings">Settings</string>
     <string name="started_since">Service started since</string>
     <string name="phone_id">Phone ID</string>
@@ -73,6 +76,9 @@
     <string name="pref_client_id_na">54d4faa5343d49fba03f2a2ec1f210b9</string>
     <string name="pref_client_id_eu">cd757a11e2cc42ba81bae65c10bdd49e</string>
     
+    <string name="pref_access_token_key">pref_access_token</string>
+    <string name="pref_token_expires_at_key">pref_token_expires_at</string>
+    
     <!-- default values -->
     <string name="pref_password_default">12345</string>
     
@@ -80,4 +86,30 @@
     <string name="invalid_prefs">Invalid parameters</string>
     <string name="prefs_missing">Some application parameters are missing</string>
 
+    <!-- Start fragment -->
+    <string name="login_na">Login with AirVantage NA</string>
+    <string name="login_eu">Login with AirVantage EU</string>
+    <string name="login_custom_server">Login with AirVantage</string>
+    
+    <string name="logout">Logout</string>
+    
+    <string name="switch_instance_eu">Want to work on Airvantage EU instead ?</string>
+    <string name="switch_instance_na">Want to work on Airvantage NA instead ?</string>
+    <string name="custom_instance">You are using Airvantage instance at %1$s</string>
+    <string name="switch_instance">Click here</string>
+    
+    <string name="progress_syncing">Synchronizing with Airvantage</string>
+    
+    <string name="progress_starting">Starting..</string>
+    <string name="progress_checking_application">Checking application</string>
+    <string name="progress_creating_application">Creating application</string>
+    <string name="progress_checking_system">Checking system</string>
+    <string name="progress_creating_system">Creating system</string>
+    <string name="progress_checking_alert_rule">Checking alert rule</string>
+    <string name="progress_creating_alert_rule">Creating alert rule</string>
+    <string name="progress_updating_application">Updating application</string>
+    <string name="progress_adding_application">Adding application</string>
+    <string name="progress_done">Done</string>
+    
+    
 </resources>
