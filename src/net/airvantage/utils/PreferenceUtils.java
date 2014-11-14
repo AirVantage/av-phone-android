@@ -113,9 +113,13 @@ public class PreferenceUtils {
         if (prefs.usesEU()) {
             this.setPreference(R.string.pref_server_key,
                     getActivity().getString(R.string.pref_server_na_value));
+            this.setPreference(R.string.pref_client_id_key, 
+                    getActivity().getString(R.string.pref_client_id_na));
         } else if (prefs.usesNA()){
             this.setPreference(R.string.pref_server_key,
                     getActivity().getString(R.string.pref_server_eu_value));
+            this.setPreference(R.string.pref_client_id_key, 
+                    getActivity().getString(R.string.pref_client_id_eu));
         }
     }
 

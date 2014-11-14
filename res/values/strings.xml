@@ -4,7 +4,7 @@
     <string name="app_name">AV Phone Demo</string>
     
     <string name="home_tab">Home</string>
-    <string name="run_tab">Run</string>
+    <string name="run_tab">Send Data</string>
     <string name="configure_tab">Configure</string>
     
     <string name="action_settings">Settings</string>
@@ -86,19 +86,49 @@
     <string name="invalid_prefs">Invalid parameters</string>
     <string name="prefs_missing">Some application parameters are missing</string>
 
-    <!-- Start fragment -->
+    <!-- Home fragment -->
     <string name="login_na">Login with AirVantage NA</string>
     <string name="login_eu">Login with AirVantage EU</string>
     <string name="login_custom_server">Login with AirVantage</string>
     
+    <string name="logged_on_na">You are currently logged on Airvantage NA</string>
+    <string name="logged_on_eu">You are currently logged on Airvantage EU </string>
+    <string name="logged_on_custom">You are currently logged on %1$s</string>
+    
     <string name="logout">Logout</string>
     
-    <string name="switch_instance_eu">Want to work on Airvantage EU instead ?</string>
-    <string name="switch_instance_na">Want to work on Airvantage NA instead ?</string>
-    <string name="custom_instance">You are using Airvantage instance at %1$s</string>
-    <string name="switch_instance">Click here</string>
+    <string name="switch_instance_eu">(Want to work on Airvantage EU instead ?</string>
+    <string name="switch_instance_na">(Want to work on Airvantage NA instead ?</string>
+    <string name="custom_instance">(You will log on Airvantage instance %1$s. Open \'Settings\' to change it.)</string>
+    <string name="switch_instance">Click here)</string>
     
+    <string name="home_welcome_message">
+         <![CDATA[
+        <h1>Welcome to AV Phone Demo</h1>
+        This application will let you use your phone to communicate with AirVantage.<br/>
+        We will register your phone on Airvantage automatically.<br/>
+        ]]>
+    </string>
+   
+    <string name="home_before_starting">
+         <![CDATA[
+        <h2>Before starting</h2>
+        &#8226; Create an account on Airvantage in the Sierra Wireless company<br/>
+        &#8226; Make sure this account has the \'xxxx\' Profile<br/>
+        &#8226; Click the Login button below to get started !
+        ]]>
+    </string>
+    
+    <!-- Synchronization steps -->
     <string name="progress_syncing">Synchronizing with Airvantage</string>
+    <string name="progress_syncing_message">
+         <![CDATA[
+        We are synchronizing your phone with Airvantage.<br/>
+        Please wait.<br/>
+        (%1$s)
+        ]]>
+    </string>
+    
     
     <string name="progress_starting">Starting..</string>
     <string name="progress_checking_application">Checking application</string>
@@ -111,5 +141,28 @@
     <string name="progress_adding_application">Adding application</string>
     <string name="progress_done">Done</string>
     
+    <string name="sync_error_system_exists">Error : A system already exists with this serial number (maybe in another company.)</string>
+    <string name="sync_error_app_exists">Error : An application with type %1$s already exists (maybe in another company)</string>
+    <string name="sync_error_too_many_rules">Error : There are too many alert rules registered in your company.</string>
+    <string name="sync_error_no_right_create_application">Error : You don\'t have the right to create application. Contact your administrator</string>
     
+    <string name="sync_error_no_right_create_system">Error : You don\'t have the right to create a system. Contact your administrator</string>
+    <string name="sync_error_no_right_create_alert_rule">Error : You don\'t have the right to create an alert rule. Contact your administrator</string>
+    <string name="sync_error_no_right_update_app">Error : You don\'t have the right to update an application. Contact your administrator</string>
+    <string name="sync_error_no_right_update_system">Error : You don\'t have the right to update a system. Contact your administrator</string>
+    <string name="sync_error_forbidden">Error : You are not allowed to %1$s on URL %2$s</string>
+    <string name="sync_error_unexpected">Error : Unexpected error (%1$s)</string>
+    
+    <string name="sync_success">Synchronized with airvantage</string>
+    
+    <!-- Run fragment -->
+    <string name="run_info_message">Your phone is registered on AirVantage as %1$s. Toggle ON/OFF to send data to Airvantage</string>
+    
+    <!-- Configure fragment -->
+    <string name="configure_info_message">
+         <![CDATA[
+         You can customize the labels of the data sent by your phone.
+         Click \'Sync with Airvantage\' for the changes to take effect.
+         ]]>
+    </string>
 </resources>

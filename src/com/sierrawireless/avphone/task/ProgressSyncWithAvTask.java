@@ -3,6 +3,7 @@ package com.sierrawireless.avphone.task;
 import net.airvantage.model.AvError;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.text.Html;
 
 import com.sierrawireless.avphone.R;
 
@@ -35,7 +36,9 @@ public class ProgressSyncWithAvTask extends SyncWithAvTask {
     @Override
     public void onProgressUpdate(SyncProgress ...progress) {
         dialog.setProgress(progress[0].value);
-        dialog.setMessage(context.getString(progress[0].stringId));
+        String stepMessage = context.getString(progress[0].stringId);
+        String htmlMessage = context.getString(R.string.progress_syncing_message, stepMessage);
+        dialog.setMessage(Html.fromHtml(htmlMessage));
     }
 
     @Override

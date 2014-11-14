@@ -8,10 +8,15 @@ import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Application;
 import net.airvantage.model.AvError;
 import net.airvantage.model.AvSystem;
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.sierrawireless.avphone.DeviceInfo;
 import com.sierrawireless.avphone.MainActivity;
+import com.sierrawireless.avphone.R;
+import com.sierrawireless.avphone.message.IMessageDisplayer;
+import com.sierrawireless.avphone.model.AvPhoneApplication;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 
 public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, AvError>  {
@@ -117,4 +122,35 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Av
         return found;
     }
 
+    public void showResult(AvError error, IMessageDisplayer displayer, Activity context) {
+        
+        if (error != null) {
+            if (error.systemAlreadyExists()) {
+                displayer.showError(R.string.sync_error_system_exists);
+            } else if (error.applicationAlreadyUsed()) {
+                displayer.showError(R.string.sync_error_app_exists,  AvPhoneApplication.appType(DeviceInfo.getUniqueId(context)));
+            } else if (error.tooManyAlerRules()) {
+                displayer.showError(R.string.sync_error_too_many_rules);
+            } else if (error.cantCreateApplication()) {
+                displayer.showError(R.string.sync_error_no_right_create_application);
+            } else if (error.cantCreateSystem()) {
+                displayer.showError(R.string.sync_error_no_right_create_system);
+            } else if (error.cantCreateAlertRule()) {
+                displayer.showError(R.string.sync_error_no_right_create_alert_rule);
+            } else if (error.cantUpdateApplication()) {
+                displayer.showError(R.string.sync_error_no_right_update_app);
+            } else if (error.cantUpdateSystem()) {
+                displayer.showError(R.string.sync_error_no_right_update_system);
+            } else if (error.forbidden()) {
+                String method = error.errorParameters.get(0);
+                String url = error.errorParameters.get(1);
+                displayer.showError(R.string.sync_error_forbidden, method, url);
+            } else {
+                displayer.showError(R.string.sync_error_unexpected, error.error);
+            }
+        } else {
+            displayer.showSuccess(R.string.sync_success);
+        }
+    }
+    
 }

@@ -3,7 +3,6 @@ package com.sierrawireless.avphone;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import net.airvantage.model.AvError;
 import net.airvantage.utils.AvPhonePrefs;
@@ -11,9 +10,11 @@ import net.airvantage.utils.PreferenceUtils;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,12 +25,16 @@ import android.widget.TextView;
 import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.auth.AuthenticationListener;
 import com.sierrawireless.avphone.auth.IAuthenticationManager;
+import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.task.IAsyncTaskFactory;
 import com.sierrawireless.avphone.task.SyncWithAvListener;
 import com.sierrawireless.avphone.task.SyncWithAvParams;
 import com.sierrawireless.avphone.task.SyncWithAvTask;
 
-public class HomeFragment extends Fragment implements OnSharedPreferenceChangeListener, AuthenticationListener {
+public class HomeFragment extends AvPhoneFragment implements OnSharedPreferenceChangeListener, AuthenticationListener,
+        IMessageDisplayer {
+
+    private static final String LOGTAG = HomeFragment.class.getName();
 
     private View view;
 
@@ -42,7 +47,7 @@ public class HomeFragment extends Fragment implements OnSharedPreferenceChangeLi
 
     private IAsyncTaskFactory taskFactory;
     private IAuthenticationManager authManager;
-    
+
     private List<LoginListener> loginListeners = new ArrayList<LoginListener>();
 
     public HomeFragment() {
@@ -64,7 +69,7 @@ public class HomeFragment extends Fragment implements OnSharedPreferenceChangeLi
     public void setAuthManager(IAuthenticationManager authManager) {
         this.authManager = authManager;
     }
-    
+
     public void addLoginListener(LoginListener loginListener) {
         this.loginListeners.add(loginListener);
     }
@@ -74,9 +79,13 @@ public class HomeFragment extends Fragment implements OnSharedPreferenceChangeLi
 
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        TextView welcome = (TextView) view.findViewById(R.id.home_welcome_message);
+        welcome.setText(Html.fromHtml(getString(R.string.home_welcome_message)));
+        getPrereqView().setText(Html.fromHtml(getString(R.string.home_before_starting)));
+
         prefUtils = new PreferenceUtils(this);
         prefUtils.addListener(this);
-        
+
         btnLogin = (Button) view.findViewById(R.id.login_btn);
 
         btnLogout = (Button) view.findViewById(R.id.logout_btn);
@@ -84,6 +93,7 @@ public class HomeFragment extends Fragment implements OnSharedPreferenceChangeLi
         instanceMessage = (TextView) view.findViewById(R.id.switch_login_instance_text);
 
         switchLink = (TextView) view.findViewById(R.id.switch_instance);
+        switchLink.setPaintFlags(switchLink.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         switchLink.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -118,16 +128,52 @@ public class HomeFragment extends Fragment implements OnSharedPreferenceChangeLi
 
         Authentication auth = authManager.getAuthentication(prefUtils);
         if (auth != null && !auth.isExpired(new Date())) {
-            showLogoutButton();
             fireLoginChanged(true);
+            showLoggedInState();
         }
-        
 
         return view;
     }
 
+    private TextView getInfoMessageView() {
+        TextView infoMessageView = (TextView) view.findViewById(R.id.home_info_message);
+        return infoMessageView;
+    }
+
+    private void showCurrentServer() {
+        AvPhonePrefs phonePrefs = prefUtils.getAvPhonePrefs();
+        TextView infoMessageView = getInfoMessageView();
+
+        String message = null;
+        if (phonePrefs.usesNA()) {
+            message = getString(R.string.logged_on_na);
+        } else if (phonePrefs.usesEU()) {
+            message = getString(R.string.logged_on_eu);
+        } else {
+            message = getString(R.string.logged_on_custom, phonePrefs.serverHost);
+        }
+
+        infoMessageView.setText(message);
+        infoMessageView.setVisibility(View.VISIBLE);
+    }
+
+    private void hideCurrentServer() {
+        TextView infoMessageView = getInfoMessageView();
+        infoMessageView.setVisibility(View.GONE);
+        infoMessageView.setText("");
+    }
+
+    private void hidePrerequesites() {
+        TextView prereqView = getPrereqView();
+        prereqView.setVisibility(View.GONE);
+    }
+
+    private TextView getPrereqView() {
+        TextView prereqView = (TextView) view.findViewById(R.id.home_before_starting);
+        return prereqView;
+    }
+
     private void setLoginMessage() {
-        // TODO(pht) set logout message ?
         AvPhonePrefs avPhonePrefs = prefUtils.getAvPhonePrefs();
         if (avPhonePrefs.usesNA()) {
             btnLogin.setText(getString(R.string.login_na));
@@ -140,50 +186,48 @@ public class HomeFragment extends Fragment implements OnSharedPreferenceChangeLi
         } else {
             btnLogin.setText(getString(R.string.login_custom_server));
             instanceMessage.setText(getString(R.string.custom_instance, avPhonePrefs.serverHost));
-            switchLink.setVisibility(View.INVISIBLE);
+            switchLink.setVisibility(View.GONE);
         }
     }
 
-
     private void requestAuthentication() {
-        /*
-        Intent intent = new Intent(getActivity(), AuthorizationActivity.class);
-        startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION);
-        */
-        authManager.authenticate(prefUtils,this, this);
+        authManager.authenticate(prefUtils, this, this);
     }
 
-    // TODO(pht) factor ConfigureFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        
+
         Authentication auth = authManager.activityResultAsAuthentication(requestCode, resultCode, data);
         if (auth != null) {
             authManager.saveAuthentication(prefUtils, auth);
             onAuthentication(auth);
         }
     }
-    
+
     @Override
     public void onAuthentication(Authentication auth) {
         syncWithAv(auth.getAccessToken());
     }
-    
+
     private void syncWithAv(String accessToken) {
 
         AvPhonePrefs avPhonePrefs = prefUtils.getAvPhonePrefs();
 
-        assert (taskFactory != null);
-
-        SyncWithAvTask syncAvTask = taskFactory.syncAvTask(avPhonePrefs.serverHost, accessToken);
+        final IMessageDisplayer displayer = this;
+        final SyncWithAvTask syncAvTask = taskFactory.syncAvTask(avPhonePrefs.serverHost, accessToken);
 
         syncAvTask.addProgressListener(new SyncWithAvListener() {
             @Override
             public void onSynced(AvError error) {
                 if (error == null) {
                     fireLoginChanged(true);
-                    showLogoutButton();
+                    showLoggedInState();
+                } else {
+                    authManager.forgetAuthentication(prefUtils);
+                    fireLoginChanged(false);
+                    showLoggedOutState();
+                    syncAvTask.showResult(error, displayer, getActivity());
                 }
 
             }
@@ -200,43 +244,47 @@ public class HomeFragment extends Fragment implements OnSharedPreferenceChangeLi
 
     }
 
+    private void showLoggedInState() {
+        hidePrerequesites();
+        showCurrentServer();
+        showLogoutButton();
+    }
+
+    private void showLoggedOutState() {
+        hideLogoutButton();
+        hideCurrentServer();
+    }
+
     private void logout() {
 
         AvPhonePrefs avPhonePrefs = prefUtils.getAvPhonePrefs();
         String accessToken = authManager.getAuthentication(prefUtils).getAccessToken();
-        
+
         AsyncTask<String, Integer, AvError> logoutTask = taskFactory.logoutTask(avPhonePrefs.serverHost, accessToken);
 
         logoutTask.execute();
 
         try {
-            AvError error = logoutTask.get();
-            if (error == null) {
-                
-                authManager.forgetAuthentication(prefUtils);
-                fireLoginChanged(false);
-                hideLogoutButton();
-                
-            }
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logoutTask.get();
+        } catch (Exception e) {
+            Log.w(LOGTAG, "Exception while ");
+        } finally {
+            authManager.forgetAuthentication(prefUtils);
+            fireLoginChanged(false);
+            showLoggedOutState();
         }
 
     }
 
     private void showLogoutButton() {
         btnLogout.setVisibility(View.VISIBLE);
-        btnLogin.setVisibility(View.INVISIBLE);
-        instanceMessage.setVisibility(View.INVISIBLE);
-        switchLink.setVisibility(View.INVISIBLE);
+        btnLogin.setVisibility(View.GONE);
+        instanceMessage.setVisibility(View.GONE);
+        switchLink.setVisibility(View.GONE);
     }
 
     private void hideLogoutButton() {
-        btnLogout.setVisibility(View.INVISIBLE);
+        btnLogout.setVisibility(View.GONE);
         btnLogin.setVisibility(View.VISIBLE);
         instanceMessage.setVisibility(View.VISIBLE);
         switchLink.setVisibility(View.VISIBLE);
@@ -253,8 +301,12 @@ public class HomeFragment extends Fragment implements OnSharedPreferenceChangeLi
         if (prefUtils.isMonitoringPreference(changedPrefKey)) {
             authManager.forgetAuthentication(prefUtils);
             fireLoginChanged(false);
-            hideLogoutButton();
+            showLoggedOutState();
         }
+    }
+
+    public TextView getErrorMessageView() {
+        return (TextView) view.findViewById(R.id.home_error_message);
     }
 
 }

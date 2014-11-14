@@ -45,7 +45,6 @@ public class AuthenticationManager implements IAuthenticationManager {
     }
 
     public Authentication getAuthentication(PreferenceUtils prefUtils) {
-        // TODO(pht) move this from prefUtils
         return prefUtils.getAuthentication();
     }
 

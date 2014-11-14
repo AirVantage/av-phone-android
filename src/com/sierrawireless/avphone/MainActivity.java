@@ -157,7 +157,7 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
             return fragment;
         }
 
-        protected ConfigureFragment makeConfigureFragment() {
+        protected AvPhoneFragment makeConfigureFragment() {
             ConfigureFragment fragment = (ConfigureFragment) Fragment.instantiate(MainActivity.this,
                     ConfigureFragment.class.getName());
             

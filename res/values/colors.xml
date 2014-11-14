@@ -5,5 +5,11 @@
     <item name="greybg" type="color">#F9F9F9</item>
     <item name="whitebg" type="color">#FFFFFF</item>
     <item name="textcolor" type="color">#515D66</item>
+    
+    <item name="error_bg" type="color">#FFBABA</item>
+    <item name="error_text" type="color">#D8000C</item>
  
+    <item name="info_bg" type="color">#BDE5F8</item>
+    <item name="info_text" type="color">#00529B</item>
+    
 </resources> 

@@ -2,10 +2,10 @@ package net.airvantage.utils;
 
 import java.util.Date;
 
-import com.sierrawireless.avphone.auth.Authentication;
-
 import android.net.Uri;
 import android.util.Log;
+
+import com.sierrawireless.avphone.auth.Authentication;
 
 public class AuthenticationUrlParser {
 

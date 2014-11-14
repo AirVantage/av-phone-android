@@ -5,28 +5,26 @@ import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.auth.AuthenticationListener;
 import com.sierrawireless.avphone.auth.IAuthenticationManager;
-import com.sierrawireless.avphone.model.AvPhoneApplication;
+import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 import com.sierrawireless.avphone.task.IAsyncTaskFactory;
+import com.sierrawireless.avphone.task.SyncWithAvListener;
 import com.sierrawireless.avphone.task.SyncWithAvParams;
 import com.sierrawireless.avphone.task.SyncWithAvTask;
 
-public class ConfigureFragment extends Fragment implements AuthenticationListener {
+public class ConfigureFragment extends AvPhoneFragment implements AuthenticationListener {
 
     private Button syncBt;
 
@@ -152,7 +150,6 @@ public class ConfigureFragment extends Fragment implements AuthenticationListene
         syncWithAv(auth.getAccessToken());
     }
 
-    // TODO(pht) refactor wtih HomeFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -164,34 +161,13 @@ public class ConfigureFragment extends Fragment implements AuthenticationListene
         }
     }
     
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        switch (requestCode) {
-//        case (AuthorizationActivity.REQUEST_AUTHORIZATION): {
-//            if (resultCode == Activity.RESULT_OK) {
-//                String token = data.getStringExtra(AuthorizationActivity.AUTHENTICATION_TOKEN);
-//                syncWithAv(token);
-//            }
-//            break;
-//        }
-//        }
-//    }
-
-    private void toast(String message) {
-        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-    }
-
-    private void toastError(Exception e, String label, String message) {
-        Log.e(MainActivity.class.getName(), label, e);
-        toast(message);
-    }
-
     private void syncWithAv(String token) {
 
         AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
 
-        SyncWithAvTask syncTask = taskFactory.syncAvTask(prefs.serverHost, token);
+        final IMessageDisplayer display = this;
+        
+        final SyncWithAvTask syncTask = taskFactory.syncAvTask(prefs.serverHost, token);
         
         SyncWithAvParams syncParams = new SyncWithAvParams();
         syncParams.deviceId = deviceId;
@@ -200,41 +176,14 @@ public class ConfigureFragment extends Fragment implements AuthenticationListene
         syncParams.customData = getCustomDataLabels();
         
         syncTask.execute(syncParams);
-        try {
-
-            AvError error = syncTask.get();
-
-            if (error != null) {
-                if (error.systemAlreadyExists()) {
-                    toast("Error : A system already exists with this serial number (maybe in another company.)");
-                } else if (error.applicationAlreadyUsed()) {
-                    toast("Error : An application with type " + AvPhoneApplication.appType(deviceId)
-                            + " already exists (maybe in another company)");
-                } else if (error.tooManyAlerRules()) {
-                    toast("Error : There are too many alert rules registered in your company.");
-                } else if (error.cantCreateApplication()) {
-                    toast("Error : You don't have the right to create application. Contact your administrator");
-                } else if (error.cantCreateSystem()) {
-                    toast("Error : You don't have the right to create a system. Contact your administrator");
-                } else if (error.cantCreateAlertRule()) {
-                    toast("Error : You don't have the right to create an alert rule. Contact your administrator");
-                } else if (error.cantUpdateApplication()) {
-                    toast("Error : You don't have the right to update an application. Contact your administrator");
-                } else if (error.cantUpdateSystem()) {
-                    toast("Error : You don't have the right to update a system. Contact your administrator");
-                } else if (error.forbidden()) {
-                    String method = error.errorParameters.get(0);
-                    String url = error.errorParameters.get(1);
-                    toast("Error : You are not allowed to " + method + " on URL " + url);
-                } else {
-                    toast("Error : Unexpected error (" + error.error + ").");
-                }
-            } else {
-                toast("Synchronized with airvantage.");
+        
+        syncTask.addProgressListener(new SyncWithAvListener() {
+            @Override
+            public void onSynced(AvError error) {
+                syncTask.showResult(error, display, getActivity());    
             }
-        } catch (Exception e) {
-            toastError(e, "Error", "An error occured when synchronizing with AirVantage.");
-        }
+        });
+
     }
 
     protected CustomDataLabels getCustomDataLabels() {
@@ -248,4 +197,8 @@ public class ConfigureFragment extends Fragment implements AuthenticationListene
         return customData;
     }
 
+    public TextView getErrorMessageView() {
+        return (TextView) view.findViewById(R.id.configure_error_message);
+    }
+    
 }
