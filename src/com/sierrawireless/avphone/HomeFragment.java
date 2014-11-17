@@ -66,7 +66,7 @@ public class HomeFragment extends AvPhoneFragment implements OnSharedPreferenceC
         this.taskFactory = taskFactory;
     }
 
-    public void setAuthManager(IAuthenticationManager authManager) {
+    public void setAuthenticationManager(IAuthenticationManager authManager) {
         this.authManager = authManager;
     }
 

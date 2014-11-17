@@ -113,8 +113,8 @@
     <string name="home_before_starting">
          <![CDATA[
         <h2>Before starting</h2>
-        &#8226; Create an account on Airvantage in the Sierra Wireless company<br/>
-        &#8226; Make sure this account has the \'xxxx\' Profile<br/>
+        &#8226; Create an account on Airvantage<br/>
+        &#8226; Make sure this account has at least the \'User\' Profile<br/>
         &#8226; Click the Login button below to get started !
         ]]>
     </string>

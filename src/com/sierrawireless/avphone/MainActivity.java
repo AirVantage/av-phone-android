@@ -152,7 +152,7 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
             HomeFragment fragment = (HomeFragment) Fragment
                     .instantiate(MainActivity.this, HomeFragment.class.getName());
             fragment.setTaskFactory(taskFactory);
-            fragment.setAuthManager(authManager);
+            fragment.setAuthenticationManager(authManager);
             fragment.addLoginListener(MainActivity.this);
             return fragment;
         }
@@ -160,7 +160,6 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
         protected AvPhoneFragment makeConfigureFragment() {
             ConfigureFragment fragment = (ConfigureFragment) Fragment.instantiate(MainActivity.this,
                     ConfigureFragment.class.getName());
-            
             fragment.setTaskFactory(taskFactory);
             fragment.setAuthenticationManager(authManager);
             return fragment;

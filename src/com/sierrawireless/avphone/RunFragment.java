@@ -46,7 +46,6 @@ public class RunFragment extends AvPhoneFragment implements OnSharedPreferenceCh
     private PreferenceUtils prefUtils;
 
     private String deviceId;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -215,9 +214,9 @@ public class RunFragment extends AvPhoneFragment implements OnSharedPreferenceCh
             stopMonitoringService();
             startMonitoringService();
         }
-
+        
         setCustomDataLabels(prefUtils.getCustomDataLabels());
-
+        
     }
 
     @Override

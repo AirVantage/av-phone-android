@@ -26,8 +26,9 @@ import com.sierrawireless.avphone.task.SyncWithAvTask;
 
 public class ConfigureFragment extends AvPhoneFragment implements AuthenticationListener {
 
+    
     private Button syncBt;
-
+    
     private EditText customData1EditText;
     private EditText customData2EditText;
     private EditText customData3EditText;
@@ -42,27 +43,29 @@ public class ConfigureFragment extends AvPhoneFragment implements Authentication
     private String deviceId;
     private String imei;
 
+    private IAsyncTaskFactory taskFactory;
     private IAuthenticationManager authManager;
 
-    private IAsyncTaskFactory taskFactory;
-    
     public ConfigureFragment() {
         super();
     }
-    
-    public ConfigureFragment(IAuthenticationManager authManager, IAsyncTaskFactory taskFactory) {
+
+    protected ConfigureFragment(IAsyncTaskFactory taskFactory, IAuthenticationManager authManager) {
         super();
-        this.authManager = authManager;
+        assert (taskFactory != null);
+        assert (authManager != null);
         this.taskFactory = taskFactory;
-    }
-    
-    public void setAuthenticationManager(IAuthenticationManager authManger) {
-        this.authManager = authManger;
+        this.authManager = authManager;
     }
     
     public void setTaskFactory(IAsyncTaskFactory taskFactory) {
         this.taskFactory = taskFactory;
     }
+
+    public void setAuthenticationManager(IAuthenticationManager authManager) {
+        this.authManager = authManager;
+    }
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -74,7 +77,7 @@ public class ConfigureFragment extends AvPhoneFragment implements Authentication
 
         // try to get the IMEI for GSM phones
         imei = DeviceInfo.getIMEI(this.getActivity());
-        
+       
         // Register button
         syncBt = (Button) view.findViewById(R.id.sync_bt);
         syncBt.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +86,7 @@ public class ConfigureFragment extends AvPhoneFragment implements Authentication
                 onRegisterClicked();
             }
         });
-
+        
         prefUtils = new PreferenceUtils(this);
 
         // Fields for custom data
@@ -153,36 +156,38 @@ public class ConfigureFragment extends AvPhoneFragment implements Authentication
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        
+
         Authentication auth = authManager.activityResultAsAuthentication(requestCode, resultCode, data);
         if (auth != null) {
             authManager.saveAuthentication(prefUtils, auth);
             onAuthentication(auth);
         }
     }
-    
+
+
     private void syncWithAv(String token) {
 
         AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
 
         final IMessageDisplayer display = this;
-        
+
         final SyncWithAvTask syncTask = taskFactory.syncAvTask(prefs.serverHost, token);
-        
+
         SyncWithAvParams syncParams = new SyncWithAvParams();
         syncParams.deviceId = deviceId;
         syncParams.imei = imei;
         syncParams.mqttPassword = prefs.password;
         syncParams.customData = getCustomDataLabels();
-        
+
         syncTask.execute(syncParams);
         
         syncTask.addProgressListener(new SyncWithAvListener() {
             @Override
             public void onSynced(AvError error) {
                 syncTask.showResult(error, display, getActivity());    
-            }
+        }
         });
+
 
     }
 
@@ -200,5 +205,5 @@ public class ConfigureFragment extends AvPhoneFragment implements Authentication
     public TextView getErrorMessageView() {
         return (TextView) view.findViewById(R.id.configure_error_message);
     }
-    
+
 }
