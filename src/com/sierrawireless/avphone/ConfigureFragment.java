@@ -1,40 +1,34 @@
 package com.sierrawireless.avphone;
 
 import net.airvantage.model.AvError;
-import net.airvantage.utils.AirVantageClient;
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.sierrawireless.avphone.model.AvPhoneApplication;
+import com.sierrawireless.avphone.auth.Authentication;
+import com.sierrawireless.avphone.auth.AuthenticationListener;
+import com.sierrawireless.avphone.auth.IAuthenticationManager;
+import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.model.CustomDataLabels;
-import com.sierrawireless.avphone.task.AlertRuleClient;
-import com.sierrawireless.avphone.task.ApplicationClient;
-import com.sierrawireless.avphone.task.IAlertRuleClient;
-import com.sierrawireless.avphone.task.IApplicationClient;
-import com.sierrawireless.avphone.task.ISystemClient;
+import com.sierrawireless.avphone.task.IAsyncTaskFactory;
+import com.sierrawireless.avphone.task.SyncWithAvListener;
+import com.sierrawireless.avphone.task.SyncWithAvParams;
 import com.sierrawireless.avphone.task.SyncWithAvTask;
-import com.sierrawireless.avphone.task.SystemClient;
 
-public class ConfigureFragment extends Fragment {
+public class ConfigureFragment extends AvPhoneFragment implements AuthenticationListener {
 
+    
     private Button syncBt;
-
+    
     private EditText customData1EditText;
     private EditText customData2EditText;
     private EditText customData3EditText;
@@ -47,7 +41,31 @@ public class ConfigureFragment extends Fragment {
     private PreferenceUtils prefUtils;
 
     private String deviceId;
+    private String imei;
 
+    private IAsyncTaskFactory taskFactory;
+    private IAuthenticationManager authManager;
+
+    public ConfigureFragment() {
+        super();
+    }
+
+    protected ConfigureFragment(IAsyncTaskFactory taskFactory, IAuthenticationManager authManager) {
+        super();
+        assert (taskFactory != null);
+        assert (authManager != null);
+        this.taskFactory = taskFactory;
+        this.authManager = authManager;
+    }
+    
+    public void setTaskFactory(IAsyncTaskFactory taskFactory) {
+        this.taskFactory = taskFactory;
+    }
+
+    public void setAuthenticationManager(IAuthenticationManager authManager) {
+        this.authManager = authManager;
+    }
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -57,6 +75,9 @@ public class ConfigureFragment extends Fragment {
         deviceId = DeviceInfo.getUniqueId(this.getActivity());
         ((TextView) view.findViewById(R.id.phoneid_value)).setText(deviceId);
 
+        // try to get the IMEI for GSM phones
+        imei = DeviceInfo.getIMEI(this.getActivity());
+       
         // Register button
         syncBt = (Button) view.findViewById(R.id.sync_bt);
         syncBt.setOnClickListener(new View.OnClickListener() {
@@ -65,7 +86,7 @@ public class ConfigureFragment extends Fragment {
                 onRegisterClicked();
             }
         });
-
+        
         prefUtils = new PreferenceUtils(this);
 
         // Fields for custom data
@@ -123,89 +144,51 @@ public class ConfigureFragment extends Fragment {
 
     protected void onRegisterClicked() {
         if (checkCredentials()) {
-            Intent intent = new Intent(getActivity(), AuthorizationActivity.class);
-            startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION);
+            authManager.authenticate(prefUtils, this, this);
         }
+    }
+
+    @Override
+    public void onAuthentication(Authentication auth) {
+        syncWithAv(auth.getAccessToken());
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-        case (AuthorizationActivity.REQUEST_AUTHORIZATION): {
-            if (resultCode == Activity.RESULT_OK) {
-                String token = data.getStringExtra(AuthorizationActivity.TOKEN);
-                syncWithAv(token);
-            }
-            break;
-        }
+
+        Authentication auth = authManager.activityResultAsAuthentication(requestCode, resultCode, data);
+        if (auth != null) {
+            authManager.saveAuthentication(prefUtils, auth);
+            onAuthentication(auth);
         }
     }
 
-    private void toast(String message) {
-        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-    }
-
-    private void toastError(Exception e, String label, String message) {
-        Log.e(MainActivity.class.getName(), label, e);
-        toast(message);
-    }
 
     private void syncWithAv(String token) {
 
         AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
 
-        AirVantageClient client = new AirVantageClient(prefs.serverHost, token);
+        final IMessageDisplayer display = this;
 
-        IApplicationClient appClient = new ApplicationClient(client);
-        ISystemClient systemClient = new SystemClient(client);
-        IAlertRuleClient alertRuleClient = new AlertRuleClient(client);
+        final SyncWithAvTask syncTask = taskFactory.syncAvTask(prefs.serverHost, token);
 
-        SyncWithAvTask syncTask = new SyncWithAvTask(appClient, systemClient, alertRuleClient);
+        SyncWithAvParams syncParams = new SyncWithAvParams();
+        syncParams.deviceId = deviceId;
+        syncParams.imei = imei;
+        syncParams.mqttPassword = prefs.password;
+        syncParams.customData = getCustomDataLabels();
 
-        // try to get the IMEI for GSM phones
-        String imei = null;
-        TelephonyManager telManager = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-        if (telManager != null && telManager.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
-            imei = telManager.getDeviceId();
+        syncTask.execute(syncParams);
+        
+        syncTask.addProgressListener(new SyncWithAvListener() {
+            @Override
+            public void onSynced(AvError error) {
+                syncTask.showResult(error, display, getActivity());    
         }
+        });
 
-        syncTask.execute(deviceId, imei, prefs.password, getCustomDataLabels());
-        try {
 
-            AvError error = syncTask.get();
-
-            if (error != null) {
-                if (error.systemAlreadyExists()) {
-                    toast("Error : A system already exists with this serial number (maybe in another company.)");
-                } else if (error.applicationAlreadyUsed()) {
-                    toast("Error : An application with type " + AvPhoneApplication.appType(deviceId)
-                            + " already exists (maybe in another company)");
-                } else if (error.tooManyAlerRules()) {
-                    toast("Error : There are too many alert rules registered in your company.");
-                } else if (error.cantCreateApplication()) {
-                    toast("Error : You don't have the right to create application. Contact your administrator");
-                } else if (error.cantCreateSystem()) {
-                    toast("Error : You don't have the right to create a system. Contact your administrator");
-                } else if (error.cantCreateAlertRule()) {
-                    toast("Error : You don't have the right to create an alert rule. Contact your administrator");
-                } else if (error.cantUpdateApplication()) {
-                    toast("Error : You don't have the right to update an application. Contact your administrator");
-                } else if (error.cantUpdateSystem()) {
-                    toast("Error : You don't have the right to update a system. Contact your administrator");
-                } else if (error.forbidden()) {
-                    String method = error.errorParameters.get(0);
-                    String url = error.errorParameters.get(1);
-                    toast("Error : You are not allowed to " + method + " on URL " + url);
-                } else {
-                    toast("Error : Unexpected error (" + error.error + ").");
-                }
-            } else {
-                toast("Synchronized with airvantage.");
-            }
-        } catch (Exception e) {
-            toastError(e, "Error", "An error occured when synchronizing with AirVantage.");
-        }
     }
 
     protected CustomDataLabels getCustomDataLabels() {
@@ -217,6 +200,10 @@ public class ConfigureFragment extends Fragment {
         customData.customStr1Label = customData5EditText.getText().toString();
         customData.customStr2Label = customData6EditText.getText().toString();
         return customData;
+    }
+
+    public TextView getErrorMessageView() {
+        return (TextView) view.findViewById(R.id.configure_error_message);
     }
 
 }

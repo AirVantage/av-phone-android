@@ -1,28 +1,35 @@
 package com.sierrawireless.avphone;
 
+import java.util.Date;
+
 import net.airvantage.utils.AirVantageClient;
+import net.airvantage.utils.AuthenticationUrlParser;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.sierrawireless.avphone.auth.Authentication;
+
 public class AuthorizationActivity extends Activity {
 
-    public static final String TOKEN = "token";
-    public static final String AUTHORIZATION_CODE = "auth_code";
+    public static final String AUTHENTICATION_TOKEN = "token";
+    public static final String AUTHENTICATION_EXPIRATION_DATE = "expirationDate";
+
+    public static final String AUTHENTICATION_LISTENER = "listener";
 
     public static final int REQUEST_AUTHORIZATION = 1;
 
-    // A way to know *why* the authorization was required
-    public static final String AUTHORIZATION_CONTEXT = "context";
-
     private WebView webview;
+
+    private AuthenticationUrlParser authUrlParser = new AuthenticationUrlParser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,58 +52,37 @@ public class AuthorizationActivity extends Activity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
-                // check for our custom callback protocol otherwise use default
-                // behavior
-                if (url.startsWith("oauth")) {
+                Authentication auth = authUrlParser.parseUrl(url, new Date());
 
-                    Log.d(AuthorizationActivity.class.getName(), "Callback URL: " + url);
-                    Uri uri = Uri.parse(url);
-                    // Extract code param
-                    String code = uri.getQueryParameter("code");
-                    // Extract token from fragment
-                    String fragment = uri.getFragment();
-                    String access_token = null;
-                    if (fragment != null) {
-                        String paramName = "access_token=";
-                        int start = fragment.indexOf(paramName);
-                        int end = fragment.indexOf("&");
-                        access_token = fragment.substring(start + paramName.length(), end);
-                    }
-                    Log.d(AuthorizationActivity.class.getName(), "Access token: " + access_token);
-                    Log.d(AuthorizationActivity.class.getName(), "OAuth code: " + code);
-
-                    // host airvantage detected from callback
-                    // oauth://airvantage
-                    if (uri.getHost().equals("airvantage")) {
-                        if (code != null) {
-                            sendAuthorizationCode(code);
-                        } else if (access_token != null) {
-                            sendToken(access_token);
-                        }
-                    }
-
-                    return true;
+                if (auth != null) {
+                    Log.d(AuthorizationActivity.class.getName(), "Access token: " + auth.getAccessToken());
+                    Log.d(AuthorizationActivity.class.getName(), "Expiration date : " + auth.getExpirationDate());
+                    sendAuthentication(auth);
                 }
 
                 return super.shouldOverrideUrlLoading(view, url);
             }
+
         });
         String authUrl = AirVantageClient.buildImplicitFlowURL(serverHost, clientId);
         Log.d(AuthorizationActivity.class.getName(), "Auth URL: " + authUrl);
+        
+        // The 'authorize' page from AirVantage will store a cookie ; 
+        // if this cookie is passed between calls, the 'authorize' page
+        // will not be displayed at all.
+        CookieSyncManager.createInstance(this);
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.removeAllCookie();
+        
         webview.loadUrl(authUrl);
     }
 
-    private void sendAuthorizationCode(String code) {
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra(AUTHORIZATION_CODE, code);
-        setResult(Activity.RESULT_OK, resultIntent);
-        finish();
-    }
-
-    private void sendToken(String token) {
+    private void sendAuthentication(Authentication auth) {
 
         Intent resultIntent = new Intent();
-        resultIntent.putExtra(TOKEN, token);
+
+        resultIntent.putExtra(AUTHENTICATION_TOKEN, auth.getAccessToken());
+        resultIntent.putExtra(AUTHENTICATION_EXPIRATION_DATE, auth.getExpirationDate().getTime());
 
         setResult(Activity.RESULT_OK, resultIntent);
         finish();

@@ -19,6 +19,23 @@
         android:layout_marginBottom="10dp"
         android:orientation="vertical" >
 
+        <TextView
+            style="@style/InfoMessage"
+            android:id="@+id/run_info_message"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp" 
+            />
+
+        <TextView
+            style="@style/ErrorMessage"
+            android:id="@+id/run_error_message"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" 
+            android:layout_marginBottom="2dp"
+            />
+            
         <Switch
             android:id="@+id/service_switch"
             android:layout_width="wrap_content"

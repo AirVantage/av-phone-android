@@ -15,7 +15,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,7 +33,7 @@ import com.sierrawireless.avphone.service.MonitoringService;
 import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder;
 import com.sierrawireless.avphone.service.NewData;
 
-public class RunFragment extends Fragment implements OnSharedPreferenceChangeListener {
+public class RunFragment extends AvPhoneFragment implements OnSharedPreferenceChangeListener {
 
     private static final String LOGTAG = RunFragment.class.getName();
 
@@ -47,7 +46,6 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
     private PreferenceUtils prefUtils;
 
     private String deviceId;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -96,6 +94,11 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
         // Alarm button
         ToggleButton alarmButton = (ToggleButton) view.findViewById(R.id.alarm_button);
         alarmButton.setOnClickListener(onAlarmClick);
+
+        // Info message
+        TextView infoMesageView = (TextView) view.findViewById(R.id.run_info_message);
+        String infoMessage = getString(R.string.run_info_message, DeviceInfo.getUniqueId(getActivity()));
+        infoMesageView.setText(infoMessage);
 
         return view;
     }
@@ -211,9 +214,9 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
             stopMonitoringService();
             startMonitoringService();
         }
-
+        
         setCustomDataLabels(prefUtils.getCustomDataLabels());
-
+        
     }
 
     @Override
@@ -233,6 +236,10 @@ public class RunFragment extends Fragment implements OnSharedPreferenceChangeLis
                 service.sendAlarmEvent(((ToggleButton) v).isChecked());
             }
         }
+    };
+
+    protected TextView getErrorMessageView() {
+        return (TextView) view.findViewById(R.id.run_error_message);
     };
 
 }

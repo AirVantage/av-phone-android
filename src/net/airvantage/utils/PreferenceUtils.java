@@ -1,5 +1,7 @@
 package net.airvantage.utils;
 
+import java.util.Date;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -7,12 +9,17 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import com.sierrawireless.avphone.R;
+import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 
 public class PreferenceUtils {
 
+    private static final String LOGTAG = PreferenceUtils.class.getName();
+
+    
     private static final String DEFAULT_COMM_PERIOD = "2";
 
     private SharedPreferences prefs;
@@ -36,6 +43,10 @@ public class PreferenceUtils {
         AvPhonePrefs res = new AvPhonePrefs();
 
         res.serverHost = prefs.getString(getActivity().getString(R.string.pref_server_key), null);
+        
+        res.usesNA = (getActivity().getString(R.string.pref_server_na_value)).equals(res.serverHost);
+        res.usesEU = (getActivity().getString(R.string.pref_server_eu_value)).equals(res.serverHost);
+        
         res.password = prefs.getString(getActivity().getString(R.string.pref_password_key), null);
         res.period = prefs.getString(getActivity().getString(R.string.pref_period_key), DEFAULT_COMM_PERIOD);
 
@@ -87,9 +98,46 @@ public class PreferenceUtils {
     }
     
     public boolean isMonitoringPreference(String changedPrefKey) {
-        return (getString(R.string.pref_password_key).equals(changedPrefKey) ||
-                getString(R.string.pref_server_key).equals(changedPrefKey) ||
-                getString(R.string.pref_period_key).equals(changedPrefKey));
+        if (this.getActivity() == null) {
+            Log.w(LOGTAG, "null Activity in PreferenceUtils ; this should only happen in tests");
+            return false;
+        } else {
+            return (getString(R.string.pref_password_key).equals(changedPrefKey) ||
+                    getString(R.string.pref_server_key).equals(changedPrefKey) ||
+                    getString(R.string.pref_period_key).equals(changedPrefKey));
+        }
+    }
+    
+    public void toggleServers() {
+        AvPhonePrefs prefs = getAvPhonePrefs();
+        if (prefs.usesEU()) {
+            this.setPreference(R.string.pref_server_key,
+                    getActivity().getString(R.string.pref_server_na_value));
+            this.setPreference(R.string.pref_client_id_key, 
+                    getActivity().getString(R.string.pref_client_id_na));
+        } else if (prefs.usesNA()){
+            this.setPreference(R.string.pref_server_key,
+                    getActivity().getString(R.string.pref_server_eu_value));
+            this.setPreference(R.string.pref_client_id_key, 
+                    getActivity().getString(R.string.pref_client_id_eu));
+        }
+    }
+
+    public Authentication getAuthentication() {
+        
+        Authentication auth = null;
+        
+        String accessToken = prefs.getString(getString(R.string.pref_access_token_key), null);
+        String expiresAtMs = prefs.getString(getString(R.string.pref_token_expires_at_key), null);
+        
+        if (accessToken != null && expiresAtMs != null) {
+            Date expiresAt = new Date(Long.parseLong(expiresAtMs));
+            auth = new Authentication();
+            auth.setAccessToken(accessToken);
+            auth.setExpirationDate(expiresAt);
+        }
+        
+        return auth;
     }
 
 }

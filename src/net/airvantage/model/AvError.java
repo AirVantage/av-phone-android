@@ -5,10 +5,10 @@ import java.util.List;
 
 public class AvError {
 
-    public static final Object SYSTEM_EXISTS = "system.not.unique.identifiers";
-    public static final Object GATEWAY_EXISTS = "gateway.not.unique.identifiers";
+    public static final String SYSTEM_EXISTS = "system.not.unique.identifiers";
+    public static final String GATEWAY_EXISTS = "gateway.not.unique.identifiers";
     public static final String FORBIDDEN = "forbidden";
-    public static final Object APPLICATION_TYPE_EXISTS = "application.type.already.used";
+    public static final String APPLICATION_TYPE_EXISTS = "application.type.already.used";
     public static final String ALERT_RULES_TOO_MANY = "alert.rule.too.many";
     
     public String error;

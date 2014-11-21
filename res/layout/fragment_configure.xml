@@ -9,20 +9,39 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin" >
 
-    <TableRow
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+    <LinearLayout
+        android:id="@+id/action_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical" >
 
-        <TextView
-            style="@style/ItemLabel"
-            android:text="@string/phone_id" />
-
-        <TextView
-            android:id="@+id/phoneid_value"
-            android:layout_width="wrap_content"
+       <TextView
+            style="@style/InfoMessage"
+            android:id="@+id/configure_info_message"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/no_value" />
-    </TableRow>
+            android:layout_marginBottom="2dp"
+            android:text="@string/configure_info_message" 
+            />
+
+        <TextView
+            style="@style/ErrorMessage"
+            android:id="@+id/configure_error_message"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginBottom="2dp"
+            />
+
+        <Button
+            android:id="@+id/sync_bt"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:text="@string/sync" />
+        
+    </LinearLayout>
 
     <View
         android:layout_width="fill_parent"
@@ -31,123 +50,148 @@
         android:layout_marginTop="10dp"
         android:background="@android:color/darker_gray" />
 
-    <TableRow
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            style="@style/ItemLabel"
-            android:labelFor="@+id/custom1_value"
-            android:text="@string/pref_custom1_label" />
-
-        <EditText
-            android:id="@+id/custom1_value"
-            style="@style/EditableItem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine" />
-    </TableRow>
-
-    <TableRow
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            style="@style/ItemLabel"
-            android:labelFor="@+id/custom2_value"
-            android:text="@string/pref_custom2_label" />
-
-        <EditText
-            android:id="@+id/custom2_value"
-            style="@style/EditableItem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine" />
-    </TableRow>
-
-    <TableRow
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            style="@style/ItemLabel"
-            android:labelFor="@+id/custom3_value"
-            android:text="@string/pref_custom3_label" />
-
-        <EditText
-            android:id="@+id/custom3_value"
-            style="@style/EditableItem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine" />
-    </TableRow>
-
-    <TableRow
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            style="@style/ItemLabel"
-            android:labelFor="@+id/custom4_value"
-            android:text="@string/pref_custom4_label" />
-
-        <EditText
-            android:id="@+id/custom4_value"
-            style="@style/EditableItem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine" />
-    </TableRow>
-
-    <TableRow
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            style="@style/ItemLabel"
-            android:labelFor="@+id/custom5_value"
-            android:text="@string/pref_custom5_label" />
-
-        <EditText
-            android:id="@+id/custom5_value"
-            style="@style/EditableItem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine" />
-    </TableRow>
-
-    <TableRow
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            style="@style/ItemLabel"
-            android:labelFor="@+id/custom6_value"
-            android:text="@string/pref_custom6_label" />
-
-        <EditText
-            android:id="@+id/custom6_value"
-            style="@style/EditableItem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine" />
-    </TableRow>
-
-    <View
+    <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:background="@android:color/darker_gray" />
+        android:layout_height="wrap_content" >
 
-    <Button
-        android:id="@+id/sync_bt"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:paddingBottom="0dp"
-        android:paddingTop="0dp"
-        android:text="@string/sync" />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TableLayout
+                android:id="@+id/table_data"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:textAppearance="?android:attr/textAppearanceMedium" >
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        style="@style/ItemLabel"
+                        android:text="@string/phone_id" />
+
+                    <TextView
+                        android:id="@+id/phoneid_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/no_value" />
+                </TableRow>
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@android:color/darker_gray" />
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        style="@style/ItemLabel"
+                        android:labelFor="@+id/custom1_value"
+                        android:text="@string/pref_custom1_label" />
+
+                    <EditText
+                        android:id="@+id/custom1_value"
+                        style="@style/EditableItem"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        style="@style/ItemLabel"
+                        android:labelFor="@+id/custom2_value"
+                        android:text="@string/pref_custom2_label" />
+
+                    <EditText
+                        android:id="@+id/custom2_value"
+                        style="@style/EditableItem"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        style="@style/ItemLabel"
+                        android:labelFor="@+id/custom3_value"
+                        android:text="@string/pref_custom3_label" />
+
+                    <EditText
+                        android:id="@+id/custom3_value"
+                        style="@style/EditableItem"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        style="@style/ItemLabel"
+                        android:labelFor="@+id/custom4_value"
+                        android:text="@string/pref_custom4_label" />
+
+                    <EditText
+                        android:id="@+id/custom4_value"
+                        style="@style/EditableItem"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        style="@style/ItemLabel"
+                        android:labelFor="@+id/custom5_value"
+                        android:text="@string/pref_custom5_label" />
+
+                    <EditText
+                        android:id="@+id/custom5_value"
+                        style="@style/EditableItem"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        style="@style/ItemLabel"
+                        android:labelFor="@+id/custom6_value"
+                        android:text="@string/pref_custom6_label" />
+
+                    <EditText
+                        android:id="@+id/custom6_value"
+                        style="@style/EditableItem"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine" />
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
