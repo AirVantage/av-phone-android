@@ -1,6 +1,12 @@
 TODO
 ----
 
+# Feedback from bobby
+
+- right to set application at publish (separate from edit Application) change_visibility
+
+- handle several apps with the same protocol
+
 # Configuration fragment
 
 - Add a box to display errors
