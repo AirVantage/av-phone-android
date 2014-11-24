@@ -5,8 +5,8 @@ public class AvPhonePrefs {
     public String serverHost;
     public String password;
     public String period;
-    protected boolean usesNA;
-    protected boolean usesEU;
+    public boolean usesNA;
+    public boolean usesEU;
     
     public boolean checkCredentials() {
         return !(password == null || password.isEmpty() || serverHost == null || serverHost.isEmpty());

@@ -1,9 +1,8 @@
 package net.airvantage.utils;
 
-import java.util.Date;
-
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -12,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.sierrawireless.avphone.R;
-import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 
 public class PreferenceUtils {
@@ -25,20 +23,41 @@ public class PreferenceUtils {
     private SharedPreferences prefs;
     private Fragment fragment;
 
+
+    public static final String PREF_PASSWORD_KEY = "pref_password_key";
+
+
+    public static final String PREF_PERIOD_KEY = "pref_period_key";
+
+
+    public static final String PREF_CLIENT_ID_KEY = "pref_client_id_key";
+
+
+    public static final String PREF_ACCESS_TOKEN = "pref_access_token";
+
+
+    public static final String PREF_TOKEN_EXPIRES_AT = "pref_token_expires_at";
+
+
+    public static final String PREF_SERVER_KEY = "pref_server_key";
+
     /**
      * Wrapper for usefull functions on a fragment. A Fragment is passed rather than an activity, since it seems like
      * keeping references to activities is not safe.
      */
+    @Deprecated
     public PreferenceUtils(Fragment fragment) {
         this.fragment = fragment;
         PreferenceManager.setDefaultValues(getActivity(), R.xml.preferences, false);
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
     }
 
+    @Deprecated
     public void addListener(OnSharedPreferenceChangeListener listener) {
         prefs.registerOnSharedPreferenceChangeListener(listener);
     }
 
+    @Deprecated
     public AvPhonePrefs getAvPhonePrefs() {
         AvPhonePrefs res = new AvPhonePrefs();
 
@@ -53,23 +72,40 @@ public class PreferenceUtils {
         return res;
     }
 
-    public String getPreference(int prefKeyId, int defaultValueKeyId) {
-        String prefKey = getActivity().getString(prefKeyId);
+    public static AvPhonePrefs getAvPhonePrefs(Context activity) {
+        AvPhonePrefs res = new AvPhonePrefs();
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        res.serverHost = prefs.getString(activity.getString(R.string.pref_server_key), null);
+        
+        res.usesNA = (activity.getString(R.string.pref_server_na_value)).equals(res.serverHost);
+        res.usesEU = (activity.getString(R.string.pref_server_eu_value)).equals(res.serverHost);
+        
+        res.password = prefs.getString(activity.getString(R.string.pref_password_key), null);
+        res.period = prefs.getString(activity.getString(R.string.pref_period_key), DEFAULT_COMM_PERIOD);
+
+        return res;
+    }
+    
+    public static String getPreference(Context context, int prefKeyId, int defaultValueKeyId) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String prefKey = context.getString(prefKeyId);
         if (prefKey.equals("false")) {
             System.out.println("WTF ?");
         }
-        String defaultValueKey = getActivity().getString(defaultValueKeyId);
+        String defaultValueKey =context.getString(defaultValueKeyId);
         return prefs.getString(prefKey, defaultValueKey);
     }
 
-    public void setPreference(int prefKeyId, String value) {
-        String prefKey = getActivity().getString(prefKeyId);
+    public static void setPreference(Context context, int prefKeyId, String value) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String prefKey = context.getString(prefKeyId);
         prefs.edit().putString(prefKey, value).commit();
         
     }
 
-    public void showMissingPrefsDialog() {
-        new AlertDialog.Builder(getActivity()).setTitle(R.string.invalid_prefs).setMessage(R.string.prefs_missing)
+    public static void showMissingPrefsDialog(Activity activity) {
+        new AlertDialog.Builder(activity).setTitle(R.string.invalid_prefs).setMessage(R.string.prefs_missing)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // do nothing
@@ -81,14 +117,14 @@ public class PreferenceUtils {
         return this.fragment.getActivity();
     }
 
-    public CustomDataLabels getCustomDataLabels() {
+    public static CustomDataLabels getCustomDataLabels(Context context) {
         CustomDataLabels labels = new CustomDataLabels();
-        labels.customUp1Label = getPreference(R.string.pref_custom1_label_key, R.string.pref_custom1_label_default);
-        labels.customUp2Label = getPreference(R.string.pref_custom2_label_key, R.string.pref_custom2_label_default);
-        labels.customDown1Label = getPreference(R.string.pref_custom3_label_key, R.string.pref_custom3_label_default);
-        labels.customDown2Label = getPreference(R.string.pref_custom4_label_key, R.string.pref_custom4_label_default);
-        labels.customStr1Label = getPreference(R.string.pref_custom5_label_key, R.string.pref_custom5_label_default);
-        labels.customStr2Label = getPreference(R.string.pref_custom6_label_key, R.string.pref_custom6_label_default);
+        labels.customUp1Label = getPreference(context, R.string.pref_custom1_label_key, R.string.pref_custom1_label_default);
+        labels.customUp2Label = getPreference(context, R.string.pref_custom2_label_key, R.string.pref_custom2_label_default);
+        labels.customDown1Label = getPreference(context, R.string.pref_custom3_label_key, R.string.pref_custom3_label_default);
+        labels.customDown2Label = getPreference(context, R.string.pref_custom4_label_key, R.string.pref_custom4_label_default);
+        labels.customStr1Label = getPreference(context, R.string.pref_custom5_label_key, R.string.pref_custom5_label_default);
+        labels.customStr2Label = getPreference(context, R.string.pref_custom6_label_key, R.string.pref_custom6_label_default);
 
         return labels;
     }
@@ -108,36 +144,20 @@ public class PreferenceUtils {
         }
     }
     
-    public void toggleServers() {
-        AvPhonePrefs prefs = getAvPhonePrefs();
+    public static void toggleServers(Context context) {
+        AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(context);
         if (prefs.usesEU()) {
-            this.setPreference(R.string.pref_server_key,
-                    getActivity().getString(R.string.pref_server_na_value));
-            this.setPreference(R.string.pref_client_id_key, 
-                    getActivity().getString(R.string.pref_client_id_na));
+            PreferenceUtils.setPreference(context,R.string.pref_server_key,
+                    context.getString(R.string.pref_server_na_value));
+            PreferenceUtils.setPreference(context,R.string.pref_client_id_key, 
+                    context.getString(R.string.pref_client_id_na));
         } else if (prefs.usesNA()){
-            this.setPreference(R.string.pref_server_key,
-                    getActivity().getString(R.string.pref_server_eu_value));
-            this.setPreference(R.string.pref_client_id_key, 
-                    getActivity().getString(R.string.pref_client_id_eu));
+            PreferenceUtils.setPreference(context,R.string.pref_server_key,
+                    context.getString(R.string.pref_server_eu_value));
+            PreferenceUtils.setPreference(context,R.string.pref_client_id_key, 
+                    context.getString(R.string.pref_client_id_eu));
         }
     }
 
-    public Authentication getAuthentication() {
-        
-        Authentication auth = null;
-        
-        String accessToken = prefs.getString(getString(R.string.pref_access_token_key), null);
-        String expiresAtMs = prefs.getString(getString(R.string.pref_token_expires_at_key), null);
-        
-        if (accessToken != null && expiresAtMs != null) {
-            Date expiresAt = new Date(Long.parseLong(expiresAtMs));
-            auth = new Authentication();
-            auth.setAccessToken(accessToken);
-            auth.setExpirationDate(expiresAt);
-        }
-        
-        return auth;
-    }
 
 }
