@@ -4,6 +4,8 @@ import java.util.Date;
 
 import net.airvantage.utils.AirVantageClient;
 import net.airvantage.utils.AuthenticationUrlParser;
+import net.airvantage.utils.AvPhonePrefs;
+import net.airvantage.utils.PreferenceUtils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -41,9 +43,16 @@ public class AuthorizationActivity extends Activity {
 
     @SuppressLint("SetJavaScriptEnabled")
     private void openAuthorizationPage() {
+        
+        AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this);
+        
+        String serverHost = avPhonePrefs.serverHost;
+        String clientId = avPhonePrefs.clientId;
+        /*
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String serverHost = prefs.getString(this.getString(R.string.pref_server_key), null);
         String clientId = prefs.getString(this.getString(R.string.pref_client_id_key), null);
+        */
 
         webview = (WebView) findViewById(R.id.authorization_webview);
         webview.getSettings().setJavaScriptEnabled(true);

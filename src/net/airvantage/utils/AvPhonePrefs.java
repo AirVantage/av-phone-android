@@ -3,6 +3,8 @@ package net.airvantage.utils;
 public class AvPhonePrefs {
     
     public String serverHost;
+    public String clientId;
+    
     public String password;
     public String period;
     public boolean usesNA;

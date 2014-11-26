@@ -181,8 +181,12 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
     
     @Override
     public void onCustomLabelsChanged() {
-        CustomDataLabels customLabels = PreferenceUtils.getCustomDataLabels(getActivity());
-        setCustomDataLabels(customLabels);
+        // The activity can be null if the change is done while the fragment is not active.
+        // This can wait for the activity to be resumed.
+        if (getActivity() != null) {
+            CustomDataLabels customLabels = PreferenceUtils.getCustomDataLabels(getActivity());
+            setCustomDataLabels(customLabels);
+        }
     }
 
 }
