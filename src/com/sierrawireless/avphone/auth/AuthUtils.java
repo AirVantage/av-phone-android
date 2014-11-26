@@ -25,9 +25,5 @@ public class AuthUtils {
         }
         return res;
     }
-// K
-//    public static Authentication getAuthentication(PreferenceUtils prefUtils) {
-//        return prefUtils.getAuthentication();
-//    }
 
 }

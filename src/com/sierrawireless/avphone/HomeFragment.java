@@ -61,7 +61,7 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
         instanceMessage = (TextView) view.findViewById(R.id.switch_login_instance_text);
 
         switchLink = (TextView) view.findViewById(R.id.switch_instance);
-        switchLink.setPaintFlags(switchLink.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        // switchLink.setPaintFlags(switchLink.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         switchLink.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -92,9 +92,7 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
             }
         });
 
-        chooseLoginMessage();
-
-        if (authListener.isLogged()) {
+        if (authManager.isLogged()) {
             showLoggedInState();
         } else {
             showLoggedOutState();
@@ -107,9 +105,7 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
     public void onResume() {
         super.onResume();
 
-        chooseLoginMessage();
-
-        if (authListener.isLogged()) {
+        if (authManager.isLogged()) {
             showLoggedInState();
         } else {
             showLoggedOutState();
@@ -178,7 +174,7 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
         Authentication auth = AuthUtils.activityResultAsAuthentication(requestCode, resultCode, data);
         if (auth != null) {
 
-            authListener.onAuthentication(auth);
+            authManager.onAuthentication(auth);
 
             syncWithAv(auth.getAccessToken());
         }
@@ -197,7 +193,7 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
                 if (error == null) {
                     showLoggedInState();
                 } else {
-                    authListener.forgetAuthentication();
+                    authManager.forgetAuthentication();
                     showLoggedOutState();
                     syncAvTask.showResult(error, displayer, getActivity());
                 }
@@ -225,13 +221,14 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
     private void showLoggedOutState() {
         hideLogoutButton();
         hideCurrentServer();
+        chooseLoginMessage();
     }
 
     private void logout() {
 
         AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(getActivity());
 
-        String accessToken = authListener.getAuthentication().getAccessToken();
+        String accessToken = authManager.getAuthentication().getAccessToken();
         
         AsyncTask<String, Integer, AvError> logoutTask = taskFactory.logoutTask(avPhonePrefs.serverHost, accessToken);
 
@@ -243,7 +240,7 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
             Log.w(LOGTAG, "Exception while ");
         } finally {
             // K authManager.forgetAuthentication(prefUtils);
-            authListener.forgetAuthentication();
+            authManager.forgetAuthentication();
 
             showLoggedOutState();
         }

@@ -131,7 +131,7 @@ public class ConfigureFragment extends AvPhoneFragment {
 
     protected void onRegisterClicked() {
         if (checkCredentials()) {
-            Authentication auth = authListener.getAuthentication();
+            Authentication auth = authManager.getAuthentication();
             if (auth != null && !auth.isExpired()) {
                 syncWithAv(auth.getAccessToken());
             } else {
@@ -145,7 +145,7 @@ public class ConfigureFragment extends AvPhoneFragment {
         super.onActivityResult(requestCode, resultCode, data);
         Authentication auth = AuthUtils.activityResultAsAuthentication(requestCode, resultCode, data);
         if (auth != null) {
-            authListener.onAuthentication(auth);
+            authManager.onAuthentication(auth);
             syncWithAv(auth.getAccessToken());
         }
     }

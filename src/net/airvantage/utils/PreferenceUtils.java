@@ -1,17 +1,25 @@
 package net.airvantage.utils;
 
+import java.util.Date;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
+import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.R;
+import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 
 public class PreferenceUtils {
 
+    private static String LOGTAG = PreferenceUtils.class.getName();
+
+    
     private static final String DEFAULT_COMM_PERIOD = "2";
 
     public static final String PREF_SERVER_KEY = "pref_server_key";
@@ -38,7 +46,8 @@ public class PreferenceUtils {
         res.usesNA = (context.getString(R.string.pref_server_na_value)).equals(res.serverHost);
         res.usesEU = (context.getString(R.string.pref_server_eu_value)).equals(res.serverHost);
 
-        res.password = PreferenceUtils.getPreference(context, R.string.pref_password_key, R.string.pref_password_default);
+        res.password = PreferenceUtils.getPreference(context, R.string.pref_password_key,
+                R.string.pref_password_default);
         res.period = prefs.getString(context.getString(R.string.pref_period_key), DEFAULT_COMM_PERIOD);
 
         return res;
@@ -98,6 +107,57 @@ public class PreferenceUtils {
             PreferenceUtils.setPreference(context, R.string.pref_client_id_key,
                     context.getString(R.string.pref_client_id_eu));
         }
+    }
+
+    public static void saveAuthentication(Context context, Authentication auth) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        prefs.edit().putString(PreferenceUtils.PREF_ACCESS_TOKEN, auth.getAccessToken())
+                .putLong(PreferenceUtils.PREF_TOKEN_EXPIRES_AT, auth.getExpirationDate().getTime()).commit();
+    }
+
+    public static void resetAuthentication(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        prefs.edit().remove(PreferenceUtils.PREF_ACCESS_TOKEN).remove(PreferenceUtils.PREF_TOKEN_EXPIRES_AT).commit();
+
+    }
+
+    public static Authentication readAuthentication(Context context) {
+
+        Authentication auth = null;
+        
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        
+        String accessToken = prefs.getString(PreferenceUtils.PREF_ACCESS_TOKEN, null);
+
+        Long expiresAtMs = null;
+
+        try {
+            expiresAtMs = prefs.getLong(PreferenceUtils.PREF_TOKEN_EXPIRES_AT, 0);
+        } catch (ClassCastException e) {
+            // An earlier version might have stored the token as a string
+            String expiresAtSt = null;
+            try {
+                expiresAtSt = prefs.getString(PreferenceUtils.PREF_TOKEN_EXPIRES_AT, null);
+                if (expiresAtSt != null) {
+                    expiresAtMs = Long.parseLong(expiresAtSt);
+                }
+            } catch (NumberFormatException nfe) {
+                // The string was not even a valid one, we'll ignore it.
+                Log.w(LOGTAG, "pref_token_expires_at stored as invalid String : '" + expiresAtSt + "'", nfe);
+            }
+        }
+
+        if (accessToken != null && expiresAtMs != null && expiresAtMs != 0) {
+            Date expiresAt = new Date(expiresAtMs);
+            auth = new Authentication();
+            auth.setAccessToken(accessToken);
+            auth.setExpirationDate(expiresAt);
+        }
+        
+        return auth;
+
     }
 
 }

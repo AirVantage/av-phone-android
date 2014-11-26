@@ -31,7 +31,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.sierrawireless.avphone.auth.Authentication;
-import com.sierrawireless.avphone.auth.AuthenticationListener;
+import com.sierrawireless.avphone.auth.AuthenticationManager;
 import com.sierrawireless.avphone.service.MonitoringService;
 import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder;
 import com.sierrawireless.avphone.task.AsyncTaskFactory;
@@ -40,7 +40,7 @@ import com.sierrawireless.avphone.task.IAsyncTaskFactory;
 /**
  * The main activity, in charge of displaying the tab view
  */
-public class MainActivity extends FragmentActivity implements TabListener, LoginListener, AuthenticationListener,
+public class MainActivity extends FragmentActivity implements TabListener, LoginListener, AuthenticationManager,
         OnSharedPreferenceChangeListener, MonitorServiceManager, CustomLabelsManager {
 
     private static String LOGTAG = MainActivity.class.getName();
@@ -117,33 +117,7 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
     }
 
     private void readAuthenticationFromPreferences() {
-
-        String accessToken = prefs.getString(PreferenceUtils.PREF_ACCESS_TOKEN, null);
-
-        Long expiresAtMs = null;
-
-        try {
-            expiresAtMs = prefs.getLong(PreferenceUtils.PREF_TOKEN_EXPIRES_AT, 0);
-        } catch (ClassCastException e) {
-            // An earlier version might have stored the token as a string
-            String expiresAtSt = null;
-            try {
-                expiresAtSt = prefs.getString(PreferenceUtils.PREF_TOKEN_EXPIRES_AT, null);
-                if (expiresAtSt != null) {
-                    expiresAtMs = Long.parseLong(expiresAtSt);
-                }
-            } catch (NumberFormatException nfe) {
-                // The string was not even a valid one, we'll ignore it.
-                Log.w(LOGTAG, "pref_token_expires_at stored as invalid String : '" + expiresAtSt + "'", nfe);
-            }
-        }
-
-        if (accessToken != null && expiresAtMs != null && expiresAtMs != 0) {
-            Date expiresAt = new Date(expiresAtMs);
-            auth = new Authentication();
-            auth.setAccessToken(accessToken);
-            auth.setExpirationDate(expiresAt);
-        }
+        this.auth = PreferenceUtils.readAuthentication(this);
     }
 
     // Preferences
@@ -253,10 +227,7 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
     }
 
     private void saveAuthenticationInPreferences(Authentication auth) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        prefs.edit().putString(PreferenceUtils.PREF_ACCESS_TOKEN, auth.getAccessToken())
-                .putLong(PreferenceUtils.PREF_TOKEN_EXPIRES_AT, auth.getExpirationDate().getTime()).commit();
+        PreferenceUtils.saveAuthentication(this, auth);
     }
 
     public void showLoggedTabs() {
@@ -278,10 +249,9 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
     }
 
     public void forgetAuthentication() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        prefs.edit().remove(PreferenceUtils.PREF_ACCESS_TOKEN).remove(PreferenceUtils.PREF_TOKEN_EXPIRES_AT).commit();
-
+        
+        PreferenceUtils.resetAuthentication(this);
+        
         this.auth = null;
 
         hideLoggedTabs();

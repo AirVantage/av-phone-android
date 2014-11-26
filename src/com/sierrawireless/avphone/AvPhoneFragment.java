@@ -7,12 +7,12 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sierrawireless.avphone.auth.AuthenticationListener;
+import com.sierrawireless.avphone.auth.AuthenticationManager;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
 
 public abstract class AvPhoneFragment extends Fragment implements IMessageDisplayer {
 
-    protected AuthenticationListener authListener;
+    protected AuthenticationManager authManager;
 
     public AvPhoneFragment() {
         super();
@@ -22,10 +22,16 @@ public abstract class AvPhoneFragment extends Fragment implements IMessageDispla
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        authListener = (AuthenticationListener) activity;
+        if (activity instanceof AuthenticationManager) {
+            setAuthManager((AuthenticationManager) activity);
+        }
 
     }
 
+    public void setAuthManager(AuthenticationManager authManager) {
+        this.authManager = authManager;
+    }
+    
     @Override
     public void showError(int id, Object... params) {
         this.showErrorMessage(id, params);
