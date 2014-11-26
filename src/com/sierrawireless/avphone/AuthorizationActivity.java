@@ -74,6 +74,7 @@ public class AuthorizationActivity extends Activity {
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.removeAllCookie();
         
+        // Example : https://na.airvantage.net/api/oauth/authorize?client_id=54d4faa5343d49fba03f2a2ec1f210b9&response_type=token&redirect_uri=oauth://airvantage
         webview.loadUrl(authUrl);
     }
 
