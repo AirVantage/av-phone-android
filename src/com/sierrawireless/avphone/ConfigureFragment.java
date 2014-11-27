@@ -25,7 +25,7 @@ import com.sierrawireless.avphone.task.SyncWithAvTask;
 
 public class ConfigureFragment extends AvPhoneFragment {
 
-    private Button syncBt;
+    private Button saveBt;
 
     private EditText customData1EditText;
     private EditText customData2EditText;
@@ -68,8 +68,8 @@ public class ConfigureFragment extends AvPhoneFragment {
         imei = DeviceInfo.getIMEI(this.getActivity());
 
         // Register button
-        syncBt = (Button) view.findViewById(R.id.sync_bt);
-        syncBt.setOnClickListener(new View.OnClickListener() {
+        saveBt = (Button) view.findViewById(R.id.save_bt);
+        saveBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onRegisterClicked();

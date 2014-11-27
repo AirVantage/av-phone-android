@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
- 
+
+    <!-- 
+    
+    
+    
+     -->
+    
     <item name="sierrared" type="color">#E53B30</item>
     <item name="greybg" type="color">#F9F9F9</item>
+    
     <item name="whitebg" type="color">#FFFFFF</item>
     <item name="textcolor" type="color">#515D66</item>
+    
     
     <item name="error_bg" type="color">#FFBABA</item>
     <item name="error_text" type="color">#D8000C</item>

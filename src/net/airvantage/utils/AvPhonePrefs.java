@@ -7,6 +7,8 @@ public class AvPhonePrefs {
     
     public String password;
     public String period;
+    
+    // TODO(pht) use enum for server
     public boolean usesNA;
     public boolean usesEU;
     
@@ -20,6 +22,10 @@ public class AvPhonePrefs {
     
     public boolean usesEU() {
         return usesEU;
+    }
+
+    public boolean usesCustomServer() {
+        return (!usesNA && !usesEU);
     }
     
 }

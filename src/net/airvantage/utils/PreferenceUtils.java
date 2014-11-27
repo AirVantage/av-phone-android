@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.R;
 import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.model.CustomDataLabels;
@@ -18,6 +17,12 @@ import com.sierrawireless.avphone.model.CustomDataLabels;
 public class PreferenceUtils {
 
     private static String LOGTAG = PreferenceUtils.class.getName();
+
+    public enum Server {
+        NA,
+        EU,
+        CUSTOM
+    }
 
     
     private static final String DEFAULT_COMM_PERIOD = "2";
@@ -94,21 +99,23 @@ public class PreferenceUtils {
         return labels;
     }
 
-    public static void toggleServers(Context context) {
-        AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(context);
-        if (prefs.usesEU()) {
-            PreferenceUtils.setPreference(context, R.string.pref_server_key,
-                    context.getString(R.string.pref_server_na_value));
-            PreferenceUtils.setPreference(context, R.string.pref_client_id_key,
-                    context.getString(R.string.pref_client_id_na));
-        } else if (prefs.usesNA()) {
-            PreferenceUtils.setPreference(context, R.string.pref_server_key,
-                    context.getString(R.string.pref_server_eu_value));
-            PreferenceUtils.setPreference(context, R.string.pref_client_id_key,
-                    context.getString(R.string.pref_client_id_eu));
-        }
-    }
 
+    public static void setServer(Server server, Context context) {
+       if (server == Server.NA) {
+           PreferenceUtils.setPreference(context, R.string.pref_server_key,
+                   context.getString(R.string.pref_server_na_value));
+           PreferenceUtils.setPreference(context, R.string.pref_client_id_key,
+                   context.getString(R.string.pref_client_id_na));
+       } else if (server == Server.EU) {
+           PreferenceUtils.setPreference(context, R.string.pref_server_key,
+                   context.getString(R.string.pref_server_eu_value));
+           PreferenceUtils.setPreference(context, R.string.pref_client_id_key,
+                   context.getString(R.string.pref_client_id_eu));
+       } else {
+           throw new IllegalArgumentException("Should be NA or EU");
+       }
+    }
+    
     public static void saveAuthentication(Context context, Authentication auth) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -159,5 +166,6 @@ public class PreferenceUtils {
         return auth;
 
     }
+
 
 }
