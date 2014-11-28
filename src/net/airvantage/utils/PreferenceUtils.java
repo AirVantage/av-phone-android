@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.R;
 import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.model.CustomDataLabels;
@@ -19,7 +18,6 @@ public class PreferenceUtils {
 
     private static String LOGTAG = PreferenceUtils.class.getName();
 
-    
     private static final String DEFAULT_COMM_PERIOD = "2";
 
     public static final String PREF_SERVER_KEY = "pref_server_key";
@@ -38,17 +36,15 @@ public class PreferenceUtils {
         AvPhonePrefs res = new AvPhonePrefs();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        res.serverHost = PreferenceUtils
-                .getPreference(context, R.string.pref_server_key, R.string.pref_server_na_value);
+        res.serverHost = prefs.getString(PREF_SERVER_KEY, context.getString(R.string.pref_server_na_value));
 
-        res.clientId = PreferenceUtils.getPreference(context, R.string.pref_client_id_key, R.string.pref_client_id_na);
+        res.clientId = prefs.getString(PREF_SERVER_KEY, context.getString(R.string.pref_client_id_na));
 
         res.usesNA = (context.getString(R.string.pref_server_na_value)).equals(res.serverHost);
         res.usesEU = (context.getString(R.string.pref_server_eu_value)).equals(res.serverHost);
 
-        res.password = PreferenceUtils.getPreference(context, R.string.pref_password_key,
-                R.string.pref_password_default);
-        res.period = prefs.getString(context.getString(R.string.pref_period_key), DEFAULT_COMM_PERIOD);
+        res.password = prefs.getString(PREF_PASSWORD_KEY, context.getString(R.string.pref_password_default));
+        res.period = prefs.getString(PREF_PERIOD_KEY, DEFAULT_COMM_PERIOD);
 
         return res;
     }
@@ -60,13 +56,21 @@ public class PreferenceUtils {
         return prefs.getString(prefKey, defaultValueKey);
     }
 
+    /**
+     * Use setPreference(Context, String, String) instead.
+     */
+    @Deprecated
     public static void setPreference(Context context, int prefKeyId, String value) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String prefKey = context.getString(prefKeyId);
-        prefs.edit().putString(prefKey, value).commit();
-
+        PreferenceUtils.setPreference(context, prefKey, value);
     }
 
+    public static void setPreference(Context context, String prefKey, String value) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putString(prefKey, value).commit();
+    }
+
+    
     public static void showMissingPrefsDialog(Activity activity) {
         new AlertDialog.Builder(activity).setTitle(R.string.invalid_prefs).setMessage(R.string.prefs_missing)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
@@ -97,14 +101,14 @@ public class PreferenceUtils {
     public static void toggleServers(Context context) {
         AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(context);
         if (prefs.usesEU()) {
-            PreferenceUtils.setPreference(context, R.string.pref_server_key,
+            PreferenceUtils.setPreference(context, PREF_SERVER_KEY,
                     context.getString(R.string.pref_server_na_value));
-            PreferenceUtils.setPreference(context, R.string.pref_client_id_key,
+            PreferenceUtils.setPreference(context, PREF_CLIENT_ID_KEY,
                     context.getString(R.string.pref_client_id_na));
         } else if (prefs.usesNA()) {
-            PreferenceUtils.setPreference(context, R.string.pref_server_key,
+            PreferenceUtils.setPreference(context, PREF_SERVER_KEY,
                     context.getString(R.string.pref_server_eu_value));
-            PreferenceUtils.setPreference(context, R.string.pref_client_id_key,
+            PreferenceUtils.setPreference(context, PREF_CLIENT_ID_KEY,
                     context.getString(R.string.pref_client_id_eu));
         }
     }
@@ -126,9 +130,9 @@ public class PreferenceUtils {
     public static Authentication readAuthentication(Context context) {
 
         Authentication auth = null;
-        
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        
+
         String accessToken = prefs.getString(PreferenceUtils.PREF_ACCESS_TOKEN, null);
 
         Long expiresAtMs = null;
@@ -155,7 +159,7 @@ public class PreferenceUtils {
             auth.setAccessToken(accessToken);
             auth.setExpirationDate(expiresAt);
         }
-        
+
         return auth;
 
     }

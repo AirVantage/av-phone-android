@@ -3,20 +3,20 @@
 
      <com.sierrawireless.avphone.preference.ServerDialogPreference
         android:defaultValue="@string/pref_server_na_value"
-        android:key="@string/pref_server_key"
+        android:key="pref_server_key"
         android:summary=""
         android:title="@string/pref_server" />
     
     <com.sierrawireless.avphone.preference.ClientIdPreference
         android:defaultValue="@string/pref_client_id_na"
-        android:key="@string/pref_client_id_key"
+        android:key="pref_client_id_key"
         android:summary=""
-        android:dependency="@string/pref_server_key"
+        android:dependency="pref_server_key"
         android:title="@string/pref_client_id" />
     
     <EditTextPreference
         android:defaultValue="@string/pref_password_default"
-        android:key="@string/pref_password_key"
+        android:key="pref_password_key"
         android:summary=""
         android:title="@string/pref_password" 
         android:inputType="textPassword"/>
@@ -25,7 +25,7 @@
         android:defaultValue="@string/pref_period_default"
         android:entries="@array/periodentries"
         android:entryValues="@array/periodvalues"
-        android:key="@string/pref_period_key"
+        android:key="pref_period_key"
         android:summary=""
         android:title="@string/pref_period" />
         

@@ -1,5 +1,6 @@
 package com.sierrawireless.avphone;
 
+import net.airvantage.utils.PreferenceUtils;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
@@ -42,11 +43,11 @@ public class SettingsActivity extends PreferenceActivity {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             // server host
-            Preference serverPref = findPreference(getString(R.string.pref_server_key));
-            serverPref.setSummary(sharedPreferences.getString(getString(R.string.pref_server_key), ""));
+            Preference serverPref = findPreference(PreferenceUtils.PREF_SERVER_KEY);
+            serverPref.setSummary(sharedPreferences.getString(PreferenceUtils.PREF_SERVER_KEY, ""));
 
             // period
-            ListPreference periodPref = (ListPreference) findPreference(getString(R.string.pref_period_key));
+            ListPreference periodPref = (ListPreference) findPreference(PreferenceUtils.PREF_PERIOD_KEY);
             periodPref.setSummary(periodPref.getEntry());
         }
     }
