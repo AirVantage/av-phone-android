@@ -2,19 +2,9 @@ package com.sierrawireless.avphone;
 
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningServiceInfo;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
+import android.app.Activity;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,37 +20,51 @@ import android.widget.ToggleButton;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 import com.sierrawireless.avphone.service.LogMessage;
 import com.sierrawireless.avphone.service.MonitoringService;
-import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder;
 import com.sierrawireless.avphone.service.NewData;
 
-public class RunFragment extends AvPhoneFragment implements OnSharedPreferenceChangeListener {
+public class RunFragment extends AvPhoneFragment implements MonitorServiceListener, CustomLabelsListener {
 
     private static final String LOGTAG = RunFragment.class.getName();
 
     private DataViewUpdater viewUpdater;
 
-    private AlarmManager alarmManager;
-
     private View view;
 
-    private PreferenceUtils prefUtils;
+    private MonitorServiceManager monitorServiceManager;
 
-    private String deviceId;
+    private CustomLabelsManager customLabelsManager;
+    
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (activity instanceof MonitorServiceManager) {
+            this.setMonitorServiceManager((MonitorServiceManager) activity);
+        }
+
+        if (activity instanceof CustomLabelsManager) {
+           this.setCustomLabelsManager((CustomLabelsManager) activity);
+        }
+    }
+
+    protected void setMonitorServiceManager(MonitorServiceManager manager) {
+        this.monitorServiceManager = manager;
+        this.monitorServiceManager.setMonitoringServiceListener(this);
+    }
+    
+    protected void setCustomLabelsManager(CustomLabelsManager manager) {
+        this.customLabelsManager = manager;
+        this.customLabelsManager.setCustomLabelsListener(this);
+    }
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_run, container, false);
         viewUpdater = new DataViewUpdater(view);
 
-        prefUtils = new PreferenceUtils(this);
-        prefUtils.addListener(this);
-
-        deviceId = DeviceInfo.getUniqueId(this.getActivity());
-
-        CustomDataLabels customLabels = prefUtils.getCustomDataLabels();
+        CustomDataLabels customLabels = PreferenceUtils.getCustomDataLabels(getActivity());
         setCustomDataLabels(customLabels);
-
-        alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
 
         // register service listener
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(viewUpdater,
@@ -68,15 +72,11 @@ public class RunFragment extends AvPhoneFragment implements OnSharedPreferenceCh
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(viewUpdater,
                 new IntentFilter(LogMessage.LOG_EVENT));
 
-        // Preferences
-
-        // Start/stop switch
-        boolean isServiceRunning = isServiceRunning();
+        boolean isServiceRunning = monitorServiceManager.isServiceRunning();
 
         Switch serviceSwitch = (Switch) view.findViewById(R.id.service_switch);
         serviceSwitch.setChecked(isServiceRunning);
         serviceSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -88,9 +88,9 @@ public class RunFragment extends AvPhoneFragment implements OnSharedPreferenceCh
         });
 
         if (isServiceRunning) {
-            connectToService();
+            this.onServiceStarted(monitorServiceManager.getMonitoringService());
         }
-
+        
         // Alarm button
         ToggleButton alarmButton = (ToggleButton) view.findViewById(R.id.alarm_button);
         alarmButton.setOnClickListener(onAlarmClick);
@@ -103,38 +103,30 @@ public class RunFragment extends AvPhoneFragment implements OnSharedPreferenceCh
         return view;
     }
 
-    private boolean isServiceRunning() {
-        ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
-        for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (MonitoringService.class.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        boolean isServiceRunning = monitorServiceManager.isServiceRunning();
+        Switch serviceSwitch = (Switch) view.findViewById(R.id.service_switch);
+        serviceSwitch.setChecked(isServiceRunning);
+
     }
 
     private void startMonitoringService() {
-        AvPhonePrefs avPrefs = prefUtils.getAvPhonePrefs();
-
+        AvPhonePrefs avPrefs = PreferenceUtils.getAvPhonePrefs(getActivity());
         if (!avPrefs.checkCredentials()) {
-            prefUtils.showMissingPrefsDialog();
+            PreferenceUtils.showMissingPrefsDialog(getActivity());
             Switch serviceSwitch = (Switch) view.findViewById(R.id.service_switch);
             serviceSwitch.setChecked(false);
-            return;
+        } else {
+            this.monitorServiceManager.startMonitoringService();
         }
 
-        Intent intent = new Intent(getActivity(), MonitoringService.class);
-        intent.putExtra(MonitoringService.DEVICE_ID, deviceId);
-        intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost);
-        intent.putExtra(MonitoringService.PASSWORD, avPrefs.password);
+    }
 
-        PendingIntent pendingIntent = PendingIntent.getService(getActivity(), 0, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
-        // registering our pending intent with alarm manager
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, Integer.valueOf(avPrefs.period) * 60 * 1000,
-                pendingIntent);
-
-        this.connectToService();
+    private void stopMonitoringService() {
+        this.monitorServiceManager.stopMonitoringService();
     }
 
     protected void setCustomDataLabels(CustomDataLabels customDataLabels) {
@@ -158,72 +150,6 @@ public class RunFragment extends AvPhoneFragment implements OnSharedPreferenceCh
 
     }
 
-    private void stopMonitoringService() {
-
-        Intent intent = new Intent(getActivity(), MonitoringService.class);
-        PendingIntent pendingIntent = PendingIntent.getService(getActivity(), 0, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
-        alarmManager.cancel(pendingIntent);
-        getActivity().stopService(intent);
-
-        disconnectFromService();
-
-        viewUpdater.onStop();
-    }
-
-    // Service binding
-
-    private void connectToService() {
-        bound = getActivity().bindService(new Intent(getActivity(), MonitoringService.class), connection,
-                Context.BIND_AUTO_CREATE);
-    }
-
-    private void disconnectFromService() {
-        if (bound) {
-            getActivity().unbindService(connection);
-            bound = false;
-        }
-    }
-
-    boolean bound = false;
-    MonitoringService service;
-    ServiceConnection connection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName arg0, IBinder binder) {
-            Log.d(LOGTAG, "Connected to the monitoring service");
-            service = ((ServiceBinder) binder).getService();
-            viewUpdater.onStart(service.getStartedSince(), service.getLastData(), service.getLastLog(),
-                    service.getLastRun());
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            Log.d(LOGTAG, "Disconnected from the monitoring service");
-            bound = false;
-        }
-
-    };
-
-    // Preferences
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String changedPrefKey) {
-        if (isServiceRunning() && prefUtils.isMonitoringPreference(changedPrefKey)) {
-            // restart
-            stopMonitoringService();
-            startMonitoringService();
-        }
-        
-        setCustomDataLabels(prefUtils.getCustomDataLabels());
-        
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        disconnectFromService();
-    }
 
     // Alarm button
 
@@ -232,14 +158,35 @@ public class RunFragment extends AvPhoneFragment implements OnSharedPreferenceCh
         @Override
         public void onClick(View v) {
             Log.d(LOGTAG, "On alarm button click");
-            if (bound && service != null) {
-                service.sendAlarmEvent(((ToggleButton) v).isChecked());
-            }
+
+            monitorServiceManager.sendAlarmEvent(((ToggleButton) v).isChecked());
+
         }
     };
 
     protected TextView getErrorMessageView() {
         return (TextView) view.findViewById(R.id.run_error_message);
-    };
+    }
+
+    @Override
+    public void onServiceStarted(MonitoringService service) {
+        viewUpdater.onStart(service.getStartedSince(), service.getLastData(), service.getLastLog(),
+                service.getLastRun());
+    }
+
+    @Override
+    public void onServiceStopped(MonitoringService service) {
+        viewUpdater.onStop();
+    }
+    
+    @Override
+    public void onCustomLabelsChanged() {
+        // The activity can be null if the change is done while the fragment is not active.
+        // This can wait for the activity to be resumed.
+        if (getActivity() != null) {
+            CustomDataLabels customLabels = PreferenceUtils.getCustomDataLabels(getActivity());
+            setCustomDataLabels(customLabels);
+        }
+    }
 
 }

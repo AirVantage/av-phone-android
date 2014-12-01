@@ -14,9 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.sierrawireless.avphone.auth.AuthUtils;
 import com.sierrawireless.avphone.auth.Authentication;
-import com.sierrawireless.avphone.auth.AuthenticationListener;
-import com.sierrawireless.avphone.auth.IAuthenticationManager;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 import com.sierrawireless.avphone.task.IAsyncTaskFactory;
@@ -24,11 +23,10 @@ import com.sierrawireless.avphone.task.SyncWithAvListener;
 import com.sierrawireless.avphone.task.SyncWithAvParams;
 import com.sierrawireless.avphone.task.SyncWithAvTask;
 
-public class ConfigureFragment extends AvPhoneFragment implements AuthenticationListener {
+public class ConfigureFragment extends AvPhoneFragment {
 
-    
     private Button syncBt;
-    
+
     private EditText customData1EditText;
     private EditText customData2EditText;
     private EditText customData3EditText;
@@ -38,34 +36,25 @@ public class ConfigureFragment extends AvPhoneFragment implements Authentication
 
     private View view;
 
-    private PreferenceUtils prefUtils;
-
     private String deviceId;
     private String imei;
 
     private IAsyncTaskFactory taskFactory;
-    private IAuthenticationManager authManager;
 
     public ConfigureFragment() {
         super();
     }
 
-    protected ConfigureFragment(IAsyncTaskFactory taskFactory, IAuthenticationManager authManager) {
+    protected ConfigureFragment(IAsyncTaskFactory taskFactory) {
         super();
         assert (taskFactory != null);
-        assert (authManager != null);
         this.taskFactory = taskFactory;
-        this.authManager = authManager;
     }
-    
+
     public void setTaskFactory(IAsyncTaskFactory taskFactory) {
         this.taskFactory = taskFactory;
     }
 
-    public void setAuthenticationManager(IAuthenticationManager authManager) {
-        this.authManager = authManager;
-    }
-    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -77,7 +66,7 @@ public class ConfigureFragment extends AvPhoneFragment implements Authentication
 
         // try to get the IMEI for GSM phones
         imei = DeviceInfo.getIMEI(this.getActivity());
-       
+
         // Register button
         syncBt = (Button) view.findViewById(R.id.sync_bt);
         syncBt.setOnClickListener(new View.OnClickListener() {
@@ -86,8 +75,6 @@ public class ConfigureFragment extends AvPhoneFragment implements Authentication
                 onRegisterClicked();
             }
         });
-        
-        prefUtils = new PreferenceUtils(this);
 
         // Fields for custom data
         customData1EditText = buildCustomLabelEditText(view, R.id.custom1_value, R.string.pref_custom1_label_key,
@@ -109,7 +96,7 @@ public class ConfigureFragment extends AvPhoneFragment implements Authentication
     private EditText buildCustomLabelEditText(View view, int id, final int prefKeyId, int labelDefaultKeyId) {
         EditText res = (EditText) view.findViewById(id);
 
-        res.setText(prefUtils.getPreference(prefKeyId, labelDefaultKeyId));
+        res.setText(PreferenceUtils.getPreference(getActivity(), prefKeyId, labelDefaultKeyId));
 
         res.addTextChangedListener(new TextWatcher() {
 
@@ -123,7 +110,7 @@ public class ConfigureFragment extends AvPhoneFragment implements Authentication
 
             @Override
             public void afterTextChanged(Editable s) {
-                prefUtils.setPreference(prefKeyId, s.toString());
+                PreferenceUtils.setPreference(getActivity(), prefKeyId, s.toString());
             }
         });
         return res;
@@ -131,10 +118,10 @@ public class ConfigureFragment extends AvPhoneFragment implements Authentication
 
     private boolean checkCredentials() {
 
-        AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
+        AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(getActivity());
 
         if (!prefs.checkCredentials()) {
-            prefUtils.showMissingPrefsDialog();
+            PreferenceUtils.showMissingPrefsDialog(getActivity());
             return false;
         }
 
@@ -144,30 +131,28 @@ public class ConfigureFragment extends AvPhoneFragment implements Authentication
 
     protected void onRegisterClicked() {
         if (checkCredentials()) {
-            authManager.authenticate(prefUtils, this, this);
+            Authentication auth = authManager.getAuthentication();
+            if (auth != null && !auth.isExpired()) {
+                syncWithAv(auth.getAccessToken());
+            } else {
+                requestAuthentication();
+            }
         }
-    }
-
-    @Override
-    public void onAuthentication(Authentication auth) {
-        syncWithAv(auth.getAccessToken());
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        Authentication auth = authManager.activityResultAsAuthentication(requestCode, resultCode, data);
+        Authentication auth = AuthUtils.activityResultAsAuthentication(requestCode, resultCode, data);
         if (auth != null) {
-            authManager.saveAuthentication(prefUtils, auth);
-            onAuthentication(auth);
+            authManager.onAuthentication(auth);
+            syncWithAv(auth.getAccessToken());
         }
     }
 
-
     private void syncWithAv(String token) {
 
-        AvPhonePrefs prefs = prefUtils.getAvPhonePrefs();
+        AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(getActivity());
 
         final IMessageDisplayer display = this;
 
@@ -180,14 +165,13 @@ public class ConfigureFragment extends AvPhoneFragment implements Authentication
         syncParams.customData = getCustomDataLabels();
 
         syncTask.execute(syncParams);
-        
+
         syncTask.addProgressListener(new SyncWithAvListener() {
             @Override
             public void onSynced(AvError error) {
-                syncTask.showResult(error, display, getActivity());    
-        }
+                syncTask.showResult(error, display, getActivity());
+            }
         });
-
 
     }
 

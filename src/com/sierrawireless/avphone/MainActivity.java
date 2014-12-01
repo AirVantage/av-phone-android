@@ -1,37 +1,79 @@
 package com.sierrawireless.avphone;
 
+import java.util.Date;
+
+import net.airvantage.utils.AvPhonePrefs;
+import net.airvantage.utils.PreferenceUtils;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.ActionBar.TabListener;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
+import android.app.AlarmManager;
 import android.app.FragmentTransaction;
+import android.app.PendingIntent;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.auth.AuthenticationManager;
-import com.sierrawireless.avphone.auth.IAuthenticationManager;
+import com.sierrawireless.avphone.service.MonitoringService;
+import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder;
 import com.sierrawireless.avphone.task.AsyncTaskFactory;
 import com.sierrawireless.avphone.task.IAsyncTaskFactory;
 
 /**
  * The main activity, in charge of displaying the tab view
  */
-public class MainActivity extends FragmentActivity implements TabListener, LoginListener {
+public class MainActivity extends FragmentActivity implements TabListener, LoginListener, AuthenticationManager,
+        OnSharedPreferenceChangeListener, MonitorServiceManager, CustomLabelsManager {
+
+    private static String LOGTAG = MainActivity.class.getName();
 
     private ViewPager viewPager;
     private TabsPagerAdapter tabsPageAdapter;
     private ActionBar actionBar;
+    private AlarmManager alarmManager;
+    private IAsyncTaskFactory taskFactory;
+    private Authentication auth;
+    private SharedPreferences prefs;
+
+    boolean boundToMonitoringService = false;
+    MonitoringService monitoringService;
+    private MonitorServiceListener monitoringServiceListener = null;
+
+    private CustomLabelsListener customLabelsListener = null;
+
+    public void setCustomLabelsListener(CustomLabelsListener customLabelsListener) {
+        this.customLabelsListener = customLabelsListener;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.registerOnSharedPreferenceChangeListener(this);
+
+        readAuthenticationFromPreferences();
+
+        taskFactory = new AsyncTaskFactory(MainActivity.this);
 
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getActionBar();
@@ -40,6 +82,8 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
         viewPager.setAdapter(tabsPageAdapter);
         actionBar.setHomeButtonEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
         // Adding Tabs
         actionBar.addTab(actionBar.newTab().setText(getString(R.string.home_tab)).setTabListener(this));
@@ -60,6 +104,20 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
             }
         });
 
+        if (isLogged()) {
+            showLoggedTabs();
+        } else {
+            hideLoggedTabs();
+        }
+
+        if (isServiceRunning()) {
+            connectToService();
+        }
+
+    }
+
+    private void readAuthenticationFromPreferences() {
+        this.auth = PreferenceUtils.readAuthentication(this);
     }
 
     // Preferences
@@ -85,42 +143,13 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
 
     @Override
     public void OnLoginChanged(boolean logged) {
-        if (logged) {
-            if (actionBar.getTabCount() == 1) {
-                actionBar.addTab(actionBar.newTab().setText(getString(R.string.run_tab)).setTabListener(this));
-                actionBar.addTab(actionBar.newTab().setText(getString(R.string.configure_tab)).setTabListener(this));
-            }
-            this.tabsPageAdapter.setLogged(logged);
-            this.tabsPageAdapter.notifyDataSetChanged();
-            this.viewPager.setCurrentItem(1);
-        } else {
-            if (actionBar.getTabCount() == 3) {
-                actionBar.removeTabAt(2);
-                actionBar.removeTabAt(1);
-            }
-            this.tabsPageAdapter.setLogged(false);
-            this.tabsPageAdapter.notifyDataSetChanged();
-            this.viewPager.setCurrentItem(0);
-        }
     }
 
     class TabsPagerAdapter extends FragmentPagerAdapter {
 
-        public boolean logged = false;
-
-        private IAsyncTaskFactory taskFactory;
-        private IAuthenticationManager authManager;
-
         public TabsPagerAdapter(FragmentManager fm) {
             super(fm);
 
-            taskFactory = new AsyncTaskFactory(MainActivity.this);
-            authManager = new AuthenticationManager();
-
-        }
-
-        public void setLogged(boolean logged) {
-            this.logged = logged;
         }
 
         @Override
@@ -141,7 +170,7 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
 
         @Override
         public int getCount() {
-            if (!logged) {
+            if (!isLogged()) {
                 return 1;
             } else {
                 return 3;
@@ -152,8 +181,6 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
             HomeFragment fragment = (HomeFragment) Fragment
                     .instantiate(MainActivity.this, HomeFragment.class.getName());
             fragment.setTaskFactory(taskFactory);
-            fragment.setAuthenticationManager(authManager);
-            fragment.addLoginListener(MainActivity.this);
             return fragment;
         }
 
@@ -161,7 +188,6 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
             ConfigureFragment fragment = (ConfigureFragment) Fragment.instantiate(MainActivity.this,
                     ConfigureFragment.class.getName());
             fragment.setTaskFactory(taskFactory);
-            fragment.setAuthenticationManager(authManager);
             return fragment;
         }
 
@@ -179,5 +205,184 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
     @Override
     public void onTabReselected(Tab tab, FragmentTransaction ft) {
     }
+
+    public boolean isLogged() {
+        return (this.auth != null && !this.auth.isExpired(new Date()));
+    }
+
+    @Override
+    public void onAuthentication(Authentication auth) {
+
+        this.auth = auth;
+
+        saveAuthenticationInPreferences(auth);
+
+        showLoggedTabs();
+
+    }
+
+    @Override
+    public Authentication getAuthentication() {
+        return this.auth;
+    }
+
+    private void saveAuthenticationInPreferences(Authentication auth) {
+        PreferenceUtils.saveAuthentication(this, auth);
+    }
+
+    public void showLoggedTabs() {
+        if (actionBar.getTabCount() == 1) {
+            actionBar.addTab(actionBar.newTab().setText(getString(R.string.run_tab)).setTabListener(this));
+            actionBar.addTab(actionBar.newTab().setText(getString(R.string.configure_tab)).setTabListener(this));
+        }
+        this.tabsPageAdapter.notifyDataSetChanged();
+        this.viewPager.setCurrentItem(1);
+    }
+
+    public void hideLoggedTabs() {
+        if (actionBar.getTabCount() == 3) {
+            actionBar.removeTabAt(2);
+            actionBar.removeTabAt(1);
+        }
+        this.tabsPageAdapter.notifyDataSetChanged();
+        this.viewPager.setCurrentItem(0);
+    }
+
+    public void forgetAuthentication() {
+        
+        PreferenceUtils.resetAuthentication(this);
+        
+        this.auth = null;
+
+        hideLoggedTabs();
+        
+        if (this.isServiceRunning()) {
+            this.stopMonitoringService();
+        }
+        
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        if (PreferenceUtils.PREF_SERVER_KEY.equals(key) || PreferenceUtils.PREF_CLIENT_ID_KEY.equals(key)) {
+
+            this.stopMonitoringService();
+            this.forgetAuthentication();
+
+        } else if (PreferenceUtils.PREF_PERIOD_KEY.equals(key) || PreferenceUtils.PREF_PASSWORD_KEY.equals(key)) {
+
+            this.restartMonitoringService();
+
+        } else if (key.indexOf("pref_data_custom") != -1) {
+
+            if (this.customLabelsListener != null) {
+                this.customLabelsListener.onCustomLabelsChanged();
+            }
+        }
+
+    }
+
+    public boolean isServiceRunning() {
+        ActivityManager manager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
+        for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (MonitoringService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void connectToService() {
+        Intent intent = new Intent(this, MonitoringService.class);
+        boundToMonitoringService = this.bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    private void disconnectFromService() {
+        if (boundToMonitoringService) {
+            this.unbindService(connection);
+            boundToMonitoringService = false;
+        }
+    }
+
+    ServiceConnection connection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName arg0, IBinder binder) {
+            Log.d(LOGTAG, "Connected to the monitoring service");
+            monitoringService = ((ServiceBinder) binder).getService();
+
+            if (monitoringServiceListener != null) {
+                monitoringServiceListener.onServiceStarted(monitoringService);
+            }
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.d(LOGTAG, "Disconnected from the monitoring service");
+            boundToMonitoringService = false;
+            if (monitoringServiceListener != null) {
+                monitoringServiceListener.onServiceStopped(monitoringService);
+            }
+        }
+
+    };
+
+    public void sendAlarmEvent(boolean activated) {
+        if (boundToMonitoringService && monitoringService != null) {
+            monitoringService.sendAlarmEvent(activated);
+        }
+    }
+
+    @Override
+    public void startMonitoringService() {
+        AvPhonePrefs avPrefs = PreferenceUtils.getAvPhonePrefs(this);
+
+        Intent intent = new Intent(this, MonitoringService.class);
+        intent.putExtra(MonitoringService.DEVICE_ID, DeviceInfo.getUniqueId(this));
+        intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost);
+        intent.putExtra(MonitoringService.PASSWORD, avPrefs.password);
+
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        // registering our pending intent with alarm manager
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, Integer.valueOf(avPrefs.period) * 60 * 1000,
+                pendingIntent);
+
+        connectToService();
+
+    }
+
+    @Override
+    public void stopMonitoringService() {
+        Intent intent = new Intent(this, MonitoringService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        alarmManager.cancel(pendingIntent);
+        this.stopService(intent);
+
+        disconnectFromService();
+
+    }
+
+    private void restartMonitoringService() {
+        stopMonitoringService();
+        startMonitoringService();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        disconnectFromService();
+    }
+
+    @Override
+    public MonitoringService getMonitoringService() {
+        return this.monitoringService;
+    }
+
+    public void setMonitoringServiceListener(MonitorServiceListener listener) {
+        this.monitoringServiceListener = listener;
+    }
+
 
 }
