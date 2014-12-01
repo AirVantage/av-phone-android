@@ -32,10 +32,7 @@
     <string name="notif_new_message">Message!</string>
 
     <!-- Preferences -->
-    <string name="pref_password_key">pref_password</string>
     <string name="pref_password">Password</string>
-    
-    <string name="pref_server_key">pref_server_key</string>
     <string name="pref_server">AirVantage server</string>
     <string name="pref_server_na">NA</string>
     <string name="pref_server_na_value">na.airvantage.net</string>
@@ -66,16 +63,11 @@
     <string name="pref_custom6_label">Custom Data 6 (String)</string>
     <string name="pref_custom6_label_default">Color Cartridge SN</string>
     
-    <string name="pref_period_key">pref_period_key</string>
     <string name="pref_period">Push data period</string>
     
-    <string name="pref_client_id_key">pref_client_id_key</string>
     <string name="pref_client_id">Client ID</string>
     <string name="pref_client_id_na">54d4faa5343d49fba03f2a2ec1f210b9</string>
     <string name="pref_client_id_eu">cd757a11e2cc42ba81bae65c10bdd49e</string>
-    
-    <string name="pref_access_token_key">pref_access_token</string>
-    <string name="pref_token_expires_at_key">pref_token_expires_at</string>
     
     <!-- default values -->
     <string name="pref_password_default">12345</string>

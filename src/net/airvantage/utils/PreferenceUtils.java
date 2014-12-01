@@ -23,7 +23,6 @@ public class PreferenceUtils {
         EU,
         CUSTOM
     }
-
     
     private static final String DEFAULT_COMM_PERIOD = "2";
 
@@ -43,17 +42,15 @@ public class PreferenceUtils {
         AvPhonePrefs res = new AvPhonePrefs();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        res.serverHost = PreferenceUtils
-                .getPreference(context, R.string.pref_server_key, R.string.pref_server_na_value);
+        res.serverHost = prefs.getString(PREF_SERVER_KEY, context.getString(R.string.pref_server_na_value));
 
-        res.clientId = PreferenceUtils.getPreference(context, R.string.pref_client_id_key, R.string.pref_client_id_na);
+        res.clientId = prefs.getString(PREF_CLIENT_ID_KEY, context.getString(R.string.pref_client_id_na));
 
         res.usesNA = (context.getString(R.string.pref_server_na_value)).equals(res.serverHost);
         res.usesEU = (context.getString(R.string.pref_server_eu_value)).equals(res.serverHost);
 
-        res.password = PreferenceUtils.getPreference(context, R.string.pref_password_key,
-                R.string.pref_password_default);
-        res.period = prefs.getString(context.getString(R.string.pref_period_key), DEFAULT_COMM_PERIOD);
+        res.password = prefs.getString(PREF_PASSWORD_KEY, context.getString(R.string.pref_password_default));
+        res.period = prefs.getString(PREF_PERIOD_KEY, DEFAULT_COMM_PERIOD);
 
         return res;
     }
@@ -65,11 +62,18 @@ public class PreferenceUtils {
         return prefs.getString(prefKey, defaultValueKey);
     }
 
+    /**
+     * Use setPreference(Context, String, String) instead.
+     */
+    @Deprecated
     public static void setPreference(Context context, int prefKeyId, String value) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String prefKey = context.getString(prefKeyId);
-        prefs.edit().putString(prefKey, value).commit();
+        PreferenceUtils.setPreference(context, prefKey, value);
+    }
 
+    public static void setPreference(Context context, String prefKey, String value) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putString(prefKey, value).commit();
     }
 
     public static void showMissingPrefsDialog(Activity activity) {
@@ -99,23 +103,22 @@ public class PreferenceUtils {
         return labels;
     }
 
-
     public static void setServer(Server server, Context context) {
        if (server == Server.NA) {
-           PreferenceUtils.setPreference(context, R.string.pref_server_key,
-                   context.getString(R.string.pref_server_na_value));
-           PreferenceUtils.setPreference(context, R.string.pref_client_id_key,
-                   context.getString(R.string.pref_client_id_na));
+            PreferenceUtils.setPreference(context, PREF_SERVER_KEY,
+                    context.getString(R.string.pref_server_na_value));
+            PreferenceUtils.setPreference(context, PREF_CLIENT_ID_KEY,
+                    context.getString(R.string.pref_client_id_na));
        } else if (server == Server.EU) {
-           PreferenceUtils.setPreference(context, R.string.pref_server_key,
-                   context.getString(R.string.pref_server_eu_value));
-           PreferenceUtils.setPreference(context, R.string.pref_client_id_key,
-                   context.getString(R.string.pref_client_id_eu));
+            PreferenceUtils.setPreference(context, PREF_SERVER_KEY,
+                    context.getString(R.string.pref_server_eu_value));
+            PreferenceUtils.setPreference(context, PREF_CLIENT_ID_KEY,
+                    context.getString(R.string.pref_client_id_eu));
        } else {
            throw new IllegalArgumentException("Should be NA or EU");
-       }
+        }
     }
-    
+
     public static void saveAuthentication(Context context, Authentication auth) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -166,6 +169,5 @@ public class PreferenceUtils {
         return auth;
 
     }
-
 
 }
