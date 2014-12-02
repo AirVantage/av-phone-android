@@ -78,8 +78,8 @@
 
     <!-- Home fragment -->
     
-    <string name="logged_on_na">You are currently logged on Airvantage NA</string>
-    <string name="logged_on_eu">You are currently logged on Airvantage EU </string>
+    <string name="logged_on_na">You are currently logged on AirVantage NA</string>
+    <string name="logged_on_eu">You are currently logged on AirVantage EU </string>
     <string name="logged_on_custom">You are currently logged on %1$s</string>
     
     <string name="logout">Logout</string>
@@ -95,13 +95,13 @@
     
     <string name="home_simulate_message"><b>Simulate</b> a device with your phone</string>
     
-    <string name="home_login_message">Login to <b>automatically register</b> your phone on Airvantage</string>
+    <string name="home_login_message">Login to <b>automatically register</b> your phone on AirVantage</string>
     
     <!-- Synchronization steps -->
-    <string name="progress_syncing">Synchronizing with Airvantage</string>
+    <string name="progress_syncing">Synchronizing with AirVantage</string>
     <string name="progress_syncing_message">
          <![CDATA[
-        We are synchronizing your phone with Airvantage.<br/>
+        We are synchronizing your phone with AirVantage.<br/>
         Please wait.<br/>
         (%1$s)
         ]]>
@@ -132,10 +132,10 @@
     <string name="sync_error_forbidden">Error : You are not allowed to %1$s on URL %2$s</string>
     <string name="sync_error_unexpected">Error : Unexpected error (%1$s)</string>
     
-    <string name="sync_success">Synchronized with airvantage</string>
+    <string name="sync_success">Synchronized with AirVantage</string>
     
     <!-- Run fragment -->
-    <string name="run_info_message">Your phone is registered on AirVantage as %1$s. Toggle ON/OFF to send data to Airvantage</string>
+    <string name="run_info_message">Your phone is registered on AirVantage as %1$s. Toggle ON/OFF to send data to AirVantage</string>
     <string name="run_send_data">Send Data</string>
     <string name="run_activate_alarm">Activate alarm</string>
     
