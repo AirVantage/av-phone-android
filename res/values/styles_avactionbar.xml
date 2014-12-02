@@ -31,6 +31,11 @@
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_avactionbar</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Avactionbar</item>
         <item name="android:actionBarTabTextStyle">@style/ActionBar.TabTextStyle</item>
+        <item name="android:actionOverflowButtonStyle">@style/ActionBar.TabTextStyle.OverFlowButton</item>
+    </style>
+    
+    <style name="ActionBar.TabTextStyle.OverFlowButton">
+        <item name="android:src">@drawable/ic_action_overflow</item>
     </style>
 
     <style name="ActionBar.TabTextStyle" parent="@android:style/Widget.Holo.Light.ActionBar.TabText">
