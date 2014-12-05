@@ -19,11 +19,9 @@ public class PreferenceUtils {
     private static String LOGTAG = PreferenceUtils.class.getName();
 
     public enum Server {
-        NA,
-        EU,
-        CUSTOM
+        NA, EU, CUSTOM
     }
-    
+
     private static final String DEFAULT_COMM_PERIOD = "2";
 
     public static final String PREF_SERVER_KEY = "pref_server_key";
@@ -62,15 +60,6 @@ public class PreferenceUtils {
         return prefs.getString(prefKey, defaultValueKey);
     }
 
-    /**
-     * Use setPreference(Context, String, String) instead.
-     */
-    @Deprecated
-    public static void setPreference(Context context, int prefKeyId, String value) {
-        String prefKey = context.getString(prefKeyId);
-        PreferenceUtils.setPreference(context, prefKey, value);
-    }
-
     public static void setPreference(Context context, String prefKey, String value) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().putString(prefKey, value).commit();
@@ -104,18 +93,14 @@ public class PreferenceUtils {
     }
 
     public static void setServer(Server server, Context context) {
-       if (server == Server.NA) {
-            PreferenceUtils.setPreference(context, PREF_SERVER_KEY,
-                    context.getString(R.string.pref_server_na_value));
-            PreferenceUtils.setPreference(context, PREF_CLIENT_ID_KEY,
-                    context.getString(R.string.pref_client_id_na));
-       } else if (server == Server.EU) {
-            PreferenceUtils.setPreference(context, PREF_SERVER_KEY,
-                    context.getString(R.string.pref_server_eu_value));
-            PreferenceUtils.setPreference(context, PREF_CLIENT_ID_KEY,
-                    context.getString(R.string.pref_client_id_eu));
-       } else {
-           throw new IllegalArgumentException("Should be NA or EU");
+        if (server == Server.NA) {
+            PreferenceUtils.setPreference(context, PREF_SERVER_KEY, context.getString(R.string.pref_server_na_value));
+            PreferenceUtils.setPreference(context, PREF_CLIENT_ID_KEY, context.getString(R.string.pref_client_id_na));
+        } else if (server == Server.EU) {
+            PreferenceUtils.setPreference(context, PREF_SERVER_KEY, context.getString(R.string.pref_server_eu_value));
+            PreferenceUtils.setPreference(context, PREF_CLIENT_ID_KEY, context.getString(R.string.pref_client_id_eu));
+        } else {
+            throw new IllegalArgumentException("Should be NA or EU");
         }
     }
 
@@ -136,9 +121,9 @@ public class PreferenceUtils {
     public static Authentication readAuthentication(Context context) {
 
         Authentication auth = null;
-        
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        
+
         String accessToken = prefs.getString(PreferenceUtils.PREF_ACCESS_TOKEN, null);
 
         Long expiresAtMs = null;
@@ -165,7 +150,7 @@ public class PreferenceUtils {
             auth.setAccessToken(accessToken);
             auth.setExpirationDate(expiresAt);
         }
-        
+
         return auth;
 
     }

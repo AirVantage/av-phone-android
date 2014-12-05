@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.text.Html;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.sierrawireless.avphone.R;
@@ -52,7 +51,6 @@ public class ProgressSyncWithAvTask extends SyncWithAvTask {
         TextView alertTitle = (TextView) dialog.getWindow().getDecorView().findViewById(alertTitleId);
         alertTitle.setTextColor(context.getResources().getColor(R.color.sierrared)); // change title text color
 
-        
     }
 
     @Override

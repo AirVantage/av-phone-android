@@ -110,7 +110,7 @@ public class ConfigureFragment extends AvPhoneFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                PreferenceUtils.setPreference(getActivity(), prefKeyId, s.toString());
+                PreferenceUtils.setPreference(getActivity(), getActivity().getString(prefKeyId), s.toString());
             }
         });
         return res;
