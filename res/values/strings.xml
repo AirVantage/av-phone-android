@@ -24,8 +24,6 @@
     <string name="memory_usage">Memory usage</string>
     <string name="android_version">Android version</string>
     <string name="no_value">-</string>
-    <string name="sync">Sync with AirVantage</string>
-    <string name="alarm">Activate alarm</string>
     <string name="update_data">Update data</string>
 
     <!-- Notifications -->
@@ -79,43 +77,31 @@
     <string name="prefs_missing">Some application parameters are missing</string>
 
     <!-- Home fragment -->
-    <string name="login_na">Login with AirVantage NA</string>
-    <string name="login_eu">Login with AirVantage EU</string>
-    <string name="login_custom_server">Login with AirVantage</string>
     
-    <string name="logged_on_na">You are currently logged on Airvantage NA</string>
-    <string name="logged_on_eu">You are currently logged on Airvantage EU </string>
+    <string name="logged_on_na">You are currently logged on AirVantage NA</string>
+    <string name="logged_on_eu">You are currently logged on AirVantage EU </string>
     <string name="logged_on_custom">You are currently logged on %1$s</string>
     
     <string name="logout">Logout</string>
     
-    <string name="switch_instance_eu">(Want to work on Airvantage EU instead ?</string>
-    <string name="switch_instance_na">(Want to work on Airvantage NA instead ?</string>
-    <string name="custom_instance">(You will log on Airvantage instance %1$s. Open \'Settings\' to change it.)</string>
-    <string name="switch_instance">Click here)</string>
+    <string name="home_title"><h1><b>Welcome to AV Phone</b></h1></string>
     
-    <string name="home_welcome_message">
-         <![CDATA[
-        <h1>Welcome to AV Phone Demo</h1>
-        This application will let you use your phone to communicate with AirVantage.<br/>
-        We will register your phone on Airvantage automatically.<br/>
-        ]]>
-    </string>
-   
-    <string name="home_before_starting">
-         <![CDATA[
-        <h2>Before starting</h2>
-        &#8226; Create an account on Airvantage<br/>
-        &#8226; Make sure this account has at least the \'User\' Profile<br/>
-        &#8226; Click the Login button below to get started !
-        ]]>
-    </string>
+    <string name="home_image_alt"></string>
+    
+    <string name="home_login_na">Login on AirVantage NA</string>
+    <string name="home_login_eu">Login on AirVantage EU</string>
+    <string name="home_login_custom">Login on AirVantage %1$s</string>
+    
+    
+    <string name="home_simulate_message"><b>Simulate</b> a device with your phone</string>
+    
+    <string name="home_login_message">Login to <b>automatically register</b> your phone on AirVantage</string>
     
     <!-- Synchronization steps -->
-    <string name="progress_syncing">Synchronizing with Airvantage</string>
+    <string name="progress_syncing">Synchronizing with AirVantage</string>
     <string name="progress_syncing_message">
          <![CDATA[
-        We are synchronizing your phone with Airvantage.<br/>
+        We are synchronizing your phone with AirVantage.<br/>
         Please wait.<br/>
         (%1$s)
         ]]>
@@ -134,6 +120,7 @@
     <string name="progress_done">Done</string>
     
     <string name="sync_error_system_exists">Error : A system already exists with this serial number (maybe in another company.)</string>
+    <string name="sync_error_gateway_exists">Error : A gateway already exists with this serial number (maybe in another company.)</string>
     <string name="sync_error_app_exists">Error : An application with type %1$s already exists (maybe in another company)</string>
     <string name="sync_error_too_many_rules">Error : There are too many alert rules registered in your company.</string>
     <string name="sync_error_no_right_create_application">Error : You don\'t have the right to create application. Contact your administrator</string>
@@ -145,16 +132,22 @@
     <string name="sync_error_forbidden">Error : You are not allowed to %1$s on URL %2$s</string>
     <string name="sync_error_unexpected">Error : Unexpected error (%1$s)</string>
     
-    <string name="sync_success">Synchronized with airvantage</string>
+    <string name="sync_success">Synchronized with AirVantage</string>
     
     <!-- Run fragment -->
-    <string name="run_info_message">Your phone is registered on AirVantage as %1$s. Toggle ON/OFF to send data to Airvantage</string>
+    <string name="run_info_message">Your phone is registered on AirVantage as %1$s. Toggle ON/OFF to send data to AirVantage</string>
+    <string name="run_send_data">Send Data</string>
+    <string name="run_activate_alarm">Activate alarm</string>
+    
     
     <!-- Configure fragment -->
     <string name="configure_info_message">
          <![CDATA[
          You can customize the labels of the data sent by your phone.
-         Click \'Sync with Airvantage\' for the changes to take effect.
+         Click \'Save\' for the changes to take effect.
          ]]>
     </string>
+    
+    <string name="configure_save">Save</string>
+    
 </resources>

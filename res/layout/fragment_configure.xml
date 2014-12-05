@@ -35,11 +35,11 @@
             />
 
         <Button
-            android:id="@+id/sync_bt"
+            android:id="@+id/save_bt"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_gravity="center"
-            android:text="@string/sync" />
+            android:text="@string/configure_save" />
         
     </LinearLayout>
 

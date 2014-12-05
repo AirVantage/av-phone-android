@@ -127,6 +127,8 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Av
         if (error != null) {
             if (error.systemAlreadyExists()) {
                 displayer.showError(R.string.sync_error_system_exists);
+            } else if (error.gatewayAlreadyExists()) {
+                displayer.showError(R.string.sync_error_gateway_exists);
             } else if (error.applicationAlreadyUsed()) {
                 displayer.showError(R.string.sync_error_app_exists,  AvPhoneApplication.appType(DeviceInfo.getUniqueId(context)));
             } else if (error.tooManyAlerRules()) {

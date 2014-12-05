@@ -86,7 +86,8 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
         alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
         // Adding Tabs
-        actionBar.addTab(actionBar.newTab().setText(getString(R.string.home_tab)).setTabListener(this));
+        Tab tab = actionBar.newTab().setText(getString(R.string.home_tab)).setTabListener(this);
+        actionBar.addTab(tab);
 
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
@@ -104,6 +105,7 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
             }
         });
 
+        
         if (isLogged()) {
             showLoggedTabs();
         } else {
@@ -232,20 +234,23 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
 
     public void showLoggedTabs() {
         if (actionBar.getTabCount() == 1) {
-            actionBar.addTab(actionBar.newTab().setText(getString(R.string.run_tab)).setTabListener(this));
+            Tab runTab = actionBar.newTab().setText(getString(R.string.run_tab));
+            actionBar.addTab(runTab.setTabListener(this));
+            tabsPageAdapter.notifyDataSetChanged();
             actionBar.addTab(actionBar.newTab().setText(getString(R.string.configure_tab)).setTabListener(this));
+            tabsPageAdapter.notifyDataSetChanged();
         }
-        this.tabsPageAdapter.notifyDataSetChanged();
-        this.viewPager.setCurrentItem(1);
+        viewPager.setCurrentItem(1);
     }
 
     public void hideLoggedTabs() {
         if (actionBar.getTabCount() == 3) {
             actionBar.removeTabAt(2);
+            tabsPageAdapter.notifyDataSetChanged();
             actionBar.removeTabAt(1);
+            tabsPageAdapter.notifyDataSetChanged();
         }
-        this.tabsPageAdapter.notifyDataSetChanged();
-        this.viewPager.setCurrentItem(0);
+        viewPager.setCurrentItem(0);
     }
 
     public void forgetAuthentication() {

@@ -6,7 +6,6 @@ import net.airvantage.utils.PreferenceUtils;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,12 +28,14 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
     private View view;
 
-    private Button btnLogin;
+    private Button btnLoginNa;
+    private Button btnLoginEu;
+    
     private Button btnLogout;
-    private TextView instanceMessage;
-    private TextView switchLink;
-
+    
     private IAsyncTaskFactory taskFactory;
+
+    private Button btnLoginCustom;
 
     public HomeFragment() {
         super();
@@ -49,40 +50,44 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        TextView welcome = (TextView) view.findViewById(R.id.home_welcome_message);
-        welcome.setText(Html.fromHtml(getString(R.string.home_welcome_message)));
-        getPrereqView().setText(Html.fromHtml(getString(R.string.home_before_starting)));
-
-        btnLogin = (Button) view.findViewById(R.id.login_btn);
+        btnLoginNa = (Button) view.findViewById(R.id.login_na_btn);
+        btnLoginEu = (Button) view.findViewById(R.id.login_eu_btn);
+        btnLoginCustom = (Button) view.findViewById(R.id.login_custom_btn);
 
         btnLogout = (Button) view.findViewById(R.id.logout_btn);
 
-        instanceMessage = (TextView) view.findViewById(R.id.switch_login_instance_text);
-
-        switchLink = (TextView) view.findViewById(R.id.switch_instance);
-        // switchLink.setPaintFlags(switchLink.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        switchLink.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                PreferenceUtils.toggleServers(getActivity());
-
-                chooseLoginMessage();
-
-                requestAuthentication();
-
-            }
-
-        });
-
-        btnLogin.setOnClickListener(new OnClickListener() {
+       btnLoginNa.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
+                PreferenceUtils.setServer(PreferenceUtils.Server.NA, getActivity());
                 requestAuthentication();
             }
         });
 
+        btnLoginEu.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                PreferenceUtils.setServer(PreferenceUtils.Server.EU, getActivity());
+                requestAuthentication();
+            }
+        });
+
+        
+        btnLoginEu.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                PreferenceUtils.setServer(PreferenceUtils.Server.EU, getActivity());
+                requestAuthentication();
+            }
+        });
+
+        btnLoginCustom.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestAuthentication();
+            }
+        });
+        
         btnLogout.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -139,33 +144,6 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
         infoMessageView.setText("");
     }
 
-    private void hidePrerequesites() {
-        TextView prereqView = getPrereqView();
-        prereqView.setVisibility(View.GONE);
-    }
-
-    private TextView getPrereqView() {
-        TextView prereqView = (TextView) view.findViewById(R.id.home_before_starting);
-        return prereqView;
-    }
-
-    private void chooseLoginMessage() {
-        AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(getActivity());
-        if (avPhonePrefs.usesNA()) {
-            btnLogin.setText(getString(R.string.login_na));
-            instanceMessage.setText(getString(R.string.switch_instance_eu));
-            switchLink.setVisibility(View.VISIBLE);
-        } else if (avPhonePrefs.usesEU()) {
-            btnLogin.setText(getString(R.string.login_eu));
-            instanceMessage.setText(getString(R.string.switch_instance_na));
-            switchLink.setVisibility(View.VISIBLE);
-        } else {
-            btnLogin.setText(getString(R.string.login_custom_server));
-            instanceMessage.setText(getString(R.string.custom_instance, avPhonePrefs.serverHost));
-            switchLink.setVisibility(View.GONE);
-        }
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -190,6 +168,7 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
             @Override
             public void onSynced(AvError error) {
                 if (error == null) {
+                    hideErrorMessage();
                     showLoggedInState();
                 } else {
                     authManager.forgetAuthentication();
@@ -212,7 +191,6 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
     }
 
     private void showLoggedInState() {
-        hidePrerequesites();
         showCurrentServer();
         showLogoutButton();
     }
@@ -220,7 +198,6 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
     private void showLoggedOutState() {
         hideLogoutButton();
         hideCurrentServer();
-        chooseLoginMessage();
     }
 
     private void logout() {
@@ -248,28 +225,29 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
     private void showLogoutButton() {
         btnLogout.setVisibility(View.VISIBLE);
-        btnLogin.setVisibility(View.GONE);
-        instanceMessage.setVisibility(View.GONE);
-        switchLink.setVisibility(View.GONE);
+        btnLoginNa.setVisibility(View.GONE);
+        btnLoginEu.setVisibility(View.GONE);
+        btnLoginCustom.setVisibility(View.GONE);
+        view.findViewById(R.id.home_login_message).setVisibility(View.GONE);
     }
 
     private void hideLogoutButton() {
         btnLogout.setVisibility(View.GONE);
-        btnLogin.setVisibility(View.VISIBLE);
-        instanceMessage.setVisibility(View.VISIBLE);
-        switchLink.setVisibility(View.VISIBLE);
-    }
+        btnLoginNa.setVisibility(View.VISIBLE);
+        btnLoginEu.setVisibility(View.VISIBLE);
+        
+        view.findViewById(R.id.home_login_message).setVisibility(View.VISIBLE);
+        
+        AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(getActivity());
+        if (prefs.usesCustomServer()) {
+            btnLoginCustom.setText(getActivity().getString(R.string.home_login_custom, prefs.serverHost));
+            btnLoginCustom.setVisibility(View.VISIBLE);
+        } else {
+            btnLoginCustom.setVisibility(View.GONE);
+        }
+        
 
-    // K should be listened by the MainActivity instead
-    // @Override
-    // public void onSharedPreferenceChanged(SharedPreferences prefs, String changedPrefKey) {
-    // if (prefUtils.isMonitoringPreference(changedPrefKey)) {
-    // // K authManager.forgetAuthentication(prefUtils);
-    //
-    // fireLoginChanged(false);
-    // showLoggedOutState();
-    // }
-    // }
+    }
 
     public TextView getErrorMessageView() {
         return (TextView) view.findViewById(R.id.home_error_message);

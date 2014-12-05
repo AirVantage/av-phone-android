@@ -9,13 +9,11 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.sierrawireless.avphone.model.CustomDataLabels;
 import com.sierrawireless.avphone.service.LogMessage;
@@ -76,6 +74,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
         Switch serviceSwitch = (Switch) view.findViewById(R.id.service_switch);
         serviceSwitch.setChecked(isServiceRunning);
+        
         serviceSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -92,8 +91,8 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         }
         
         // Alarm button
-        ToggleButton alarmButton = (ToggleButton) view.findViewById(R.id.alarm_button);
-        alarmButton.setOnClickListener(onAlarmClick);
+        Switch alarmButton = (Switch) view.findViewById(R.id.alarm_switch);
+        alarmButton.setOnCheckedChangeListener(onAlarmClick);
 
         // Info message
         TextView infoMesageView = (TextView) view.findViewById(R.id.run_info_message);
@@ -108,16 +107,20 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         super.onResume();
 
         boolean isServiceRunning = monitorServiceManager.isServiceRunning();
-        Switch serviceSwitch = (Switch) view.findViewById(R.id.service_switch);
+        Switch serviceSwitch = getServiceSwitch();
         serviceSwitch.setChecked(isServiceRunning);
 
     }
 
+    public Switch getServiceSwitch() {
+        return (Switch) view.findViewById(R.id.service_switch);
+    }
+    
     private void startMonitoringService() {
         AvPhonePrefs avPrefs = PreferenceUtils.getAvPhonePrefs(getActivity());
         if (!avPrefs.checkCredentials()) {
             PreferenceUtils.showMissingPrefsDialog(getActivity());
-            Switch serviceSwitch = (Switch) view.findViewById(R.id.service_switch);
+            Switch serviceSwitch = getServiceSwitch();
             serviceSwitch.setChecked(false);
         } else {
             this.monitorServiceManager.startMonitoringService();
@@ -153,14 +156,14 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
     // Alarm button
 
-    OnClickListener onAlarmClick = new View.OnClickListener() {
+    OnCheckedChangeListener onAlarmClick = new OnCheckedChangeListener() {
 
         @Override
-        public void onClick(View v) {
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             Log.d(LOGTAG, "On alarm button click");
 
-            monitorServiceManager.sendAlarmEvent(((ToggleButton) v).isChecked());
-
+            monitorServiceManager.sendAlarmEvent(isChecked);
+            
         }
     };
 
