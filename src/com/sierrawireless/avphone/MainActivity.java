@@ -105,15 +105,20 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
             }
         });
 
-        
         if (isLogged()) {
             showLoggedTabs();
+
+            if (isServiceRunning()) {
+                connectToService();
+            }
         } else {
             hideLoggedTabs();
-        }
 
-        if (isServiceRunning()) {
-            connectToService();
+            if (isServiceRunning()) {
+                // The token is probably expired.
+                // We stop the service since the "stop" button is not available anymore.
+                this.stopMonitoringService();
+            }
         }
 
     }
@@ -254,17 +259,17 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
     }
 
     public void forgetAuthentication() {
-        
+
         PreferenceUtils.resetAuthentication(this);
-        
+
         this.auth = null;
 
         hideLoggedTabs();
-        
+
         if (this.isServiceRunning()) {
             this.stopMonitoringService();
         }
-        
+
     }
 
     @Override
@@ -388,6 +393,5 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
     public void setMonitoringServiceListener(MonitorServiceListener listener) {
         this.monitoringServiceListener = listener;
     }
-
 
 }
