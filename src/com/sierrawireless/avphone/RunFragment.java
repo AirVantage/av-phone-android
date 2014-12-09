@@ -31,7 +31,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
     private MonitorServiceManager monitorServiceManager;
 
     private CustomLabelsManager customLabelsManager;
-    
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -41,7 +41,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         }
 
         if (activity instanceof CustomLabelsManager) {
-           this.setCustomLabelsManager((CustomLabelsManager) activity);
+            this.setCustomLabelsManager((CustomLabelsManager) activity);
         }
     }
 
@@ -49,12 +49,12 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         this.monitorServiceManager = manager;
         this.monitorServiceManager.setMonitoringServiceListener(this);
     }
-    
+
     protected void setCustomLabelsManager(CustomLabelsManager manager) {
         this.customLabelsManager = manager;
         this.customLabelsManager.setCustomLabelsListener(this);
     }
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -74,7 +74,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
         Switch serviceSwitch = (Switch) view.findViewById(R.id.service_switch);
         serviceSwitch.setChecked(isServiceRunning);
-        
+
         serviceSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -87,17 +87,23 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         });
 
         if (isServiceRunning) {
-            this.onServiceStarted(monitorServiceManager.getMonitoringService());
+            MonitoringService service = monitorServiceManager.getMonitoringService();
+            if (service != null) {
+                this.onServiceStarted(service);
+            } else {
+                // the activity is not yet connected to the service.
+                // as a MonitorServiceListener, this fragment will be notified when the service is available
+            }
         }
-        
+
         // Alarm button
         Switch alarmButton = (Switch) view.findViewById(R.id.alarm_switch);
         alarmButton.setOnCheckedChangeListener(onAlarmClick);
 
         // Info message
-        TextView infoMesageView = (TextView) view.findViewById(R.id.run_info_message);
+        TextView infoMessageView = (TextView) view.findViewById(R.id.run_info_message);
         String infoMessage = getString(R.string.run_info_message, DeviceInfo.getUniqueId(getActivity()));
-        infoMesageView.setText(infoMessage);
+        infoMessageView.setText(infoMessage);
 
         return view;
     }
@@ -115,7 +121,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
     public Switch getServiceSwitch() {
         return (Switch) view.findViewById(R.id.service_switch);
     }
-    
+
     private void startMonitoringService() {
         AvPhonePrefs avPrefs = PreferenceUtils.getAvPhonePrefs(getActivity());
         if (!avPrefs.checkCredentials()) {
@@ -153,7 +159,6 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
     }
 
-
     // Alarm button
 
     OnCheckedChangeListener onAlarmClick = new OnCheckedChangeListener() {
@@ -163,7 +168,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
             Log.d(LOGTAG, "On alarm button click");
 
             monitorServiceManager.sendAlarmEvent(isChecked);
-            
+
         }
     };
 
@@ -181,7 +186,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
     public void onServiceStopped(MonitoringService service) {
         viewUpdater.onStop();
     }
-    
+
     @Override
     public void onCustomLabelsChanged() {
         // The activity can be null if the change is done while the fragment is not active.
