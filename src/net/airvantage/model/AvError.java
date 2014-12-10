@@ -11,7 +11,8 @@ public class AvError {
     public static final String FORBIDDEN = "forbidden";
     public static final String APPLICATION_TYPE_EXISTS = "application.type.already.used";
     public static final String ALERT_RULES_TOO_MANY = "alert.rule.too.many";
-
+    public static final String MISSING_RIGHTS = "missing.rights";
+    
     public String error;
     public List<String> errorParameters;
 
@@ -74,6 +75,10 @@ public class AvError {
         } else {
             return false;
         }
+    }
+
+    public boolean missingRights() {
+        return MISSING_RIGHTS.equals(error);
     }
 
 }

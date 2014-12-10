@@ -15,8 +15,8 @@ public class ProgressSyncWithAvTask extends SyncWithAvTask {
     private ProgressDialog dialog;
 
     public ProgressSyncWithAvTask(IApplicationClient applicationClient, ISystemClient systemClient,
-            IAlertRuleClient alertRuleClient, Context context) {
-        super(applicationClient, systemClient, alertRuleClient);
+            IAlertRuleClient alertRuleClient, IUserClient userClient, Context context) {
+        super(applicationClient, systemClient, alertRuleClient, userClient);
         this.context = context;
     }
 

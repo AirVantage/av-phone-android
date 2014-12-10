@@ -108,7 +108,8 @@
     </string>
     
     
-    <string name="progress_starting">Starting..</string>
+    <string name="progress_starting">Starting&#8230;</string>
+    <string name="progress_checking_rights">Checking permissions</string>
     <string name="progress_checking_application">Checking application</string>
     <string name="progress_creating_application">Creating application</string>
     <string name="progress_checking_system">Checking system</string>
@@ -149,5 +150,18 @@
     </string>
     
     <string name="configure_save">Save</string>
+    
+    <!-- Common -->
+    <string name="auth_not_enough_rights">You don\'t have all the permissions on AirVantage to use AV Phone. Please contact your administrator.</string>
+    <string name="auth_missing_rights">You are missing rights to :</string>
+    
+    <string name="entities_systems_view">View systems</string>
+    <string name="entities_systems_create">Create a system</string>
+    <string name="entities_systems_edit">Edit a system</string>
+    <string name="entities_applications_view">View applications</string>
+    <string name="entities_applications_create">Create an application</string>
+    <string name="entities_applications_edit">Edit an application</string>
+    <string name="entities_alerts_rule_view">View alert rules</string>
+    <string name="entities_alerts_rule_create_edit_delete">Create and edit an alert rule</string>
     
 </resources>

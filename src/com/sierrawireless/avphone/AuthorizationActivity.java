@@ -27,6 +27,7 @@ public class AuthorizationActivity extends Activity {
 
     public static final int REQUEST_AUTHORIZATION = 1;
 
+
     private WebView webview;
 
     private AuthenticationUrlParser authUrlParser = new AuthenticationUrlParser();
@@ -41,17 +42,12 @@ public class AuthorizationActivity extends Activity {
 
     @SuppressLint("SetJavaScriptEnabled")
     private void openAuthorizationPage() {
-        
-        AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this);
-        
-        String serverHost = avPhonePrefs.serverHost;
-        String clientId = avPhonePrefs.clientId;
-        /*
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String serverHost = prefs.getString(this.getString(R.string.pref_server_key), null);
-        String clientId = prefs.getString(this.getString(R.string.pref_client_id_key), null);
-        */
 
+        AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this);
+
+        final String serverHost = avPhonePrefs.serverHost;
+        final String clientId = avPhonePrefs.clientId;
+        
         webview = (WebView) findViewById(R.id.authorization_webview);
         webview.getSettings().setJavaScriptEnabled(true);
         // attach WebViewClient to intercept the callback url
@@ -59,12 +55,14 @@ public class AuthorizationActivity extends Activity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
-                Authentication auth = authUrlParser.parseUrl(url, new Date());
+                final Authentication auth = authUrlParser.parseUrl(url, new Date());
 
                 if (auth != null) {
                     Log.d(AuthorizationActivity.class.getName(), "Access token: " + auth.getAccessToken());
                     Log.d(AuthorizationActivity.class.getName(), "Expiration date : " + auth.getExpirationDate());
+
                     sendAuthentication(auth);
+                    
                 }
 
                 return super.shouldOverrideUrlLoading(view, url);
@@ -73,15 +71,16 @@ public class AuthorizationActivity extends Activity {
         });
         String authUrl = AirVantageClient.buildImplicitFlowURL(serverHost, clientId);
         Log.d(AuthorizationActivity.class.getName(), "Auth URL: " + authUrl);
-        
-        // The 'authorize' page from AirVantage will store a cookie ; 
+
+        // The 'authorize' page from AirVantage will store a cookie ;
         // if this cookie is passed between calls, the 'authorize' page
         // will not be displayed at all.
         CookieSyncManager.createInstance(this);
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.removeAllCookie();
-        
-        // Example : https://na.airvantage.net/api/oauth/authorize?client_id=54d4faa5343d49fba03f2a2ec1f210b9&response_type=token&redirect_uri=oauth://airvantage
+
+        // Example :
+        // https://na.airvantage.net/api/oauth/authorize?client_id=54d4faa5343d49fba03f2a2ec1f210b9&response_type=token&redirect_uri=oauth://airvantage
         webview.loadUrl(authUrl);
     }
 
@@ -95,4 +94,6 @@ public class AuthorizationActivity extends Activity {
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }
+
+
 }
