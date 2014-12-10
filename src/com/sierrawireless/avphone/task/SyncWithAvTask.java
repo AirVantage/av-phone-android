@@ -8,18 +8,22 @@ import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Application;
 import net.airvantage.model.AvError;
 import net.airvantage.model.AvSystem;
+import net.airvantage.model.UserRights;
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.text.Html;
 import android.util.Log;
+import android.view.View;
 
 import com.sierrawireless.avphone.DeviceInfo;
 import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.R;
+import com.sierrawireless.avphone.auth.AuthUtils;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.model.AvPhoneApplication;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 
-public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, AvError>  {
+public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, AvError> {
 
     private IApplicationClient applicationClient;
 
@@ -28,68 +32,78 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Av
     private IAlertRuleClient alertRuleClient;
 
     private List<SyncWithAvListener> syncListeners = new ArrayList<SyncWithAvListener>();
-    
+
+    private IUserClient userClient;
+
     public SyncWithAvTask(IApplicationClient applicationClient, ISystemClient systemClient,
-            IAlertRuleClient alertRuleClient) {
+            IAlertRuleClient alertRuleClient, IUserClient userClient) {
         this.applicationClient = applicationClient;
         this.systemClient = systemClient;
         this.alertRuleClient = alertRuleClient;
+        this.userClient = userClient;
     }
 
     public void addProgressListener(SyncWithAvListener listener) {
         this.syncListeners.add(listener);
     }
-    
+
     @Override
     protected AvError doInBackground(SyncWithAvParams... params) {
 
         try {
 
-            SyncWithAvParams syncParams = params[0];
+            publishProgress(SyncProgress.CHECKING_RIGHTS);
             
+            List<String> missingRights = userClient.checkRights();
+
+            if (!missingRights.isEmpty()) {
+                return new AvError(AvError.MISSING_RIGHTS, missingRights);
+            }
+
+            SyncWithAvParams syncParams = params[0];
+
             String serialNumber = syncParams.deviceId;
             String imei = syncParams.imei;
             String mqttPassword = syncParams.mqttPassword;
             CustomDataLabels customData = syncParams.customData;
 
             publishProgress(SyncProgress.CHECKING_APPLICATION);
-            
+
             Application application = this.applicationClient.ensureApplicationExists(serialNumber);
 
             publishProgress(SyncProgress.CHECKING_SYSTEM);
-            
+
             net.airvantage.model.AvSystem system = this.systemClient.getSystem(serialNumber);
             if (system == null) {
-            
+
                 publishProgress(SyncProgress.CREATING_SYSTEM);
-                
+
                 system = systemClient.createSystem(serialNumber, imei, mqttPassword, application.uid);
             }
 
             publishProgress(SyncProgress.CHECKING_ALERT_RULE);
-            
+
             net.airvantage.model.AlertRule alertRule = this.alertRuleClient.getAlertRule(serialNumber);
             if (alertRule == null) {
-                
+
                 publishProgress(SyncProgress.CREATING_ALERT_RULE);
-                
-                
+
                 this.alertRuleClient.createAlertRule(serialNumber, system.uid, application.uid);
             }
 
             publishProgress(SyncProgress.UPDATING_APPLICATION);
-            
+
             this.applicationClient.setApplicationData(application.uid, customData);
 
             if (!hasApplication(system, application)) {
-            
+
                 publishProgress(SyncProgress.ADDING_APPLICATION);
-                
+
                 this.applicationClient.addApplication(system, application);
             }
-            
+
             publishProgress(SyncProgress.DONE);
-            
+
             return null;
         } catch (AirVantageException e) {
             publishProgress(SyncProgress.DONE);
@@ -109,7 +123,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Av
             listener.onSynced(result);
         }
     }
-    
+
     private boolean hasApplication(AvSystem system, Application application) {
         boolean found = false;
         if (system.applications != null) {
@@ -123,14 +137,18 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Av
     }
 
     public void showResult(AvError error, IMessageDisplayer displayer, Activity context) {
-        
+
         if (error != null) {
-            if (error.systemAlreadyExists()) {
+            if (error.missingRights()) {
+                String message = missingRightsMessage(error, context);
+                displayer.showErrorMessage(Html.fromHtml(message));
+            } else if (error.systemAlreadyExists()) {
                 displayer.showError(R.string.sync_error_system_exists);
             } else if (error.gatewayAlreadyExists()) {
                 displayer.showError(R.string.sync_error_gateway_exists);
             } else if (error.applicationAlreadyUsed()) {
-                displayer.showError(R.string.sync_error_app_exists,  AvPhoneApplication.appType(DeviceInfo.getUniqueId(context)));
+                displayer.showError(R.string.sync_error_app_exists,
+                        AvPhoneApplication.appType(DeviceInfo.getUniqueId(context)));
             } else if (error.tooManyAlerRules()) {
                 displayer.showError(R.string.sync_error_too_many_rules);
             } else if (error.cantCreateApplication()) {
@@ -154,5 +172,21 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Av
             displayer.showSuccess(R.string.sync_success);
         }
     }
-    
+
+    private String missingRightsMessage(AvError error, Activity context) {
+        List<String> missingRights = error.errorParameters;
+        StringBuilder message = new StringBuilder();
+        message.append(context.getText(R.string.auth_not_enough_rights));
+        message.append("<br/>");
+        message.append(context.getText(R.string.auth_missing_rights));
+        message.append("<br/>");
+
+        for (String missingRight : missingRights) {
+            message.append("&#8226; ");
+            message.append(UserRights.asString(missingRight, context));
+            message.append("<br/>");
+        }
+        return message.toString();
+    }
+
 }

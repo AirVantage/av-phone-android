@@ -26,6 +26,7 @@ import net.airvantage.model.Datapoint;
 import net.airvantage.model.Protocol;
 import net.airvantage.model.SystemsList;
 import net.airvantage.model.User;
+import net.airvantage.model.UserRights;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -305,4 +306,11 @@ public class AirVantageClient implements IAirVantageClient {
         get(url);
     }
 
+    public UserRights getUserRights() throws IOException, AirVantageException {
+        URL url = new URL(buildEndpoint("/users/rights"));
+        InputStream in = get(url);
+        return gson.fromJson(new InputStreamReader(in), UserRights.class);
+    }
+     
+    
 }

@@ -5,6 +5,7 @@ import com.sierrawireless.avphone.R;
 public enum SyncProgress {
     // There is no "CREATING_SYSTEM', since it is done
     // in the single 'ensureApplicationExists' method
+    CHECKING_RIGHTS(R.string.progress_checking_rights, 0),
     CHECKING_APPLICATION(R.string.progress_checking_application, 1),
     CHECKING_SYSTEM(R.string.progress_checking_system, 2),
     CREATING_SYSTEM(R.string.progress_creating_system, 3),

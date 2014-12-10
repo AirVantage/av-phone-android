@@ -15,13 +15,14 @@ public class AsyncTaskFactory implements IAsyncTaskFactory {
     
     public SyncWithAvTask syncAvTask(String serverHost, String token) {
         
-        AirVantageClient client = new AirVantageClient(serverHost, token);
+        AirVantageClient avClient = new AirVantageClient(serverHost, token);
 
-        IApplicationClient appClient = new ApplicationClient(client);
-        ISystemClient systemClient = new SystemClient(client);
-        IAlertRuleClient alertRuleClient = new AlertRuleClient(client);
-
-        return new ProgressSyncWithAvTask(appClient, systemClient, alertRuleClient, context);
+        IApplicationClient appClient = new ApplicationClient(avClient);
+        ISystemClient systemClient = new SystemClient(avClient);
+        IAlertRuleClient alertRuleClient = new AlertRuleClient(avClient);
+        IUserClient userClient = new UserClient(avClient);
+        
+        return new ProgressSyncWithAvTask(appClient, systemClient, alertRuleClient, userClient, context);
     }
 
     public AsyncTask<String, Integer, AvError> logoutTask(String serverHost, String token) {

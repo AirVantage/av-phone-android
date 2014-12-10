@@ -3,6 +3,7 @@ package com.sierrawireless.avphone;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
+import android.text.Spanned;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +54,12 @@ public abstract class AvPhoneFragment extends Fragment implements IMessageDispla
         errorMessageView.setVisibility(View.VISIBLE);
     }
 
+    public void showErrorMessage(Spanned spanned) {
+        TextView errorMessageView = getErrorMessageView();
+        errorMessageView.setText(spanned);
+        errorMessageView.setVisibility(View.VISIBLE);
+    }
+    
     public void hideErrorMessage() {
         getErrorMessageView().setVisibility(View.GONE);
     }
