@@ -12,6 +12,14 @@
     android:showDividers="middle"
     tools:context=".MainActivity" >
 
+    <!--
+    <ScrollView 
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="top"
+        >
+    -->
+
     <LinearLayout
         android:id="@+id/action_layout"
         android:layout_width="fill_parent"
@@ -42,71 +50,85 @@
             android:layout_marginBottom="10dp"
             android:gravity="center"
             android:text="@string/home_title"
-            android:textSize="32sp"
+            android:textSize="25sp"
             android:textStyle="bold" />
 
-        <ImageView
-            android:id="@+id/home_welcome_image"
+        <ScrollView
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/home_image_alt"
-            android:gravity="center"
-            android:src="@drawable/home_logo_alpha" />
+            android:layout_height="fill_parent"
+            android:layout_gravity="top" >
 
-        <TextView
-            android:id="@+id/home_simulate_message"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"
-            android:text="@string/home_simulate_message" />
-
-        <TextView
-            android:id="@+id/home_login_message"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"
-            android:text="@string/home_login_message" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:orientation="vertical" >
-
-            <Button
-                android:id="@+id/login_eu_btn"
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:text="@string/home_login_eu"
-                android:textColor="#FFFFFF" />
-            
-            <Button
-                android:id="@+id/login_na_btn"
-                android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:text="@string/home_login_na"
-                android:textColor="#FFFFFF" />
-            
-            <Button
-                android:id="@+id/login_custom_btn"
-                android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:text="@string/home_login_eu"
-                android:textColor="#FFFFFF"
-                android:visibility="gone" />
+                android:layout_height="wrap_content" >
 
-            <Button
-                android:id="@+id/logout_btn"
-                android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:text="@string/logout"
-                android:textColor="#FFFFFF"
-                android:visibility="gone" />
-        </LinearLayout>
+                <ImageView
+                    android:id="@+id/home_welcome_image"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/home_image_alt"
+                    android:gravity="center"
+                    android:src="@drawable/home_logo_alpha" />
+
+                <TextView
+                    android:id="@+id/home_simulate_message"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center"
+                    android:text="@string/home_simulate_message" />
+
+                <TextView
+                    android:id="@+id/home_login_message"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center"
+                    android:text="@string/home_login_message" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="vertical" >
+
+                    <Button
+                        android:id="@+id/login_eu_btn"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:text="@string/home_login_eu"
+                        android:textColor="#FFFFFF" />
+
+                    <Button
+                        android:id="@+id/login_na_btn"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:text="@string/home_login_na"
+                        android:textColor="#FFFFFF" />
+
+                    <Button
+                        android:id="@+id/login_custom_btn"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:text="@string/home_login_eu"
+                        android:textColor="#FFFFFF"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/logout_btn"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:text="@string/logout"
+                        android:textColor="#FFFFFF"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
+
+<!-- </ScrollView> -->
 
 </LinearLayout>
