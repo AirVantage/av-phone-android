@@ -22,7 +22,7 @@ public class SystemClient implements ISystemClient {
 
     @Override
     public net.airvantage.model.AvSystem getSystem(String serialNumber) throws IOException, AirVantageException {
-        List<net.airvantage.model.AvSystem> systems = client.getSystems(serialNumber);
+        List<net.airvantage.model.AvSystem> systems = client.getSystemsBySerialNumber(serialNumber);
         return Utils.first(systems);
     }
 
