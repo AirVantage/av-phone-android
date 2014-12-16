@@ -3,6 +3,8 @@ package net.airvantage.model;
 import java.util.List;
 import java.util.Map;
 
+import net.airvantage.utils.Predicate;
+
 
 public class AvSystem {
     public String uid;
@@ -35,4 +37,14 @@ public class AvSystem {
         public String type;
     }
 
+    public static Predicate<AvSystem> hasSerialNumber(final String serialNumber) {
+        return new Predicate<AvSystem>() {
+            @Override
+            public boolean matches(AvSystem item) {
+                return (serialNumber != null && serialNumber.equals(item.gateway.serialNumber));
+            }
+        };
+    }
+
+    
 }

@@ -222,7 +222,7 @@ public class AirVantageClient implements IAirVantageClient {
     }
 
     public List<net.airvantage.model.AvSystem> getSystemsBySerialNumber(String serialNumber) throws IOException, AirVantageException {
-        String urlString = buildEndpoint("/systems") + "&fields=uid,name,commStatus,lastCommDate,data,applications";
+        String urlString = buildEndpoint("/systems") + "&fields=uid,name,commStatus,lastCommDate,data,applications,gateway";
         if (serialNumber != null) {
             urlString += "&gateway=serialNumber:" + serialNumber;
         }
@@ -276,7 +276,7 @@ public class AirVantageClient implements IAirVantageClient {
     }
 
     @Override
-    public AlertRule getAlertRule(String name) throws IOException, AirVantageException {
+    public AlertRule getAlertRuleByName(final String name) throws IOException, AirVantageException {
 
         String str = Uri.parse(buildEndpoint("/alerts/rules")).buildUpon()
                 .appendQueryParameter("access_token", access_token).appendQueryParameter("fields", "uid,name")
@@ -290,7 +290,7 @@ public class AirVantageClient implements IAirVantageClient {
 
         InputStream in = get(url);
         AlertRuleList rules = gson.fromJson(new InputStreamReader(in), AlertRuleList.class);
-        return Utils.first(rules.items);
+        return Utils.firstWhere(rules.items, AlertRule.isNamed(name));
     }
 
     @Override
@@ -299,6 +299,15 @@ public class AirVantageClient implements IAirVantageClient {
         InputStream in = post(url, alertRule);
         return gson.fromJson(new InputStreamReader(in), AlertRule.class);
     }
+    
+    @Override
+    public AlertRule updateAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
+        URL url = new URL(buildEndpoint("/alerts/rules/" + alertRule.uid));
+        put(url, alertRule);
+        InputStream in = put(url, alertRule);
+        return gson.fromJson(new InputStreamReader(in), AlertRule.class);
+    }
+    
     
     @Override
     public void logout() throws IOException, AirVantageException {
