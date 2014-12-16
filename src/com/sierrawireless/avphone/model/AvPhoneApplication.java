@@ -71,6 +71,8 @@ public class AvPhoneApplication {
         asset.data.add(new Variable("phone.memoryusage", "Memory usage", "double"));
         asset.data.add(new Variable("phone.runningapps", "Running applications", "int"));
         asset.data.add(new Variable("phone.activewifi", "Active Wi-Fi", "boolean"));
+        asset.data.add(new Variable("phone.androidversion", "Android Version", "string"));
+        
         asset.data.add(new Variable(PHONE_ALARM_DATA_ID, "Active alarm", "boolean"));
 
         asset.data.add(new Variable("phone.custom.up.1", customData.customUp1Label, "int"));

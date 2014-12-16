@@ -205,7 +205,7 @@ public class AirVantageClient implements IAirVantageClient {
 
     }
 
-    public net.airvantage.model.AvSystem getSystem(String uid) throws IOException, AirVantageException {
+    public net.airvantage.model.AvSystem getSystemByUid(String uid) throws IOException, AirVantageException {
         URL url = new URL(buildEndpoint("/systems") + "&fields=uid,name,commStatus,lastCommDate,data,applications&uid="
                 + uid);
         InputStream in = get(url);
@@ -218,13 +218,13 @@ public class AirVantageClient implements IAirVantageClient {
     }
 
     public List<net.airvantage.model.AvSystem> getSystems() throws IOException, AirVantageException {
-        return getSystems(null);
+        return getSystemsBySerialNumber(null);
     }
 
-    public List<net.airvantage.model.AvSystem> getSystems(String name) throws IOException, AirVantageException {
+    public List<net.airvantage.model.AvSystem> getSystemsBySerialNumber(String serialNumber) throws IOException, AirVantageException {
         String urlString = buildEndpoint("/systems") + "&fields=uid,name,commStatus,lastCommDate,data,applications";
-        if (name != null) {
-            urlString += "&name=" + name;
+        if (serialNumber != null) {
+            urlString += "&gateway=serialNumber:" + serialNumber;
         }
         URL url = new URL(urlString);
         InputStream in = this.get(url);
