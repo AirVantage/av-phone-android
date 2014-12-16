@@ -88,14 +88,12 @@
     
     <string name="home_image_alt"></string>
     
-    <string name="home_login_na">Login on AirVantage NA</string>
-    <string name="home_login_eu">Login on AirVantage EU</string>
-    <string name="home_login_custom">Login on AirVantage %1$s</string>
-    
-    
     <string name="home_simulate_message"><b>Simulate</b> a device with your phone</string>
     
-    <string name="home_login_message">Login to <b>automatically register</b> your phone on AirVantage</string>
+    <string name="home_login_message">Login to <b>automatically register</b> your phone on AirVantage:</string>
+    <string name="home_login_na">On na.airvantage.net</string>
+    <string name="home_login_eu">On eu.airvantage.net</string>
+    <string name="home_login_custom">On %1$s</string>
     
     <!-- Synchronization steps -->
     <string name="progress_syncing">Synchronizing with AirVantage</string>
