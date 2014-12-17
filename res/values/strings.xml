@@ -114,6 +114,7 @@
     <string name="progress_creating_system">Creating system</string>
     <string name="progress_checking_alert_rule">Checking alert rule</string>
     <string name="progress_creating_alert_rule">Creating alert rule</string>
+    <string name="progress_updating_alert_rule">Updating alert rule</string>
     <string name="progress_updating_application">Updating application</string>
     <string name="progress_adding_application">Adding application</string>
     <string name="progress_done">Done</string>

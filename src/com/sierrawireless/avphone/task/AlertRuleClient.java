@@ -19,7 +19,7 @@ public class AlertRuleClient implements IAlertRuleClient {
     @Override
     public AlertRule getAlertRule(String serialNumber) throws IOException, AirVantageException {
         String alertRuleName = AvPhoneApplication.alertRuleName(serialNumber);
-        return client.getAlertRule(alertRuleName);
+        return client.getAlertRuleByName(alertRuleName);
     }
    
     @Override
@@ -28,4 +28,11 @@ public class AlertRuleClient implements IAlertRuleClient {
         return client.createAlertRule(alertRule);
     }
 
+    @Override
+    public AlertRule updateAlertRule(String alertRuleUid, String serialNumber, String systemUid, String applicationUid) throws IOException, AirVantageException {
+        AlertRule alertRule = AvPhoneApplication.createAlertRule(serialNumber, systemUid, applicationUid);
+        alertRule.uid = alertRuleUid;
+        return client.updateAlertRule(alertRule);
+    }
+    
 }

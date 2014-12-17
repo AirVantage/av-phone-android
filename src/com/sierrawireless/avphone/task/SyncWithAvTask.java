@@ -13,12 +13,10 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.text.Html;
 import android.util.Log;
-import android.view.View;
 
 import com.sierrawireless.avphone.DeviceInfo;
 import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.R;
-import com.sierrawireless.avphone.auth.AuthUtils;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.model.AvPhoneApplication;
 import com.sierrawireless.avphone.model.CustomDataLabels;
@@ -53,7 +51,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Av
         try {
 
             publishProgress(SyncProgress.CHECKING_RIGHTS);
-            
+
             List<String> missingRights = userClient.checkRights();
 
             if (!missingRights.isEmpty()) {
@@ -89,6 +87,15 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Av
                 publishProgress(SyncProgress.CREATING_ALERT_RULE);
 
                 this.alertRuleClient.createAlertRule(serialNumber, system.uid, application.uid);
+            } else {
+
+                publishProgress(SyncProgress.UPDATING_ALERT_RULE);
+
+                // The alert rule exists, but was linked to another system
+                // This probably means that the system was deleted, we'll update the alert rule.
+                alertRule = this.alertRuleClient.updateAlertRule(alertRule.uid, serialNumber, system.uid,
+                        application.uid);
+
             }
 
             publishProgress(SyncProgress.UPDATING_APPLICATION);

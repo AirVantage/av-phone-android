@@ -11,4 +11,7 @@ public interface IAlertRuleClient {
 
     AlertRule createAlertRule(String serialNumber, String systemUid, String applicationUid) throws IOException, AirVantageException;
 
+    AlertRule updateAlertRule(String alertRuleUid, String serialNumber, String systemUid, String applicationUid) throws IOException, AirVantageException;
+
+    
 }
