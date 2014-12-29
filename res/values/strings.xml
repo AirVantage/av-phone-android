@@ -135,7 +135,7 @@
     <string name="sync_success">Synchronized with AirVantage</string>
     
     <!-- Run fragment -->
-    <string name="run_info_message">Your phone is registered on AirVantage as %1$s. Toggle ON/OFF to send data to AirVantage</string>
+    <string name="run_info_message">Your phone is registered on AirVantage as gateway %1$s. Toggle ON/OFF to send data to AirVantage</string>
     <string name="run_send_data">Send Data</string>
     <string name="run_activate_alarm">Activate alarm</string>
     
