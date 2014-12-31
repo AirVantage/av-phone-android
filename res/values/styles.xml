@@ -24,7 +24,6 @@
     </style>
 
     <style name="ItemLabel" parent="AppTheme">
-        <item name="android:layout_width">170dp</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
     </style>

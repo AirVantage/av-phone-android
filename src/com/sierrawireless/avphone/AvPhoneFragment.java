@@ -10,15 +10,19 @@ import android.widget.Toast;
 
 import com.sierrawireless.avphone.auth.AuthenticationManager;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
+import com.sierrawireless.avphone.task.SyncWithAvListener;
 
 public abstract class AvPhoneFragment extends Fragment implements IMessageDisplayer {
 
     protected AuthenticationManager authManager;
 
+    protected SyncWithAvListener syncListener;
+    
     public AvPhoneFragment() {
         super();
     }
 
+    
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -27,6 +31,9 @@ public abstract class AvPhoneFragment extends Fragment implements IMessageDispla
             setAuthManager((AuthenticationManager) activity);
         }
 
+        if (activity instanceof SyncWithAvListener) {
+            this.syncListener = (SyncWithAvListener) activity;
+        }
     }
 
     public void setAuthManager(AuthenticationManager authManager) {

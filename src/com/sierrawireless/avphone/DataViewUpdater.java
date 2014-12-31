@@ -76,6 +76,7 @@ public class DataViewUpdater extends BroadcastReceiver {
     }
 
     private void setNewData(NewData data) {
+        
         if (data.getRssi() != null) {
             findView(R.id.signal_strength_value).setText(data.getRssi() + " dBm (RSSI)");
         } else if (data.getRsrp() != null) {
@@ -112,7 +113,7 @@ public class DataViewUpdater extends BroadcastReceiver {
         }
 
         if (data.getMemoryUsage() != null) {
-            findView(R.id.memoryusage_value).setText((int) (data.getMemoryUsage() * 100) + "%");
+            findView(R.id.memory_usage_value).setText((int) (data.getMemoryUsage() * 100) + "%");
         }
 
         if (data.getRunningApps() != null) {
@@ -120,11 +121,11 @@ public class DataViewUpdater extends BroadcastReceiver {
         }
 
         if (data.isWifiActive() != null) {
-            findView(R.id.wifi_value).setText(data.isWifiActive() ? "On" : "Off");
+            findView(R.id.active_wifi_value).setText(data.isWifiActive() ? "On" : "Off");
         }
 
         if (data.getAndroidVersion() != null) {
-            findView(R.id.androidversion_value).setText(data.getAndroidVersion());
+            findView(R.id.android_version_value).setText(data.getAndroidVersion());
         }
 
         if (data.isAlarmActivated() != null) {
@@ -132,7 +133,7 @@ public class DataViewUpdater extends BroadcastReceiver {
         }
 
         setCustomDataValues(data);
-
+        
     }
 
     private void setCustomDataValues(NewData data) {

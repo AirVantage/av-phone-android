@@ -62,7 +62,7 @@ public class ProgressSyncWithAvTask extends SyncWithAvTask {
     }
 
     @Override
-    protected void onPostExecute(AvError result) {
+    protected void onPostExecute(SyncWithAvResult result) {
         if (dialog.isShowing()) {
             dialog.dismiss();
         }

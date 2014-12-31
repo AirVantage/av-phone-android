@@ -4,11 +4,11 @@
     android:layout_height="fill_parent"
     android:background="@color/greybg"
     android:divider="?android:dividerHorizontal"
-    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
     android:showDividers="middle"
     tools:context=".MainActivity" >
 
@@ -35,9 +35,9 @@
             android:visibility="gone" />
 
         <LinearLayout
-            android:baselineAligned="false"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:baselineAligned="false"
             android:orientation="horizontal" >
 
             <LinearLayout
@@ -96,329 +96,489 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:gravity="right"
+            android:gravity="center"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/service_log"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
             android:textSize="12sp" />
     </LinearLayout>
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+            android:layout_gravity="center" >
 
-        <LinearLayout
+        <TableLayout
+            android:id="@+id/table_data"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:textAppearance="?android:attr/textAppearanceMedium" >
 
-            <TableLayout
-                android:id="@+id/table_data"
+            <TableRow
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:textAppearance="?android:attr/textAppearanceMedium" >
+                android:weightSum="2" >
 
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
+                <TextView
+                    android:id="@+id/run_custom1_label"
+                    style="@style/ItemLabel"
 
-                    <TextView
-                        android:id="@+id/run_custom1_label"
-                        style="@style/ItemLabel" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp" />
 
-                    <TextView
-                        android:id="@+id/run_custom1_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
+                <TextView
+                    android:id="@+id/run_custom1_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
 
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        android:id="@+id/run_custom2_label"
-                        style="@style/ItemLabel" />
-
-                    <TextView
-                        android:id="@+id/run_custom2_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        android:id="@+id/run_custom3_label"
-                        style="@style/ItemLabel" />
-
-                    <TextView
-                        android:id="@+id/run_custom3_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        android:id="@+id/run_custom4_label"
-                        style="@style/ItemLabel" />
-
-                    <TextView
-                        android:id="@+id/run_custom4_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        android:id="@+id/run_custom5_label"
-                        style="@style/ItemLabel" />
-
-                    <TextView
-                        android:id="@+id/run_custom5_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        android:id="@+id/run_custom6_label"
-                        style="@style/ItemLabel" />
-
-                    <TextView
-                        android:id="@+id/run_custom6_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@android:color/darker_gray" />
-
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/ItemLabel"
-                        android:text="@string/signal_strength" />
-
-                    <TextView
-                        android:id="@+id/signal_strength_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/ItemLabel"
-                        android:text="@string/operator" />
-
-                    <TextView
-                        android:id="@+id/operator_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/ItemLabel"
-                        android:text="@string/network_type" />
-
-                    <TextView
-                        android:id="@+id/network_type_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/ItemLabel"
-                        android:text="@string/imei" />
-
-                    <TextView
-                        android:id="@+id/imei_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/ItemLabel"
-                        android:text="@string/bytes_sent" />
-
-                    <TextView
-                        android:id="@+id/bytes_sent_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/ItemLabel"
-                        android:text="@string/bytes_received" />
-
-                    <TextView
-                        android:id="@+id/bytes_received_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/ItemLabel"
-                        android:text="@string/active_wifi" />
-
-                    <TextView
-                        android:id="@+id/wifi_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:id="@+id/tableRow2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/ItemLabel"
-                        android:text="@string/latitude" />
-
-                    <TextView
-                        android:id="@+id/latitude_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:id="@+id/tableRow3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/ItemLabel"
-                        android:text="@string/longitude" />
-
-                    <TextView
-                        android:id="@+id/longitude_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/ItemLabel"
-                        android:text="@string/battery_level" />
-
-                    <TextView
-                        android:id="@+id/battery_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/ItemLabel"
-                        android:text="@string/running_apps" />
-
-                    <TextView
-                        android:id="@+id/running_apps_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/ItemLabel"
-                        android:text="@string/memory_usage" />
-
-                    <TextView
-                        android:id="@+id/memoryusage_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/ItemLabel"
-                        android:text="@string/android_version" />
-
-                    <TextView
-                        android:id="@+id/androidversion_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_value" />
-                </TableRow>
-            </TableLayout>
-
-            <TextView
-                android:id="@+id/service_log"
+            <TableRow
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="right"
-                android:textSize="12sp" />
-        </LinearLayout>
+                android:weightSum="2" >
+
+                <TextView
+                    android:id="@+id/run_custom2_label"
+                    style="@style/ItemLabel"
+                   android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp" />
+
+                <TextView
+                    android:id="@+id/run_custom2_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    android:id="@+id/run_custom3_label"
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp" />
+
+                <TextView
+                    android:id="@+id/run_custom3_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    android:id="@+id/run_custom4_label"
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp" />
+
+                <TextView
+                    android:id="@+id/run_custom4_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    android:id="@+id/run_custom5_label"
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp" />
+
+                <TextView
+                    android:id="@+id/run_custom5_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    android:id="@+id/run_custom6_label"
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp" />
+
+                <TextView
+                    android:id="@+id/run_custom6_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp"
+                    android:text="@string/operator" />
+
+                <TextView
+                    android:id="@+id/operator_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp"
+                    android:text="@string/signal_strength" />
+
+                <TextView
+                    android:id="@+id/signal_strength_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp"
+                    android:text="@string/imei" />
+
+                <TextView
+                    android:id="@+id/imei_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp"
+                    android:text="@string/network_type" />
+
+                <TextView
+                    android:id="@+id/network_type_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+            
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp"
+                    android:text="@string/bytes_sent" />
+
+                <TextView
+                    android:id="@+id/bytes_sent_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp"
+                    android:text="@string/bytes_received" />
+
+                <TextView
+                    android:id="@+id/bytes_received_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp"
+                    android:text="@string/active_wifi" />
+
+                <TextView
+                    android:id="@+id/active_wifi_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp"
+                    android:text="@string/latitude" />
+
+                <TextView
+                    android:id="@+id/latitude_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp"
+                    android:text="@string/longitude" />
+
+                <TextView
+                    android:id="@+id/longitude_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp"
+                    android:text="@string/battery" />
+
+                <TextView
+                    android:id="@+id/battery_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp"
+                    android:text="@string/running_apps" />
+
+                <TextView
+                    android:id="@+id/running_apps_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp"
+                    android:text="@string/memory_usage" />
+
+                <TextView
+                    android:id="@+id/memory_usage_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2" >
+
+                <TextView
+                    style="@style/ItemLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingRight="5dp"
+                    android:text="@string/android_version" />
+
+                <TextView
+                    android:id="@+id/android_version_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text="@string/no_value" />
+            </TableRow>
+        </TableLayout>
+
     </ScrollView>
 
 </LinearLayout>

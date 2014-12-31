@@ -3,6 +3,7 @@ package com.sierrawireless.avphone;
 import net.airvantage.model.AvError;
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.task.IAsyncTaskFactory;
 import com.sierrawireless.avphone.task.SyncWithAvListener;
 import com.sierrawireless.avphone.task.SyncWithAvParams;
+import com.sierrawireless.avphone.task.SyncWithAvResult;
 import com.sierrawireless.avphone.task.SyncWithAvTask;
 
 public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
@@ -45,6 +47,13 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
         this.taskFactory = taskFactory;
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        
+        syncListener = (SyncWithAvListener) activity;
+    }
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -149,32 +158,30 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
         Authentication auth = AuthUtils.activityResultAsAuthentication(requestCode, resultCode, data);
         if (auth != null) {
-
-            authManager.onAuthentication(auth);
-
-            syncWithAv(auth.getAccessToken());
+            syncWithAv(auth);
         }
-
     }
 
-    private void syncWithAv(String accessToken) {
+    private void syncWithAv(final Authentication auth) {
 
         hideErrorMessage();
         
         AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(getActivity());
 
         final IMessageDisplayer displayer = this;
-        final SyncWithAvTask syncAvTask = taskFactory.syncAvTask(avPhonePrefs.serverHost, accessToken);
+        final SyncWithAvTask syncAvTask = taskFactory.syncAvTask(avPhonePrefs.serverHost, auth.getAccessToken());
 
         syncAvTask.addProgressListener(new SyncWithAvListener() {
             @Override
-            public void onSynced(AvError error) {
-                if (error == null) {
-                    showLoggedInState();
-                } else {
+            public void onSynced(SyncWithAvResult result) {
+                if (result.isError()) {
                     authManager.forgetAuthentication();
                     showLoggedOutState();
-                    syncAvTask.showResult(error, displayer, getActivity());
+                    syncAvTask.showResult(result, displayer, getActivity());
+                } else {
+                    authManager.onAuthentication(auth);
+                    showLoggedInState();
+                    syncListener.onSynced(result);
                 }
 
             }
@@ -216,7 +223,6 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
         } catch (Exception e) {
             Log.w(LOGTAG, "Exception while ");
         } finally {
-            // K authManager.forgetAuthentication(prefUtils);
             authManager.forgetAuthentication();
 
             showLoggedOutState();
