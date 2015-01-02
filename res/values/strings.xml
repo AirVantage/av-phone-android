@@ -117,6 +117,7 @@
     <string name="progress_creating_system">Creating system</string>
     <string name="progress_checking_alert_rule">Checking alert rule</string>
     <string name="progress_creating_alert_rule">Creating alert rule</string>
+    <string name="progress_updating_alert_rule">Updating alert rule</string>
     <string name="progress_updating_application">Updating application</string>
     <string name="progress_adding_application">Adding application</string>
     <string name="progress_done">Done</string>
@@ -137,7 +138,7 @@
     <string name="sync_success">Synchronized with AirVantage</string>
     
     <!-- Run fragment -->
-    <string name="run_info_message">Your phone is registered on AirVantage as %1$s. Toggle ON/OFF to send data to AirVantage</string>
+    <string name="run_info_message">Your phone is registered on AirVantage as gateway %1$s. Toggle ON/OFF to send data to AirVantage</string>
     <string name="run_send_data">Send Data</string>
     <string name="run_activate_alarm">Activate alarm</string>
     

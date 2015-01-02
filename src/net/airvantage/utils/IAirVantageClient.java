@@ -15,7 +15,9 @@ public interface IAirVantageClient {
 
     AlertRule createAlertRule(AlertRule alertRule) throws IOException, AirVantageException;
 
-    AlertRule getAlertRule(String name) throws IOException, AirVantageException;
+    AlertRule updateAlertRule(AlertRule alertRule) throws IOException, AirVantageException;
+    
+    AlertRule getAlertRuleByName(String name) throws IOException, AirVantageException;
 
     void setApplicationData(String applicationUid, List<ApplicationData> data) throws IOException, AirVantageException;
 
