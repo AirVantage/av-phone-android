@@ -76,19 +76,7 @@
             android:gravity="center"
             android:orientation="vertical" >
 
-            <Button
-                android:id="@+id/login_eu_btn"
-                android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:text="@string/home_login_eu"
-                android:textColor="#FFFFFF" />
-            
-            <Button
-                android:id="@+id/login_na_btn"
-                android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:text="@string/home_login_na"
-                android:textColor="#FFFFFF" />
+            <!--
             
             <Button
                 android:id="@+id/login_custom_btn"
@@ -97,6 +85,14 @@
                 android:text="@string/home_login_eu"
                 android:textColor="#FFFFFF"
                 android:visibility="gone" />
+            -->
+
+            <Button
+                android:id="@+id/login_btn"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:text="@string/home_login"
+                android:textColor="#FFFFFF" />
 
             <Button
                 android:id="@+id/logout_btn"
