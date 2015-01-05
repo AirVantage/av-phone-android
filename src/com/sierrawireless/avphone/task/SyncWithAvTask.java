@@ -21,7 +21,7 @@ import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.model.AvPhoneApplication;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 
-public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, AvError> {
+public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, SyncWithAvResult> {
 
     private IApplicationClient applicationClient;
 
@@ -46,7 +46,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Av
     }
 
     @Override
-    protected AvError doInBackground(SyncWithAvParams... params) {
+    protected SyncWithAvResult doInBackground(SyncWithAvParams... params) {
 
         try {
 
@@ -55,7 +55,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Av
             List<String> missingRights = userClient.checkRights();
 
             if (!missingRights.isEmpty()) {
-                return new AvError(AvError.MISSING_RIGHTS, missingRights);
+                return new SyncWithAvResult(new AvError(AvError.MISSING_RIGHTS, missingRights));
             }
 
             SyncWithAvParams syncParams = params[0];
@@ -111,20 +111,21 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Av
 
             publishProgress(SyncProgress.DONE);
 
-            return null;
+            return new SyncWithAvResult(system);
+
         } catch (AirVantageException e) {
             publishProgress(SyncProgress.DONE);
-            return e.getError();
+            return new SyncWithAvResult(e.getError());
         } catch (IOException e) {
             Log.e(MainActivity.class.getName(), "Error when trying to synchronize with server", e);
             publishProgress(SyncProgress.DONE);
-            return new AvError("unkown.error");
+            return new SyncWithAvResult(new AvError("unkown.error"));
         }
 
     }
 
     @Override
-    protected void onPostExecute(AvError result) {
+    protected void onPostExecute(SyncWithAvResult result) {
         super.onPostExecute(result);
         for (SyncWithAvListener listener : syncListeners) {
             listener.onSynced(result);
@@ -143,9 +144,10 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Av
         return found;
     }
 
-    public void showResult(AvError error, IMessageDisplayer displayer, Activity context) {
+    public void showResult(SyncWithAvResult result, IMessageDisplayer displayer, Activity context) {
 
-        if (error != null) {
+        if (result.isError()) {
+            AvError error = result.getError();
             if (error.missingRights()) {
                 String message = missingRightsMessage(error, context);
                 displayer.showErrorMessage(Html.fromHtml(message));

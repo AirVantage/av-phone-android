@@ -1,6 +1,5 @@
 package com.sierrawireless.avphone;
 
-import net.airvantage.model.AvError;
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
 import android.content.Intent;
@@ -21,6 +20,7 @@ import com.sierrawireless.avphone.model.CustomDataLabels;
 import com.sierrawireless.avphone.task.IAsyncTaskFactory;
 import com.sierrawireless.avphone.task.SyncWithAvListener;
 import com.sierrawireless.avphone.task.SyncWithAvParams;
+import com.sierrawireless.avphone.task.SyncWithAvResult;
 import com.sierrawireless.avphone.task.SyncWithAvTask;
 
 public class ConfigureFragment extends AvPhoneFragment {
@@ -168,8 +168,13 @@ public class ConfigureFragment extends AvPhoneFragment {
 
         syncTask.addProgressListener(new SyncWithAvListener() {
             @Override
-            public void onSynced(AvError error) {
-                syncTask.showResult(error, display, getActivity());
+            public void onSynced(SyncWithAvResult result) {
+                syncTask.showResult(result, display, getActivity());
+                
+                if (!result.isError()) {
+                    syncListener.onSynced(result);
+                }
+                
             }
         });
 

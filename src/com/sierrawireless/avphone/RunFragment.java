@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -100,12 +102,32 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         Switch alarmButton = (Switch) view.findViewById(R.id.alarm_switch);
         alarmButton.setOnCheckedChangeListener(onAlarmClick);
 
-        // Info message
+        // Make links clickable in info view.
         TextView infoMessageView = (TextView) view.findViewById(R.id.run_info_message);
-        String infoMessage = getString(R.string.run_info_message, DeviceInfo.getUniqueId(getActivity()));
-        infoMessageView.setText(infoMessage);
+        infoMessageView.setLinksClickable(true);
+        infoMessageView.setMovementMethod(LinkMovementMethod.getInstance());
 
         return view;
+    }
+
+    public void setLinkToSystem(String systemUid, String systemName) {
+        TextView infoMessageView = (TextView) view.findViewById(R.id.run_info_message);
+
+        String infoMessage = null;
+        if (systemUid != null) {
+
+            AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(getActivity());
+            String link = String.format("https://%s/monitor/systems/systemDetails?uid=%s", avPhonePrefs.serverHost,
+                    systemUid);
+
+            infoMessage = getString(R.string.run_info_message_link, link, systemName);
+            infoMessageView.setText(Html.fromHtml(infoMessage));
+
+        } else {
+            infoMessage = getString(R.string.run_info_message, DeviceInfo.getUniqueId(getActivity()));
+            infoMessageView.setText(infoMessage);
+        }
+
     }
 
     @Override
@@ -156,7 +178,6 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
         labelView = (TextView) view.findViewById(R.id.run_custom6_label);
         labelView.setText(customDataLabels.customStr2Label);
-
     }
 
     // Alarm button
