@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:layout_gravity="center"
     android:background="@color/greybg"
     android:divider="?android:dividerHorizontal"
     android:orientation="vertical"
@@ -85,16 +86,6 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:orientation="vertical" >
-
-                    <!--
-            <Button
-                android:id="@+id/login_custom_btn"
-                android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:text="@string/home_login_eu"
-                android:textColor="#FFFFFF"
-                android:visibility="gone" />
-                    -->
 
                     <Button
                         android:id="@+id/login_btn"

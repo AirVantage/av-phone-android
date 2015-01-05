@@ -6,6 +6,7 @@ import net.airvantage.utils.PreferenceUtils;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +47,9 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        TextView loginMessage = (TextView) view.findViewById(R.id.home_login_message);
+        loginMessage.setText(Html.fromHtml(getString(R.string.home_login_message)));
+        
         btnLogin = (Button) view.findViewById(R.id.login_btn);
         
         btnLogout = (Button) view.findViewById(R.id.logout_btn);
@@ -205,16 +209,6 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
         btnLogin.setVisibility(View.VISIBLE);
         
         view.findViewById(R.id.home_login_message).setVisibility(View.VISIBLE);
-
-        // K (Waiting to see if the custom server feature should be removed entirely.)
-//        AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(getActivity());
-//        if (prefs.usesCustomServer()) {
-//            btnLoginCustom.setText(getActivity().getString(R.string.home_login_custom, prefs.serverHost));
-//            btnLoginCustom.setVisibility(View.VISIBLE);
-//        } else {
-//            btnLoginCustom.setVisibility(View.GONE);
-//        }
-
     }
 
     public TextView getErrorMessageView() {

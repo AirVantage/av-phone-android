@@ -32,7 +32,7 @@
     <string name="notif_new_message">Message!</string>
 
     <!-- Preferences -->
-    <string name="pref_password">Password</string>
+    <string name="pref_password">MQTT Password</string>
     <string name="pref_server">AirVantage server</string>
     <string name="pref_server_na">NA</string>
     <string name="pref_server_na_value">na.airvantage.net</string>
@@ -88,15 +88,14 @@
     
     <string name="home_image_alt"></string>
     
-    <string name="home_simulate_message"><b>Simulate</b> a device with your phone</string>
+    <string name="home_simulate_message"><b>Simulate</b> any object with your phone</string>
     
-    <string name="home_login_message">Login to <b>automatically register</b> your phone on AirVantage:</string>
+    <string name="home_login_message"> <![CDATA[<b>Create a simulated object</b> automatically in your <font color="#E53B30">AirVantage</font> account]]></string>
 
-    <string name="home_login">Login on Airvantage</string>
+    <string name="home_login">Login to your Airvantage account</string>
     
-    <string name="auth_login_na">On na.airvantage.net</string>
-    <string name="auth_login_eu">On eu.airvantage.net</string>
-    <string name="home_login_custom">On %1$s</string>
+    <string name="auth_login_na">NA (na.airvantage.net)</string>
+    <string name="auth_login_eu">EU (eu.airvantage.net)</string>
     
     <!-- Synchronization steps -->
     <string name="progress_syncing">Synchronizing with AirVantage</string>
