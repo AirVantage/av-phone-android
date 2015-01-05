@@ -2,6 +2,7 @@ package com.sierrawireless.avphone;
 
 import java.util.Date;
 
+import net.airvantage.model.AvSystem;
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
 import android.app.ActionBar;
@@ -25,6 +26,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
@@ -36,12 +38,14 @@ import com.sierrawireless.avphone.service.MonitoringService;
 import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder;
 import com.sierrawireless.avphone.task.AsyncTaskFactory;
 import com.sierrawireless.avphone.task.IAsyncTaskFactory;
+import com.sierrawireless.avphone.task.SyncWithAvListener;
+import com.sierrawireless.avphone.task.SyncWithAvResult;
 
 /**
  * The main activity, in charge of displaying the tab view
  */
 public class MainActivity extends FragmentActivity implements TabListener, LoginListener, AuthenticationManager,
-        OnSharedPreferenceChangeListener, MonitorServiceManager, CustomLabelsManager {
+        OnSharedPreferenceChangeListener, MonitorServiceManager, CustomLabelsManager, SyncWithAvListener {
 
     private static String LOGTAG = MainActivity.class.getName();
 
@@ -63,6 +67,7 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
         this.customLabelsListener = customLabelsListener;
     }
 
+ 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,7 +125,7 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
                 this.stopMonitoringService();
             }
         }
-
+        
     }
 
     private void readAuthenticationFromPreferences() {
@@ -152,6 +157,8 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
     public void OnLoginChanged(boolean logged) {
     }
 
+    private RunFragment runFragment;
+    
     class TabsPagerAdapter extends FragmentPagerAdapter {
 
         public TabsPagerAdapter(FragmentManager fm) {
@@ -166,8 +173,10 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
             case 0: {
                 return makeHomeFragment();
             }
-            case 1:
-                return Fragment.instantiate(MainActivity.this, RunFragment.class.getName());
+            case 1: {
+                runFragment = (RunFragment) Fragment.instantiate(MainActivity.this, RunFragment.class.getName());
+                return runFragment;
+            }
             case 2:
                 return makeConfigureFragment();
             }
@@ -245,6 +254,7 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
             actionBar.addTab(actionBar.newTab().setText(getString(R.string.configure_tab)).setTabListener(this));
             tabsPageAdapter.notifyDataSetChanged();
         }
+        
         viewPager.setCurrentItem(1);
     }
 
@@ -394,4 +404,28 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
         this.monitoringServiceListener = listener;
     }
 
+    @Override
+    public void onSynced(SyncWithAvResult result) {
+        AvSystem system = result.getSystem();
+        prefs.edit().putString("systemUid", system.uid).commit();
+        prefs.edit().putString("systemName", system.name).commit();
+        
+        if (runFragment != null) {
+            String systemUid = this.getSystemUid();
+            String systemName = this.getSystemName();
+            runFragment.setLinkToSystem(systemUid, systemName);
+        } else {
+            Log.w(LOGTAG, "RunFragment reference is null when onSynced is called");
+        }
+        
+    }
+
+    public String getSystemUid() {
+        return prefs.getString("systemUid", null);
+    }
+    
+    public String getSystemName() {
+        return prefs.getString("systemName", null);
+    }
+    
 }
