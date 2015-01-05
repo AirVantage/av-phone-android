@@ -137,7 +137,7 @@
     <string name="sync_success">Synchronized with AirVantage</string>
     
     <!-- Run fragment -->
-    <string name="run_info_message">Your phone is registered on AirVantage as gateway %1$s. Toggle ON/OFF to send data to AirVantage</string>
+    <string name="run_info_message">Your phone is registered on AirVantage as gateway %1$s.</string>
     <string name="run_info_message_link">
 <![CDATA[
         Your phone is registered on AirVantage as  <a href="%1$s">%2$s</a>. Toggle ON/OFF to send data to AirVantage
@@ -154,6 +154,8 @@
          Click \'Save\' for the changes to take effect.
          ]]>
     </string>
+    
+    <string name="toggle_to_start">Toggle \'Send Data\' to start sending data to AirVantage.</string>
     
     <string name="configure_save">Save</string>
     
