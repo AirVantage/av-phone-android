@@ -11,10 +11,9 @@ public enum SyncProgress {
     CREATING_SYSTEM(R.string.progress_creating_system, 3),
     CHECKING_ALERT_RULE(R.string.progress_checking_alert_rule, 4),
     CREATING_ALERT_RULE(R.string.progress_creating_alert_rule, 5),
-    UPDATING_ALERT_RULE(R.string.progress_updating_alert_rule, 6),
-    UPDATING_APPLICATION(R.string.progress_updating_application, 7),
-    ADDING_APPLICATION(R.string.progress_adding_application, 8),
-    DONE(R.string.progress_done, 9);
+    UPDATING_APPLICATION(R.string.progress_updating_application, 6),
+    ADDING_APPLICATION(R.string.progress_adding_application, 7),
+    DONE(R.string.progress_done, 8);
     
     public final int stringId;
     public final int value;

@@ -86,18 +86,9 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
 
                 publishProgress(SyncProgress.CREATING_ALERT_RULE);
 
-                this.alertRuleClient.createAlertRule(serialNumber, system.uid, application.uid);
-            } else {
-
-                publishProgress(SyncProgress.UPDATING_ALERT_RULE);
-
-                // The alert rule exists, but was linked to another system
-                // This probably means that the system was deleted, we'll update the alert rule.
-                alertRule = this.alertRuleClient.updateAlertRule(alertRule.uid, serialNumber, system.uid,
-                        application.uid);
-
+                this.alertRuleClient.createAlertRule();
             }
-
+            
             publishProgress(SyncProgress.UPDATING_APPLICATION);
 
             this.applicationClient.setApplicationData(application.uid, customData);
