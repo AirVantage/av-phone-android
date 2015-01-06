@@ -78,6 +78,8 @@
 
     <!-- Home fragment -->
     
+    <string name="home_sw_logo_alt">Sierra Wireless - AV Phone</string>
+    
     <string name="logged_on_na">You are currently logged on AirVantage NA</string>
     <string name="logged_on_eu">You are currently logged on AirVantage EU </string>
     <string name="logged_on_custom">You are currently logged on %1$s</string>
