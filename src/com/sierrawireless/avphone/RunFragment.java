@@ -138,6 +138,11 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         Switch serviceSwitch = getServiceSwitch();
         serviceSwitch.setChecked(isServiceRunning);
 
+        String systemUid = ((MainActivity) getActivity()).getSystemUid();
+        String systemName = ((MainActivity) getActivity()).getSystemName();
+        
+        this.setLinkToSystem(systemUid, systemName);
+        
     }
 
     public Switch getServiceSwitch() {
