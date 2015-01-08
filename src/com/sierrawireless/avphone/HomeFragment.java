@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,14 +31,10 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
     private View view;
 
-    private Button btnLoginNa;
-    private Button btnLoginEu;
-
+    private Button btnLogin;
     private Button btnLogout;
 
     private IAsyncTaskFactory taskFactory;
-
-    private Button btnLoginCustom;
 
     public HomeFragment() {
         super();
@@ -59,39 +56,16 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        btnLoginNa = (Button) view.findViewById(R.id.login_na_btn);
-        btnLoginEu = (Button) view.findViewById(R.id.login_eu_btn);
-        btnLoginCustom = (Button) view.findViewById(R.id.login_custom_btn);
-
+        TextView loginMessage = (TextView) view.findViewById(R.id.home_login_message);
+        loginMessage.setText(Html.fromHtml(getString(R.string.home_login_message)));
+        
+        btnLogin = (Button) view.findViewById(R.id.login_btn);
+        
         btnLogout = (Button) view.findViewById(R.id.logout_btn);
 
-        btnLoginNa.setOnClickListener(new OnClickListener() {
+        btnLogin.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                PreferenceUtils.setServer(PreferenceUtils.Server.NA, getActivity());
-                requestAuthentication();
-            }
-        });
-
-        btnLoginEu.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                PreferenceUtils.setServer(PreferenceUtils.Server.EU, getActivity());
-                requestAuthentication();
-            }
-        });
-
-        btnLoginEu.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                PreferenceUtils.setServer(PreferenceUtils.Server.EU, getActivity());
-                requestAuthentication();
-            }
-        });
-
-        btnLoginCustom.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
                 requestAuthentication();
             }
         });
@@ -232,27 +206,15 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
     private void showLogoutButton() {
         btnLogout.setVisibility(View.VISIBLE);
-        btnLoginNa.setVisibility(View.GONE);
-        btnLoginEu.setVisibility(View.GONE);
-        btnLoginCustom.setVisibility(View.GONE);
+        btnLogin.setVisibility(View.GONE);
         view.findViewById(R.id.home_login_message).setVisibility(View.GONE);
     }
 
     private void hideLogoutButton() {
         btnLogout.setVisibility(View.GONE);
-        btnLoginNa.setVisibility(View.VISIBLE);
-        btnLoginEu.setVisibility(View.VISIBLE);
-
+        btnLogin.setVisibility(View.VISIBLE);
+        
         view.findViewById(R.id.home_login_message).setVisibility(View.VISIBLE);
-
-        AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(getActivity());
-        if (prefs.usesCustomServer()) {
-            btnLoginCustom.setText(getActivity().getString(R.string.home_login_custom, prefs.serverHost));
-            btnLoginCustom.setVisibility(View.VISIBLE);
-        } else {
-            btnLoginCustom.setVisibility(View.GONE);
-        }
-
     }
 
     public TextView getErrorMessageView() {

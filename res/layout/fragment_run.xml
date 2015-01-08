@@ -92,11 +92,21 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/toggle_to_start"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/toggle_to_start"
+            android:textSize="12sp" />
+        
+        <TextView
             android:id="@+id/started_since"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:gravity="center"
+            android:visibility="gone"
             android:textSize="12sp" />
 
         <TextView
@@ -104,21 +114,18 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:visibility="gone"
             android:textSize="12sp" />
     </LinearLayout>
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-            android:layout_gravity="center" >
+        android:layout_height="fill_parent">
 
         <TableLayout
             android:id="@+id/table_data"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center"
             android:textAppearance="?android:attr/textAppearanceMedium" >
 
             <TableRow

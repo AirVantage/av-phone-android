@@ -138,6 +138,11 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         Switch serviceSwitch = getServiceSwitch();
         serviceSwitch.setChecked(isServiceRunning);
 
+        String systemUid = ((MainActivity) getActivity()).getSystemUid();
+        String systemName = ((MainActivity) getActivity()).getSystemName();
+        
+        this.setLinkToSystem(systemUid, systemName);
+        
     }
 
     public Switch getServiceSwitch() {
@@ -199,12 +204,18 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
     @Override
     public void onServiceStarted(MonitoringService service) {
+        view.findViewById(R.id.toggle_to_start).setVisibility(View.GONE);
+        view.findViewById(R.id.started_since).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.service_log).setVisibility(View.VISIBLE);
         viewUpdater.onStart(service.getStartedSince(), service.getLastData(), service.getLastLog(),
                 service.getLastRun());
     }
 
     @Override
     public void onServiceStopped(MonitoringService service) {
+        view.findViewById(R.id.toggle_to_start).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.started_since).setVisibility(View.GONE);
+        view.findViewById(R.id.service_log).setVisibility(View.GONE);
         viewUpdater.onStop();
     }
 

@@ -60,7 +60,7 @@ public class DataViewUpdater extends BroadcastReceiver {
             logView.setText(hourFormat.format(timestamp != null ? new Date(timestamp) : new Date()) + " - " + log);
             logView.setVisibility(View.VISIBLE);
         } else {
-            logView.setVisibility(View.INVISIBLE);
+            logView.setVisibility(View.GONE);
         }
     }
 
@@ -71,7 +71,7 @@ public class DataViewUpdater extends BroadcastReceiver {
                     + new SimpleDateFormat("dd/MM HH:mm:ss", Locale.FRENCH).format(new Date(startedSince)));
             startedTextView.setVisibility(View.VISIBLE);
         } else {
-            startedTextView.setVisibility(View.INVISIBLE);
+            startedTextView.setVisibility(View.GONE);
         }
     }
 
