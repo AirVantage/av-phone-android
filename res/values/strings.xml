@@ -146,7 +146,7 @@
         ]]>
     </string>
     <string name="run_send_data">Send Data</string>
-    <string name="run_activate_alarm">Activate alarm</string>
+    <string name="run_activate_alarm">Send Alarm</string>
     
     
     <!-- Configure fragment -->
