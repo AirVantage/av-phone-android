@@ -26,12 +26,12 @@ public class NewData extends Intent {
 
     private static final String ALARM_KEY = NEW_DATA_PREFIX + "alarm";
 
-    private static final String CUSTOM_INT_UP1_KEY = NEW_DATA_PREFIX + "custom.up.1";
-    private static final String CUSTOM_INT_UP2_KEY = NEW_DATA_PREFIX + "custom.up.2";
-    private static final String CUSTOM_INT_DOWN1_KEY = NEW_DATA_PREFIX + "custom.down.1";
-    private static final String CUSTOM_INT_DOWN2_KEY = NEW_DATA_PREFIX + "custom.down.2";
-    private static final String CUSTOM_STR1_KEY = NEW_DATA_PREFIX + "custom.str.1";
-    private static final String CUSTOM_STR2_KEY = NEW_DATA_PREFIX + "custom.str.2";
+    private static final String CUSTOM_1 = NEW_DATA_PREFIX + "custom.1";
+    private static final String CUSTOM_2 = NEW_DATA_PREFIX + "custom.2";
+    private static final String CUSTOM_3 = NEW_DATA_PREFIX + "custom.3";
+    private static final String CUSTOM_4 = NEW_DATA_PREFIX + "custom.4";
+    private static final String CUSTOM_5 = NEW_DATA_PREFIX + "custom.5";
+    private static final String CUSTOM_6 = NEW_DATA_PREFIX + "custom.6";
 
     public NewData() {
         super(NEW_DATA);
@@ -194,62 +194,62 @@ public class NewData extends Intent {
     }
 
     public Integer getCustomIntUp1() {
-        return (Integer) this.getExtras().get(CUSTOM_INT_UP1_KEY);
+        return (Integer) this.getExtras().get(CUSTOM_1);
     }
 
     public void setCustomIntUp1(Integer custom1) {
         if (custom1 != null) {
-            this.putExtra(CUSTOM_INT_UP1_KEY, custom1);
+            this.putExtra(CUSTOM_1, custom1);
         }
     }
 
     public Integer getCustomIntUp2() {
-        return (Integer) this.getExtras().get(CUSTOM_INT_UP2_KEY);
+        return (Integer) this.getExtras().get(CUSTOM_2);
     }
 
     public void setCustomIntUp2(Integer custom2) {
         if (custom2 != null) {
-            this.putExtra(CUSTOM_INT_UP2_KEY, custom2);
+            this.putExtra(CUSTOM_2, custom2);
         }
     }
 
     public Integer getCustomIntDown2() {
-        return (Integer) this.getExtras().get(CUSTOM_INT_DOWN2_KEY);
+        return (Integer) this.getExtras().get(CUSTOM_4);
     }
 
     public void setCustomIntDown2(Integer custom2) {
         if (custom2 != null) {
-            this.putExtra(CUSTOM_INT_DOWN2_KEY, custom2);
+            this.putExtra(CUSTOM_4, custom2);
         }
     }
 
     public Integer getCustomIntDown1() {
-        return (Integer) this.getExtras().get(CUSTOM_INT_DOWN1_KEY);
+        return (Integer) this.getExtras().get(CUSTOM_3);
     }
 
     public void setCustomIntDown1(Integer custom1) {
         if (custom1 != null) {
-            this.putExtra(CUSTOM_INT_DOWN1_KEY, custom1);
+            this.putExtra(CUSTOM_3, custom1);
         }
     }
 
     public String getCustomStr1() {
-        return (String) this.getExtras().get(CUSTOM_STR1_KEY);
+        return (String) this.getExtras().get(CUSTOM_5);
     }
 
     public String getCustomStr2() {
-        return (String) this.getExtras().get(CUSTOM_STR2_KEY);
+        return (String) this.getExtras().get(CUSTOM_6);
     }
 
     public void setCustomStr1(String customStr1) {
         if (customStr1 != null) {
-            this.putExtra(CUSTOM_STR1_KEY, customStr1);
+            this.putExtra(CUSTOM_5, customStr1);
         }
     }
 
     public void setCustomStr2(String customStr2) {
         if (customStr2 != null) {
-            this.putExtra(CUSTOM_STR2_KEY, customStr2);
+            this.putExtra(CUSTOM_6, customStr2);
         }
     }
 

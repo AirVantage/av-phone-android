@@ -18,6 +18,7 @@ import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.sierrawireless.avphone.model.AvPhoneData;
 
 public class MqttPushClient {
 
@@ -84,103 +85,103 @@ public class MqttPushClient {
         Map<String, List<DataValue>> values = new HashMap<String, List<DataValue>>();
 
         if (data.getRssi() != null) {
-            values.put("phone.rssi", Collections.singletonList(new DataValue(timestamp, data.getRssi())));
+            values.put(AvPhoneData.RSSI, Collections.singletonList(new DataValue(timestamp, data.getRssi())));
             values.put("_RSSI", Collections.singletonList(new DataValue(timestamp, data.getRssi())));
         }
 
         if (data.getRsrp() != null) {
-            values.put("phone.rsrp", Collections.singletonList(new DataValue(timestamp, data.getRsrp())));
+            values.put(AvPhoneData.RSRP, Collections.singletonList(new DataValue(timestamp, data.getRsrp())));
             values.put("_RSRP", Collections.singletonList(new DataValue(timestamp, data.getRsrp())));
         }
 
         if (data.getBatteryLevel() != null) {
-            values.put("phone.batterylevel",
+            values.put(AvPhoneData.BATTERY,
                     Collections.singletonList(new DataValue(timestamp, data.getBatteryLevel())));
         }
 
         if (data.getOperator() != null) {
-            values.put("phone.operator", Collections.singletonList(new DataValue(timestamp, data.getOperator())));
+            values.put(AvPhoneData.OPERATOR, Collections.singletonList(new DataValue(timestamp, data.getOperator())));
         }
 
         if (data.getImei() != null) {
-            values.put("phone.imei", Collections.singletonList(new DataValue(timestamp, data.getImei())));
+            values.put(AvPhoneData.IMEI, Collections.singletonList(new DataValue(timestamp, data.getImei())));
         }
 
         if (data.getNetworkType() != null) {
-            values.put("phone.service", Collections.singletonList(new DataValue(timestamp, data.getNetworkType())));
+            values.put(AvPhoneData.SERVICE, Collections.singletonList(new DataValue(timestamp, data.getNetworkType())));
             // hack for data mapping
             values.put("_NETWORK_SERVICE_TYPE",
                     Collections.singletonList(new DataValue(timestamp, data.getNetworkType())));
         }
 
         if (data.getLatitude() != null) {
-            values.put("phone.latitude", Collections.singletonList(new DataValue(timestamp, data.getLatitude())));
+            values.put(AvPhoneData.LAT, Collections.singletonList(new DataValue(timestamp, data.getLatitude())));
             // hack for data mapping
             values.put("_LATITUDE", Collections.singletonList(new DataValue(timestamp, data.getLatitude())));
         }
 
         if (data.getLongitude() != null) {
-            values.put("phone.longitude", Collections.singletonList(new DataValue(timestamp, data.getLongitude())));
+            values.put(AvPhoneData.LONG, Collections.singletonList(new DataValue(timestamp, data.getLongitude())));
             // hack for data mapping
             values.put("_LONGITUDE", Collections.singletonList(new DataValue(timestamp, data.getLongitude())));
         }
 
         if (data.getBytesReceived() != null) {
             // hack for data mapping
-            values.put("phone.bytesreceived",
+            values.put(AvPhoneData.BYTES_RECEIVED,
                     Collections.singletonList(new DataValue(timestamp, data.getBytesReceived())));
             values.put("_BYTES_RECEIVED", Collections.singletonList(new DataValue(timestamp, data.getBytesReceived())));
         }
 
         if (data.getBytesSent() != null) {
             // hack for data mapping
-            values.put("phone.bytessent", Collections.singletonList(new DataValue(timestamp, data.getBytesSent())));
+            values.put(AvPhoneData.BYTES_SENT, Collections.singletonList(new DataValue(timestamp, data.getBytesSent())));
             values.put("_BYTES_SENT", Collections.singletonList(new DataValue(timestamp, data.getBytesSent())));
         }
 
         if (data.isWifiActive() != null) {
-            values.put("phone.activewifi", Collections.singletonList(new DataValue(timestamp, data.isWifiActive())));
+            values.put(AvPhoneData.ACTIVE_WIFI, Collections.singletonList(new DataValue(timestamp, data.isWifiActive())));
         }
 
         if (data.getRunningApps() != null) {
-            values.put("phone.runningapps", Collections.singletonList(new DataValue(timestamp, data.getRunningApps())));
+            values.put(AvPhoneData.RUNNING_APPS, Collections.singletonList(new DataValue(timestamp, data.getRunningApps())));
         }
 
         if (data.getMemoryUsage() != null) {
-            values.put("phone.memoryusage", Collections.singletonList(new DataValue(timestamp, data.getMemoryUsage())));
+            values.put(AvPhoneData.MEMORY_USAGE, Collections.singletonList(new DataValue(timestamp, data.getMemoryUsage())));
         }
 
         if (data.getAndroidVersion() != null) {
-            values.put("phone.androidversion",
+            values.put(AvPhoneData.ANDROID_VERSION,
                     Collections.singletonList(new DataValue(timestamp, data.getAndroidVersion())));
             // values.put("_FIRMWARE_VERSION", Collections.singletonList(new DataValue(timestamp,
             // data.getAndroidVersion())));
         }
 
         if (data.isAlarmActivated() != null) {
-            values.put("phone.alarm",
+            values.put(AvPhoneData.ALARM,
                     Collections.singletonList(new DataValue(timestamp, data.isAlarmActivated())));
         }
 
         if (data.getCustomIntUp1() != null) {
-            values.put("phone.custom.up.1", Collections.singletonList(new DataValue(timestamp, data.getCustomIntUp1())));
+            values.put(AvPhoneData.CUSTOM_1, Collections.singletonList(new DataValue(timestamp, data.getCustomIntUp1())));
         }
         if (data.getCustomIntUp2() != null) {
-            values.put("phone.custom.up.2", Collections.singletonList(new DataValue(timestamp, data.getCustomIntUp2())));
+            values.put(AvPhoneData.CUSTOM_2, Collections.singletonList(new DataValue(timestamp, data.getCustomIntUp2())));
         }
         if (data.getCustomIntDown1() != null) {
-            values.put("phone.custom.down.1",
+            values.put(AvPhoneData.CUSTOM_3,
                     Collections.singletonList(new DataValue(timestamp, data.getCustomIntDown1())));
         }
         if (data.getCustomIntDown2() != null) {
-            values.put("phone.custom.down.2",
+            values.put(AvPhoneData.CUSTOM_4,
                     Collections.singletonList(new DataValue(timestamp, data.getCustomIntDown2())));
         }
         if (data.getCustomStr1() != null) {
-            values.put("phone.custom.str.1", Collections.singletonList(new DataValue(timestamp, data.getCustomStr1())));
+            values.put(AvPhoneData.CUSTOM_5, Collections.singletonList(new DataValue(timestamp, data.getCustomStr1())));
         }
         if (data.getCustomStr2() != null) {
-            values.put("phone.custom.str.2", Collections.singletonList(new DataValue(timestamp, data.getCustomStr2())));
+            values.put(AvPhoneData.CUSTOM_6, Collections.singletonList(new DataValue(timestamp, data.getCustomStr2())));
         }
 
         return gson.toJson(Collections.singletonList(values));
