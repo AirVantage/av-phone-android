@@ -42,10 +42,6 @@ public class SettingsActivity extends PreferenceActivity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            // server host
-            Preference serverPref = findPreference(PreferenceUtils.PREF_SERVER_KEY);
-            serverPref.setSummary(sharedPreferences.getString(PreferenceUtils.PREF_SERVER_KEY, ""));
-
             // period
             ListPreference periodPref = (ListPreference) findPreference(PreferenceUtils.PREF_PERIOD_KEY);
             periodPref.setSummary(periodPref.getEntry());

@@ -16,9 +16,8 @@ import net.airvantage.model.Variable;
 
 public class AvPhoneApplication {
 
-    private static final String PHONE_ALARM_DATA_ID = "phone.alarm";
     public static final String ALERT_RULE_NAME = "AV Phone raised an alert";
-
+    
     public static Application createApplication(String serialNumber) {
         Application application = new Application();
         application.name = AvPhoneApplication.appName(serialNumber);
@@ -59,29 +58,30 @@ public class AvPhoneApplication {
         Data asset = new Data("phone", "Phone", "node");
         asset.data = new ArrayList<net.airvantage.model.Data>();
 
-        asset.data.add(new Variable("phone.rssi", "RSSI", "int"));
-        asset.data.add(new Variable("phone.service", "Service type", "string"));
-        asset.data.add(new Variable("phone.operator", "Operator", "string"));
-        asset.data.add(new Variable("phone.latitude", "Latitude", "double"));
-        asset.data.add(new Variable("phone.longitude", "Longitude", "double"));
-        asset.data.add(new Variable("phone.batterylevel", "Battery level", "double"));
-        asset.data.add(new Variable("phone.bytesreceived", "Bytes received", "double"));
-        asset.data.add(new Variable("phone.bytessent", "Bytes sent", "double"));
-        asset.data.add(new Variable("phone.memoryusage", "Memory usage", "double"));
-        asset.data.add(new Variable("phone.runningapps", "Running applications", "int"));
-        asset.data.add(new Variable("phone.activewifi", "Active Wi-Fi", "boolean"));
-        asset.data.add(new Variable("phone.androidversion", "Android Version", "string"));
+        asset.data.add(new Variable(AvPhoneData.RSSI , "RSSI", "int"));
+        asset.data.add(new Variable(AvPhoneData.RSRP, "Service type", "string"));
+        asset.data.add(new Variable(AvPhoneData.OPERATOR , "Operator", "string"));
+        asset.data.add(new Variable(AvPhoneData.IMEI , "IMEI", "string"));
+        asset.data.add(new Variable(AvPhoneData.LAT , "Latitude", "double"));
+        asset.data.add(new Variable(AvPhoneData.LONG, "Longitude", "double"));
+        asset.data.add(new Variable(AvPhoneData.BATTERY , "Battery level", "double"));
+        asset.data.add(new Variable(AvPhoneData.BYTES_RECEIVED , "Bytes received", "double"));
+        asset.data.add(new Variable(AvPhoneData.BYTES_SENT , "Bytes sent", "double"));
+        asset.data.add(new Variable(AvPhoneData.MEMORY_USAGE , "Memory usage", "double"));
+        asset.data.add(new Variable(AvPhoneData.RUNNING_APPS, "Running applications", "int"));
+        asset.data.add(new Variable(AvPhoneData.ACTIVE_WIFI, "Active Wi-Fi", "boolean"));
+        asset.data.add(new Variable(AvPhoneData.ANDROID_VERSION, "Android Version", "string"));
         
-        asset.data.add(new Variable(PHONE_ALARM_DATA_ID, "Active alarm", "boolean"));
+        asset.data.add(new Variable(AvPhoneData.ALARM, "Active alarm", "boolean"));
 
-        asset.data.add(new Variable("phone.custom.up.1", customData.customUp1Label, "int"));
-        asset.data.add(new Variable("phone.custom.up.2", customData.customUp2Label, "int"));
-        asset.data.add(new Variable("phone.custom.down.1", customData.customDown1Label, "int"));
-        asset.data.add(new Variable("phone.custom.down.2", customData.customDown2Label, "int"));
-        asset.data.add(new Variable("phone.custom.str.1", customData.customStr1Label, "string"));
-        asset.data.add(new Variable("phone.custom.str.2", customData.customStr2Label, "string"));
+        asset.data.add(new Variable(AvPhoneData.CUSTOM_1, customData.customUp1Label, "int"));
+        asset.data.add(new Variable(AvPhoneData.CUSTOM_2, customData.customUp2Label, "int"));
+        asset.data.add(new Variable(AvPhoneData.CUSTOM_3, customData.customDown1Label, "int"));
+        asset.data.add(new Variable(AvPhoneData.CUSTOM_4, customData.customDown2Label, "int"));
+        asset.data.add(new Variable(AvPhoneData.CUSTOM_5, customData.customStr1Label, "string"));
+        asset.data.add(new Variable(AvPhoneData.CUSTOM_6, customData.customStr2Label, "string"));
 
-        Command c = new Command("phone.notify", "Notify");
+        Command c = new Command(AvPhoneData.NOTIFY, "Notify");
         Parameter p = new Parameter("message", "string");
         c.parameters = Arrays.asList(p);
 
@@ -110,7 +110,7 @@ public class AvPhoneApplication {
         
         Condition alarmCondition = new Condition();
         alarmCondition.eventProperty = "communication.data.value";
-        alarmCondition.eventPropertyKey = PHONE_ALARM_DATA_ID;
+        alarmCondition.eventPropertyKey = AvPhoneData.ALARM;
         alarmCondition.operator = "EQUALS";
         alarmCondition.value = "true";
         

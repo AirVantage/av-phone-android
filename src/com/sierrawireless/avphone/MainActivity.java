@@ -322,11 +322,14 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
         if (boundToMonitoringService) {
             this.unbindService(connection);
             boundToMonitoringService = false;
+            if (monitoringServiceListener != null) {
+                monitoringServiceListener.onServiceStopped(monitoringService);
+            }
         }
     }
 
     ServiceConnection connection = new ServiceConnection() {
-
+        
         @Override
         public void onServiceConnected(ComponentName arg0, IBinder binder) {
             Log.d(LOGTAG, "Connected to the monitoring service");
@@ -342,9 +345,6 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
         public void onServiceDisconnected(ComponentName arg0) {
             Log.d(LOGTAG, "Disconnected from the monitoring service");
             boundToMonitoringService = false;
-            if (monitoringServiceListener != null) {
-                monitoringServiceListener.onServiceStopped(monitoringService);
-            }
         }
 
     };

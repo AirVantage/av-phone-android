@@ -9,17 +9,23 @@ import net.airvantage.utils.PreferenceUtils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 
 import com.sierrawireless.avphone.auth.Authentication;
 
 public class AuthorizationActivity extends Activity {
 
+    private static final String LOGTAG = AuthorizationActivity.class.getName();
+    
     public static final String AUTHENTICATION_TOKEN = "token";
     public static final String AUTHENTICATION_EXPIRATION_DATE = "expirationDate";
 
@@ -31,15 +37,81 @@ public class AuthorizationActivity extends Activity {
     private WebView webview;
 
     private AuthenticationUrlParser authUrlParser = new AuthenticationUrlParser();
+    
+    private Drawable enabledButtonBg;
+    private Drawable disabledButtonBg;
+    
+    private Button btnEu;
+    private Button btnNa;
 
+    private boolean isEu = true;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authorization);
 
+        btnEu = (Button) this.findViewById(R.id.auth_btn_eu);
+        btnNa = (Button) this.findViewById(R.id.auth_btn_na);
+        
+        if (disabledButtonBg == null) {
+            disabledButtonBg = btnEu.getBackground();
+        } else {
+            Log.w(LOGTAG, "disabledButtonBg has already been loaded, this can cause bug...");
+        }
+        enabledButtonBg = getResources().getDrawable(R.drawable.apptheme_switch_thumb_activated_holo_light);
+        
+        btnNa.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isEu) {
+                    isEu = false;
+                    setButtonEnabled(btnNa);
+                    setButtonDisabled(btnEu);
+                    PreferenceUtils.setServer(PreferenceUtils.Server.NA, AuthorizationActivity.this);
+                    openAuthorizationPage();
+                }
+            }
+        });
+        
+        btnEu.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isEu) {
+                    isEu = true;
+                    setButtonEnabled(btnEu);
+                    setButtonDisabled(btnNa);
+                    PreferenceUtils.setServer(PreferenceUtils.Server.EU, AuthorizationActivity.this);
+                    openAuthorizationPage();
+                }
+            }
+        });
+        
+        AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this);
+        if (avPhonePrefs.usesEU()) {
+            this.isEu = true;
+            setButtonEnabled(btnEu);
+            setButtonDisabled(btnNa);
+        } else {
+            this.isEu = false;
+            setButtonEnabled(btnNa);
+            setButtonDisabled(btnEu);
+        }
+        
         openAuthorizationPage();
     }
 
+    private void setButtonEnabled(Button btn) {
+        btn.setBackground(enabledButtonBg);
+        btn.setTextColor(getResources().getColor(R.color.white));
+    }
+
+    private void setButtonDisabled(Button btn) {
+        btn.setBackground(disabledButtonBg);
+        btn.setTextColor(getResources().getColor(R.color.textcolor));
+    }
+
+    
     @SuppressLint("SetJavaScriptEnabled")
     private void openAuthorizationPage() {
 

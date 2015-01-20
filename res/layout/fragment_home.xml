@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:layout_gravity="center"
     android:background="@color/greybg"
     android:divider="?android:dividerHorizontal"
     android:orientation="vertical"
@@ -12,14 +13,6 @@
     android:showDividers="middle"
     tools:context=".MainActivity" >
 
-    <!--
-    <ScrollView 
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_gravity="top"
-        >
-    -->
-
     <LinearLayout
         android:id="@+id/action_layout"
         android:layout_width="fill_parent"
@@ -27,6 +20,19 @@
         android:layout_gravity="center"
         android:orientation="vertical" >
 
+        <ImageView
+                    android:id="@+id/home_sw_logo"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/home_sw_logo_alt"
+                    android:gravity="center"
+                    android:src="@drawable/sw_av_phone"
+                    android:layout_marginBottom="5dp" />
+        
+        <!-- 
+        android:layout_height="80dp"
+         -->
+        
         <TextView
             android:id="@+id/home_info_message"
             style="@style/InfoMessage"
@@ -43,6 +49,7 @@
             android:layout_marginBottom="2dp"
             android:visibility="gone" />
 
+        <!-- 
         <TextView
             android:id="@+id/home_title"
             android:layout_width="fill_parent"
@@ -52,6 +59,7 @@
             android:text="@string/home_title"
             android:textSize="25sp"
             android:textStyle="bold" />
+ -->
 
         <ScrollView
             android:layout_width="fill_parent"
@@ -59,9 +67,9 @@
             android:layout_gravity="top" >
 
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
 
                 <ImageView
                     android:id="@+id/home_welcome_image"
@@ -95,26 +103,11 @@
                     android:orientation="vertical" >
 
                     <Button
-                        android:id="@+id/login_eu_btn"
+                        android:id="@+id/login_btn"
                         android:layout_width="fill_parent"
                         android:layout_height="40dp"
-                        android:text="@string/home_login_eu"
+                        android:text="@string/home_login"
                         android:textColor="#FFFFFF" />
-
-                    <Button
-                        android:id="@+id/login_na_btn"
-                        android:layout_width="fill_parent"
-                        android:layout_height="40dp"
-                        android:text="@string/home_login_na"
-                        android:textColor="#FFFFFF" />
-
-                    <Button
-                        android:id="@+id/login_custom_btn"
-                        android:layout_width="fill_parent"
-                        android:layout_height="40dp"
-                        android:text="@string/home_login_eu"
-                        android:textColor="#FFFFFF"
-                        android:visibility="gone" />
 
                     <Button
                         android:id="@+id/logout_btn"
@@ -128,7 +121,5 @@
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
-
-<!-- </ScrollView> -->
 
 </LinearLayout>
