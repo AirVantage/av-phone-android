@@ -2,9 +2,7 @@ package com.sierrawireless.avphone.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.airvantage.model.AlertRule;
 import net.airvantage.model.Application;
@@ -18,6 +16,8 @@ import net.airvantage.model.Variable;
 
 public class AvPhoneApplication {
 
+    public static final String ALERT_RULE_NAME = "AV Phone raised an alert";
+    
     public static Application createApplication(String serialNumber) {
         Application application = new Application();
         application.name = AvPhoneApplication.appName(serialNumber);
@@ -101,21 +101,12 @@ public class AvPhoneApplication {
         return "av.phone.demo." + serialNumber;
     }
 
-    public static String alertRuleName(String serialNumber) {
-        return "AV Phone rule " + serialNumber;
-    }
-    
-    public static AlertRule createAlertRule(String serialNumber, String systemUid, String applicationUid) {
+    public static AlertRule createAlertRule() {
         AlertRule rule = new AlertRule();
         
         rule.active = true;
-        rule.name = alertRuleName(serialNumber);
+        rule.name = ALERT_RULE_NAME;
         rule.eventType = "event.system.incoming.communication";
-        
-        Condition sysCondition = new Condition();
-        sysCondition.eventProperty = "system.uid";
-        sysCondition.operator = "EQUALS";
-        sysCondition.value = systemUid;
         
         Condition alarmCondition = new Condition();
         alarmCondition.eventProperty = "communication.data.value";
@@ -123,12 +114,7 @@ public class AvPhoneApplication {
         alarmCondition.operator = "EQUALS";
         alarmCondition.value = "true";
         
-        rule.conditions = Arrays.asList(sysCondition, alarmCondition);
-        
-        Map<String, String> metadata = new HashMap<String, String>();
-        metadata.put("condition_1_application", applicationUid);
-        
-        rule.metadata = metadata;
+        rule.conditions = Arrays.asList(alarmCondition);
         
         return rule;
     }
