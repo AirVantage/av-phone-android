@@ -37,6 +37,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.CrashlyticsListener;
 import com.google.gson.Gson;
 import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.R;
@@ -236,6 +237,7 @@ public class MonitoringService extends Service {
             try {
                 this.client.disconnect();
             } catch (MqttException e) {
+                Crashlytics.logException(e);
                 Log.e(LOGTAG, "error", e);
             }
         }
@@ -254,7 +256,7 @@ public class MonitoringService extends Service {
         try {
             client.push(data);
         } catch (MqttException e) {
-            // TODO display something
+            Crashlytics.logException(e);
             Log.e(LOGTAG, "Could not push the alarm event", e);
         }
     }

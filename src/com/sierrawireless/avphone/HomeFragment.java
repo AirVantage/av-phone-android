@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.sierrawireless.avphone.auth.AuthUtils;
 import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
@@ -195,7 +196,8 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
         try {
             logoutTask.get();
         } catch (Exception e) {
-            Log.w(LOGTAG, "Exception while ");
+            Log.w(LOGTAG, "Exception while logging out");
+            Crashlytics.logException(e);
         } finally {
             authManager.forgetAuthentication();
 
