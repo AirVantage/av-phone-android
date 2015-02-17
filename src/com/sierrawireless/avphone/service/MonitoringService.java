@@ -256,6 +256,7 @@ public class MonitoringService extends Service {
         try {
             client.push(data);
         } catch (MqttException e) {
+            // TODO display something
             Crashlytics.logException(e);
             Log.e(LOGTAG, "Could not push the alarm event", e);
         }
