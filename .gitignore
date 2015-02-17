@@ -19,3 +19,8 @@ local.properties
 .classpath
 .project
 .settings
+
+# Crashlytics files
+# (Should NOT be stored in source control.)
+assets/crashlytics-build.properties
+res/values/com_crashlytics_export_strings.xml
