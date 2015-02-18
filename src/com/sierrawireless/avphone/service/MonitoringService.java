@@ -109,6 +109,11 @@ public class MonitoringService extends Service {
 
         try {
             
+            if (this.client == null) {
+                client = new MqttPushClient(intent.getStringExtra(DEVICE_ID), intent.getStringExtra(PASSWORD),
+                        intent.getStringExtra(SERVER_HOST), mqttCallback);
+            }
+            
             if (!client.isConnected()) {
                 client.connect();
             }
