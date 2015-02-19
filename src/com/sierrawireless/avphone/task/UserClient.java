@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import com.crashlytics.android.Crashlytics;
+
 import android.util.Log;
 import net.airvantage.model.AirVantageException;
 import net.airvantage.model.UserRights;
@@ -34,6 +36,7 @@ public class UserClient implements IUserClient {
             UserRights rights = client.getUserRights();
             requiredRights.removeAll(rights);
         } catch (Exception e) {
+            Crashlytics.logException(e);
             Log.e(LOGTAG, "Could not get user rights", e);
         }
         

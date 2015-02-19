@@ -35,6 +35,7 @@ import org.json.JSONObject;
 import android.net.Uri;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.OkHttpClient;
@@ -198,7 +199,8 @@ public class AirVantageClient implements IAirVantageClient {
                 values.put(jsonValues.names().getString(i).trim(), jsonValues.getInt(jsonValues.names().getString(i)));
             }
         } catch (JSONException e) {
-            Log.e(AirVantageClient.class.getName(), "Error in json", e);
+            Log.e(AirVantageClient.class.getName(), "Unable to parse json", e);
+            Crashlytics.logException(e);
         }
 
         return values;
