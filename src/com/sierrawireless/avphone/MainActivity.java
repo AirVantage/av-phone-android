@@ -1,5 +1,7 @@
 package com.sierrawireless.avphone;
 
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import java.util.Date;
 
 import net.airvantage.model.AvSystem;
@@ -26,7 +28,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
@@ -67,10 +68,11 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
         this.customLabelsListener = customLabelsListener;
     }
 
- 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
+        
         setContentView(R.layout.activity_main);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -125,7 +127,7 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
                 this.stopMonitoringService();
             }
         }
-        
+
     }
 
     private void readAuthenticationFromPreferences() {
@@ -158,7 +160,7 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
     }
 
     private RunFragment runFragment;
-    
+
     class TabsPagerAdapter extends FragmentPagerAdapter {
 
         public TabsPagerAdapter(FragmentManager fm) {
@@ -254,7 +256,7 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
             actionBar.addTab(actionBar.newTab().setText(getString(R.string.configure_tab)).setTabListener(this));
             tabsPageAdapter.notifyDataSetChanged();
         }
-        
+
         viewPager.setCurrentItem(1);
     }
 
@@ -329,7 +331,7 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
     }
 
     ServiceConnection connection = new ServiceConnection() {
-        
+
         @Override
         public void onServiceConnected(ComponentName arg0, IBinder binder) {
             Log.d(LOGTAG, "Connected to the monitoring service");
@@ -409,7 +411,7 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
         AvSystem system = result.getSystem();
         prefs.edit().putString("systemUid", system.uid).commit();
         prefs.edit().putString("systemName", system.name).commit();
-        
+
         if (runFragment != null) {
             String systemUid = this.getSystemUid();
             String systemName = this.getSystemName();
@@ -417,15 +419,15 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
         } else {
             Log.w(LOGTAG, "RunFragment reference is null when onSynced is called");
         }
-        
+
     }
 
     public String getSystemUid() {
         return prefs.getString("systemUid", null);
     }
-    
+
     public String getSystemName() {
         return prefs.getString("systemName", null);
     }
-    
+
 }

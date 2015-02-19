@@ -36,6 +36,8 @@ import android.telephony.CellInfoWcdma;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.CrashlyticsListener;
 import com.google.gson.Gson;
 import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.R;
@@ -106,11 +108,12 @@ public class MonitoringService extends Service {
         lastRun = System.currentTimeMillis();
 
         try {
+            
             if (this.client == null) {
                 client = new MqttPushClient(intent.getStringExtra(DEVICE_ID), intent.getStringExtra(PASSWORD),
                         intent.getStringExtra(SERVER_HOST), mqttCallback);
             }
-
+            
             if (!client.isConnected()) {
                 client.connect();
             }
@@ -222,6 +225,7 @@ public class MonitoringService extends Service {
             LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog));
 
         } catch (Exception e) {
+            Crashlytics.logException(e);
             Log.e(LOGTAG, "error", e);
             lastLog = "ERROR: " + e.getMessage();
             LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog));
@@ -238,6 +242,7 @@ public class MonitoringService extends Service {
             try {
                 this.client.disconnect();
             } catch (MqttException e) {
+                Crashlytics.logException(e);
                 Log.e(LOGTAG, "error", e);
             }
         }
@@ -257,6 +262,7 @@ public class MonitoringService extends Service {
             client.push(data);
         } catch (MqttException e) {
             // TODO display something
+            Crashlytics.logException(e);
             Log.e(LOGTAG, "Could not push the alarm event", e);
         }
     }

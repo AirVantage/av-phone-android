@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.text.Html;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.sierrawireless.avphone.DeviceInfo;
 import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.R;
@@ -108,6 +109,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
             publishProgress(SyncProgress.DONE);
             return new SyncWithAvResult(e.getError());
         } catch (IOException e) {
+            Crashlytics.logException(e);
             Log.e(MainActivity.class.getName(), "Error when trying to synchronize with server", e);
             publishProgress(SyncProgress.DONE);
             return new SyncWithAvResult(new AvError("unkown.error"));

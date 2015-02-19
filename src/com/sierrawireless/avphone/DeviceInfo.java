@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import com.crashlytics.android.Crashlytics;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
@@ -45,9 +47,11 @@ public class DeviceInfo {
                 }
                 return hexString.toString().substring(0, 12);
             } catch (NoSuchAlgorithmException e) {
-                //
+                // Should not happen
+                Crashlytics.logException(e);
             } catch (UnsupportedEncodingException e) {
-                //
+                // Should not happen
+                Crashlytics.logException(e);
             }
         }
         return null;
