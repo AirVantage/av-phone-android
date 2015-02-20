@@ -59,7 +59,8 @@ public class AvPhoneApplication {
         asset.data = new ArrayList<net.airvantage.model.Data>();
 
         asset.data.add(new Variable(AvPhoneData.RSSI , "RSSI", "int"));
-        asset.data.add(new Variable(AvPhoneData.RSRP, "Service type", "string"));
+        asset.data.add(new Variable(AvPhoneData.RSRP, "RSRP", "int"));
+        asset.data.add(new Variable(AvPhoneData.SERVICE, "Service type", "string"));
         asset.data.add(new Variable(AvPhoneData.OPERATOR , "Operator", "string"));
         asset.data.add(new Variable(AvPhoneData.IMEI , "IMEI", "string"));
         asset.data.add(new Variable(AvPhoneData.LAT , "Latitude", "double"));
