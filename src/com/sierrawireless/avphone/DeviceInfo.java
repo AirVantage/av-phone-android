@@ -18,7 +18,7 @@ public class DeviceInfo {
     public static String getUniqueId(Context context) {
 
         String identifier = Build.SERIAL;
-        if (identifier == null || identifier.equalsIgnoreCase("123456789ABCD")) {
+        if (identifier == null || isCommonSerialNumber(identifier)) {
             // from IMEI
             String deviceId = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
             identifier = hash(deviceId);
@@ -29,6 +29,20 @@ public class DeviceInfo {
             identifier = hash(Secure.ANDROID_ID);
         }
         return identifier != null ? identifier.toUpperCase() : null;
+    }
+
+    @SuppressLint("DefaultLocale")
+    /**
+     * Is this SN one of the common ones used by cheap phones (eg wiko) ? 
+     * Currently we had issues with :
+     * - "123456789ABCD"
+     * - "0123456789ABCDEF"
+     *
+     * We simply check if "123456789ABCD" is a substring, this should do
+     * for a while.
+     */
+    private static boolean isCommonSerialNumber(String serialNumber) {
+        return serialNumber.toUpperCase().contains("123456789ABCD");
     }
 
     // first 12 digits of SHA-1 hash
