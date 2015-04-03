@@ -1,6 +1,9 @@
 package net.airvantage.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
+import java.util.Properties;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -36,13 +39,15 @@ public class PreferenceUtils {
 
     public static final String PREF_TOKEN_EXPIRES_AT = "pref_token_expires_at";
 
+    protected static Properties properties;
+    
     public static AvPhonePrefs getAvPhonePrefs(Context context) {
         AvPhonePrefs res = new AvPhonePrefs();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         res.serverHost = prefs.getString(PREF_SERVER_KEY, context.getString(R.string.pref_server_na_value));
 
-        res.clientId = prefs.getString(PREF_CLIENT_ID_KEY, context.getString(R.string.pref_client_id_na));
+        res.clientId = prefs.getString(PREF_CLIENT_ID_KEY, getNaClientId(context));
 
         res.usesNA = (context.getString(R.string.pref_server_na_value)).equals(res.serverHost);
         res.usesEU = (context.getString(R.string.pref_server_eu_value)).equals(res.serverHost);
@@ -53,6 +58,29 @@ public class PreferenceUtils {
         return res;
     }
 
+    private static Properties getPropertiesFile(Context context) {
+        if (properties == null) {
+            try {
+                InputStream in = context.getAssets().open("avphone.properties");
+                properties = new Properties();
+                properties.load(in);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }    
+        }
+        return properties;
+    }
+    
+    private static String getNaClientId(Context context) {
+        Properties properties = getPropertiesFile(context);
+        return properties.getProperty("clientid.na");
+    }
+
+    private static String getEuClientId(Context context) {
+        Properties properties = getPropertiesFile(context);
+        return properties.getProperty("clientid.eu");
+    }
+    
     public static String getPreference(Context context, int prefKeyId, int defaultValueKeyId) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String prefKey = context.getString(prefKeyId);
@@ -95,10 +123,10 @@ public class PreferenceUtils {
     public static void setServer(Server server, Context context) {
         if (server == Server.NA) {
             PreferenceUtils.setPreference(context, PREF_SERVER_KEY, context.getString(R.string.pref_server_na_value));
-            PreferenceUtils.setPreference(context, PREF_CLIENT_ID_KEY, context.getString(R.string.pref_client_id_na));
+            PreferenceUtils.setPreference(context, PREF_CLIENT_ID_KEY, getNaClientId(context));
         } else if (server == Server.EU) {
             PreferenceUtils.setPreference(context, PREF_SERVER_KEY, context.getString(R.string.pref_server_eu_value));
-            PreferenceUtils.setPreference(context, PREF_CLIENT_ID_KEY, context.getString(R.string.pref_client_id_eu));
+            PreferenceUtils.setPreference(context, PREF_CLIENT_ID_KEY, getEuClientId(context));
         } else {
             throw new IllegalArgumentException("Should be NA or EU");
         }
