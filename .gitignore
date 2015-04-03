@@ -12,6 +12,9 @@
 bin/
 gen/
 
+# Properties
+assets/avphone.properties
+
 # Local configuration file (sdk path, etc)
 local.properties
 
@@ -24,3 +27,9 @@ local.properties
 # (Should NOT be stored in source control.)
 assets/crashlytics-build.properties
 res/values/com_crashlytics_export_strings.xml
+crashlytics.properties
+fabric.properties
+
+# 'Private' doc
+SECRET.md
+TODO.md

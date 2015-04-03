@@ -66,8 +66,6 @@
     <string name="pref_period">Push data period</string>
     
     <string name="pref_client_id">Client ID</string>
-    <string name="pref_client_id_na">54d4faa5343d49fba03f2a2ec1f210b9</string>
-    <string name="pref_client_id_eu">cd757a11e2cc42ba81bae65c10bdd49e</string>
     
     <!-- default values -->
     <string name="pref_password_default">12345</string>
