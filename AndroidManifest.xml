@@ -46,8 +46,8 @@
         <service android:name="com.sierrawireless.avphone.service.MonitoringService" />
 
         <meta-data
-            android:name="com.crashlytics.ApiKey"
-            android:value="49611014764fa52cfad6ef5db953059d1d7769bb" />
+            android:name="io.fabric.ApiKey"
+            android:value="9a96a8b13fb7d66d3faa24132dfc4d1891d1604e" />
     </application>
 
 </manifest>
