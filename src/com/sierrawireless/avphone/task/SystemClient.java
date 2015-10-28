@@ -10,9 +10,7 @@ import net.airvantage.model.Application;
 import net.airvantage.model.AvSystem;
 import net.airvantage.model.MqttCommunication;
 import net.airvantage.utils.AirVantageClient;
-import net.airvantage.utils.Predicate;
 import net.airvantage.utils.Utils;
-
 
 public class SystemClient implements ISystemClient {
 
@@ -25,19 +23,19 @@ public class SystemClient implements ISystemClient {
     @Override
     public net.airvantage.model.AvSystem getSystem(final String serialNumber) throws IOException, AirVantageException {
         List<net.airvantage.model.AvSystem> systems = client.getSystemsBySerialNumber(serialNumber);
-        
+
         return Utils.firstWhere(systems, AvSystem.hasSerialNumber(serialNumber));
     }
 
     @Override
-    public net.airvantage.model.AvSystem createSystem(String serialNumber, String imei, String mqttPassword, String applicationUid)
-            throws IOException, AirVantageException {
+    public net.airvantage.model.AvSystem createSystem(String serialNumber, String imei, String mqttPassword,
+            String applicationUid) throws IOException, AirVantageException {
         net.airvantage.model.AvSystem system = new net.airvantage.model.AvSystem();
 
         net.airvantage.model.AvSystem.Gateway gateway = new net.airvantage.model.AvSystem.Gateway();
         gateway.serialNumber = serialNumber;
         gateway.imei = imei;
-        
+
         system.gateway = gateway;
 
         system.state = "READY";

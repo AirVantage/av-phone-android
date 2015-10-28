@@ -1,14 +1,11 @@
 package com.sierrawireless.avphone.auth;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
+
+import com.sierrawireless.avphone.AuthorizationActivity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
-
-import com.sierrawireless.avphone.AuthorizationActivity;
 
 public class AuthUtils {
 

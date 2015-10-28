@@ -10,7 +10,10 @@ import com.sierrawireless.avphone.R;
 
 public class UserRights extends ArrayList<String> {
 
+    private static final long serialVersionUID = 1L;
+
     private static Map<String, Integer> AS_STRING_ID = new HashMap<String, Integer>();
+
     static {
         AS_STRING_ID.put("entities.systems.view", R.string.entities_systems_view);
         AS_STRING_ID.put("entities.systems.create", R.string.entities_systems_create);
@@ -30,5 +33,5 @@ public class UserRights extends ArrayList<String> {
         }
         return res;
     }
-    
+
 }

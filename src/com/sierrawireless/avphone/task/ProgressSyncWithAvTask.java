@@ -1,13 +1,12 @@
 package com.sierrawireless.avphone.task;
 
-import net.airvantage.model.AvError;
+import com.sierrawireless.avphone.R;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
-
-import com.sierrawireless.avphone.R;
 
 public class ProgressSyncWithAvTask extends SyncWithAvTask {
 

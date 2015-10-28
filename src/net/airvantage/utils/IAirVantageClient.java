@@ -9,6 +9,7 @@ import net.airvantage.model.Application;
 import net.airvantage.model.ApplicationData;
 import net.airvantage.model.AvSystem;
 import net.airvantage.model.Protocol;
+import net.airvantage.model.User;
 import net.airvantage.model.UserRights;
 
 public interface IAirVantageClient {
@@ -32,4 +33,7 @@ public interface IAirVantageClient {
     void logout() throws IOException, AirVantageException;
 
     UserRights getUserRights() throws IOException, AirVantageException;
+
+    User getCurrentUser() throws IOException, AirVantageException;
+
 }

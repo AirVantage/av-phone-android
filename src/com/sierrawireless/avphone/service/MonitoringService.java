@@ -9,6 +9,11 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import com.crashlytics.android.Crashlytics;
+import com.google.gson.Gson;
+import com.sierrawireless.avphone.MainActivity;
+import com.sierrawireless.avphone.R;
+
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.app.Notification;
@@ -35,12 +40,6 @@ import android.telephony.CellInfoLte;
 import android.telephony.CellInfoWcdma;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.CrashlyticsListener;
-import com.google.gson.Gson;
-import com.sierrawireless.avphone.MainActivity;
-import com.sierrawireless.avphone.R;
 
 public class MonitoringService extends Service {
 

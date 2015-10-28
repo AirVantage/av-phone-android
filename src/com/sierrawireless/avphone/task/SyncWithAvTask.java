@@ -4,23 +4,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.airvantage.model.AirVantageException;
-import net.airvantage.model.Application;
-import net.airvantage.model.AvError;
-import net.airvantage.model.AvSystem;
-import net.airvantage.model.UserRights;
-import android.app.Activity;
-import android.os.AsyncTask;
-import android.text.Html;
-import android.util.Log;
-
 import com.crashlytics.android.Crashlytics;
-import com.sierrawireless.avphone.DeviceInfo;
 import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.R;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.model.AvPhoneApplication;
 import com.sierrawireless.avphone.model.CustomDataLabels;
+
+import android.app.Activity;
+import android.os.AsyncTask;
+import android.text.Html;
+import android.util.Log;
+import net.airvantage.model.AirVantageException;
+import net.airvantage.model.Application;
+import net.airvantage.model.AvError;
+import net.airvantage.model.AvSystem;
+import net.airvantage.model.UserRights;
 
 public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, SyncWithAvResult> {
 
@@ -68,7 +67,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
 
             publishProgress(SyncProgress.CHECKING_APPLICATION);
 
-            Application application = this.applicationClient.ensureApplicationExists(serialNumber);
+            Application application = this.applicationClient.ensureApplicationExists();
 
             publishProgress(SyncProgress.CHECKING_SYSTEM);
 
@@ -89,7 +88,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
 
                 this.alertRuleClient.createAlertRule();
             }
-            
+
             publishProgress(SyncProgress.UPDATING_APPLICATION);
 
             this.applicationClient.setApplicationData(application.uid, customData);
@@ -150,7 +149,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
                 displayer.showError(R.string.sync_error_gateway_exists);
             } else if (error.applicationAlreadyUsed()) {
                 displayer.showError(R.string.sync_error_app_exists,
-                        AvPhoneApplication.appType(DeviceInfo.getUniqueId(context)));
+                        AvPhoneApplication.appType(userClient.getUserName()));
             } else if (error.tooManyAlerRules()) {
                 displayer.showError(R.string.sync_error_too_many_rules);
             } else if (error.cantCreateApplication()) {

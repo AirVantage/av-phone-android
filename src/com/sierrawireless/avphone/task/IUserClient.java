@@ -7,4 +7,6 @@ import net.airvantage.model.AirVantageException;
 public interface IUserClient {
 
     public List<String> checkRights() throws AirVantageException;
+
+    public String getUserName();
 }

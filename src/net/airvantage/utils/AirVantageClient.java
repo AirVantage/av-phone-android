@@ -101,7 +101,8 @@ public class AirVantageClient implements IAirVantageClient {
         return in;
     }
 
-    protected InputStream sendString(String method, URL url, String bodyString) throws IOException, AirVantageException {
+    protected InputStream sendString(String method, URL url, String bodyString)
+            throws IOException, AirVantageException {
 
         OutputStream out = null;
         try {
@@ -142,6 +143,7 @@ public class AirVantageClient implements IAirVantageClient {
         return readResponse(connection);
     }
 
+    @Override
     public User getCurrentUser() throws IOException, AirVantageException {
         URL url = new URL(buildEndpoint("/users/current"));
         InputStream in = get(url);
@@ -173,8 +175,8 @@ public class AirVantageClient implements IAirVantageClient {
 
     }
 
-    public Map<String, Integer> getLast24HoursOccurences(String systemUid, String data) throws IOException,
-            AirVantageException {
+    public Map<String, Integer> getLast24HoursOccurences(String systemUid, String data)
+            throws IOException, AirVantageException {
 
         URL url = new URL(buildEndpoint("/systems/" + systemUid + "/data/" + data + "/aggregated")
                 + "&fn=occ&interval=24hour&from=" + (System.currentTimeMillis() - 23 * 60 * 60 * 1000) + "&to="
@@ -208,8 +210,8 @@ public class AirVantageClient implements IAirVantageClient {
     }
 
     public net.airvantage.model.AvSystem getSystemByUid(String uid) throws IOException, AirVantageException {
-        URL url = new URL(buildEndpoint("/systems") + "&fields=uid,name,commStatus,lastCommDate,data,applications&uid="
-                + uid);
+        URL url = new URL(
+                buildEndpoint("/systems") + "&fields=uid,name,commStatus,lastCommDate,data,applications&uid=" + uid);
         InputStream in = get(url);
         List<net.airvantage.model.AvSystem> items = gson.fromJson(new InputStreamReader(in), SystemsList.class).items;
         if (items.size() > 0) {
@@ -223,8 +225,10 @@ public class AirVantageClient implements IAirVantageClient {
         return getSystemsBySerialNumber(null);
     }
 
-    public List<net.airvantage.model.AvSystem> getSystemsBySerialNumber(String serialNumber) throws IOException, AirVantageException {
-        String urlString = buildEndpoint("/systems") + "&fields=uid,name,commStatus,lastCommDate,data,applications,gateway";
+    public List<net.airvantage.model.AvSystem> getSystemsBySerialNumber(String serialNumber)
+            throws IOException, AirVantageException {
+        String urlString = buildEndpoint("/systems")
+                + "&fields=uid,name,commStatus,lastCommDate,data,applications,gateway";
         if (serialNumber != null) {
             urlString += "&gateway=serialNumber:" + serialNumber;
         }
@@ -233,8 +237,8 @@ public class AirVantageClient implements IAirVantageClient {
         return gson.fromJson(new InputStreamReader(in), SystemsList.class).items;
     }
 
-    public net.airvantage.model.AvSystem createSystem(net.airvantage.model.AvSystem system) throws IOException,
-            AirVantageException {
+    public net.airvantage.model.AvSystem createSystem(net.airvantage.model.AvSystem system)
+            throws IOException, AirVantageException {
         URL url = new URL(buildEndpoint("/systems"));
         InputStream in = post(url, system);
         return gson.fromJson(new InputStreamReader(in), net.airvantage.model.AvSystem.class);
@@ -265,14 +269,14 @@ public class AirVantageClient implements IAirVantageClient {
         return gson.fromJson(new InputStreamReader(in), net.airvantage.model.Application.class);
     }
 
-    public void setApplicationData(String applicationUid, List<ApplicationData> data) throws IOException,
-            AirVantageException {
+    public void setApplicationData(String applicationUid, List<ApplicationData> data)
+            throws IOException, AirVantageException {
         URL url = new URL(buildEndpoint("/applications/" + applicationUid + "/data"));
         put(url, data);
     }
 
-    public void setApplicationCommunication(String applicationUid, List<Protocol> protocols) throws IOException,
-            AirVantageException {
+    public void setApplicationCommunication(String applicationUid, List<Protocol> protocols)
+            throws IOException, AirVantageException {
         URL url = new URL(buildEndpoint("/applications/" + applicationUid + "/communication"));
         put(url, protocols);
     }
@@ -301,7 +305,7 @@ public class AirVantageClient implements IAirVantageClient {
         InputStream in = post(url, alertRule);
         return gson.fromJson(new InputStreamReader(in), AlertRule.class);
     }
-    
+
     @Override
     public AlertRule updateAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
         URL url = new URL(buildEndpoint("/alerts/rules/" + alertRule.uid));
@@ -309,8 +313,7 @@ public class AirVantageClient implements IAirVantageClient {
         InputStream in = put(url, alertRule);
         return gson.fromJson(new InputStreamReader(in), AlertRule.class);
     }
-    
-    
+
     @Override
     public void logout() throws IOException, AirVantageException {
         URL url = new URL(SCHEME + server + "/api/oauth/expire?access_token=" + access_token);
@@ -322,6 +325,5 @@ public class AirVantageClient implements IAirVantageClient {
         InputStream in = get(url);
         return gson.fromJson(new InputStreamReader(in), UserRights.class);
     }
-     
-    
+
 }
