@@ -82,8 +82,6 @@ public class AirVantageClient implements IAirVantageClient {
             in = connection.getErrorStream();
             InputStreamReader isr = new InputStreamReader(in);
 
-            // String wrf = asString(isr);
-
             net.airvantage.model.AvError error = gson.fromJson(isr, net.airvantage.model.AvError.class);
 
             Log.e(AirVantageClient.class.getName(), "AirVantage Error : " + error.error + "," + error.errorParameters);

@@ -11,6 +11,7 @@ import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.model.AvPhoneApplication;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.text.Html;
@@ -19,6 +20,7 @@ import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Application;
 import net.airvantage.model.AvError;
 import net.airvantage.model.AvSystem;
+import net.airvantage.model.User;
 import net.airvantage.model.UserRights;
 
 public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, SyncWithAvResult> {
@@ -46,24 +48,34 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
     }
 
     @Override
+    @SuppressLint("DefaultLocale")
     protected SyncWithAvResult doInBackground(SyncWithAvParams... params) {
 
         try {
 
             publishProgress(SyncProgress.CHECKING_RIGHTS);
 
-            List<String> missingRights = userClient.checkRights();
+            final List<String> missingRights = userClient.checkRights();
 
             if (!missingRights.isEmpty()) {
                 return new SyncWithAvResult(new AvError(AvError.MISSING_RIGHTS, missingRights));
             }
 
-            SyncWithAvParams syncParams = params[0];
-
-            String serialNumber = syncParams.deviceId;
-            String imei = syncParams.imei;
-            String mqttPassword = syncParams.mqttPassword;
-            CustomDataLabels customData = syncParams.customData;
+            //
+            // Serial number is in `syncParams.deviceId`, why not using it?
+            //
+            // - It is not available running emulator
+            // - It is not available to our iOs counterpart
+            //
+            // So to be AV Phone iOs compatible and able to run emulator, we use: uppercase(userUid + "-" + systemType)
+            //
+            final String systemType = "Android";
+            final SyncWithAvParams syncParams = params[0];
+            final User user = userClient.getUser();
+            final String serialNumber = (user.uid + "-" + systemType).toUpperCase();
+            final String imei = syncParams.imei;
+            final String mqttPassword = syncParams.mqttPassword;
+            final CustomDataLabels customData = syncParams.customData;
 
             publishProgress(SyncProgress.CHECKING_APPLICATION);
 
@@ -76,7 +88,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
 
                 publishProgress(SyncProgress.CREATING_SYSTEM);
 
-                system = systemClient.createSystem(serialNumber, imei, mqttPassword, application.uid);
+                system = systemClient.createSystem(serialNumber, imei, systemType, mqttPassword, application.uid);
             }
 
             publishProgress(SyncProgress.CHECKING_ALERT_RULE);
@@ -148,8 +160,12 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
             } else if (error.gatewayAlreadyExists()) {
                 displayer.showError(R.string.sync_error_gateway_exists);
             } else if (error.applicationAlreadyUsed()) {
-                displayer.showError(R.string.sync_error_app_exists,
-                        AvPhoneApplication.appType(userClient.getUserName()));
+                final User user = userClient.getUser();
+                if (user == null) {
+                    displayer.showError(R.string.sync_error_no_user_data);
+                } else {
+                    displayer.showError(R.string.sync_error_app_exists, AvPhoneApplication.appType(user.name));
+                }
             } else if (error.tooManyAlerRules()) {
                 displayer.showError(R.string.sync_error_too_many_rules);
             } else if (error.cantCreateApplication()) {

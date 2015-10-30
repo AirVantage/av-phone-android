@@ -8,6 +8,7 @@ import com.crashlytics.android.Crashlytics;
 
 import android.util.Log;
 import net.airvantage.model.AirVantageException;
+import net.airvantage.model.User;
 import net.airvantage.model.UserRights;
 import net.airvantage.utils.IAirVantageClient;
 
@@ -42,13 +43,13 @@ public class UserClient implements IUserClient {
     }
 
     @Override
-    public String getUserName() {
+    public User getUser() {
         try {
-            return this.client.getCurrentUser().name;
+            return this.client.getCurrentUser();
         } catch (final Exception e) {
             Crashlytics.logException(e);
             Log.e(LOGTAG, "Could not get user name", e);
+            return null;
         }
-        return "";
     }
 }

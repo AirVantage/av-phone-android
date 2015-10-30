@@ -132,6 +132,7 @@
     <string name="sync_error_no_right_update_app">Error : You don\'t have the right to update an application. Contact your administrator</string>
     <string name="sync_error_no_right_update_system">Error : You don\'t have the right to update a system. Contact your administrator</string>
     <string name="sync_error_forbidden">Error : You are not allowed to %1$s on URL %2$s</string>
+    <string name="sync_error_no_user_data">Error : Unable to get user data.</string>
     <string name="sync_error_unexpected">Error : Unexpected error (%1$s)</string>
     
     <string name="sync_success">Synchronized with AirVantage</string>

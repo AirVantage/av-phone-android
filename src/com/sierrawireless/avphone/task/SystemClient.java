@@ -28,7 +28,7 @@ public class SystemClient implements ISystemClient {
     }
 
     @Override
-    public net.airvantage.model.AvSystem createSystem(String serialNumber, String imei, String mqttPassword,
+    public net.airvantage.model.AvSystem createSystem(String serialNumber, String imei, String type, String mqttPassword,
             String applicationUid) throws IOException, AirVantageException {
         net.airvantage.model.AvSystem system = new net.airvantage.model.AvSystem();
 
@@ -49,7 +49,7 @@ public class SystemClient implements ISystemClient {
 
         system.communication = new HashMap<String, MqttCommunication>();
         system.communication.put("mqtt", mqtt);
-        system.type = "Android";
+        system.type = type;
 
         return client.createSystem(system);
     }
