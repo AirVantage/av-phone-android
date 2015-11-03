@@ -81,6 +81,7 @@ public class ApplicationClient implements IApplicationClient {
 
         AvSystem res = new AvSystem();
         res.uid = system.uid;
+        res.type = system.type;
         res.applications = new ArrayList<Application>();
 
         boolean appAlreadyLinked = false;

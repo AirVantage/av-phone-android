@@ -226,7 +226,7 @@ public class AirVantageClient implements IAirVantageClient {
     public List<net.airvantage.model.AvSystem> getSystemsBySerialNumber(String serialNumber)
             throws IOException, AirVantageException {
         String urlString = buildEndpoint("/systems")
-                + "&fields=uid,name,commStatus,lastCommDate,data,applications,gateway";
+                + "&fields=uid,name,commStatus,lastCommDate,data,applications,gateway,type";
         if (serialNumber != null) {
             urlString += "&gateway=serialNumber:" + serialNumber;
         }

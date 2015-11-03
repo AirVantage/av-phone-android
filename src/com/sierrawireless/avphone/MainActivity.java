@@ -1,12 +1,18 @@
 package com.sierrawireless.avphone;
 
-import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
 import java.util.Date;
 
-import net.airvantage.model.AvSystem;
-import net.airvantage.utils.AvPhonePrefs;
-import net.airvantage.utils.PreferenceUtils;
+import com.crashlytics.android.Crashlytics;
+import com.sierrawireless.avphone.auth.Authentication;
+import com.sierrawireless.avphone.auth.AuthenticationManager;
+import com.sierrawireless.avphone.service.MonitoringService;
+import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder;
+import com.sierrawireless.avphone.task.AsyncTaskFactory;
+import com.sierrawireless.avphone.task.IAsyncTaskFactory;
+import com.sierrawireless.avphone.task.SyncWithAvListener;
+import com.sierrawireless.avphone.task.SyncWithAvResult;
+
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.ActionBar.TabListener;
@@ -32,21 +38,22 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import com.sierrawireless.avphone.auth.Authentication;
-import com.sierrawireless.avphone.auth.AuthenticationManager;
-import com.sierrawireless.avphone.service.MonitoringService;
-import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder;
-import com.sierrawireless.avphone.task.AsyncTaskFactory;
-import com.sierrawireless.avphone.task.IAsyncTaskFactory;
-import com.sierrawireless.avphone.task.SyncWithAvListener;
-import com.sierrawireless.avphone.task.SyncWithAvResult;
+import io.fabric.sdk.android.Fabric;
+import net.airvantage.model.AvSystem;
+import net.airvantage.model.User;
+import net.airvantage.utils.AvPhonePrefs;
+import net.airvantage.utils.PreferenceUtils;
 
 /**
  * The main activity, in charge of displaying the tab view
  */
 public class MainActivity extends FragmentActivity implements TabListener, LoginListener, AuthenticationManager,
         OnSharedPreferenceChangeListener, MonitorServiceManager, CustomLabelsManager, SyncWithAvListener {
+
+    private static final String PREFERENCE_SYSTEM_NAME = "systemName";
+    private static final String PREFERENCE_SYSTEM_SERIAL = "systemSerial";
+    private static final String PREFERENCE_USER_NAME = "userName";
+    private static final String PREFERENCE_USER_UID = "userUid";
 
     private static String LOGTAG = MainActivity.class.getName();
 
@@ -72,7 +79,7 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
-        
+
         setContentView(R.layout.activity_main);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -196,8 +203,8 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
         }
 
         protected HomeFragment makeHomeFragment() {
-            HomeFragment fragment = (HomeFragment) Fragment
-                    .instantiate(MainActivity.this, HomeFragment.class.getName());
+            HomeFragment fragment = (HomeFragment) Fragment.instantiate(MainActivity.this,
+                    HomeFragment.class.getName());
             fragment.setTaskFactory(taskFactory);
             return fragment;
         }
@@ -406,11 +413,20 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
         this.monitoringServiceListener = listener;
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     public void onSynced(SyncWithAvResult result) {
-        AvSystem system = result.getSystem();
+
+        final AvSystem system = result.getSystem();
         prefs.edit().putString("systemUid", system.uid).commit();
-        prefs.edit().putString("systemName", system.name).commit();
+        prefs.edit().putString(PREFERENCE_SYSTEM_NAME, system.name).commit();
+
+        final User user = result.getUser();
+        prefs.edit().putString(PREFERENCE_USER_UID, user.uid).commit();
+        prefs.edit().putString(PREFERENCE_USER_NAME, user.name).commit();
+
+        final String deviceSerial = DeviceInfo.generateSerial(user.uid, system.type);
+        prefs.edit().putString(PREFERENCE_SYSTEM_SERIAL, deviceSerial).commit();
 
         if (runFragment != null) {
             String systemUid = this.getSystemUid();
@@ -426,8 +442,17 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
         return prefs.getString("systemUid", null);
     }
 
+    public String getSystemSerial() {
+        return prefs.getString(PREFERENCE_SYSTEM_SERIAL, null);
+    }
+
     public String getSystemName() {
-        return prefs.getString("systemName", null);
+        return prefs.getString(PREFERENCE_SYSTEM_NAME, null);
+    }
+
+    @SuppressLint("DefaultLocale")
+    public void setSystemSerial(final String serial) {
+        prefs.edit().putString(PREFERENCE_SYSTEM_SERIAL, serial.toUpperCase()).commit();
     }
 
 }

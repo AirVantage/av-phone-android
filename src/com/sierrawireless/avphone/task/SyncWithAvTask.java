@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.crashlytics.android.Crashlytics;
+import com.sierrawireless.avphone.DeviceInfo;
 import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.R;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
@@ -13,6 +14,7 @@ import com.sierrawireless.avphone.model.CustomDataLabels;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.text.Html;
 import android.util.Log;
@@ -35,12 +37,15 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
 
     private IUserClient userClient;
 
+    private Context context;
+
     public SyncWithAvTask(IApplicationClient applicationClient, ISystemClient systemClient,
-            IAlertRuleClient alertRuleClient, IUserClient userClient) {
+            IAlertRuleClient alertRuleClient, IUserClient userClient, Context context) {
         this.applicationClient = applicationClient;
         this.systemClient = systemClient;
         this.alertRuleClient = alertRuleClient;
         this.userClient = userClient;
+        this.context = context;
     }
 
     public void addProgressListener(SyncWithAvListener listener) {
@@ -56,26 +61,25 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
             publishProgress(SyncProgress.CHECKING_RIGHTS);
 
             final List<String> missingRights = userClient.checkRights();
-
             if (!missingRights.isEmpty()) {
                 return new SyncWithAvResult(new AvError(AvError.MISSING_RIGHTS, missingRights));
             }
-
-            //
-            // Serial number is in `syncParams.deviceId`, why not using it?
-            //
-            // - It is not available running emulator
-            // - It is not available to our iOs counterpart
-            //
-            // So to be AV Phone iOs compatible and able to run emulator, we use: uppercase(userUid + "-" + systemType)
-            //
+            
             final String systemType = "Android";
             final SyncWithAvParams syncParams = params[0];
             final User user = userClient.getUser();
-            final String serialNumber = (user.uid + "-" + systemType).toUpperCase();
             final String imei = syncParams.imei;
             final String mqttPassword = syncParams.mqttPassword;
             final CustomDataLabels customData = syncParams.customData;
+
+            // For emulator and iOs compatibility sake, using generated serial.
+            final String serialNumber =  DeviceInfo.generateSerial(user.uid ,systemType);
+
+            // Save Device serial in context
+            if (context instanceof MainActivity) {
+                final MainActivity mainActivity = (MainActivity) context;
+                mainActivity.setSystemSerial(serialNumber);
+            }
 
             publishProgress(SyncProgress.CHECKING_APPLICATION);
 
@@ -114,7 +118,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
 
             publishProgress(SyncProgress.DONE);
 
-            return new SyncWithAvResult(system);
+            return new SyncWithAvResult(system, user);
 
         } catch (AirVantageException e) {
             publishProgress(SyncProgress.DONE);
@@ -188,6 +192,10 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
         } else {
             displayer.showSuccess(R.string.sync_success);
         }
+    }
+
+    protected Context getContext() {
+        return this.context;
     }
 
     private String missingRightsMessage(AvError error, Activity context) {
