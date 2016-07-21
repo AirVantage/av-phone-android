@@ -1,0 +1,30 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="CustomTextView" parent="android:Widget.TextView">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="ItemLabel" parent="AppTheme">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="EditableItem" parent="AppTheme">
+        <item name="android:textColor">@color/textcolor</item>
+    </style>
+
+    <style name="Message" parent="AppTheme">
+        <item name="android:padding">6dp</item>
+    </style>
+    
+    <style name="InfoMessage" parent="Message">
+        <item name="android:color">@color/info_text</item>
+        <item name="android:background">@color/info_bg</item>
+    </style>
+
+    <style name="ErrorMessage" parent="Message">
+        <item name="android:color">@color/error_text</item>
+        <item name="android:background">@color/error_bg</item>
+    </style>
+    
+</resources>

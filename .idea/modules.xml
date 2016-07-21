@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$USER_HOME$/Development/av-phone-android/av-phone-android.iml" filepath="$USER_HOME$/Development/av-phone-android/av-phone-android.iml" />
+      <module fileurl="file://$USER_HOME$/Development/av-phone-android/comcrashlyticssdkandroid_crashlytics/comcrashlyticssdkandroid_crashlytics.iml" filepath="$USER_HOME$/Development/av-phone-android/comcrashlyticssdkandroid_crashlytics/comcrashlyticssdkandroid_crashlytics.iml" />
+      <module fileurl="file://$USER_HOME$/Development/av-phone-android/mainActivity/mainActivity.iml" filepath="$USER_HOME$/Development/av-phone-android/mainActivity/mainActivity.iml" />
+    </modules>
+  </component>
+</project>
