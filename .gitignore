@@ -20,10 +20,11 @@ local.properties
 
 # Crashlytics files
 # (Should NOT be stored in source control.)
-mainActivity/src/main/assets/crashlytics-build.properties
-res/values/com_crashlytics_export_strings.xml
+comcrashlyticssdkandroid_crashlytics
 crashlytics.properties
 fabric.properties
+mainActivity/src/main/assets/crashlytics-build.properties
+res/values/com_crashlytics_export_strings.xml
 
 # 'Private' doc
 SECRET.md
