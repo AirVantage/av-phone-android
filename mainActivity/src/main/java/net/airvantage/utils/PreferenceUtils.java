@@ -3,6 +3,8 @@ package net.airvantage.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import android.app.Activity;
@@ -40,7 +42,7 @@ public class PreferenceUtils {
     public static final String PREF_TOKEN_EXPIRES_AT = "pref_token_expires_at";
 
     protected static Properties properties;
-    
+
     public static AvPhonePrefs getAvPhonePrefs(Context context) {
         AvPhonePrefs res = new AvPhonePrefs();
 
@@ -49,8 +51,11 @@ public class PreferenceUtils {
 
         res.clientId = prefs.getString(PREF_CLIENT_ID_KEY, getNaClientId(context));
 
-        res.usesNA = (context.getString(R.string.pref_server_na_value)).equals(res.serverHost);
-        res.usesEU = (context.getString(R.string.pref_server_eu_value)).equals(res.serverHost);
+        HashMap<String, Server> serverMapping = new HashMap<String, Server>();
+        serverMapping.put(context.getString(R.string.pref_server_eu_value), Server.EU);
+        serverMapping.put(context.getString(R.string.pref_server_na_value), Server.NA);
+        serverMapping.put(context.getString(R.string.pref_server_custom_value), Server.CUSTOM);
+        res.usesServer = serverMapping.get(res.serverHost);
 
         res.password = prefs.getString(PREF_PASSWORD_KEY, context.getString(R.string.pref_password_default));
         res.period = prefs.getString(PREF_PERIOD_KEY, DEFAULT_COMM_PERIOD);
@@ -66,11 +71,11 @@ public class PreferenceUtils {
                 properties.load(in);
             } catch (IOException e) {
                 e.printStackTrace();
-            }    
+            }
         }
         return properties;
     }
-    
+
     private static String getNaClientId(Context context) {
         Properties properties = getPropertiesFile(context);
         return properties.getProperty("clientid.na");
@@ -80,7 +85,16 @@ public class PreferenceUtils {
         Properties properties = getPropertiesFile(context);
         return properties.getProperty("clientid.eu");
     }
-    
+
+    private static String getCustomClientId(Context context) {
+        Properties properties = getPropertiesFile(context);
+        return properties.getProperty("clientid.custom");
+    }
+
+    public static boolean isCustomDefined(Context context) {
+        return getCustomClientId(context) != null;
+    }
+
     public static String getPreference(Context context, int prefKeyId, int defaultValueKeyId) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String prefKey = context.getString(prefKeyId);
@@ -121,28 +135,35 @@ public class PreferenceUtils {
     }
 
     public static void setServer(Server server, Context context) {
-        if (server == Server.NA) {
-            PreferenceUtils.setPreference(context, PREF_SERVER_KEY, context.getString(R.string.pref_server_na_value));
-            PreferenceUtils.setPreference(context, PREF_CLIENT_ID_KEY, getNaClientId(context));
-        } else if (server == Server.EU) {
-            PreferenceUtils.setPreference(context, PREF_SERVER_KEY, context.getString(R.string.pref_server_eu_value));
-            PreferenceUtils.setPreference(context, PREF_CLIENT_ID_KEY, getEuClientId(context));
-        } else {
-            throw new IllegalArgumentException("Should be NA or EU");
+        switch (server) {
+            case NA:
+                setPreference(context, PREF_SERVER_KEY, context.getString(R.string.pref_server_na_value));
+                setPreference(context, PREF_CLIENT_ID_KEY, getNaClientId(context));
+                break;
+            case EU:
+                setPreference(context, PREF_SERVER_KEY, context.getString(R.string.pref_server_eu_value));
+                setPreference(context, PREF_CLIENT_ID_KEY, getEuClientId(context));
+                break;
+            case CUSTOM:
+                setPreference(context, PREF_SERVER_KEY, context.getString(R.string.pref_server_custom_value));
+                setPreference(context, PREF_CLIENT_ID_KEY, getCustomClientId(context));
+                break;
+            default:
+                throw new IllegalArgumentException("Should be NA or EU");
         }
     }
 
     public static void saveAuthentication(Context context, Authentication auth) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        prefs.edit().putString(PreferenceUtils.PREF_ACCESS_TOKEN, auth.getAccessToken())
-                .putLong(PreferenceUtils.PREF_TOKEN_EXPIRES_AT, auth.getExpirationDate().getTime()).commit();
+        prefs.edit().putString(PREF_ACCESS_TOKEN, auth.getAccessToken())
+                .putLong(PREF_TOKEN_EXPIRES_AT, auth.getExpirationDate().getTime()).commit();
     }
 
     public static void resetAuthentication(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        prefs.edit().remove(PreferenceUtils.PREF_ACCESS_TOKEN).remove(PreferenceUtils.PREF_TOKEN_EXPIRES_AT).commit();
+        prefs.edit().remove(PREF_ACCESS_TOKEN).remove(PREF_TOKEN_EXPIRES_AT).commit();
 
     }
 
@@ -152,17 +173,17 @@ public class PreferenceUtils {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        String accessToken = prefs.getString(PreferenceUtils.PREF_ACCESS_TOKEN, null);
+        String accessToken = prefs.getString(PREF_ACCESS_TOKEN, null);
 
         Long expiresAtMs = null;
 
         try {
-            expiresAtMs = prefs.getLong(PreferenceUtils.PREF_TOKEN_EXPIRES_AT, 0);
+            expiresAtMs = prefs.getLong(PREF_TOKEN_EXPIRES_AT, 0);
         } catch (ClassCastException e) {
             // An earlier version might have stored the token as a string
             String expiresAtSt = null;
             try {
-                expiresAtSt = prefs.getString(PreferenceUtils.PREF_TOKEN_EXPIRES_AT, null);
+                expiresAtSt = prefs.getString(PREF_TOKEN_EXPIRES_AT, null);
                 if (expiresAtSt != null) {
                     expiresAtMs = Long.parseLong(expiresAtSt);
                 }

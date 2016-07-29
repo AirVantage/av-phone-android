@@ -42,18 +42,25 @@ public class AuthorizationActivity extends Activity {
     private Drawable enabledButtonBg;
     private Drawable disabledButtonBg;
 
+    private Button btnCustom;
     private Button btnEu;
     private Button btnNa;
 
     private boolean isEu = true;
+    private PreferenceUtils.Server currentServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authorization);
 
+        btnCustom = (Button) this.findViewById(R.id.auth_btn_custom);
         btnEu = (Button) this.findViewById(R.id.auth_btn_eu);
         btnNa = (Button) this.findViewById(R.id.auth_btn_na);
+
+        if (!PreferenceUtils.isCustomDefined(this)) {
+            btnCustom.setVisibility(Button.GONE);
+        }
 
         if (disabledButtonBg == null) {
             disabledButtonBg = btnEu.getBackground();
@@ -65,26 +72,50 @@ public class AuthorizationActivity extends Activity {
         btnNa.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isEu) {
-                    isEu = false;
-                    setButtonEnabled(btnNa);
-                    setButtonDisabled(btnEu);
-                    PreferenceUtils.setServer(PreferenceUtils.Server.NA, AuthorizationActivity.this);
-                    openAuthorizationPage();
+
+                if (currentServer == PreferenceUtils.Server.NA) {
+                    return;
                 }
+
+                currentServer = PreferenceUtils.Server.NA;
+                setButtonEnabled(btnNa);
+                setButtonDisabled(btnCustom);
+                setButtonDisabled(btnEu);
+                PreferenceUtils.setServer(PreferenceUtils.Server.NA, AuthorizationActivity.this);
+                openAuthorizationPage();
             }
         });
 
         btnEu.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isEu) {
-                    isEu = true;
-                    setButtonEnabled(btnEu);
-                    setButtonDisabled(btnNa);
-                    PreferenceUtils.setServer(PreferenceUtils.Server.EU, AuthorizationActivity.this);
-                    openAuthorizationPage();
+
+                if (currentServer == PreferenceUtils.Server.EU) {
+                    return;
                 }
+
+                currentServer = PreferenceUtils.Server.EU;
+                setButtonEnabled(btnEu);
+                setButtonDisabled(btnCustom);
+                setButtonDisabled(btnNa);
+                PreferenceUtils.setServer(PreferenceUtils.Server.EU, AuthorizationActivity.this);
+                openAuthorizationPage();
+            }
+        });
+
+        btnCustom.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (currentServer == PreferenceUtils.Server.CUSTOM) {
+                    return;
+                }
+
+                setButtonEnabled(btnCustom);
+                setButtonDisabled(btnEu);
+                setButtonDisabled(btnNa);
+                PreferenceUtils.setServer(PreferenceUtils.Server.CUSTOM, AuthorizationActivity.this);
+                openAuthorizationPage();
             }
         });
 

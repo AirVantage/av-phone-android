@@ -13,6 +13,14 @@
         android:paddingTop="10dp" >
 
         <Button
+            android:id="@+id/auth_btn_custom"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/auth_login_custom" />
+
+        <Button
             android:id="@+id/auth_btn_eu"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
