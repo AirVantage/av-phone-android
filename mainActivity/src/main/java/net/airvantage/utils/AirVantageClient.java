@@ -1,5 +1,31 @@
 package net.airvantage.utils;
 
+import android.util.Log;
+
+import com.crashlytics.android.Crashlytics;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.squareup.okhttp.OkHttpClient;
+
+import net.airvantage.model.AirVantageException;
+import net.airvantage.model.ApplicationData;
+import net.airvantage.model.ApplicationsList;
+import net.airvantage.model.AvError;
+import net.airvantage.model.AvSystem;
+import net.airvantage.model.Datapoint;
+import net.airvantage.model.Protocol;
+import net.airvantage.model.SystemsList;
+import net.airvantage.model.User;
+import net.airvantage.model.UserRights;
+import net.airvantage.model.alert.v1.AlertRule;
+import net.airvantage.utils.alert.AlertAdapterFactory;
+import net.airvantage.utils.alert.IAlertAdapterFactoryListener;
+import net.airvantage.utils.alert.DefaultAlertAdapter;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,40 +39,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.airvantage.model.AirVantageException;
-import net.airvantage.model.Alert;
-import net.airvantage.model.AlertRule;
-import net.airvantage.model.AlertRuleList;
-import net.airvantage.model.AlertsList;
-import net.airvantage.model.ApplicationData;
-import net.airvantage.model.ApplicationsList;
-import net.airvantage.model.AvError;
-import net.airvantage.model.AvSystem;
-import net.airvantage.model.Datapoint;
-import net.airvantage.model.Protocol;
-import net.airvantage.model.SystemsList;
-import net.airvantage.model.User;
-import net.airvantage.model.UserRights;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.net.Uri;
-import android.util.Log;
-
-import com.crashlytics.android.Crashlytics;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.squareup.okhttp.OkHttpClient;
-
-public class AirVantageClient implements IAirVantageClient {
+public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactoryListener {
 
     private static final String SCHEME = "https://";
 
-    private static final String APIS = "/api/v1";
+    private static final String API_PREFIX = "/api/v1";
 
     private final String access_token;
+
+    private DefaultAlertAdapter alertAdapter = null;
 
     private final String server;
 
@@ -54,20 +55,27 @@ public class AirVantageClient implements IAirVantageClient {
 
     private OkHttpClient client;
 
-    public static String buildImplicitFlowURL(String server, String clientId) {
-        return SCHEME + server + "/api/oauth/authorize?client_id=" + clientId
-                + "&response_type=token&redirect_uri=oauth://airvantage";
-    }
-
     public AirVantageClient(String server, String token) {
         this.server = server;
         this.access_token = token;
         this.gson = new Gson();
         this.client = new OkHttpClient();
+        new AlertAdapterFactory(server, token, this);
+
+    }
+
+    @Override
+    public void alertAdapterAvailable(DefaultAlertAdapter adapter) {
+        alertAdapter = adapter;
+    }
+
+    public static String buildImplicitFlowURL(String server, String clientId) {
+        return SCHEME + server + "/api/oauth/authorize?client_id=" + clientId
+                + "&response_type=token&redirect_uri=oauth://airvantage";
     }
 
     private String buildPath(String api) {
-        return server + APIS + api + "?access_token=" + access_token;
+        return server + API_PREFIX + api + "?access_token=" + access_token;
     }
 
     private String buildEndpoint(String api) {
@@ -75,7 +83,7 @@ public class AirVantageClient implements IAirVantageClient {
     }
 
     protected InputStream readResponse(HttpURLConnection connection) throws IOException, AirVantageException {
-        InputStream in = null;
+        InputStream in;
         if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
             in = connection.getInputStream();
         } else if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {
@@ -109,6 +117,7 @@ public class AirVantageClient implements IAirVantageClient {
             HttpURLConnection connection = client.open(url);
             connection.addRequestProperty("Cache-Control", "no-cache");
             connection.addRequestProperty("Content-Type", "application/json");
+
             // Write the request.
             connection.setRequestMethod(method);
             out = connection.getOutputStream();
@@ -118,7 +127,6 @@ public class AirVantageClient implements IAirVantageClient {
         } finally {
             if (out != null)
                 out.close();
-
         }
 
     }
@@ -151,12 +159,6 @@ public class AirVantageClient implements IAirVantageClient {
     public void expire() throws IOException, AirVantageException {
         URL url = new URL(server + "/api/oauth/expire?access_token=" + access_token);
         this.get(url);
-    }
-
-    public List<Alert> getUnacknowledgedAlerts(String systemUid) throws IOException, AirVantageException {
-        URL url = new URL(buildEndpoint("/privates/alerts/groups") + "&acknowledged=false&target=" + systemUid);
-        InputStream in = this.get(url);
-        return gson.fromJson(new InputStreamReader(in), AlertsList.class).items;
     }
 
     public List<Datapoint> getLast24Hours(String systemUid, String data) throws IOException, AirVantageException {
@@ -279,37 +281,27 @@ public class AirVantageClient implements IAirVantageClient {
         put(url, protocols);
     }
 
+    private void checkAlertAdapter() throws AirVantageException {
+        if (this.alertAdapter == null)
+            throw new AirVantageException(new AvError("Response pending"));
+    }
+
     @Override
     public AlertRule getAlertRuleByName(final String name) throws IOException, AirVantageException {
-
-        String str = Uri.parse(buildEndpoint("/alerts/rules")).buildUpon()
-                .appendQueryParameter("access_token", access_token).appendQueryParameter("fields", "uid,name")
-                .appendQueryParameter("name", name).build().toString();
-
-        URL url = new URL(str);
-
-        String s = url.toString();
-
-        System.out.println(s);
-
-        InputStream in = get(url);
-        AlertRuleList rules = gson.fromJson(new InputStreamReader(in), AlertRuleList.class);
-        return Utils.firstWhere(rules.items, AlertRule.isNamed(name));
+        checkAlertAdapter();
+        return this.alertAdapter.getAlertRuleByName(name);
     }
 
     @Override
     public AlertRule createAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
-        URL url = new URL(buildEndpoint("/alerts/rules"));
-        InputStream in = post(url, alertRule);
-        return gson.fromJson(new InputStreamReader(in), AlertRule.class);
+        checkAlertAdapter();
+        return this.alertAdapter.createAlertRule(alertRule);
     }
 
     @Override
     public AlertRule updateAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
-        URL url = new URL(buildEndpoint("/alerts/rules/" + alertRule.uid));
-        put(url, alertRule);
-        InputStream in = put(url, alertRule);
-        return gson.fromJson(new InputStreamReader(in), AlertRule.class);
+        checkAlertAdapter();
+        return this.alertAdapter.updateAlertRule(alertRule);
     }
 
     @Override
@@ -323,5 +315,4 @@ public class AirVantageClient implements IAirVantageClient {
         InputStream in = get(url);
         return gson.fromJson(new InputStreamReader(in), UserRights.class);
     }
-
 }

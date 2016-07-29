@@ -1,8 +1,9 @@
-package net.airvantage.model;
+package net.airvantage.model.alert.v1;
 
 import java.util.List;
 import java.util.Map;
 
+import net.airvantage.model.Condition;
 import net.airvantage.utils.Predicate;
 
 public class AlertRule {

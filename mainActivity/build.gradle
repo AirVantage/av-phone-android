@@ -21,8 +21,8 @@ android {
 
     defaultConfig {
         applicationId "com.sierrawireless.avphone"
-        minSdkVersion 17
-        targetSdkVersion 20
+        minSdkVersion 19
+        targetSdkVersion 19
     }
 
     buildTypes {

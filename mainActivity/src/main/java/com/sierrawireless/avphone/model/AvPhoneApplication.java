@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.airvantage.model.AlertRule;
+import net.airvantage.model.alert.v1.AlertRule;
 import net.airvantage.model.Application;
 import net.airvantage.model.ApplicationData;
 import net.airvantage.model.Command;

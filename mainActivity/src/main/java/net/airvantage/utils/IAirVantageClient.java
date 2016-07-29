@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import net.airvantage.model.AirVantageException;
-import net.airvantage.model.AlertRule;
+import net.airvantage.model.alert.v1.AlertRule;
 import net.airvantage.model.Application;
 import net.airvantage.model.ApplicationData;
 import net.airvantage.model.AvSystem;

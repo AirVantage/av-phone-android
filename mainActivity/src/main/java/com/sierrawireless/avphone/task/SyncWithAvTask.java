@@ -24,6 +24,7 @@ import net.airvantage.model.AvError;
 import net.airvantage.model.AvSystem;
 import net.airvantage.model.User;
 import net.airvantage.model.UserRights;
+import net.airvantage.model.alert.v1.AlertRule;
 
 public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, SyncWithAvResult> {
 
@@ -97,7 +98,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
 
             publishProgress(SyncProgress.CHECKING_ALERT_RULE);
 
-            net.airvantage.model.AlertRule alertRule = this.alertRuleClient.getAlertRule(serialNumber);
+            AlertRule alertRule = this.alertRuleClient.getAlertRule(serialNumber);
             if (alertRule == null) {
 
                 publishProgress(SyncProgress.CREATING_ALERT_RULE);

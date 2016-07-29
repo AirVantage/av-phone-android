@@ -3,7 +3,7 @@ package com.sierrawireless.avphone.task;
 import java.io.IOException;
 
 import net.airvantage.model.AirVantageException;
-import net.airvantage.model.AlertRule;
+import net.airvantage.model.alert.v1.AlertRule;
 import net.airvantage.utils.IAirVantageClient;
 
 import com.sierrawireless.avphone.model.AvPhoneApplication;

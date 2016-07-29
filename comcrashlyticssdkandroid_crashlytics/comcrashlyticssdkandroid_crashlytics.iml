@@ -27,7 +27,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="com-crashlytics-sdk-android_crashlytics-classes" level="project" />
+    <orderEntry type="library" exported="" name="_home_kevin_Development_av_phone_android_comcrashlyticssdkandroid_crashlytics_libs_com_crashlytics_sdk_android_crashlytics_classes_jar" level="project" />
     <orderEntry type="library" exported="" name="comcrashlyticssdkandroid_crashlytics.comcrashlyticssdkandroid_crashlytics" level="project" />
   </component>
 </module>

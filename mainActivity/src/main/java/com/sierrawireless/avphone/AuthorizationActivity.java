@@ -6,6 +6,7 @@ import net.airvantage.utils.AirVantageClient;
 import net.airvantage.utils.AuthenticationUrlParser;
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -25,7 +26,7 @@ import com.sierrawireless.avphone.auth.Authentication;
 public class AuthorizationActivity extends Activity {
 
     private static final String LOGTAG = AuthorizationActivity.class.getName();
-    
+
     public static final String AUTHENTICATION_TOKEN = "token";
     public static final String AUTHENTICATION_EXPIRATION_DATE = "expirationDate";
 
@@ -37,15 +38,15 @@ public class AuthorizationActivity extends Activity {
     private WebView webview;
 
     private AuthenticationUrlParser authUrlParser = new AuthenticationUrlParser();
-    
+
     private Drawable enabledButtonBg;
     private Drawable disabledButtonBg;
-    
+
     private Button btnEu;
     private Button btnNa;
 
     private boolean isEu = true;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,14 +54,14 @@ public class AuthorizationActivity extends Activity {
 
         btnEu = (Button) this.findViewById(R.id.auth_btn_eu);
         btnNa = (Button) this.findViewById(R.id.auth_btn_na);
-        
+
         if (disabledButtonBg == null) {
             disabledButtonBg = btnEu.getBackground();
         } else {
             Log.w(LOGTAG, "disabledButtonBg has already been loaded, this can cause bug...");
         }
         enabledButtonBg = getResources().getDrawable(R.drawable.apptheme_switch_thumb_activated_holo_light);
-        
+
         btnNa.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,7 +74,7 @@ public class AuthorizationActivity extends Activity {
                 }
             }
         });
-        
+
         btnEu.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,7 +87,7 @@ public class AuthorizationActivity extends Activity {
                 }
             }
         });
-        
+
         AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this);
         if (avPhonePrefs.usesEU()) {
             this.isEu = true;
@@ -97,7 +98,7 @@ public class AuthorizationActivity extends Activity {
             setButtonEnabled(btnNa);
             setButtonDisabled(btnEu);
         }
-        
+
         openAuthorizationPage();
     }
 
@@ -111,7 +112,7 @@ public class AuthorizationActivity extends Activity {
         btn.setTextColor(getResources().getColor(R.color.textcolor));
     }
 
-    
+
     @SuppressLint("SetJavaScriptEnabled")
     private void openAuthorizationPage() {
 
@@ -119,7 +120,7 @@ public class AuthorizationActivity extends Activity {
 
         final String serverHost = avPhonePrefs.serverHost;
         final String clientId = avPhonePrefs.clientId;
-        
+
         webview = (WebView) findViewById(R.id.authorization_webview);
         webview.getSettings().setJavaScriptEnabled(true);
         // attach WebViewClient to intercept the callback url
@@ -134,7 +135,7 @@ public class AuthorizationActivity extends Activity {
                     Log.d(AuthorizationActivity.class.getName(), "Expiration date : " + auth.getExpirationDate());
 
                     sendAuthentication(auth);
-                    
+
                 }
 
                 return super.shouldOverrideUrlLoading(view, url);
