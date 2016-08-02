@@ -3,6 +3,7 @@ package com.sierrawireless.avphone;
 import net.airvantage.model.AvError;
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -32,6 +33,9 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
     private View view;
 
+    private Authentication authForSync;
+    private boolean retrySync;
+
     private Button btnLogin;
     private Button btnLogout;
 
@@ -39,19 +43,25 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
     public HomeFragment() {
         super();
+        retrySync = false;
+        taskFactory = null;
     }
 
     public void setTaskFactory(IAsyncTaskFactory taskFactory) {
         this.taskFactory = taskFactory;
+        if (retrySync) {
+            retrySync = false;
+            syncWithAv(authForSync);
+        }
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        
+
         syncListener = (SyncWithAvListener) activity;
     }
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -59,9 +69,9 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
         TextView loginMessage = (TextView) view.findViewById(R.id.home_login_message);
         loginMessage.setText(Html.fromHtml(getString(R.string.home_login_message)));
-        
+
         btnLogin = (Button) view.findViewById(R.id.login_btn);
-        
+
         btnLogout = (Button) view.findViewById(R.id.logout_btn);
 
         btnLogin.setOnClickListener(new OnClickListener() {
@@ -140,8 +150,15 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
     private void syncWithAv(final Authentication auth) {
 
         hideErrorMessage();
-        
+
         AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(getActivity());
+
+        // Without task factory, try later
+        if (taskFactory == null) {
+            authForSync = auth;
+            retrySync = true;
+            return;
+        }
 
         final IMessageDisplayer displayer = this;
         final SyncWithAvTask syncAvTask = taskFactory.syncAvTask(avPhonePrefs.serverHost, auth.getAccessToken());
@@ -162,7 +179,7 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
             }
         });
 
-        SyncWithAvParams params = new SyncWithAvParams();
+        final SyncWithAvParams params = new SyncWithAvParams();
 
         params.deviceId = DeviceInfo.getUniqueId(getActivity());
         params.imei = DeviceInfo.getIMEI(getActivity());
@@ -215,7 +232,7 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
     private void hideLogoutButton() {
         btnLogout.setVisibility(View.GONE);
         btnLogin.setVisibility(View.VISIBLE);
-        
+
         view.findViewById(R.id.home_login_message).setVisibility(View.VISIBLE);
     }
 

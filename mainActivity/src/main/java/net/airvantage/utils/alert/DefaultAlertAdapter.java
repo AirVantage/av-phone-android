@@ -3,6 +3,7 @@ package net.airvantage.utils.alert;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.squareup.okhttp.OkHttpClient;
 
 import net.airvantage.model.AirVantageException;
@@ -48,7 +49,9 @@ public class DefaultAlertAdapter {
     //
 
     protected String buildPath(String api) {
-        return server + getPrefix() + api + "?access_token=" + access_token;
+        final String path = server + getPrefix() + api + "?access_token=" + access_token;
+        Log.d(this.getClass().toString(), "About to call: " + path);
+        return path;
     }
 
     protected String getPrefix() {
@@ -60,9 +63,11 @@ public class DefaultAlertAdapter {
     }
 
     protected InputStream readResponse(HttpURLConnection connection) throws IOException, AirVantageException {
-        InputStream in = null;
+        InputStream in;
         if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
             in = connection.getInputStream();
+            Log.d(this.getClass().getName(), "Just read : " + connection.getURL().toString()
+                    + " with status " + HttpURLConnection.HTTP_OK);
         } else if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {
             in = connection.getErrorStream();
             InputStreamReader isr = new InputStreamReader(in);
@@ -77,8 +82,12 @@ public class DefaultAlertAdapter {
             AvError error = new AvError(AvError.FORBIDDEN, Arrays.asList(method, url));
             throw new AirVantageException(error);
         } else {
-            throw new IOException("Unexpected HTTP response: " + connection.getResponseCode() + " "
-                    + connection.getResponseMessage());
+            String message = "Reading " + connection.getURL().toString()
+                    + " got unexpected HTTP response " + connection.getResponseCode() + ", "
+                    + connection.getResponseMessage();
+            IOException ioException = new IOException(message);
+            Log.e(this.getClass().getName(), message, ioException);
+            throw ioException;
         }
         return in;
     }
@@ -95,10 +104,13 @@ public class DefaultAlertAdapter {
             connection.addRequestProperty("Content-Type", "application/json");
             // Write the request.
             connection.setRequestMethod(method);
+
+            final String message = method +" on " + url.toString() + "\n" + bodyString;
+            Log.d(this.getClass().getName(), message);
+
             out = connection.getOutputStream();
             out.write(bodyString.getBytes());
             return readResponse(connection);
-
         } finally {
             if (out != null)
                 out.close();

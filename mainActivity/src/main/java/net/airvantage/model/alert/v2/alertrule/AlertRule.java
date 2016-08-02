@@ -1,17 +1,27 @@
-package net.airvantage.model.alert.v1;
+package net.airvantage.model.alert.v2.alertrule;
+
+
+import net.airvantage.utils.Predicate;
 
 import java.util.List;
 import java.util.Map;
 
-import net.airvantage.utils.Predicate;
-
 public class AlertRule {
-    public String uid;
-    public boolean active = true;
+
+    public String id;
+    public boolean active;
+    public List<String> emails;
+
+    public String companyId;
+    public String message;
     public String name;
-    public String eventType;
+    public String notifMode;
+    public String targetType;
+
     public List<Condition> conditions;
-    public Map<String, String> metadata;
+
+    public Map<String, Object> metadata;
+
 
     public static Predicate<AlertRule> isNamed(final String name) {
         return new Predicate<AlertRule>() {

@@ -1,4 +1,4 @@
-package net.airvantage.model;
+package net.airvantage.model.alert.v1;
 
 public class Condition {
     public String eventProperty;

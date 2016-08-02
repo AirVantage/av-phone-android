@@ -8,7 +8,7 @@ import net.airvantage.model.alert.v1.AlertRule;
 import net.airvantage.model.Application;
 import net.airvantage.model.ApplicationData;
 import net.airvantage.model.Command;
-import net.airvantage.model.Condition;
+import net.airvantage.model.alert.v1.Condition;
 import net.airvantage.model.Data;
 import net.airvantage.model.Parameter;
 import net.airvantage.model.Protocol;
