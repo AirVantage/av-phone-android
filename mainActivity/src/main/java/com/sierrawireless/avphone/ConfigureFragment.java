@@ -2,6 +2,7 @@ package com.sierrawireless.avphone;
 
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -43,12 +44,6 @@ public class ConfigureFragment extends AvPhoneFragment {
 
     public ConfigureFragment() {
         super();
-    }
-
-    protected ConfigureFragment(IAsyncTaskFactory taskFactory) {
-        super();
-        assert (taskFactory != null);
-        this.taskFactory = taskFactory;
     }
 
     public void setTaskFactory(IAsyncTaskFactory taskFactory) {
@@ -170,11 +165,11 @@ public class ConfigureFragment extends AvPhoneFragment {
             @Override
             public void onSynced(SyncWithAvResult result) {
                 syncTask.showResult(result, display, getActivity());
-                
+
                 if (!result.isError()) {
                     syncListener.onSynced(result);
                 }
-                
+
             }
         });
 

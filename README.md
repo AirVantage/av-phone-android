@@ -22,6 +22,27 @@ If API clients are missing, _login_ pages will display an error page:
 
 > Something went wrong
 
+## Configure custom server
+
+Button appears as soon as `clientid.custom` is defined.
+
+Define `clientid.custom` in `mainActivity/src/main/assets/avphone.properties`.
+
+```ini
+clientid.na=CHANGEME
+clientid.eu=CHANGEME
+clientid.custom=IF_YOU_NEED # <= Here
+```
+
+Define `pref_server_custom_value` in `mainActivity/src/main/res/values/strings.xml`.
+It __has to__ be accessible from `https://`.
+
+```xml
+<string name="pref_server_custom">Custom</string>
+<!-- Change following -->
+<string name="pref_server_custom_value">get.some.io</string>
+```
+
 ### Crashlytics
 
 When checking out, code will probably not compile because of Crashlytics,
