@@ -58,7 +58,7 @@ public class MonitoringService extends Service {
     public static final String SERVER_HOST = "server_host";
     public static final String PASSWORD = "password";
 
-    private MqttPushClient client;
+    private MqttPushClient client = null;
 
     private Long startedSince;
 
@@ -107,12 +107,14 @@ public class MonitoringService extends Service {
         lastRun = System.currentTimeMillis();
 
         try {
-            
+
             if (this.client == null) {
-                client = new MqttPushClient(intent.getStringExtra(DEVICE_ID), intent.getStringExtra(PASSWORD),
-                        intent.getStringExtra(SERVER_HOST), mqttCallback);
+                client = new MqttPushClient(intent.getStringExtra(DEVICE_ID),
+                        intent.getStringExtra(PASSWORD),
+                        intent.getStringExtra(SERVER_HOST),
+                        mqttCallback);
             }
-            
+
             if (!client.isConnected()) {
                 client.connect();
             }
@@ -149,32 +151,32 @@ public class MonitoringService extends Service {
             data.setOperator(telephonyManager.getNetworkOperatorName());
 
             switch (telephonyManager.getNetworkType()) {
-            case TelephonyManager.NETWORK_TYPE_GPRS:
-                data.setNetworkType("GPRS");
-                break;
-            case TelephonyManager.NETWORK_TYPE_EDGE:
-                data.setNetworkType("EDGE");
-                break;
-            case TelephonyManager.NETWORK_TYPE_UMTS:
-                data.setNetworkType("UMTS");
-                break;
-            case TelephonyManager.NETWORK_TYPE_HSDPA:
-                data.setNetworkType("HSDPA");
-                break;
-            case TelephonyManager.NETWORK_TYPE_HSPAP:
-                data.setNetworkType("HSPA+");
-                break;
-            case TelephonyManager.NETWORK_TYPE_HSPA:
-                data.setNetworkType("HSPA");
-                break;
-            case TelephonyManager.NETWORK_TYPE_HSUPA:
-                data.setNetworkType("HSUPA");
-                break;
-            case TelephonyManager.NETWORK_TYPE_LTE:
-                data.setNetworkType("LTE");
-                break;
-            // to be continued
-            default:
+                case TelephonyManager.NETWORK_TYPE_GPRS:
+                    data.setNetworkType("GPRS");
+                    break;
+                case TelephonyManager.NETWORK_TYPE_EDGE:
+                    data.setNetworkType("EDGE");
+                    break;
+                case TelephonyManager.NETWORK_TYPE_UMTS:
+                    data.setNetworkType("UMTS");
+                    break;
+                case TelephonyManager.NETWORK_TYPE_HSDPA:
+                    data.setNetworkType("HSDPA");
+                    break;
+                case TelephonyManager.NETWORK_TYPE_HSPAP:
+                    data.setNetworkType("HSPA+");
+                    break;
+                case TelephonyManager.NETWORK_TYPE_HSPA:
+                    data.setNetworkType("HSPA");
+                    break;
+                case TelephonyManager.NETWORK_TYPE_HSUPA:
+                    data.setNetworkType("HSUPA");
+                    break;
+                case TelephonyManager.NETWORK_TYPE_LTE:
+                    data.setNetworkType("LTE");
+                    break;
+                // to be continued
+                default:
             }
 
             data.setActiveWifi(connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected());
@@ -219,7 +221,7 @@ public class MonitoringService extends Service {
             // dispatch new data event to update the activity UI
             LocalBroadcastManager.getInstance(this).sendBroadcast(data);
 
-            client.push(data);
+            this.client.push(data);
             lastLog = data.size() + " data pushed to the server";
             LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog));
 
@@ -251,6 +253,12 @@ public class MonitoringService extends Service {
     }
 
     public void sendAlarmEvent(boolean activated) {
+
+        if (this.client == null) {
+            // TODO: Propagate error message when client is not available yet
+            return;
+        }
+
         NewData data = new NewData();
         data.setAlarmActivated(activated);
 
@@ -258,7 +266,7 @@ public class MonitoringService extends Service {
         lastData.putExtras(data.getExtras());
 
         try {
-            client.push(data);
+            this.client.push(data);
         } catch (MqttException e) {
             // TODO display something
             Crashlytics.logException(e);
