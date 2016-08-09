@@ -1,19 +1,5 @@
 package com.sierrawireless.avphone.service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-
-import com.crashlytics.android.Crashlytics;
-import com.google.gson.Gson;
-import com.sierrawireless.avphone.MainActivity;
-import com.sierrawireless.avphone.R;
-
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.app.Notification;
@@ -26,7 +12,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.net.ConnectivityManager;
 import android.net.TrafficStats;
 import android.os.BatteryManager;
@@ -40,6 +28,20 @@ import android.telephony.CellInfoLte;
 import android.telephony.CellInfoWcdma;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+
+import com.crashlytics.android.Crashlytics;
+import com.google.gson.Gson;
+import com.sierrawireless.avphone.MainActivity;
+import com.sierrawireless.avphone.R;
+
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class MonitoringService extends Service {
 
@@ -70,6 +72,12 @@ public class MonitoringService extends Service {
 
     private CustomDataSource customDataSource;
 
+    // FIXME(pht) for testing, to compare with "last known location"
+    private Location networkLocation = null;
+    private Location gpsLocation = null;
+    private LocationListener networkLocationListener;
+    private LocationListener gpsLocationListener;
+
     @Override
     public void onCreate() {
 
@@ -99,6 +107,7 @@ public class MonitoringService extends Service {
         customDataSource = new CustomDataSource(new java.util.Date());
 
         startedSince = System.currentTimeMillis();
+        
     }
 
     @Override
@@ -119,15 +128,8 @@ public class MonitoringService extends Service {
                 client.connect();
             }
 
-            final LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            final String locationProvider = locManager.getBestProvider(new Criteria(), true);
-            Log.d(LOGTAG, "Location provider: " + locationProvider);
-
-            Location location = null;
-            if (locationProvider != null) {
-                location = locManager.getLastKnownLocation(locationProvider);
-            }
-
+            Location location = getLastKnownLocation();
+            
             // retrieve data
             NewData data = new NewData();
 
@@ -225,6 +227,9 @@ public class MonitoringService extends Service {
             lastLog = data.size() + " data pushed to the server";
             LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog));
 
+            setUpLocationListeners();
+            
+            
         } catch (Exception e) {
             Crashlytics.logException(e);
             Log.e(LOGTAG, "error", e);
@@ -232,6 +237,8 @@ public class MonitoringService extends Service {
             LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog));
         }
 
+        
+        
         return Service.START_NOT_STICKY;
     }
 
@@ -250,8 +257,74 @@ public class MonitoringService extends Service {
 
         // Cancel the persistent notification.
         stopForeground(true);
+        
+        stopLocationListeners();
     }
 
+    private void setUpLocationListeners() {
+        final LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        LocationProvider networkLocationProvider = locManager.getProvider(LocationManager.NETWORK_PROVIDER);
+        if (networkLocationProvider != null) {
+            networkLocationListener = new LocationListenerAdapter() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    Log.d(LOGTAG, "Received Network location update " + location.getLatitude() + ";" + location.getLongitude());
+                    networkLocation = location;
+                }
+            };
+            locManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60*1000, 5, networkLocationListener);
+        }
+        LocationProvider gpsLocationProvider = locManager.getProvider(LocationManager.GPS_PROVIDER);
+        if (gpsLocationProvider != null) {
+            gpsLocationListener = new LocationListenerAdapter() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    Log.d(LOGTAG, "Received GPS location update " + location.getLatitude() + ";" + location.getLongitude());
+                    gpsLocation = location;
+                }
+            };
+            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60*1000, 5, gpsLocationListener);
+        }
+    }
+    
+    private void stopLocationListeners() {
+        final LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (networkLocationListener != null) {
+            locManager.removeUpdates(networkLocationListener);
+        }
+        if (gpsLocationListener != null) {
+            locManager.removeUpdates(gpsLocationListener);
+        }
+    }
+    
+
+    private Location getLastKnownLocation() {
+        final LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        final String locationProvider = locManager.getBestProvider(new Criteria(), true);
+        Log.d(LOGTAG, "Getting last known location from provider: " + locationProvider);
+
+        Location location = null;
+        if (locationProvider != null) {
+            location = locManager.getLastKnownLocation(locationProvider);
+            if (location != null) {
+                Log.d(LOGTAG, "Last known location : " + location.getLatitude() +"," + location.getLongitude());
+            } else {
+                Log.d(LOGTAG, "Read null location");
+            }
+            if (networkLocation != null) {
+                Log.d(LOGTAG, "Last Network Location : "+ networkLocation.getLatitude() + "," + networkLocation.getLongitude());
+            } else {
+                Log.d(LOGTAG, "No known network location");
+            }
+            if (gpsLocation != null) {
+                Log.d(LOGTAG, "Last GPS Location : "+gpsLocation.getLatitude() + "," + gpsLocation.getLongitude());
+            } else {
+                Log.d(LOGTAG, "No known GPSlocation");
+            }
+        }
+        return location;
+    }
+    
     public void sendAlarmEvent(boolean activated) {
 
         if (this.client == null) {
