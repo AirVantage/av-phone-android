@@ -39,6 +39,7 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -107,7 +108,7 @@ public class MonitoringService extends Service {
         customDataSource = new CustomDataSource(new java.util.Date());
 
         startedSince = System.currentTimeMillis();
-        
+
     }
 
     @Override
@@ -118,10 +119,23 @@ public class MonitoringService extends Service {
         try {
 
             if (this.client == null) {
-                client = new MqttPushClient(intent.getStringExtra(DEVICE_ID),
-                        intent.getStringExtra(PASSWORD),
-                        intent.getStringExtra(SERVER_HOST),
-                        mqttCallback);
+
+                //
+                // Ensure intent is valid
+                //
+                final String deviceId = intent.getStringExtra(DEVICE_ID);
+                final String password = intent.getStringExtra(PASSWORD);
+                final String serverHost = intent.getStringExtra(SERVER_HOST);
+
+                final List<String> intentValuesList = Arrays.asList(deviceId, password, serverHost);
+                if (intentValuesList.contains(null)) {
+                    // Stop service when unable to start MQTT client
+                    stopSelfResult(startId);
+                    return Service.START_STICKY;
+                }
+
+                // Now, create client
+                client = new MqttPushClient(deviceId, password, serverHost, mqttCallback);
             }
 
             if (!client.isConnected()) {
@@ -129,7 +143,7 @@ public class MonitoringService extends Service {
             }
 
             Location location = getLastKnownLocation();
-            
+
             // retrieve data
             NewData data = new NewData();
 
@@ -190,11 +204,13 @@ public class MonitoringService extends Service {
             data.setMemoryUsage((float) ((mi.totalMem - mi.availMem) / ((Long) mi.totalMem).doubleValue()));
 
             // battery level
-            IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-            Intent batteryStatus = this.registerReceiver(null, ifilter);
-            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-            data.setBatteryLevel(level / (float) scale);
+            final IntentFilter iFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+            final Intent batteryStatus = this.registerReceiver(null, iFilter);
+            if (batteryStatus != null) {
+                final int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                final int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+                data.setBatteryLevel(level / (float) scale);
+            }
 
             // location
             if (location != null && location.getTime() != lastLocation) {
@@ -228,8 +244,8 @@ public class MonitoringService extends Service {
             LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog));
 
             setUpLocationListeners();
-            
-            
+
+
         } catch (Exception e) {
             Crashlytics.logException(e);
             Log.e(LOGTAG, "error", e);
@@ -237,8 +253,7 @@ public class MonitoringService extends Service {
             LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog));
         }
 
-        
-        
+
         return Service.START_NOT_STICKY;
     }
 
@@ -257,7 +272,7 @@ public class MonitoringService extends Service {
 
         // Cancel the persistent notification.
         stopForeground(true);
-        
+
         stopLocationListeners();
     }
 
@@ -272,7 +287,7 @@ public class MonitoringService extends Service {
                     networkLocation = location;
                 }
             };
-            locManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60*1000, 5, networkLocationListener);
+            locManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60 * 1000, 5, networkLocationListener);
         }
         LocationProvider gpsLocationProvider = locManager.getProvider(LocationManager.GPS_PROVIDER);
         if (gpsLocationProvider != null) {
@@ -283,10 +298,10 @@ public class MonitoringService extends Service {
                     gpsLocation = location;
                 }
             };
-            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60*1000, 5, gpsLocationListener);
+            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60 * 1000, 5, gpsLocationListener);
         }
     }
-    
+
     private void stopLocationListeners() {
         final LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (networkLocationListener != null) {
@@ -296,7 +311,7 @@ public class MonitoringService extends Service {
             locManager.removeUpdates(gpsLocationListener);
         }
     }
-    
+
 
     private Location getLastKnownLocation() {
         final LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -307,24 +322,24 @@ public class MonitoringService extends Service {
         if (locationProvider != null) {
             location = locManager.getLastKnownLocation(locationProvider);
             if (location != null) {
-                Log.d(LOGTAG, "Last known location : " + location.getLatitude() +"," + location.getLongitude());
+                Log.d(LOGTAG, "Last known location : " + location.getLatitude() + "," + location.getLongitude());
             } else {
                 Log.d(LOGTAG, "Read null location");
             }
             if (networkLocation != null) {
-                Log.d(LOGTAG, "Last Network Location : "+ networkLocation.getLatitude() + "," + networkLocation.getLongitude());
+                Log.d(LOGTAG, "Last Network Location : " + networkLocation.getLatitude() + "," + networkLocation.getLongitude());
             } else {
                 Log.d(LOGTAG, "No known network location");
             }
             if (gpsLocation != null) {
-                Log.d(LOGTAG, "Last GPS Location : "+gpsLocation.getLatitude() + "," + gpsLocation.getLongitude());
+                Log.d(LOGTAG, "Last GPS Location : " + gpsLocation.getLatitude() + "," + gpsLocation.getLongitude());
             } else {
                 Log.d(LOGTAG, "No known GPSlocation");
             }
         }
         return location;
     }
-    
+
     public void sendAlarmEvent(boolean activated) {
 
         if (this.client == null) {
