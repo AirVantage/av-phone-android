@@ -20,7 +20,7 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Theme.Avactionbar" parent="@style/AppTheme">
+    <style name="Theme.Avactionbar" parent="@android:style/Theme.Material.Light">
         <item name="android:actionBarItemBackground">@drawable/selectable_background_avactionbar</item>
         <item name="android:popupMenuStyle">@style/PopupMenu.Avactionbar</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Avactionbar</item>
@@ -38,52 +38,52 @@
         <item name="android:src">@drawable/ic_action_overflow</item>
     </style>
 
-    <style name="ActionBar.TabTextStyle" parent="@android:style/Widget.Holo.Light.ActionBar.TabText">
+    <style name="ActionBar.TabTextStyle" parent="@android:style/Widget.Material.Light.ActionBar.TabText">
         <item name="android:textColor">@color/sierrared</item>
     </style>
 
-    <style name="ActionBar.Solid.Avactionbar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
+    <style name="ActionBar.Solid.Avactionbar" parent="@android:style/Widget.Material.Light.ActionBar.Solid">
         <item name="android:background">@drawable/ab_solid_avactionbar</item>
         <item name="android:backgroundStacked">@drawable/ab_stacked_solid_avactionbar</item>
         <item name="android:backgroundSplit">@drawable/ab_bottom_solid_avactionbar</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Avactionbar</item>
     </style>
 
-    <style name="ActionBar.Transparent.Avactionbar" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:background">@drawable/ab_transparent_avactionbar</item>
+    <style name="ActionBar.Transparent.Avactionbar" parent="@android:style/Widget.Material.Light.ActionBar">
+        <item name="android:background">@android:color/white</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Avactionbar</item>
     </style>
 
-    <style name="PopupMenu.Avactionbar" parent="@android:style/Widget.Holo.Light.ListPopupWindow">
+    <style name="PopupMenu.Avactionbar" parent="@android:style/Widget.Material.Light.ListPopupWindow">
         <item name="android:popupBackground">@drawable/menu_dropdown_panel_avactionbar</item>
     </style>
 
-    <style name="DropDownListView.Avactionbar" parent="@android:style/Widget.Holo.Light.ListView.DropDown">
+    <style name="DropDownListView.Avactionbar" parent="@android:style/Widget.Material.Light.ListView.DropDown">
         <item name="android:listSelector">@drawable/selectable_background_avactionbar</item>
     </style>
 
-    <style name="ActionBarTabStyle.Avactionbar" parent="@android:style/Widget.Holo.Light.ActionBar.TabView">
+    <style name="ActionBarTabStyle.Avactionbar" parent="@android:style/Widget.Material.Light.ActionBar.TabView">
         <item name="android:background">@drawable/tab_indicator_ab_avactionbar</item>
     </style>
 
-    <style name="DropDownNav.Avactionbar" parent="@android:style/Widget.Holo.Light.Spinner">
+    <style name="DropDownNav.Avactionbar" parent="@android:style/Widget.Material.Light.Spinner">
         <item name="android:background">@drawable/spinner_background_ab_avactionbar</item>
         <item name="android:popupBackground">@drawable/menu_dropdown_panel_avactionbar</item>
         <item name="android:dropDownSelector">@drawable/selectable_background_avactionbar</item>
     </style>
 
-    <style name="ProgressBar.Avactionbar" parent="@android:style/Widget.Holo.Light.ProgressBar.Horizontal">
+    <style name="ProgressBar.Avactionbar" parent="@android:style/Widget.Material.Light.ProgressBar.Horizontal">
         <item name="android:progressDrawable">@drawable/progress_horizontal_avactionbar</item>
         <item name="android:indeterminateDrawable">@drawable/apptheme_progress_indeterminate_horizontal_holo_light</item>
         <item name="android:textColor">@color/sierrared</item>
     </style>
 
-    <style name="ActionButton.CloseMode.Avactionbar" parent="@android:style/Widget.Holo.Light.ActionButton.CloseMode">
+    <style name="ActionButton.CloseMode.Avactionbar" parent="@android:style/Widget.Material.Light.ActionButton.CloseMode">
         <item name="android:background">@drawable/btn_cab_done_avactionbar</item>
     </style>
 
     <!-- this style is only referenced in a Light.DarkActionBar based theme -->
-    <style name="Theme.Avactionbar.Widget" parent="@android:style/Theme.Holo">
+    <style name="Theme.Avactionbar.Widget" parent="@android:style/Theme.Material.Light">
         <item name="android:popupMenuStyle">@style/PopupMenu.Avactionbar</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Avactionbar</item>
     </style>

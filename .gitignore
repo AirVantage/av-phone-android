@@ -33,10 +33,12 @@ TODO.md
 # IntelliJ
 *.iml
 .gradle/
-.idea/libraries/
-.idea/misc.xml
-.idea/workspace.xml
+gradle
+gradlew
+gradlew.bat
+.idea/*
 build/
 comcrashlyticssdkandroid_crashlytics/build/
 local.properties
 mainActivity/build/
+av-phone-android.iml

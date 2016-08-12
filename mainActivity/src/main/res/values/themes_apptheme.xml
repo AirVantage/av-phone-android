@@ -6,25 +6,25 @@
     Base application theme, dependent on API level. This theme is replaced
     by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
   -->
-  <style name="_AppTheme" parent="android:Theme.Holo.Light">
+  <style name="_AppTheme" parent="android:Theme.Material.Light">
 
-    <item name="android:editTextStyle">@style/EditTextAppTheme</item>
+    <!--<item name="android:editTextStyle">@style/EditTextAppTheme</item>-->
 
-    <item name="android:buttonStyle">@style/ButtonAppTheme</item>
+    <!--<item name="android:buttonStyle">@style/ButtonAppTheme</item>-->
 
-    <item name="android:imageButtonStyle">@style/ImageButtonAppTheme</item>
+    <!--<item name="android:imageButtonStyle">@style/ImageButtonAppTheme</item>-->
 
-    <item name="android:progressBarStyleHorizontal">@style/ProgressBarAppTheme</item>
+    <!--<item name="android:progressBarStyleHorizontal">@style/ProgressBarAppTheme</item>-->
 
-    <item name="android:buttonStyleToggle">@style/ToggleAppTheme</item>
+    <!--<item name="android:buttonStyleToggle">@style/ToggleAppTheme</item>-->
 
   </style>
 
   <!-- Application theme. -->
   <style name="AppTheme" parent="@style/_AppTheme">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textViewStyle">@style/CustomTextView</item>
-        <item name="android:textColor">@color/textcolor</item>
+        <!--<item name="android:textSize">16sp</item>-->
+        <!--<item name="android:textViewStyle">@style/CustomTextView</item>-->
+        <item name="android:textColor">@color/grey_1</item>
   </style>
 
 </resources>

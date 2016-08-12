@@ -1,6 +1,33 @@
 package com.sierrawireless.avphone;
 
-import java.util.Date;
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
+import android.app.AlarmManager;
+import android.app.Fragment;
+import android.app.PendingIntent;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.crashlytics.android.Crashlytics;
 import com.sierrawireless.avphone.auth.Authentication;
@@ -12,43 +39,25 @@ import com.sierrawireless.avphone.task.IAsyncTaskFactory;
 import com.sierrawireless.avphone.task.SyncWithAvListener;
 import com.sierrawireless.avphone.task.SyncWithAvResult;
 
-import android.annotation.SuppressLint;
-import android.app.ActionBar;
-import android.app.ActionBar.Tab;
-import android.app.ActionBar.TabListener;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningServiceInfo;
-import android.app.AlarmManager;
-import android.app.FragmentTransaction;
-import android.app.PendingIntent;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import io.fabric.sdk.android.Fabric;
 import net.airvantage.model.AvSystem;
 import net.airvantage.model.User;
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import io.fabric.sdk.android.Fabric;
+
 /**
- * The main activity, in charge of displaying the tab view
+ * The main activity, handling drawer and Fragments
  */
-public class MainActivity extends FragmentActivity implements TabListener, LoginListener, AuthenticationManager,
-        OnSharedPreferenceChangeListener, MonitorServiceManager, CustomLabelsManager, SyncWithAvListener {
+public class MainActivity extends FragmentActivity
+        implements LoginListener, AuthenticationManager, OnSharedPreferenceChangeListener,
+        MonitorServiceManager, CustomLabelsManager, SyncWithAvListener {
 
     private static final String PREFERENCE_SYSTEM_NAME = "systemName";
     private static final String PREFERENCE_SYSTEM_SERIAL = "systemSerial";
@@ -57,8 +66,6 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
 
     private static String LOGTAG = MainActivity.class.getName();
 
-    private ViewPager viewPager;
-    private TabsPagerAdapter tabsPageAdapter;
     private ActionBar actionBar;
     private AlarmManager alarmManager;
     private IAsyncTaskFactory taskFactory;
@@ -70,6 +77,25 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
     private MonitorServiceListener monitoringServiceListener = null;
 
     private CustomLabelsListener customLabelsListener = null;
+    private DrawerLayout drawerLayout;
+    private ListView drawerListView;
+    private ActionBarDrawerToggle drawerToggle;
+
+    private final static String FRAGMENT_HOME = "Home";
+    private final static String FRAGMENT_RUN = "Run";
+    private final static String FRAGMENT_CONFIGURE = "Configure";
+    private final static String FRAGMENT_SETTINGS = "Settings";
+
+    private ConfigureFragment configureFragment;
+    private HomeFragment homeFragment;
+    private RunFragment runFragment;
+
+    private final static String[] FRAGMENT_LIST = new String[]{
+            FRAGMENT_HOME,
+            FRAGMENT_RUN,
+            FRAGMENT_CONFIGURE,
+            FRAGMENT_SETTINGS,
+    };
 
     public void setCustomLabelsListener(CustomLabelsListener customLabelsListener) {
         this.customLabelsListener = customLabelsListener;
@@ -89,146 +115,110 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
 
         taskFactory = new AsyncTaskFactory(MainActivity.this);
 
-        viewPager = (ViewPager) findViewById(R.id.pager);
-        actionBar = getActionBar();
-        tabsPageAdapter = new TabsPagerAdapter(getSupportFragmentManager());
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerListView = (ListView) findViewById(R.id.left_drawer);
+        drawerListView.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_item, FRAGMENT_LIST));
 
-        viewPager.setAdapter(tabsPageAdapter);
-        actionBar.setHomeButtonEnabled(false);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-        alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-
-        // Adding Tabs
-        Tab tab = actionBar.newTab().setText(getString(R.string.home_tab)).setTabListener(this);
-        actionBar.addTab(tab);
-
-        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
+        // Set the list's click listener
+        drawerListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
-            public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
-            }
-
-            @Override
-            public void onPageScrolled(int arg0, float arg1, int arg2) {
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int arg0) {
+            public void onItemClick(AdapterView parent, View view, int position, long id) {
+                selectItem(position);
             }
         });
 
-        if (isLogged()) {
-            showLoggedTabs();
+        alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open,
+                R.string.drawer_close);
+        drawerLayout.setDrawerListener(drawerToggle);
+
+        final Map<String, Fragment> fragments = initFragments();
+        final Fragment currentFragment;
+        if (isLogged()) {
+
+            currentFragment = fragments.get(FRAGMENT_RUN);
+            unlockDrawer();
             if (isServiceRunning()) {
                 connectToService();
             }
-        } else {
-            hideLoggedTabs();
 
+        } else {
+
+            currentFragment = fragments.get(FRAGMENT_HOME);
+            lockDrawer();
             if (isServiceRunning()) {
                 // The token is probably expired.
                 // We stop the service since the "stop" button is not available anymore.
                 this.stopMonitoringService();
             }
+
         }
 
+        selectItem(currentFragment);
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return // Handle it ourselves
+                drawerToggle.onOptionsItemSelected(item)
+                        // Or just go with defaults
+                        || super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    private void lockDrawer() {
+
+        actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setHomeButtonEnabled(false);
+        }
+
+        if (drawerLayout != null) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+
+        if (drawerToggle != null) {
+            drawerToggle.setDrawerIndicatorEnabled(false);
+        }
+    }
+
+    private void unlockDrawer() {
+
+        actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+        }
+
+        if (drawerLayout != null) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            drawerLayout.openDrawer(Gravity.LEFT);
+        }
+
+        if (drawerToggle != null) {
+            drawerToggle.setDrawerIndicatorEnabled(true);
+        }
     }
 
     private void readAuthenticationFromPreferences() {
         this.auth = PreferenceUtils.readAuthentication(this);
     }
 
-    // Preferences
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-        case R.id.action_settings:
-            startActivity(new Intent(this, SettingsActivity.class));
-            break;
-        }
-
-        return true;
-    }
-
     @Override
     public void OnLoginChanged(boolean logged) {
-    }
-
-    private RunFragment runFragment;
-
-    class TabsPagerAdapter extends FragmentPagerAdapter {
-
-        public TabsPagerAdapter(FragmentManager fm) {
-            super(fm);
-
-        }
-
-        @Override
-        public Fragment getItem(int index) {
-
-            switch (index) {
-            case 0: {
-                return makeHomeFragment();
-            }
-            case 1: {
-                runFragment = (RunFragment) Fragment.instantiate(MainActivity.this, RunFragment.class.getName());
-                return runFragment;
-            }
-            case 2:
-                return makeConfigureFragment();
-            }
-
-            return null;
-        }
-
-        @Override
-        public int getCount() {
-            if (!isLogged()) {
-                return 1;
-            } else {
-                return 3;
-            }
-        }
-
-        protected HomeFragment makeHomeFragment() {
-            HomeFragment fragment = (HomeFragment) Fragment.instantiate(MainActivity.this,
-                    HomeFragment.class.getName());
-            fragment.setTaskFactory(taskFactory);
-            return fragment;
-        }
-
-        protected AvPhoneFragment makeConfigureFragment() {
-            ConfigureFragment fragment = (ConfigureFragment) Fragment.instantiate(MainActivity.this,
-                    ConfigureFragment.class.getName());
-            fragment.setTaskFactory(taskFactory);
-            return fragment;
-        }
-
-    }
-
-    @Override
-    public void onTabSelected(Tab tab, FragmentTransaction ft) {
-        viewPager.setCurrentItem(tab.getPosition());
-    }
-
-    @Override
-    public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-    }
-
-    @Override
-    public void onTabReselected(Tab tab, FragmentTransaction ft) {
     }
 
     public boolean isLogged() {
@@ -239,11 +229,9 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
     public void onAuthentication(Authentication auth) {
 
         this.auth = auth;
+        unlockDrawer();
 
         saveAuthenticationInPreferences(auth);
-
-        showLoggedTabs();
-
     }
 
     @Override
@@ -255,35 +243,11 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
         PreferenceUtils.saveAuthentication(this, auth);
     }
 
-    public void showLoggedTabs() {
-        if (actionBar.getTabCount() == 1) {
-            Tab runTab = actionBar.newTab().setText(getString(R.string.run_tab));
-            actionBar.addTab(runTab.setTabListener(this));
-            tabsPageAdapter.notifyDataSetChanged();
-            actionBar.addTab(actionBar.newTab().setText(getString(R.string.configure_tab)).setTabListener(this));
-            tabsPageAdapter.notifyDataSetChanged();
-        }
-
-        viewPager.setCurrentItem(1);
-    }
-
-    public void hideLoggedTabs() {
-        if (actionBar.getTabCount() == 3) {
-            actionBar.removeTabAt(2);
-            tabsPageAdapter.notifyDataSetChanged();
-            actionBar.removeTabAt(1);
-            tabsPageAdapter.notifyDataSetChanged();
-        }
-        viewPager.setCurrentItem(0);
-    }
-
     public void forgetAuthentication() {
 
+        lockDrawer();
         PreferenceUtils.resetAuthentication(this);
-
         this.auth = null;
-
-        hideLoggedTabs();
 
         if (this.isServiceRunning()) {
             this.stopMonitoringService();
@@ -373,24 +337,24 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
         intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost);
         intent.putExtra(MonitoringService.PASSWORD, avPrefs.password);
 
-        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
         // registering our pending intent with alarm manager
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, Integer.valueOf(avPrefs.period) * 60 * 1000,
-                pendingIntent);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0,
+                Integer.valueOf(avPrefs.period) * 60 * 1000, pendingIntent);
 
         connectToService();
-
     }
 
     @Override
     public void stopMonitoringService() {
         Intent intent = new Intent(this, MonitoringService.class);
-        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
         alarmManager.cancel(pendingIntent);
         this.stopService(intent);
 
         disconnectFromService();
-
     }
 
     private void restartMonitoringService() {
@@ -418,15 +382,15 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
     public void onSynced(SyncWithAvResult result) {
 
         final AvSystem system = result.getSystem();
-        prefs.edit().putString("systemUid", system.uid).commit();
-        prefs.edit().putString(PREFERENCE_SYSTEM_NAME, system.name).commit();
+        prefs.edit().putString("systemUid", system.uid).apply();
+        prefs.edit().putString(PREFERENCE_SYSTEM_NAME, system.name).apply();
 
         final User user = result.getUser();
-        prefs.edit().putString(PREFERENCE_USER_UID, user.uid).commit();
-        prefs.edit().putString(PREFERENCE_USER_NAME, user.name).commit();
+        prefs.edit().putString(PREFERENCE_USER_UID, user.uid).apply();
+        prefs.edit().putString(PREFERENCE_USER_NAME, user.name).apply();
 
         final String deviceSerial = DeviceInfo.generateSerial(user.uid, system.type);
-        prefs.edit().putString(PREFERENCE_SYSTEM_SERIAL, deviceSerial).commit();
+        prefs.edit().putString(PREFERENCE_SYSTEM_SERIAL, deviceSerial).apply();
 
         if (runFragment != null) {
             String systemUid = this.getSystemUid();
@@ -452,7 +416,74 @@ public class MainActivity extends FragmentActivity implements TabListener, Login
 
     @SuppressLint("DefaultLocale")
     public void setSystemSerial(final String serial) {
-        prefs.edit().putString(PREFERENCE_SYSTEM_SERIAL, serial.toUpperCase()).commit();
+        prefs.edit().putString(PREFERENCE_SYSTEM_SERIAL, serial.toUpperCase()).apply();
+    }
+
+    /**
+     * Swaps fragments in the main content view
+     */
+    private void selectItem(final int position) {
+
+        final Fragment fragment = getFragment(position);
+        if (fragment == null) {
+            return;
+        }
+
+        // Insert the fragment by replacing any existing fragment
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .commit();
+
+        // Highlight the selected item, update the title, and close the drawer
+        drawerListView.setItemChecked(position, true);
+        setTitle(FRAGMENT_LIST[position]);
+        drawerListView.setSelection(position);
+        drawerLayout.closeDrawer(drawerListView);
+    }
+
+    private void selectItem(final Fragment fragment) {
+        final Iterator<Fragment> fragmentsIterator = initFragments().values().iterator();
+        for (int position = 0; fragmentsIterator.hasNext(); position++) {
+            final Fragment currentFragment = fragmentsIterator.next();
+            if (fragment.getId() == currentFragment.getId()) {
+                selectItem(position);
+                return;
+            }
+        }
+    }
+
+
+    private Map<String, Fragment> initFragments() {
+
+        if (configureFragment == null) {
+            configureFragment = new ConfigureFragment();
+            configureFragment.setTaskFactory(taskFactory);
+        }
+
+        if (homeFragment == null) {
+            homeFragment = new HomeFragment();
+            homeFragment.setTaskFactory(taskFactory);
+        }
+
+        if (runFragment == null) {
+            runFragment = new RunFragment();
+        }
+
+        final HashMap<String, Fragment> fragmentsMapping = new HashMap<>();
+        fragmentsMapping.put(FRAGMENT_CONFIGURE, configureFragment);
+        fragmentsMapping.put(FRAGMENT_HOME, homeFragment);
+        fragmentsMapping.put(FRAGMENT_SETTINGS, new SettingsActivity.SettingsFragment());
+        fragmentsMapping.put(FRAGMENT_RUN, runFragment);
+
+        return fragmentsMapping;
+    }
+
+    @Nullable
+    private Fragment getFragment(final int fragmentPosition) {
+        final String fragmentName = FRAGMENT_LIST[fragmentPosition];
+        final Map<String, Fragment> fragmentMap = initFragments();
+        return fragmentMap.containsKey(fragmentName) ? fragmentMap.get(fragmentName) : null;
     }
 
 }

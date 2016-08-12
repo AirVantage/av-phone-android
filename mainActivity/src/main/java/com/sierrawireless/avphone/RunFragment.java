@@ -2,10 +2,12 @@ package com.sierrawireless.avphone;
 
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
+
 import android.app.Activity;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.SwitchCompat;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -14,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.sierrawireless.avphone.model.CustomDataLabels;
@@ -33,6 +34,8 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
     private MonitorServiceManager monitorServiceManager;
 
     private CustomLabelsManager customLabelsManager;
+    private String systemUid;
+    private String systemName;
 
     @Override
     public void onAttach(Activity activity) {
@@ -74,7 +77,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
         boolean isServiceRunning = monitorServiceManager.isServiceRunning();
 
-        Switch serviceSwitch = (Switch) view.findViewById(R.id.service_switch);
+        SwitchCompat serviceSwitch = (SwitchCompat) view.findViewById(R.id.service_switch);
         serviceSwitch.setChecked(isServiceRunning);
 
         serviceSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -99,7 +102,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         }
 
         // Alarm button
-        Switch alarmButton = (Switch) view.findViewById(R.id.alarm_switch);
+        SwitchCompat alarmButton = (SwitchCompat) view.findViewById(R.id.alarm_switch);
         alarmButton.setOnCheckedChangeListener(onAlarmClick);
 
         // Make links clickable in info view.
@@ -107,11 +110,24 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         infoMessageView.setLinksClickable(true);
         infoMessageView.setMovementMethod(LinkMovementMethod.getInstance());
 
+        // Might had those before initialization
+        if (systemUid != null && systemName != null) {
+            setLinkToSystem(systemUid, systemName);
+        }
+
         return view;
     }
 
     public void setLinkToSystem(String systemUid, String systemName) {
-        TextView infoMessageView = (TextView) view.findViewById(R.id.run_info_message);
+
+        if (view == null || getActivity() == null) {
+            // View is unavailable, bear it in mind for later
+            this.systemUid = systemUid;
+            this.systemName = systemName;
+            return;
+        }
+
+        final TextView infoMessageView = (TextView) view.findViewById(R.id.run_info_message);
 
         String infoMessage = null;
         if (systemUid != null) {
@@ -135,25 +151,25 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         super.onResume();
 
         boolean isServiceRunning = monitorServiceManager.isServiceRunning();
-        Switch serviceSwitch = getServiceSwitch();
+        SwitchCompat serviceSwitch = getServiceSwitch();
         serviceSwitch.setChecked(isServiceRunning);
 
         String systemUid = ((MainActivity) getActivity()).getSystemUid();
         String systemName = ((MainActivity) getActivity()).getSystemName();
-        
+
         this.setLinkToSystem(systemUid, systemName);
-        
+
     }
 
-    public Switch getServiceSwitch() {
-        return (Switch) view.findViewById(R.id.service_switch);
+    private SwitchCompat getServiceSwitch() {
+        return (SwitchCompat) view.findViewById(R.id.service_switch);
     }
 
     private void startMonitoringService() {
         AvPhonePrefs avPrefs = PreferenceUtils.getAvPhonePrefs(getActivity());
         if (!avPrefs.checkCredentials()) {
             PreferenceUtils.showMissingPrefsDialog(getActivity());
-            Switch serviceSwitch = getServiceSwitch();
+            SwitchCompat serviceSwitch = getServiceSwitch();
             serviceSwitch.setChecked(false);
         } else {
             this.monitorServiceManager.startMonitoringService();
