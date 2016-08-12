@@ -10,6 +10,7 @@ import net.airvantage.utils.PreferenceUtils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -135,12 +136,12 @@ public class AuthorizationActivity extends Activity {
 
     private void setButtonEnabled(Button btn) {
         btn.setBackground(enabledButtonBg);
-        btn.setTextColor(getResources().getColor(R.color.white));
+        btn.setTextColor(Color.WHITE);
     }
 
     private void setButtonDisabled(Button btn) {
         btn.setBackground(disabledButtonBg);
-        btn.setTextColor(getResources().getColor(R.color.textcolor));
+        btn.setTextColor(getResources().getColor(R.color.grey_1));
     }
 
 

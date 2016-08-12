@@ -1,25 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- 
-    
-    
-    
-     -->
-    
+    <!-- Right from http://static.airvantage.io/colors/ -->
     <item name="sierrared" type="color">#E53B30</item>
-    <item name="white" type="color">#FFFFFF</item>
-    
-    
-    <item name="greybg" type="color">#F9F9F9</item>
-    <item name="whitebg" type="color">#FFFFFF</item>
-    
-    <item name="textcolor" type="color">#515D66</item>
-    
-    <item name="error_bg" type="color">#FFBABA</item>
-    <item name="error_text" type="color">#D8000C</item>
- 
-    <item name="info_bg" type="color">#BDE5F8</item>
-    <item name="info_text" type="color">#00529B</item>
-    
-</resources> 
+
+    <item name="grey_1" type="color">#666666</item>
+    <item name="grey_2" type="color">#6A8E9A</item>
+    <item name="grey_3" type="color">#99B1B9</item>
+    <item name="grey_4" type="color">#A0ACAF</item>
+
+    <item name="orange" type="color">#F7781E</item>
+    <item name="purple" type="color">#621B4B</item>
+
+    <item name="turquoise" type="color">#00AEAF</item>
+    <item name="blue" type="color">#00677A</item>
+    <item name="green" type="color">#87B527</item>
+
+</resources>

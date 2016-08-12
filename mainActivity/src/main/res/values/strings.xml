@@ -175,5 +175,7 @@
     <string name="entities_applications_edit">Edit an application</string>
     <string name="entities_alerts_rule_view">View alert rules</string>
     <string name="entities_alerts_rule_create_edit_delete">Create and edit an alert rule</string>
-    
+    <string name="drawer_open">AV Phone navigation is available</string>
+    <string name="drawer_close">AV Phone navigation is no longer available</string>
+
 </resources>

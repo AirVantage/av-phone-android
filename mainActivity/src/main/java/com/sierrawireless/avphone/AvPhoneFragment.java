@@ -2,7 +2,7 @@ package com.sierrawireless.avphone;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.text.Spanned;
 import android.view.View;
 import android.widget.TextView;
