@@ -33,9 +33,11 @@ TODO.md
 # IntelliJ
 *.iml
 .gradle/
+gradle
+gradlew
+gradlew.bat
 .idea/libraries/
-.idea/misc.xml
-.idea/workspace.xml
+.idea/*.xml
 build/
 comcrashlyticssdkandroid_crashlytics/build/
 local.properties

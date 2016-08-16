@@ -2,6 +2,7 @@ package com.sierrawireless.avphone;
 
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
+
 import android.app.Activity;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -33,6 +34,8 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
     private MonitorServiceManager monitorServiceManager;
 
     private CustomLabelsManager customLabelsManager;
+    private String systemUid;
+    private String systemName;
 
     @Override
     public void onAttach(Activity activity) {
@@ -107,11 +110,24 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         infoMessageView.setLinksClickable(true);
         infoMessageView.setMovementMethod(LinkMovementMethod.getInstance());
 
+        // Might had those before initialization
+        if (systemUid != null && systemName != null) {
+            setLinkToSystem(systemUid, systemName);
+        }
+
         return view;
     }
 
     public void setLinkToSystem(String systemUid, String systemName) {
-        TextView infoMessageView = (TextView) view.findViewById(R.id.run_info_message);
+
+        if (view == null || getActivity() == null) {
+            // View is unavailable, bear it in mind for later
+            this.systemUid = systemUid;
+            this.systemName = systemName;
+            return;
+        }
+
+        final TextView infoMessageView = (TextView) view.findViewById(R.id.run_info_message);
 
         String infoMessage = null;
         if (systemUid != null) {
@@ -140,9 +156,9 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
         String systemUid = ((MainActivity) getActivity()).getSystemUid();
         String systemName = ((MainActivity) getActivity()).getSystemName();
-        
+
         this.setLinkToSystem(systemUid, systemName);
-        
+
     }
 
     public Switch getServiceSwitch() {

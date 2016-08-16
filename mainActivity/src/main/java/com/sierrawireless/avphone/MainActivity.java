@@ -84,14 +84,16 @@ public class MainActivity extends FragmentActivity
     private final static String FRAGMENT_CONFIGURE = "Configure";
     private final static String FRAGMENT_SETTINGS = "Settings";
 
+    private ConfigureFragment configureFragment;
+    private HomeFragment homeFragment;
+    private RunFragment runFragment;
+
     private final static String[] FRAGMENT_LIST = new String[]{
             FRAGMENT_HOME,
             FRAGMENT_RUN,
             FRAGMENT_CONFIGURE,
             FRAGMENT_SETTINGS,
     };
-    private HomeFragment homeFragment;
-    private ConfigureFragment configureFragment;
 
     public void setCustomLabelsListener(CustomLabelsListener customLabelsListener) {
         this.customLabelsListener = customLabelsListener;
@@ -111,10 +113,6 @@ public class MainActivity extends FragmentActivity
 
         taskFactory = new AsyncTaskFactory(MainActivity.this);
 
-        //     viewPager = (ViewPager) findViewById(R.id.pager);
-
-//        tabsPageAdapter = new TabsPagerAdapter(getSupportFragmentManager());
-
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -131,15 +129,13 @@ public class MainActivity extends FragmentActivity
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-//                getActionBar().setTitle(mTitle);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                invalidateOptionsMenu();
             }
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                //    getActionBar().setTitle(mDrawerTitle);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                invalidateOptionsMenu();
             }
         };
 
@@ -151,45 +147,32 @@ public class MainActivity extends FragmentActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
         }
-        // Adding Tabs
-//        Tab tab = actionBar.newTab().setText(getString(R.string.home_tab)).setTabListener(this);
-//        actionBar.addTab(tab);
 
-//        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//
-//            @Override
-//            public void onPageSelected(int position) {
-//                actionBar.setSelectedNavigationItem(position);
-//            }
-//
-//            @Override
-//            public void onPageScrolled(int arg0, float arg1, int arg2) {
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int arg0) {
-//            }
-//        });
-        initFragments();
+        final Map<String, Fragment> fragments = initFragments();
+        final Fragment currentFragment;
         if (isLogged()) {
-            showLoggedTabs();
 
+            currentFragment = fragments.get(FRAGMENT_RUN);
             if (isServiceRunning()) {
                 connectToService();
             }
+
         } else {
+
+            currentFragment = fragments.get(FRAGMENT_HOME);
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-            hideLoggedTabs();
-            getFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.content_frame, homeFragment)
-                    .commit();
             if (isServiceRunning()) {
                 // The token is probably expired.
                 // We stop the service since the "stop" button is not available anymore.
                 this.stopMonitoringService();
             }
+
         }
+
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_frame, currentFragment)
+                .commit();
 
     }
 
@@ -197,95 +180,9 @@ public class MainActivity extends FragmentActivity
         this.auth = PreferenceUtils.readAuthentication(this);
     }
 
-    // Preferences
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        return super.onCreateOptionsMenu(menu);
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//
-//            case R.id.action_settings:
-//                startActivity(new Intent(this, SettingsActivity.class));
-//                break;
-//        }
-//
-//        return true;
-//    }
-
     @Override
     public void OnLoginChanged(boolean logged) {
     }
-
-    private RunFragment runFragment;
-
-//    class TabsPagerAdapter extends FragmentPagerAdapter {
-//
-//        public TabsPagerAdapter(FragmentManager fm) {
-//            super(fm);
-//
-//        }
-//
-//        @Override
-//        public Fragment getItem(int index) {
-//
-//            switch (index) {
-//                case 0: {
-//                    return makeHomeFragment();
-//                }
-//                case 1: {
-//                    runFragment = (RunFragment) Fragment.instantiate(MainActivity.this, RunFragment.class.getName());
-//                    return runFragment;
-//                }
-//                case 2:
-//                    return makeConfigureFragment();
-//            }
-//
-//            return null;
-//        }
-//
-//        @Override
-//        public int getCount() {
-//            if (!isLogged()) {
-//                return 1;
-//            } else {
-//                return 3;
-//            }
-//        }
-//
-//        protected HomeFragment makeHomeFragment() {
-//            HomeFragment fragment = (HomeFragment) Fragment.instantiate(MainActivity.this,
-//                    HomeFragment.class.getName());
-//            fragment.setTaskFactory(taskFactory);
-//            return fragment;
-//        }
-//
-//        protected AvPhoneFragment makeConfigureFragment() {
-//            ConfigureFragment fragment = (ConfigureFragment) Fragment.instantiate(MainActivity.this,
-//                    ConfigureFragment.class.getName());
-//            fragment.setTaskFactory(taskFactory);
-//            return fragment;
-//        }
-//
-//    }
-//
-//    @Override
-//    public void onTabSelected(Tab tab, FragmentTransaction ft) {
-//        viewPager.setCurrentItem(tab.getPosition());
-//    }
-//
-//    @Override
-//    public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-//    }
-//
-//    @Override
-//    public void onTabReselected(Tab tab, FragmentTransaction ft) {
-//    }
 
     public boolean isLogged() {
         return (this.auth != null && !this.auth.isExpired(new Date()));
@@ -295,11 +192,9 @@ public class MainActivity extends FragmentActivity
     public void onAuthentication(Authentication auth) {
 
         this.auth = auth;
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 
         saveAuthenticationInPreferences(auth);
-
-        showLoggedTabs();
-
     }
 
     @Override
@@ -311,35 +206,12 @@ public class MainActivity extends FragmentActivity
         PreferenceUtils.saveAuthentication(this, auth);
     }
 
-    public void showLoggedTabs() {
-        if (actionBar.getTabCount() == 1) {
-            Tab runTab = actionBar.newTab().setText(getString(R.string.run_tab));
-            //    actionBar.addTab(runTab.setTabListener(this));
-            //tabsPageAdapter.notifyDataSetChanged();
-            //     actionBar.addTab(actionBar.newTab().setText(getString(R.string.configure_tab)).setTabListener(this));
-            //    tabsPageAdapter.notifyDataSetChanged();
-        }
-
-        //viewPager.setCurrentItem(1);
-    }
-
-    public void hideLoggedTabs() {
-        if (actionBar.getTabCount() == 3) {
-            actionBar.removeTabAt(2);
-            //   tabsPageAdapter.notifyDataSetChanged();
-            actionBar.removeTabAt(1);
-            //   tabsPageAdapter.notifyDataSetChanged();
-        }
-        // viewPager.setCurrentItem(0);
-    }
-
     public void forgetAuthentication() {
 
         PreferenceUtils.resetAuthentication(this);
 
         this.auth = null;
-
-        hideLoggedTabs();
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         if (this.isServiceRunning()) {
             this.stopMonitoringService();
@@ -435,7 +307,6 @@ public class MainActivity extends FragmentActivity
                 pendingIntent);
 
         connectToService();
-
     }
 
     @Override
@@ -446,7 +317,6 @@ public class MainActivity extends FragmentActivity
         this.stopService(intent);
 
         disconnectFromService();
-
     }
 
     private void restartMonitoringService() {
@@ -527,7 +397,6 @@ public class MainActivity extends FragmentActivity
         if (fragment == null) {
             return;
         }
-
 
         // Insert the fragment by replacing any existing fragment
         getFragmentManager()
