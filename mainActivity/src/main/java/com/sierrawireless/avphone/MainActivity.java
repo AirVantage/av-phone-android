@@ -2,7 +2,6 @@ package com.sierrawireless.avphone;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.app.ActionBar.Tab;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlarmManager;
@@ -14,6 +13,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -22,6 +22,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -49,11 +51,11 @@ import java.util.Map;
 import io.fabric.sdk.android.Fabric;
 
 /**
- * The main activity, in charge of displaying the tab view
+ * The main activity, handling drawer and Fragments
  */
 public class MainActivity extends FragmentActivity
-        implements /* TabListener, */ LoginListener, AuthenticationManager,
-        OnSharedPreferenceChangeListener, MonitorServiceManager, CustomLabelsManager, SyncWithAvListener {
+        implements LoginListener, AuthenticationManager, OnSharedPreferenceChangeListener,
+        MonitorServiceManager, CustomLabelsManager, SyncWithAvListener {
 
     private static final String PREFERENCE_SYSTEM_NAME = "systemName";
     private static final String PREFERENCE_SYSTEM_SERIAL = "systemSerial";
@@ -62,8 +64,6 @@ public class MainActivity extends FragmentActivity
 
     private static String LOGTAG = MainActivity.class.getName();
 
-    //   private ViewPager viewPager;
-    //    private TabsPagerAdapter tabsPageAdapter;
     private ActionBar actionBar;
     private AlarmManager alarmManager;
     private IAsyncTaskFactory taskFactory;
@@ -75,9 +75,9 @@ public class MainActivity extends FragmentActivity
     private MonitorServiceListener monitoringServiceListener = null;
 
     private CustomLabelsListener customLabelsListener = null;
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
-    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout drawerLayout;
+    private ListView drawerListView;
+    private ActionBarDrawerToggle drawerToggle;
 
     private final static String FRAGMENT_HOME = "Home";
     private final static String FRAGMENT_RUN = "Run";
@@ -113,46 +113,30 @@ public class MainActivity extends FragmentActivity
 
         taskFactory = new AsyncTaskFactory(MainActivity.this);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_item, FRAGMENT_LIST));
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerListView = (ListView) findViewById(R.id.left_drawer);
+        drawerListView.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_item, FRAGMENT_LIST));
 
         // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        drawerListView.setOnItemClickListener(new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView parent, View view, int position, long id) {
+                selectItem(position);
+            }
+        });
 
         alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-         /*      R.drawable.ic_launcher, */R.string.drawer_open, R.string.drawer_close) {
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                invalidateOptionsMenu();
-            }
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu();
-            }
-        };
-
-        // Set the drawer toggle as the DrawerListener
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-        actionBar = getActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeButtonEnabled(true);
-        }
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open,
+                R.string.drawer_close);
+        drawerLayout.setDrawerListener(drawerToggle);
 
         final Map<String, Fragment> fragments = initFragments();
         final Fragment currentFragment;
         if (isLogged()) {
 
             currentFragment = fragments.get(FRAGMENT_RUN);
+            unlockDrawer();
             if (isServiceRunning()) {
                 connectToService();
             }
@@ -160,7 +144,7 @@ public class MainActivity extends FragmentActivity
         } else {
 
             currentFragment = fragments.get(FRAGMENT_HOME);
-            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            lockDrawer();
             if (isServiceRunning()) {
                 // The token is probably expired.
                 // We stop the service since the "stop" button is not available anymore.
@@ -174,6 +158,62 @@ public class MainActivity extends FragmentActivity
                 .replace(R.id.content_frame, currentFragment)
                 .commit();
 
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return // Handle it ourselves
+                drawerToggle.onOptionsItemSelected(item)
+                        // Or just go with defaults
+                        || super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    private void lockDrawer() {
+
+        actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setHomeButtonEnabled(false);
+        }
+
+        if (drawerLayout != null) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+
+        if (drawerToggle != null) {
+            drawerToggle.setDrawerIndicatorEnabled(false);
+        }
+    }
+
+    private void unlockDrawer() {
+
+
+        actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+        }
+
+        if (drawerLayout != null) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            drawerLayout.openDrawer(Gravity.LEFT);
+        }
+
+        if (drawerToggle != null) {
+            drawerToggle.setDrawerIndicatorEnabled(true);
+        }
     }
 
     private void readAuthenticationFromPreferences() {
@@ -192,7 +232,7 @@ public class MainActivity extends FragmentActivity
     public void onAuthentication(Authentication auth) {
 
         this.auth = auth;
-        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        unlockDrawer();
 
         saveAuthenticationInPreferences(auth);
     }
@@ -208,10 +248,9 @@ public class MainActivity extends FragmentActivity
 
     public void forgetAuthentication() {
 
+        lockDrawer();
         PreferenceUtils.resetAuthentication(this);
-
         this.auth = null;
-        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         if (this.isServiceRunning()) {
             this.stopMonitoringService();
@@ -301,10 +340,11 @@ public class MainActivity extends FragmentActivity
         intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost);
         intent.putExtra(MonitoringService.PASSWORD, avPrefs.password);
 
-        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
         // registering our pending intent with alarm manager
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, Integer.valueOf(avPrefs.period) * 60 * 1000,
-                pendingIntent);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0,
+                Integer.valueOf(avPrefs.period) * 60 * 1000, pendingIntent);
 
         connectToService();
     }
@@ -312,7 +352,8 @@ public class MainActivity extends FragmentActivity
     @Override
     public void stopMonitoringService() {
         Intent intent = new Intent(this, MonitoringService.class);
-        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
         alarmManager.cancel(pendingIntent);
         this.stopService(intent);
 
@@ -344,15 +385,15 @@ public class MainActivity extends FragmentActivity
     public void onSynced(SyncWithAvResult result) {
 
         final AvSystem system = result.getSystem();
-        prefs.edit().putString("systemUid", system.uid).commit();
-        prefs.edit().putString(PREFERENCE_SYSTEM_NAME, system.name).commit();
+        prefs.edit().putString("systemUid", system.uid).apply();
+        prefs.edit().putString(PREFERENCE_SYSTEM_NAME, system.name).apply();
 
         final User user = result.getUser();
-        prefs.edit().putString(PREFERENCE_USER_UID, user.uid).commit();
-        prefs.edit().putString(PREFERENCE_USER_NAME, user.name).commit();
+        prefs.edit().putString(PREFERENCE_USER_UID, user.uid).apply();
+        prefs.edit().putString(PREFERENCE_USER_NAME, user.name).apply();
 
         final String deviceSerial = DeviceInfo.generateSerial(user.uid, system.type);
-        prefs.edit().putString(PREFERENCE_SYSTEM_SERIAL, deviceSerial).commit();
+        prefs.edit().putString(PREFERENCE_SYSTEM_SERIAL, deviceSerial).apply();
 
         if (runFragment != null) {
             String systemUid = this.getSystemUid();
@@ -378,14 +419,7 @@ public class MainActivity extends FragmentActivity
 
     @SuppressLint("DefaultLocale")
     public void setSystemSerial(final String serial) {
-        prefs.edit().putString(PREFERENCE_SYSTEM_SERIAL, serial.toUpperCase()).commit();
-    }
-
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView parent, View view, int position, long id) {
-            selectItem(position);
-        }
+        prefs.edit().putString(PREFERENCE_SYSTEM_SERIAL, serial.toUpperCase()).apply();
     }
 
     /**
@@ -405,10 +439,10 @@ public class MainActivity extends FragmentActivity
                 .commit();
 
         // Highlight the selected item, update the title, and close the drawer
-        mDrawerList.setItemChecked(position, true);
+        drawerListView.setItemChecked(position, true);
         setTitle(FRAGMENT_LIST[position]);
-        mDrawerList.setSelection(position);
-        mDrawerLayout.closeDrawer(mDrawerList);
+        drawerListView.setSelection(position);
+        drawerLayout.closeDrawer(drawerListView);
     }
 
     private Map<String, Fragment> initFragments() {

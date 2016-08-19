@@ -1,8 +1,8 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="CustomTextView" parent="android:Widget.TextView">
-        <item name="android:fontFamily">sans-serif-light</item>
-    </style>
+    <!--<style name="CustomTextView" parent="android:Widget.TextView">-->
+        <!--<item name="android:fontFamily">sans-serif-light</item>-->
+    <!--</style>-->
 
     <style name="ItemLabel" parent="AppTheme">
         <item name="android:fontFamily">sans-serif</item>
