@@ -1,17 +1,8 @@
 package com.sierrawireless.avphone;
 
-import java.util.Date;
-
-import net.airvantage.utils.AirVantageClient;
-import net.airvantage.utils.AuthenticationUrlParser;
-import net.airvantage.utils.AvPhonePrefs;
-import net.airvantage.utils.PreferenceUtils;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,8 +12,17 @@ import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.sierrawireless.avphone.auth.Authentication;
+
+import net.airvantage.utils.AirVantageClient;
+import net.airvantage.utils.AuthenticationUrlParser;
+import net.airvantage.utils.AvPhonePrefs;
+import net.airvantage.utils.PreferenceUtils;
+
+import java.util.Date;
 
 public class AuthorizationActivity extends Activity {
 
@@ -40,108 +40,52 @@ public class AuthorizationActivity extends Activity {
 
     private AuthenticationUrlParser authUrlParser = new AuthenticationUrlParser();
 
-    private Drawable enabledButtonBg;
-    private Drawable disabledButtonBg;
-
     private Button btnCustom;
     private Button btnEu;
     private Button btnNa;
 
-    private boolean isEu = true;
     private PreferenceUtils.Server currentServer;
+
+    private final class OnHostClickListener implements OnClickListener {
+
+        private final PreferenceUtils.Server server;
+
+        public OnHostClickListener(final PreferenceUtils.Server targetServer) {
+            server = targetServer;
+        }
+
+        @Override
+        public void onClick(final View v) {
+            if (currentServer != server) {
+                currentServer = server;
+                PreferenceUtils.setServer(server, AuthorizationActivity.this);
+                openAuthorizationPage();
+            }
+        }
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authorization);
 
-        btnCustom = (Button) this.findViewById(R.id.auth_btn_custom);
-        btnEu = (Button) this.findViewById(R.id.auth_btn_eu);
-        btnNa = (Button) this.findViewById(R.id.auth_btn_na);
+        btnNa = (RadioButton) this.findViewById(R.id.auth_btn_na);
+        btnEu = (RadioButton) this.findViewById(R.id.auth_btn_eu);
+        btnCustom = (RadioButton) this.findViewById(R.id.auth_btn_custom);
 
-        if (!PreferenceUtils.isCustomDefined(this)) {
+        btnNa.setOnClickListener(new OnHostClickListener(PreferenceUtils.Server.NA));
+        btnEu.setOnClickListener(new OnHostClickListener(PreferenceUtils.Server.EU));
+        btnCustom.setOnClickListener(new OnHostClickListener(PreferenceUtils.Server.CUSTOM));
+
+        if (PreferenceUtils.isCustomDefined(this)) {
+            final RadioGroup parentRadioGroup = (RadioGroup) btnCustom.getParent();
+            parentRadioGroup.check(btnCustom.getId());
+        } else {
             btnCustom.setVisibility(Button.GONE);
         }
 
-        if (disabledButtonBg == null) {
-            disabledButtonBg = btnEu.getBackground();
-        } else {
-            Log.w(LOGTAG, "disabledButtonBg has already been loaded, this can cause bug...");
-        }
-        enabledButtonBg = getResources().getDrawable(R.drawable.apptheme_switch_thumb_activated_holo_light);
-
-        btnNa.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (currentServer == PreferenceUtils.Server.NA) {
-                    return;
-                }
-
-                currentServer = PreferenceUtils.Server.NA;
-                setButtonEnabled(btnNa);
-                setButtonDisabled(btnCustom);
-                setButtonDisabled(btnEu);
-                PreferenceUtils.setServer(PreferenceUtils.Server.NA, AuthorizationActivity.this);
-                openAuthorizationPage();
-            }
-        });
-
-        btnEu.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (currentServer == PreferenceUtils.Server.EU) {
-                    return;
-                }
-
-                currentServer = PreferenceUtils.Server.EU;
-                setButtonEnabled(btnEu);
-                setButtonDisabled(btnCustom);
-                setButtonDisabled(btnNa);
-                PreferenceUtils.setServer(PreferenceUtils.Server.EU, AuthorizationActivity.this);
-                openAuthorizationPage();
-            }
-        });
-
-        btnCustom.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (currentServer == PreferenceUtils.Server.CUSTOM) {
-                    return;
-                }
-
-                setButtonEnabled(btnCustom);
-                setButtonDisabled(btnEu);
-                setButtonDisabled(btnNa);
-                PreferenceUtils.setServer(PreferenceUtils.Server.CUSTOM, AuthorizationActivity.this);
-                openAuthorizationPage();
-            }
-        });
-
-        AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this);
-        if (avPhonePrefs.usesEU()) {
-            this.isEu = true;
-            setButtonEnabled(btnEu);
-            setButtonDisabled(btnNa);
-        } else {
-            this.isEu = false;
-            setButtonEnabled(btnNa);
-            setButtonDisabled(btnEu);
-        }
-
         openAuthorizationPage();
-    }
-
-    private void setButtonEnabled(Button btn) {
-        btn.setBackground(enabledButtonBg);
-        btn.setTextColor(Color.WHITE);
-    }
-
-    private void setButtonDisabled(Button btn) {
-        btn.setBackground(disabledButtonBg);
-        btn.setTextColor(getResources().getColor(R.color.grey_1));
     }
 
 
@@ -199,6 +143,5 @@ public class AuthorizationActivity extends Activity {
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }
-
 
 }

@@ -5,37 +5,35 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <LinearLayout
-        style="?android:attr/buttonBarStyle"
+    <RadioGroup
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:checkedButton="@+id/auth_btn_eu"
         android:paddingTop="10dp" >
 
-        <Button
-            android:id="@+id/auth_btn_custom"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/auth_login_custom" />
-
-        <Button
-            android:id="@+id/auth_btn_eu"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/auth_login_eu" />
-
-        <Button
+        <RadioButton
             android:id="@+id/auth_btn_na"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
+            android:text="@string/auth_login_na"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/auth_login_na" />
-    </LinearLayout>
+            android:layout_width="wrap_content"
+            android:buttonTint="@color/sierrared" />
+
+        <RadioButton
+            android:id="@+id/auth_btn_eu"
+            android:text="@string/auth_login_eu"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:buttonTint="@color/sierrared" />
+
+        <RadioButton
+            android:id="@+id/auth_btn_custom"
+            android:text="@string/auth_login_custom"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:buttonTint="@color/sierrared" />
+
+    </RadioGroup>
 
     <View
         android:layout_width="fill_parent"

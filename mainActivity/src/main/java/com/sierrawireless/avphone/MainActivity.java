@@ -44,8 +44,10 @@ import net.airvantage.model.User;
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
@@ -153,11 +155,7 @@ public class MainActivity extends FragmentActivity
 
         }
 
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_frame, currentFragment)
-                .commit();
-
+        selectItem(currentFragment);
     }
 
     @Override
@@ -444,6 +442,18 @@ public class MainActivity extends FragmentActivity
         drawerListView.setSelection(position);
         drawerLayout.closeDrawer(drawerListView);
     }
+
+    private void selectItem(final Fragment fragment) {
+        final Iterator<Fragment> fragmentsIterator = initFragments().values().iterator();
+        for (int position = 0; fragmentsIterator.hasNext(); position++) {
+            final Fragment currentFragment = fragmentsIterator.next();
+            if (fragment.equals(currentFragment)) {
+                selectItem(position);
+                return;
+            }
+        }
+    }
+
 
     private Map<String, Fragment> initFragments() {
 

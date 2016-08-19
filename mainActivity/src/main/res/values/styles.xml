@@ -18,12 +18,12 @@
     </style>
     
     <style name="InfoMessage" parent="Message">
-        <item name="android:color">@android:color/white</item>
-        <item name="android:background">@color/green</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@color/navy</item>
     </style>
 
     <style name="ErrorMessage" parent="Message">
-        <item name="android:color">@android:color/white</item>
+        <item name="android:textColor">@android:color/white</item>
         <item name="android:background">@color/purple</item>
     </style>
     

@@ -60,9 +60,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textOff="OFF"
-                    android:textOn="ON"
-                    android:thumb="@drawable/apptheme_switch_inner_holo_light"
-                    android:track="@drawable/apptheme_switch_track_holo_light" />
+                    android:textOn="ON" />
             </LinearLayout>
 
             <LinearLayout
@@ -86,9 +84,7 @@
                     android:checked="false"
                     android:enabled="false"
                     android:textOff="OFF"
-                    android:textOn="ON"
-                    android:thumb="@drawable/apptheme_switch_inner_holo_light"
-                    android:track="@drawable/apptheme_switch_track_holo_light" />
+                    android:textOn="ON" />
             </LinearLayout>
         </LinearLayout>
 

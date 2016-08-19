@@ -96,9 +96,9 @@
 
     <string name="home_login">Login to your Airvantage account</string>
     
-    <string name="auth_login_na">NA (na.airvantage.net)</string>
-    <string name="auth_login_eu">EU (eu.airvantage.net)</string>
-    <string name="auth_login_custom">CUSTOM</string>
+    <string name="auth_login_na">America</string>
+    <string name="auth_login_eu">Europe</string>
+    <string name="auth_login_custom">Other</string>
     
     <!-- Synchronization steps -->
     <string name="progress_syncing">Synchronizing with AirVantage</string>
