@@ -36,8 +36,7 @@ TODO.md
 gradle
 gradlew
 gradlew.bat
-.idea/libraries/
-.idea/*.xml
+.idea/*
 build/
 comcrashlyticssdkandroid_crashlytics/build/
 local.properties

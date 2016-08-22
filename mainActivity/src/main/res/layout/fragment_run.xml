@@ -54,8 +54,9 @@
                     android:gravity="center"
                     android:text="@string/run_send_data" />
 
-                <Switch
+                <android.support.v7.widget.SwitchCompat
                     android:id="@+id/service_switch"
+                    android:theme="@style/Switch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -76,8 +77,9 @@
                     android:gravity="center"
                     android:text="@string/run_activate_alarm" />
 
-                <Switch
+                <android.support.v7.widget.SwitchCompat
                     android:id="@+id/alarm_switch"
+                    android:theme="@style/Switch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"

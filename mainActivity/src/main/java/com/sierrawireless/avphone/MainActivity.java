@@ -197,7 +197,6 @@ public class MainActivity extends FragmentActivity
 
     private void unlockDrawer() {
 
-
         actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -447,7 +446,7 @@ public class MainActivity extends FragmentActivity
         final Iterator<Fragment> fragmentsIterator = initFragments().values().iterator();
         for (int position = 0; fragmentsIterator.hasNext(); position++) {
             final Fragment currentFragment = fragmentsIterator.next();
-            if (fragment.equals(currentFragment)) {
+            if (fragment.getId() == currentFragment.getId()) {
                 selectItem(position);
                 return;
             }
