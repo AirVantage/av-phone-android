@@ -102,7 +102,8 @@
                         style="@style/EditableItem"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:inputType="textMultiLine" />
+                        android:inputType="textMultiLine"
+                        android:backgroundTint="@color/sierrared" />
                 </TableRow>
 
                 <TableRow
@@ -119,7 +120,8 @@
                         style="@style/EditableItem"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:inputType="textMultiLine" />
+                        android:inputType="textMultiLine"
+                        android:backgroundTint="@color/sierrared" />
                 </TableRow>
 
                 <TableRow
@@ -136,7 +138,8 @@
                         style="@style/EditableItem"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:inputType="textMultiLine" />
+                        android:inputType="textMultiLine"
+                        android:backgroundTint="@color/sierrared" />
                 </TableRow>
 
                 <TableRow
@@ -153,7 +156,8 @@
                         style="@style/EditableItem"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:inputType="textMultiLine" />
+                        android:inputType="textMultiLine"
+                        android:backgroundTint="@color/sierrared" />
                 </TableRow>
 
                 <TableRow
@@ -170,7 +174,8 @@
                         style="@style/EditableItem"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:inputType="textMultiLine" />
+                        android:inputType="textMultiLine"
+                        android:backgroundTint="@color/sierrared" />
                 </TableRow>
 
                 <TableRow
@@ -187,7 +192,8 @@
                         style="@style/EditableItem"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:inputType="textMultiLine" />
+                        android:inputType="textMultiLine"
+                        android:backgroundTint="@color/sierrared" />
                 </TableRow>
             </TableLayout>
         </LinearLayout>
