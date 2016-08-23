@@ -35,35 +35,30 @@ public class ConfigureFragment extends AvPhoneFragment {
     private EditText customData5EditText;
     private EditText customData6EditText;
 
-    private View view;
-
     private String deviceId;
     private String imei;
 
-    private IAsyncTaskFactory taskFactory;
-
     public ConfigureFragment() {
         super();
-    }
-
-    public void setTaskFactory(IAsyncTaskFactory taskFactory) {
-        this.taskFactory = taskFactory;
+        initTaskFactory();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
 
-        view = inflater.inflate(R.layout.fragment_configure, container, false);
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.fragment_configure);
 
         // phone identifier
-        deviceId = DeviceInfo.getUniqueId(this.getActivity());
-        ((TextView) view.findViewById(R.id.phoneid_value)).setText(deviceId);
+        deviceId = DeviceInfo.getUniqueId(getParent());
+        ((TextView) findViewById(R.id.phoneid_value)).setText(deviceId);
 
         // try to get the IMEI for GSM phones
-        imei = DeviceInfo.getIMEI(this.getActivity());
+        imei = DeviceInfo.getIMEI(getParent());
 
         // Register button
-        saveBt = (Button) view.findViewById(R.id.save_bt);
+        saveBt = (Button) findViewById(R.id.save_bt);
         saveBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,26 +67,26 @@ public class ConfigureFragment extends AvPhoneFragment {
         });
 
         // Fields for custom data
-        customData1EditText = buildCustomLabelEditText(view, R.id.custom1_value, R.string.pref_custom1_label_key,
+        customData1EditText = buildCustomLabelEditText(R.id.custom1_value, R.string.pref_custom1_label_key,
                 R.string.pref_custom1_label_default);
-        customData2EditText = buildCustomLabelEditText(view, R.id.custom2_value, R.string.pref_custom2_label_key,
+        customData2EditText = buildCustomLabelEditText(R.id.custom2_value, R.string.pref_custom2_label_key,
                 R.string.pref_custom2_label_default);
-        customData3EditText = buildCustomLabelEditText(view, R.id.custom3_value, R.string.pref_custom3_label_key,
+        customData3EditText = buildCustomLabelEditText(R.id.custom3_value, R.string.pref_custom3_label_key,
                 R.string.pref_custom3_label_default);
-        customData4EditText = buildCustomLabelEditText(view, R.id.custom4_value, R.string.pref_custom4_label_key,
+        customData4EditText = buildCustomLabelEditText(R.id.custom4_value, R.string.pref_custom4_label_key,
                 R.string.pref_custom4_label_default);
-        customData5EditText = buildCustomLabelEditText(view, R.id.custom5_value, R.string.pref_custom5_label_key,
+        customData5EditText = buildCustomLabelEditText(R.id.custom5_value, R.string.pref_custom5_label_key,
                 R.string.pref_custom5_label_default);
-        customData6EditText = buildCustomLabelEditText(view, R.id.custom6_value, R.string.pref_custom6_label_key,
+        customData6EditText = buildCustomLabelEditText(R.id.custom6_value, R.string.pref_custom6_label_key,
                 R.string.pref_custom6_label_default);
 
-        return view;
+        initTaskFactory();
     }
 
-    private EditText buildCustomLabelEditText(View view, int id, final int prefKeyId, int labelDefaultKeyId) {
-        EditText res = (EditText) view.findViewById(id);
+    private EditText buildCustomLabelEditText(int id, final int prefKeyId, int labelDefaultKeyId) {
+        EditText res = (EditText) findViewById(id);
 
-        res.setText(PreferenceUtils.getPreference(getActivity(), prefKeyId, labelDefaultKeyId));
+        res.setText(PreferenceUtils.getPreference(getParent(), prefKeyId, labelDefaultKeyId));
 
         res.addTextChangedListener(new TextWatcher() {
 
@@ -105,7 +100,7 @@ public class ConfigureFragment extends AvPhoneFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                PreferenceUtils.setPreference(getActivity(), getActivity().getString(prefKeyId), s.toString());
+                PreferenceUtils.setPreference(getParent(), getString(prefKeyId), s.toString());
             }
         });
         return res;
@@ -113,10 +108,10 @@ public class ConfigureFragment extends AvPhoneFragment {
 
     private boolean checkCredentials() {
 
-        AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(getActivity());
+        AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(getParent());
 
         if (!prefs.checkCredentials()) {
-            PreferenceUtils.showMissingPrefsDialog(getActivity());
+            PreferenceUtils.showMissingPrefsDialog(getParent());
             return false;
         }
 
@@ -147,7 +142,7 @@ public class ConfigureFragment extends AvPhoneFragment {
 
     private void syncWithAv(String token) {
 
-        AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(getActivity());
+        AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(getParent());
 
         final IMessageDisplayer display = this;
 
@@ -164,7 +159,7 @@ public class ConfigureFragment extends AvPhoneFragment {
         syncTask.addProgressListener(new SyncWithAvListener() {
             @Override
             public void onSynced(SyncWithAvResult result) {
-                syncTask.showResult(result, display, getActivity());
+                syncTask.showResult(result, display, getParent());
 
                 if (!result.isError()) {
                     syncListener.onSynced(result);
@@ -187,7 +182,7 @@ public class ConfigureFragment extends AvPhoneFragment {
     }
 
     public TextView getErrorMessageView() {
-        return (TextView) view.findViewById(R.id.configure_error_message);
+        return (TextView) findViewById(R.id.configure_error_message);
     }
 
 }

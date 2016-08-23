@@ -3,6 +3,7 @@ package com.sierrawireless.avphone;
 import android.app.Activity;
 import android.content.Intent;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.text.Spanned;
 import android.view.View;
 import android.widget.TextView;
@@ -10,29 +11,45 @@ import android.widget.Toast;
 
 import com.sierrawireless.avphone.auth.AuthenticationManager;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
+import com.sierrawireless.avphone.task.IAsyncTaskFactory;
 import com.sierrawireless.avphone.task.SyncWithAvListener;
 
-public abstract class AvPhoneFragment extends Fragment implements IMessageDisplayer {
+public abstract class AvPhoneFragment extends Activity implements IMessageDisplayer {
 
     protected AuthenticationManager authManager;
 
     protected SyncWithAvListener syncListener;
-    
+    protected IAsyncTaskFactory taskFactory;
+
     public AvPhoneFragment() {
         super();
     }
 
     
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
 
-        if (activity instanceof AuthenticationManager) {
-            setAuthManager((AuthenticationManager) activity);
+        if (this instanceof AuthenticationManager) {
+            setAuthManager((AuthenticationManager) this);
         }
 
-        if (activity instanceof SyncWithAvListener) {
-            this.syncListener = (SyncWithAvListener) activity;
+        if (this instanceof SyncWithAvListener) {
+            this.syncListener = (SyncWithAvListener) this;
+        }
+    }
+
+    protected void setTaskFactory(IAsyncTaskFactory taskFactory) {
+        this.taskFactory = taskFactory;
+    }
+
+    protected void initTaskFactory() {
+        final MainActivity parent = (MainActivity) getParent();
+        if (parent != null) {
+            final IAsyncTaskFactory factory = ((MainActivity) getParent()).getTaskFactory();
+            if (factory != null) {
+                setTaskFactory(factory);
+            }
         }
     }
 
@@ -52,7 +69,7 @@ public abstract class AvPhoneFragment extends Fragment implements IMessageDispla
     }
 
     public void showErrorMessage(int id, Object... params) {
-        showErrorMessage(getActivity().getString(id, params));
+        showErrorMessage(getString(id, params));
     }
 
     public void showErrorMessage(String message) {
@@ -72,15 +89,15 @@ public abstract class AvPhoneFragment extends Fragment implements IMessageDispla
     }
 
     private void toast(int id) {
-        toast(getActivity().getString(id));
+        toast(getString(id));
     }
 
     private void toast(String message) {
-        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     protected void requestAuthentication() {
-        Intent intent = new Intent(this.getActivity(), AuthorizationActivity.class);
+        Intent intent = new Intent(this, AuthorizationActivity.class);
         this.startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION);
     }
 

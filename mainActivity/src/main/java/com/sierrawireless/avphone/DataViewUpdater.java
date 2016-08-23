@@ -22,10 +22,15 @@ public class DataViewUpdater extends BroadcastReceiver {
 
     private DateFormat hourFormat = new SimpleDateFormat("HH:mm:ss", Locale.FRENCH);
 
-    private final View view;
+    private final IViewFinder finder;
 
-    public DataViewUpdater(View view) {
-        this.view = view;
+    public interface IViewFinder {
+        View findViewById(int id);
+        String getString(int resId);
+    }
+
+    public DataViewUpdater(IViewFinder finder) {
+        this.finder = finder;
     }
 
     @Override
@@ -44,14 +49,14 @@ public class DataViewUpdater extends BroadcastReceiver {
         this.setLogMessage(logMsg, lastRun);
 
         // activate alarm button
-        view.findViewById(R.id.alarm_switch).setEnabled(true);
+        finder.findViewById(R.id.alarm_switch).setEnabled(true);
     }
 
     public void onStop() {
         this.setStartedSince(null);
 
         // deactivate alarm button
-        view.findViewById(R.id.alarm_switch).setEnabled(false);
+        finder.findViewById(R.id.alarm_switch).setEnabled(false);
     }
 
     private void setLogMessage(String log, Long timestamp) {
@@ -67,7 +72,7 @@ public class DataViewUpdater extends BroadcastReceiver {
     private void setStartedSince(Long startedSince) {
         TextView startedTextView = findView(R.id.started_since);
         if (startedSince != null) {
-            startedTextView.setText(view.getContext().getString(R.string.started_since) + " "
+            startedTextView.setText(finder.getString(R.string.started_since) + " "
                     + new SimpleDateFormat("dd/MM HH:mm:ss", Locale.FRENCH).format(new Date(startedSince)));
             startedTextView.setVisibility(View.VISIBLE);
         } else {
@@ -76,7 +81,7 @@ public class DataViewUpdater extends BroadcastReceiver {
     }
 
     private void setNewData(NewData data) {
-        
+
         if (data.getRssi() != null) {
             findView(R.id.signal_strength_value).setText(data.getRssi() + " dBm (RSSI)");
         } else if (data.getRsrp() != null) {
@@ -129,47 +134,47 @@ public class DataViewUpdater extends BroadcastReceiver {
         }
 
         if (data.isAlarmActivated() != null) {
-            ((Switch) view.findViewById(R.id.alarm_switch)).setChecked(data.isAlarmActivated());
+            ((Switch) finder.findViewById(R.id.alarm_switch)).setChecked(data.isAlarmActivated());
         }
 
         setCustomDataValues(data);
-        
+
     }
 
     private void setCustomDataValues(NewData data) {
         if (data.getCustomIntUp1() != null) {
-            TextView valueView = (TextView) view.findViewById(R.id.run_custom1_value);
+            TextView valueView = (TextView) finder.findViewById(R.id.run_custom1_value);
             valueView.setText(String.valueOf(data.getCustomIntUp1()));
         }
 
         if (data.getCustomIntUp2() != null) {
-            TextView valueView = (TextView) view.findViewById(R.id.run_custom2_value);
+            TextView valueView = (TextView) finder.findViewById(R.id.run_custom2_value);
             valueView.setText(String.valueOf(data.getCustomIntUp2()));
         }
 
         if (data.getCustomIntDown1() != null) {
-            TextView valueView = (TextView) view.findViewById(R.id.run_custom3_value);
+            TextView valueView = (TextView) finder.findViewById(R.id.run_custom3_value);
             valueView.setText(String.valueOf(data.getCustomIntDown1()));
         }
 
         if (data.getCustomIntDown2() != null) {
-            TextView valueView = (TextView) view.findViewById(R.id.run_custom4_value);
+            TextView valueView = (TextView) finder.findViewById(R.id.run_custom4_value);
             valueView.setText(String.valueOf(data.getCustomIntDown2()));
         }
 
         if (data.getCustomStr1() != null) {
-            TextView valueView = (TextView) view.findViewById(R.id.run_custom5_value);
+            TextView valueView = (TextView) finder.findViewById(R.id.run_custom5_value);
             valueView.setText(String.valueOf(data.getCustomStr1()));
         }
 
         if (data.getCustomStr2() != null) {
-            TextView valueView = (TextView) view.findViewById(R.id.run_custom6_value);
+            TextView valueView = (TextView) finder.findViewById(R.id.run_custom6_value);
             valueView.setText(String.valueOf(data.getCustomStr2()));
         }
     }
 
     private TextView findView(int id) {
-        return (TextView) view.findViewById(id);
+        return (TextView) finder.findViewById(id);
     }
 
 }

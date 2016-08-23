@@ -35,8 +35,10 @@
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name" >
         </activity>
-        <activity android:name="com.sierrawireless.avphone.TestFragmentActivity" >
-        </activity>
+        <activity android:name="com.sierrawireless.avphone.TestFragmentActivity" />
+        <activity android:name="com.sierrawireless.avphone.HomeFragment" />
+        <activity android:name="com.sierrawireless.avphone.RunFragment" />
+        <activity android:name="com.sierrawireless.avphone.ConfigureFragment" />
 
         <service android:name="com.sierrawireless.avphone.service.MonitoringService" />
 

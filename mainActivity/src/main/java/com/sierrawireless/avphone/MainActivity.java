@@ -5,7 +5,6 @@ import android.app.ActionBar;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlarmManager;
-import android.app.Fragment;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
@@ -44,11 +43,9 @@ import net.airvantage.model.User;
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -57,12 +54,17 @@ import io.fabric.sdk.android.Fabric;
  */
 public class MainActivity extends FragmentActivity
         implements LoginListener, AuthenticationManager, OnSharedPreferenceChangeListener,
-        MonitorServiceManager, CustomLabelsManager, SyncWithAvListener {
+        MonitorServiceManager, SyncWithAvListener {
 
-    private static final String PREFERENCE_SYSTEM_NAME = "systemName";
-    private static final String PREFERENCE_SYSTEM_SERIAL = "systemSerial";
-    private static final String PREFERENCE_USER_NAME = "userName";
-    private static final String PREFERENCE_USER_UID = "userUid";
+
+    public static final String PREFERENCE_SYSTEM_NAME = "systemName";
+    public static final String PREFERENCE_SYSTEM_UID = "systemUid";
+    public static final String PREFERENCE_SYSTEM_SERIAL = "systemSerial";
+    public static final String PREFERENCE_USER_NAME = "userName";
+    public static final String PREFERENCE_USER_UID = "userUid";
+
+    public static final String INTENT_MONITOR_SERVICE = "monitorService";
+
 
     private static String LOGTAG = MainActivity.class.getName();
 
@@ -76,7 +78,6 @@ public class MainActivity extends FragmentActivity
     MonitoringService monitoringService;
     private MonitorServiceListener monitoringServiceListener = null;
 
-    private CustomLabelsListener customLabelsListener = null;
     private DrawerLayout drawerLayout;
     private ListView drawerListView;
     private ActionBarDrawerToggle drawerToggle;
@@ -86,20 +87,12 @@ public class MainActivity extends FragmentActivity
     private final static String FRAGMENT_CONFIGURE = "Configure";
     private final static String FRAGMENT_SETTINGS = "Settings";
 
-    private ConfigureFragment configureFragment;
-    private HomeFragment homeFragment;
-    private RunFragment runFragment;
-
     private final static String[] FRAGMENT_LIST = new String[]{
             FRAGMENT_HOME,
             FRAGMENT_RUN,
             FRAGMENT_CONFIGURE,
             FRAGMENT_SETTINGS,
     };
-
-    public void setCustomLabelsListener(CustomLabelsListener customLabelsListener) {
-        this.customLabelsListener = customLabelsListener;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,11 +126,11 @@ public class MainActivity extends FragmentActivity
                 R.string.drawer_close);
         drawerLayout.setDrawerListener(drawerToggle);
 
-        final Map<String, Fragment> fragments = initFragments();
-        final Fragment currentFragment;
+        final List<String> activities = Arrays.asList(FRAGMENT_LIST);
+        final int currentPosition;
         if (isLogged()) {
 
-            currentFragment = fragments.get(FRAGMENT_RUN);
+            currentPosition = activities.indexOf(FRAGMENT_RUN);
             unlockDrawer();
             if (isServiceRunning()) {
                 connectToService();
@@ -145,7 +138,7 @@ public class MainActivity extends FragmentActivity
 
         } else {
 
-            currentFragment = fragments.get(FRAGMENT_HOME);
+            currentPosition = activities.indexOf(FRAGMENT_HOME);
             lockDrawer();
             if (isServiceRunning()) {
                 // The token is probably expired.
@@ -155,7 +148,8 @@ public class MainActivity extends FragmentActivity
 
         }
 
-        selectItem(currentFragment);
+        selectItem(currentPosition);
+
     }
 
     @Override
@@ -267,11 +261,6 @@ public class MainActivity extends FragmentActivity
 
             this.restartMonitoringService();
 
-        } else if (key.indexOf("pref_data_custom") != -1) {
-
-            if (this.customLabelsListener != null) {
-                this.customLabelsListener.onCustomLabelsChanged();
-            }
         }
 
     }
@@ -392,27 +381,12 @@ public class MainActivity extends FragmentActivity
         final String deviceSerial = DeviceInfo.generateSerial(user.uid, system.type);
         prefs.edit().putString(PREFERENCE_SYSTEM_SERIAL, deviceSerial).apply();
 
-        if (runFragment != null) {
-            String systemUid = this.getSystemUid();
-            String systemName = this.getSystemName();
-            runFragment.setLinkToSystem(systemUid, systemName);
-        } else {
-            Log.w(LOGTAG, "RunFragment reference is null when onSynced is called");
-        }
-
-    }
-
-    public String getSystemUid() {
-        return prefs.getString("systemUid", null);
     }
 
     public String getSystemSerial() {
         return prefs.getString(PREFERENCE_SYSTEM_SERIAL, null);
     }
 
-    public String getSystemName() {
-        return prefs.getString(PREFERENCE_SYSTEM_NAME, null);
-    }
 
     @SuppressLint("DefaultLocale")
     public void setSystemSerial(final String serial) {
@@ -424,16 +398,25 @@ public class MainActivity extends FragmentActivity
      */
     private void selectItem(final int position) {
 
-        final Fragment fragment = getFragment(position);
-        if (fragment == null) {
+        if (position >= FRAGMENT_LIST.length) {
             return;
         }
 
-        // Insert the fragment by replacing any existing fragment
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .commit();
+        final String activityName = FRAGMENT_LIST[position];
+        switch (activityName) {
+            case FRAGMENT_CONFIGURE:
+                startActivity(new Intent(this, ConfigureFragment.class));
+                break;
+            case FRAGMENT_HOME:
+                startActivity(new Intent(this, HomeFragment.class));
+                break;
+            case FRAGMENT_RUN:
+                startActivity(new Intent(this, RunFragment.class));
+                break;
+            case FRAGMENT_SETTINGS:
+                startActivity(new Intent(this, SettingsActivity.class));
+                break;
+        }
 
         // Highlight the selected item, update the title, and close the drawer
         drawerListView.setItemChecked(position, true);
@@ -442,48 +425,8 @@ public class MainActivity extends FragmentActivity
         drawerLayout.closeDrawer(drawerListView);
     }
 
-    private void selectItem(final Fragment fragment) {
-        final Iterator<Fragment> fragmentsIterator = initFragments().values().iterator();
-        for (int position = 0; fragmentsIterator.hasNext(); position++) {
-            final Fragment currentFragment = fragmentsIterator.next();
-            if (fragment.getId() == currentFragment.getId()) {
-                selectItem(position);
-                return;
-            }
-        }
-    }
-
-
-    private Map<String, Fragment> initFragments() {
-
-        if (configureFragment == null) {
-            configureFragment = new ConfigureFragment();
-            configureFragment.setTaskFactory(taskFactory);
-        }
-
-        if (homeFragment == null) {
-            homeFragment = new HomeFragment();
-            homeFragment.setTaskFactory(taskFactory);
-        }
-
-        if (runFragment == null) {
-            runFragment = new RunFragment();
-        }
-
-        final HashMap<String, Fragment> fragmentsMapping = new HashMap<>();
-        fragmentsMapping.put(FRAGMENT_CONFIGURE, configureFragment);
-        fragmentsMapping.put(FRAGMENT_HOME, homeFragment);
-        fragmentsMapping.put(FRAGMENT_SETTINGS, new SettingsActivity.SettingsFragment());
-        fragmentsMapping.put(FRAGMENT_RUN, runFragment);
-
-        return fragmentsMapping;
-    }
-
     @Nullable
-    private Fragment getFragment(final int fragmentPosition) {
-        final String fragmentName = FRAGMENT_LIST[fragmentPosition];
-        final Map<String, Fragment> fragmentMap = initFragments();
-        return fragmentMap.containsKey(fragmentName) ? fragmentMap.get(fragmentName) : null;
+    public IAsyncTaskFactory getTaskFactory() {
+        return taskFactory;
     }
-
 }
