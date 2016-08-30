@@ -23,7 +23,7 @@ android {
         applicationId 'com.sierrawireless.avphone'
         minSdkVersion 22
         targetSdkVersion 22
-        versionName '1.0.6beta2'
+        versionName '1.0.6'
     }
 
     buildTypes {
