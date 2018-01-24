@@ -19,10 +19,12 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
+import com.sierrawireless.avphone.model.AvPhoneModel;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 import com.sierrawireless.avphone.service.LogMessage;
 import com.sierrawireless.avphone.service.MonitoringService;
 import com.sierrawireless.avphone.service.NewData;
+import com.sierrawireless.avphone.task.IAsyncTaskFactory;
 
 public class RunFragment extends AvPhoneFragment implements MonitorServiceListener, CustomLabelsListener {
 
@@ -37,6 +39,17 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
     private CustomLabelsManager customLabelsManager;
     private String systemUid;
     private String systemName;
+
+    private IAsyncTaskFactory taskFactory;
+    private AvPhoneModel model;
+
+    public void setTaskFactory(IAsyncTaskFactory taskFactory) {
+        this.taskFactory = taskFactory;
+    }
+
+    public void setModel(AvPhoneModel model) {
+        this.model = model;
+    }
 
     @Override
     public void onAttach(Activity activity) {

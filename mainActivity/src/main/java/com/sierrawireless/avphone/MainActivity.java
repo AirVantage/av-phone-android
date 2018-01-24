@@ -22,6 +22,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -33,23 +34,32 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.ndk.CrashlyticsNdk;
+import com.google.gson.Gson;
 import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.auth.AuthenticationManager;
+import com.sierrawireless.avphone.model.AvPhoneModel;
+import com.sierrawireless.avphone.model.AvPhoneModelData;
 import com.sierrawireless.avphone.service.MonitoringService;
 import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder;
 import com.sierrawireless.avphone.task.AsyncTaskFactory;
 import com.sierrawireless.avphone.task.IAsyncTaskFactory;
 import com.sierrawireless.avphone.task.SyncWithAvListener;
 import com.sierrawireless.avphone.task.SyncWithAvResult;
+import com.sierrawireless.avphone.tools.MyPreference;
+import com.sierrawireless.avphone.tools.ObjectSerializer;
 
 import net.airvantage.model.AvSystem;
 import net.airvantage.model.User;
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
@@ -85,7 +95,7 @@ public class MainActivity extends FragmentActivity
 
     private final static String FRAGMENT_HOME = "Home";
     private final static String FRAGMENT_RUN = "Run";
-    private final static String FRAGMENT_CONFIGURE = "Configure";
+    private final static String FRAGMENT_CONFIGURE = "Objects";
     private final static String FRAGMENT_SETTINGS = "Settings";
     private final static String FRAGMENT_FAQ = "FAQ";
 
@@ -93,24 +103,77 @@ public class MainActivity extends FragmentActivity
     private HomeFragment homeFragment;
     private RunFragment runFragment;
 
+    public static String SHARED_PREFS_FILE = "SavedModels";
+    public static String MODELS = "models";
+    public static String ACTIVE = "active";
+    public static int current;
+    public static String currentName;
+
+    private ArrayList<AvPhoneModel> models;
+
     private int lastPosition = 0;
 
     private Boolean serviceSendData = false;
 
-    private final static String[] FRAGMENT_LIST = new String[]{
-            FRAGMENT_HOME,
-            FRAGMENT_RUN,
-            FRAGMENT_CONFIGURE,
-            FRAGMENT_SETTINGS,
-            FRAGMENT_FAQ,
-    };
+    SharedPreferences preferences;
+
+    private static String[] FRAGMENT_LIST;
+
+    public String[] buildFragmentList() {
+        ArrayList<String> tmp = new ArrayList<>();
+        tmp.add(FRAGMENT_HOME);
+        tmp.add(currentName);
+        tmp.add(FRAGMENT_CONFIGURE);
+        tmp.add(FRAGMENT_SETTINGS);
+        tmp.add(FRAGMENT_FAQ);
+        String[] array = new String[tmp.size()];
+        return tmp.toArray(array);
+    }
 
     public void setCustomLabelsListener(CustomLabelsListener customLabelsListener) {
         this.customLabelsListener = customLabelsListener;
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (null == models) {
+            models = new ArrayList<>();
+        }
+
+        MyPreference pref = new MyPreference(getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE));
+
+
+        models = pref.getListObject(MODELS, AvPhoneModel.class);
+        current = pref.getInt(ACTIVE);
+
+        Log.d(TAG, "onCreate: models " + models);
+        if (models.isEmpty()) {
+            // Create the default model here
+            AvPhoneModel model = new AvPhoneModel();
+            model.name = "Printer";
+            AvPhoneModelData data = new AvPhoneModelData("A6 Page Count", "page(s)", "0", AvPhoneModelData.Mode.UP, "1");
+            model.add(data);
+            data = new AvPhoneModelData("Black Cartridge S/N", "", "NTOQN-7HUL9-NEPFL-13IOA", AvPhoneModelData.Mode.None, "2");
+            model.add(data);
+            data = new AvPhoneModelData("Black lnk Level", "%", "100", AvPhoneModelData.Mode.DOWN, "3");
+            model.add(data);
+            data = new AvPhoneModelData("A4 Page Count", "page(s)", "0", AvPhoneModelData.Mode.UP, "4");
+            model.add(data);
+            data = new AvPhoneModelData("Color Cartridge S/N", "", "629U7-XLT5H-6SCGJ-@CENZ", AvPhoneModelData.Mode.None, "5");
+            model.add(data);
+            data = new AvPhoneModelData("Color lnk Level", "%", "100", AvPhoneModelData.Mode.DOWN, "6");
+            model.add(data);
+            models.add(model);
+            current = 0;
+
+        }
+
+        currentName = models.get(current).name;
+
+        pref.putListObject(MODELS, models);
+        pref.putInt(ACTIVE, current);
+
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
 
@@ -123,9 +186,10 @@ public class MainActivity extends FragmentActivity
 
         taskFactory = new AsyncTaskFactory(MainActivity.this);
 
+        FRAGMENT_LIST = buildFragmentList();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerListView = (ListView) findViewById(R.id.left_drawer);
-        drawerListView.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_item, FRAGMENT_LIST));
+        drawerListView.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_item, buildFragmentList()));
 
         drawerListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         // Set the list's click listener
@@ -146,7 +210,7 @@ public class MainActivity extends FragmentActivity
         final Fragment currentFragment;
         if (isLogged()) {
 
-            currentFragment = fragments.get(FRAGMENT_RUN);
+            currentFragment = fragments.get(currentName);
             unlockDrawer();
             if (isServiceRunning()) {
                 connectToService();
@@ -552,15 +616,18 @@ public class MainActivity extends FragmentActivity
             homeFragment.setTaskFactory(taskFactory);
         }
 
+
         if (runFragment == null) {
             runFragment = new RunFragment();
+            runFragment.setTaskFactory(taskFactory);
+            runFragment.setModel(models.get(current));
         }
 
         final HashMap<String, Fragment> fragmentsMapping = new HashMap<>();
         fragmentsMapping.put(FRAGMENT_CONFIGURE, configureFragment);
         fragmentsMapping.put(FRAGMENT_HOME, homeFragment);
         fragmentsMapping.put(FRAGMENT_SETTINGS, new SettingsActivity.SettingsFragment());
-        fragmentsMapping.put(FRAGMENT_RUN, runFragment);
+        fragmentsMapping.put(currentName, runFragment);
 
         return fragmentsMapping;
     }
