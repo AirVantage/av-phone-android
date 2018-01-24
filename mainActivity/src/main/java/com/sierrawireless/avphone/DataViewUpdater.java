@@ -9,7 +9,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.sierrawireless.avphone.service.LogMessage;
@@ -44,14 +43,14 @@ public class DataViewUpdater extends BroadcastReceiver {
         this.setLogMessage(logMsg, lastRun);
 
         // activate alarm button
-        view.findViewById(R.id.alarm_switch).setEnabled(true);
+        //view.findViewById(R.id.alarm_switch).setEnabled(true);
     }
 
     public void onStop() {
         this.setStartedSince(null);
 
         // deactivate alarm button
-        view.findViewById(R.id.alarm_switch).setEnabled(false);
+        //view.findViewById(R.id.alarm_switch).setEnabled(false);
     }
 
     private void setLogMessage(String log, Long timestamp) {
@@ -128,9 +127,6 @@ public class DataViewUpdater extends BroadcastReceiver {
             findView(R.id.android_version_value).setText(data.getAndroidVersion());
         }
 
-        if (data.isAlarmActivated() != null) {
-            ((Switch) view.findViewById(R.id.alarm_switch)).setChecked(data.isAlarmActivated());
-        }
 
         setCustomDataValues(data);
         

@@ -14,6 +14,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -28,8 +29,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.ndk.CrashlyticsNdk;
 import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.auth.AuthenticationManager;
 import com.sierrawireless.avphone.service.MonitoringService;
@@ -44,7 +47,6 @@ import net.airvantage.model.User;
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -56,15 +58,15 @@ import io.fabric.sdk.android.Fabric;
  * The main activity, handling drawer and Fragments
  */
 public class MainActivity extends FragmentActivity
+
         implements LoginListener, AuthenticationManager, OnSharedPreferenceChangeListener,
         MonitorServiceManager, CustomLabelsManager, SyncWithAvListener {
 
+    private static final String TAG = "MainActivity";
     private static final String PREFERENCE_SYSTEM_NAME = "systemName";
     private static final String PREFERENCE_SYSTEM_SERIAL = "systemSerial";
     private static final String PREFERENCE_USER_NAME = "userName";
     private static final String PREFERENCE_USER_UID = "userUid";
-
-    private static String LOGTAG = MainActivity.class.getName();
 
     private ActionBar actionBar;
     private AlarmManager alarmManager;
@@ -85,16 +87,22 @@ public class MainActivity extends FragmentActivity
     private final static String FRAGMENT_RUN = "Run";
     private final static String FRAGMENT_CONFIGURE = "Configure";
     private final static String FRAGMENT_SETTINGS = "Settings";
+    private final static String FRAGMENT_FAQ = "FAQ";
 
     private ConfigureFragment configureFragment;
     private HomeFragment homeFragment;
     private RunFragment runFragment;
+
+    private int lastPosition = 0;
+
+    private Boolean serviceSendData = false;
 
     private final static String[] FRAGMENT_LIST = new String[]{
             FRAGMENT_HOME,
             FRAGMENT_RUN,
             FRAGMENT_CONFIGURE,
             FRAGMENT_SETTINGS,
+            FRAGMENT_FAQ,
     };
 
     public void setCustomLabelsListener(CustomLabelsListener customLabelsListener) {
@@ -104,7 +112,7 @@ public class MainActivity extends FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
 
         setContentView(R.layout.activity_main);
 
@@ -119,6 +127,7 @@ public class MainActivity extends FragmentActivity
         drawerListView = (ListView) findViewById(R.id.left_drawer);
         drawerListView.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_item, FRAGMENT_LIST));
 
+        drawerListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         // Set the list's click listener
         drawerListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
@@ -156,6 +165,18 @@ public class MainActivity extends FragmentActivity
         }
 
         selectItem(currentFragment);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Toast.makeText(getApplicationContext(), "On resume "+ lastPosition, Toast.LENGTH_SHORT).show();
+        drawerListView.requestFocusFromTouch();
+        drawerListView.setItemChecked(lastPosition, true);
+        drawerListView.setSelection(lastPosition);
+        Toast.makeText(getApplicationContext(), "On resume "+ lastPosition + " " + drawerListView.getCheckedItemPosition(), Toast.LENGTH_SHORT).show();
+        drawerListView.refreshDrawableState();
+        //drawerListView.setSelection();
     }
 
     @Override
@@ -205,7 +226,7 @@ public class MainActivity extends FragmentActivity
 
         if (drawerLayout != null) {
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-            drawerLayout.openDrawer(Gravity.LEFT);
+            drawerLayout.openDrawer(Gravity.START);
         }
 
         if (drawerToggle != null) {
@@ -232,7 +253,7 @@ public class MainActivity extends FragmentActivity
         unlockDrawer();
 
         saveAuthenticationInPreferences(auth);
-    }
+     }
 
     @Override
     public Authentication getAuthentication() {
@@ -267,7 +288,7 @@ public class MainActivity extends FragmentActivity
 
             this.restartMonitoringService();
 
-        } else if (key.indexOf("pref_data_custom") != -1) {
+        } else if (key.contains("pref_data_custom")) {
 
             if (this.customLabelsListener != null) {
                 this.customLabelsListener.onCustomLabelsChanged();
@@ -277,16 +298,42 @@ public class MainActivity extends FragmentActivity
     }
 
     public boolean isServiceRunning() {
+       //return serviceSendData;
+
         ActivityManager manager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
+        if (manager == null) {
+            Log.e(TAG, "isServiceRunning: can't get activity service");
+            Toast.makeText(getApplicationContext(), "can't get activity service" ,Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (MonitoringService.class.getName().equals(service.service.getClassName())) {
+                return serviceSendData;
+            }
+        }
+        return false;
+
+    }
+
+    public boolean isServiceStarted() {
+        //return serviceSendData;
+
+        ActivityManager manager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
+        if (manager == null) {
+            Log.e(TAG, "isServiceRunning: can't get activity service");
+            Toast.makeText(getApplicationContext(), "can't get activity service" ,Toast.LENGTH_SHORT).show();
+            return false;
+        }
         for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (MonitoringService.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
         }
         return false;
+
     }
 
-    private void connectToService() {
+    public void connectToService() {
         Intent intent = new Intent(this, MonitoringService.class);
         boundToMonitoringService = this.bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
@@ -305,7 +352,7 @@ public class MainActivity extends FragmentActivity
 
         @Override
         public void onServiceConnected(ComponentName arg0, IBinder binder) {
-            Log.d(LOGTAG, "Connected to the monitoring service");
+            Log.d(TAG, "Connected to the monitoring service");
             monitoringService = ((ServiceBinder) binder).getService();
 
             if (monitoringServiceListener != null) {
@@ -316,16 +363,16 @@ public class MainActivity extends FragmentActivity
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            Log.d(LOGTAG, "Disconnected from the monitoring service");
+            Log.d(TAG, "Disconnected from the monitoring service");
             boundToMonitoringService = false;
         }
 
     };
 
     public void sendAlarmEvent(boolean activated) {
-        if (boundToMonitoringService && monitoringService != null) {
+        //if (boundToMonitoringService && monitoringService != null) {
             monitoringService.sendAlarmEvent(activated);
-        }
+       // }
     }
 
     @Override
@@ -336,14 +383,45 @@ public class MainActivity extends FragmentActivity
         intent.putExtra(MonitoringService.DEVICE_ID, DeviceInfo.getUniqueId(this));
         intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost);
         intent.putExtra(MonitoringService.PASSWORD, avPrefs.password);
+        intent.putExtra(MonitoringService.CONNECT, false);
+
 
         PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
         // registering our pending intent with alarm manager
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0,
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, pendingIntent);
+
+         connectToService();
+    }
+
+    @Override
+    public void startSendData(){
+        AvPhonePrefs avPrefs = PreferenceUtils.getAvPhonePrefs(this);
+
+        Intent intent = new Intent(this, MonitoringService.class);
+        intent.putExtra(MonitoringService.DEVICE_ID, DeviceInfo.getUniqueId(this));
+        intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost);
+        intent.putExtra(MonitoringService.PASSWORD, avPrefs.password);
+        intent.putExtra(MonitoringService.CONNECT, true);
+
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+        // registering our pending intent with alarm manager
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 5000,
                 Integer.valueOf(avPrefs.period) * 60 * 1000, pendingIntent);
 
-        connectToService();
+       // connectToService();
+        serviceSendData = true;
+
+    }
+
+    @Override
+    public void stopSendData(){
+        Intent intent = new Intent(this, MonitoringService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+        alarmManager.cancel(pendingIntent);
+        serviceSendData = false;
     }
 
     @Override
@@ -397,7 +475,7 @@ public class MainActivity extends FragmentActivity
             String systemName = this.getSystemName();
             runFragment.setLinkToSystem(systemUid, systemName);
         } else {
-            Log.w(LOGTAG, "RunFragment reference is null when onSynced is called");
+            Log.w(TAG, "RunFragment reference is null when onSynced is called");
         }
 
     }
@@ -426,6 +504,13 @@ public class MainActivity extends FragmentActivity
 
         final Fragment fragment = getFragment(position);
         if (fragment == null) {
+            //No item check if the position is valid
+            if (FRAGMENT_LIST[position] == FRAGMENT_FAQ) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://doc.airvantage.net/alms/"));
+                startActivity(browserIntent);
+                drawerListView.setSelection(lastPosition);
+                drawerLayout.closeDrawer(drawerListView);
+            }
             return;
         }
 
@@ -440,6 +525,7 @@ public class MainActivity extends FragmentActivity
         setTitle(FRAGMENT_LIST[position]);
         drawerListView.setSelection(position);
         drawerLayout.closeDrawer(drawerListView);
+        lastPosition = position;
     }
 
     private void selectItem(final Fragment fragment) {

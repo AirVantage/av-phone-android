@@ -4,7 +4,7 @@ import com.sierrawireless.avphone.service.MonitoringService;
 
 public interface MonitorServiceListener {
 
-    public void onServiceStarted(MonitoringService service);
+    void onServiceStarted(MonitoringService service);
 
-    public void onServiceStopped(MonitoringService service);
+    void onServiceStopped(MonitoringService service);
 }

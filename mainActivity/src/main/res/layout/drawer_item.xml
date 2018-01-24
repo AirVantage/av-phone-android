@@ -4,5 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:textColor="@android:color/white"
+    android:background="@drawable/listitem_selector"
     android:padding="@dimen/abc_button_padding_horizontal_material"
     android:textSize="@dimen/abc_text_size_large_material" />

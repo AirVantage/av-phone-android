@@ -110,15 +110,14 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
     }
 
     private TextView getInfoMessageView() {
-        TextView infoMessageView = (TextView) view.findViewById(R.id.home_info_message);
-        return infoMessageView;
+        return (TextView) view.findViewById(R.id.home_info_message);
     }
 
     private void showCurrentServer() {
         AvPhonePrefs phonePrefs = PreferenceUtils.getAvPhonePrefs(getActivity());
         TextView infoMessageView = getInfoMessageView();
 
-        String message = null;
+        String message;
         if (phonePrefs.usesNA()) {
             message = getString(R.string.logged_on_na);
         } else if (phonePrefs.usesEU()) {
@@ -183,6 +182,8 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
         params.deviceId = DeviceInfo.getUniqueId(getActivity());
         params.imei = DeviceInfo.getIMEI(getActivity());
+        params.deviceName = DeviceInfo.getDeviceName();
+        params.iccid = DeviceInfo.getICCID(getActivity());
         params.mqttPassword = avPhonePrefs.password;
         params.customData = PreferenceUtils.getCustomDataLabels(getActivity());
 

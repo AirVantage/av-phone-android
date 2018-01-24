@@ -4,8 +4,10 @@ import net.airvantage.model.AvError;
 import net.airvantage.utils.AirVantageClient;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 public class AsyncTaskFactory implements IAsyncTaskFactory {
+    private static final String TAG = "AsyncTaskFactory";
 
     private Context context;
 
@@ -21,7 +23,7 @@ public class AsyncTaskFactory implements IAsyncTaskFactory {
         ISystemClient systemClient = new SystemClient(avClient);
         IAlertRuleClient alertRuleClient = new AlertRuleClient(avClient);
         IUserClient userClient = new UserClient(avClient);
-        
+
         return new ProgressSyncWithAvTask(appClient, systemClient, alertRuleClient, userClient, context);
     }
 

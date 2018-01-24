@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactoryListener {
+    private static final String TAG = "AirVantageClient";
 
     private static final String SCHEME = "https://";
 
@@ -235,6 +236,24 @@ public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactory
         URL url = new URL(urlString);
         InputStream in = this.get(url);
         return gson.fromJson(new InputStreamReader(in), SystemsList.class).items;
+    }
+
+    public void getGateway(String serialNumber) throws IOException, AirVantageException {
+        String urlString = buildEndpoint("/gateways");
+        Log.d(TAG, "getGateway: urlString " + urlString);
+        URL url = new URL(urlString);
+        InputStream in = this.get(url);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
+        }
+
+        in.close();
+
+        Log.d(TAG, "getGateway: answer " + sb.toString());
     }
 
     public net.airvantage.model.AvSystem createSystem(net.airvantage.model.AvSystem system)

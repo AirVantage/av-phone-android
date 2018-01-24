@@ -7,9 +7,9 @@ import android.text.Spanned;
  */
 public interface IMessageDisplayer {
     
-    public void showError(int id, Object... params);
+    void showError(int id, Object... params);
 
-    public void showSuccess(int id, Object... params);
+    void showSuccess(int id, Object... params);
 
-    public void showErrorMessage(Spanned spanned);
+    void showErrorMessage(Spanned spanned);
 }

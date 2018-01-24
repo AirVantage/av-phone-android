@@ -27,6 +27,7 @@ import net.airvantage.model.UserRights;
 import net.airvantage.model.alert.v1.AlertRule;
 
 public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, SyncWithAvResult> {
+    private static final String TAG = "SyncWithAvTask";
 
     private IApplicationClient applicationClient;
 
@@ -66,15 +67,17 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
                 return new SyncWithAvResult(new AvError(AvError.MISSING_RIGHTS, missingRights));
             }
             
-            final String systemType = "Android";
+            final String systemType = "Printer";
             final SyncWithAvParams syncParams = params[0];
             final User user = userClient.getUser();
             final String imei = syncParams.imei;
+            final String iccid = syncParams.iccid;
+            final String deviceName = syncParams.deviceName;
             final String mqttPassword = syncParams.mqttPassword;
             final CustomDataLabels customData = syncParams.customData;
 
             // For emulator and iOs compatibility sake, using generated serial.
-            final String serialNumber =  DeviceInfo.generateSerial(user.uid ,systemType);
+            final String serialNumber =  DeviceInfo.generateSerial(user.uid, systemType);
 
             // Save Device serial in context
             if (context instanceof MainActivity) {
@@ -93,7 +96,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
 
                 publishProgress(SyncProgress.CREATING_SYSTEM);
 
-                system = systemClient.createSystem(serialNumber, imei, systemType, mqttPassword, application.uid);
+                system = systemClient.createSystem(serialNumber, iccid, "Printer", mqttPassword, application.uid, deviceName, user.name, imei);
             }
 
             publishProgress(SyncProgress.CHECKING_ALERT_RULE);

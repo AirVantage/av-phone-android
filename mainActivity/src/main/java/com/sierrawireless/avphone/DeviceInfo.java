@@ -1,11 +1,51 @@
 package com.sierrawireless.avphone;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.os.Build;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+import android.util.Log;
+
+import java.util.List;
 
 public class DeviceInfo {
+    private static final String TAG = "DeviceInfo";
 
+    /** Returns the consumer friendly device name */
+    public static String getDeviceName() {
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        if (model.toUpperCase().startsWith(manufacturer.toUpperCase())) {
+            return capitalize(model);
+        }
+        return capitalize(manufacturer) + " " + model;
+    }
+
+    private static String capitalize(String str) {
+        if (TextUtils.isEmpty(str)) {
+            return str;
+        }
+        char[] arr = str.toCharArray();
+        boolean capitalizeNext = true;
+
+        StringBuilder phrase = new StringBuilder();
+        for (char c : arr) {
+            if (capitalizeNext && Character.isLetter(c)) {
+                phrase.append(Character.toUpperCase(c));
+                capitalizeNext = false;
+                continue;
+            } else if (Character.isWhitespace(c)) {
+                capitalizeNext = true;
+            }
+            phrase.append(c);
+        }
+
+        return phrase.toString();
+    }
 
     /**
     * Serial number is in `syncParams.deviceId`, why not using it?
@@ -17,7 +57,8 @@ public class DeviceInfo {
     */
     @SuppressLint("DefaultLocale")
 	public static String generateSerial(final String userUid, final String systemType) {
-        return (userUid + "-" + systemType).toUpperCase();
+        Log.d(TAG, "generateSerial*****************: system_id is " + getDeviceName());
+        return (userUid);
     }
 
     @SuppressLint("DefaultLocale")
@@ -54,5 +95,13 @@ public class DeviceInfo {
         }
 
         return null;
+    }
+
+    public static String getICCID(final Context context) {
+        SubscriptionManager sm = SubscriptionManager.from(context);
+        List<SubscriptionInfo> sis = sm.getActiveSubscriptionInfoList();
+        SubscriptionInfo si = sis.get(0);
+        return si.getIccId();
+
     }
 }

@@ -28,11 +28,15 @@ import android.telephony.CellInfoLte;
 import android.telephony.CellInfoWcdma;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.R;
+import com.sierrawireless.avphone.auth.Authentication;
+
+import net.airvantage.utils.PreferenceUtils;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -45,21 +49,20 @@ import java.util.List;
 import java.util.Map;
 
 public class MonitoringService extends Service {
-
-    private static final String LOGTAG = MonitoringService.class.getName();
-
+    private static final String TAG = "MonitoringService";
+    
     // system services
     private TelephonyManager telephonyManager;
     private ActivityManager activityManager;
     private ConnectivityManager connManager;
 
-    // Unique Identification Number for the Notification.
-    private int NOTIFICATION = R.string.notif_title;
+
 
     // Intent extra keys
     public static final String DEVICE_ID = "device_id";
     public static final String SERVER_HOST = "server_host";
     public static final String PASSWORD = "password";
+    public static final String CONNECT = "connect";
 
     private MqttPushClient client = null;
 
@@ -81,6 +84,8 @@ public class MonitoringService extends Service {
 
     @Override
     public void onCreate() {
+        // Unique Identification Number for the Notification.
+        int NOTIFICATION = R.string.notif_title;
 
         // Display a notification icon
 
@@ -117,13 +122,22 @@ public class MonitoringService extends Service {
         lastRun = System.currentTimeMillis();
 
         try {
+            final Boolean mustConnect = intent.getBooleanExtra(CONNECT, true);
+            Log.e(TAG, "onStartCommand: mustConnect here " + mustConnect  );
+
+            /* First we have to create the system if it doesn't exist */
+
+            Authentication auth =  PreferenceUtils.readAuthentication(getApplicationContext());
+
+
 
             if (this.client == null) {
+                Log.e(TAG, "onStartCommand: Start connect" );
 
                 //
                 // Ensure intent is valid
                 //
-                final String deviceId = intent.getStringExtra(DEVICE_ID);
+                final String deviceId = intent.getStringExtra(DEVICE_ID) + "-ANDROID-" + "PRINTER";
                 final String password = intent.getStringExtra(PASSWORD);
                 final String serverHost = intent.getStringExtra(SERVER_HOST);
 
@@ -137,118 +151,122 @@ public class MonitoringService extends Service {
                 // Now, create client
                 client = new MqttPushClient(deviceId, password, serverHost, mqttCallback);
             }
-
             if (!client.isConnected()) {
+                Log.e(TAG, "onStartCommand: client connect called");
                 client.connect();
             }
 
-            Location location = getLastKnownLocation();
+            if (mustConnect) {
+                Log.e(TAG, "onStartCommand: Send Data Called");
+                Location location = getLastKnownLocation();
 
-            // retrieve data
-            NewData data = new NewData();
+                // retrieve data
+                NewData data = new NewData();
 
-            List<CellInfo> cellInfos = telephonyManager.getAllCellInfo();
-            if (cellInfos != null && !cellInfos.isEmpty()) {
-                CellInfo cellInfo = cellInfos.get(0);
-                if (cellInfo instanceof CellInfoGsm) {
-                    data.setRssi(((CellInfoGsm) cellInfo).getCellSignalStrength().getDbm());
-                } else if (cellInfo instanceof CellInfoWcdma) {
-                    // RSSI ?
-                    // data.setRssi(((CellInfoWcdma) cellInfo).getCellSignalStrength().getDbm());
-                } else if (cellInfo instanceof CellInfoLte) {
-                    data.setRsrp(((CellInfoLte) cellInfo).getCellSignalStrength().getDbm());
+                List<CellInfo> cellInfos = telephonyManager.getAllCellInfo();
+                if (cellInfos != null && !cellInfos.isEmpty()) {
+                    CellInfo cellInfo = cellInfos.get(0);
+                    if (cellInfo instanceof CellInfoGsm) {
+                        data.setRssi(((CellInfoGsm) cellInfo).getCellSignalStrength().getDbm());
+                   // } else if (cellInfo instanceof CellInfoWcdma) {
+                        // RSSI ?
+                        // data.setRssi(((CellInfoWcdma) cellInfo).getCellSignalStrength().getDbm());
+                    } else if (cellInfo instanceof CellInfoLte) {
+                        data.setRsrp(((CellInfoLte) cellInfo).getCellSignalStrength().getDbm());
+                    }
                 }
+
+                if (telephonyManager.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
+                    data.setImei(telephonyManager.getDeviceId());
+                }
+
+                data.setOperator(telephonyManager.getNetworkOperatorName());
+
+                switch (telephonyManager.getNetworkType()) {
+                    case TelephonyManager.NETWORK_TYPE_GPRS:
+                        data.setNetworkType("GPRS");
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_EDGE:
+                        data.setNetworkType("EDGE");
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_UMTS:
+                        data.setNetworkType("UMTS");
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_HSDPA:
+                        data.setNetworkType("HSDPA");
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_HSPAP:
+                        data.setNetworkType("HSPA+");
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_HSPA:
+                        data.setNetworkType("HSPA");
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_HSUPA:
+                        data.setNetworkType("HSUPA");
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_LTE:
+                        data.setNetworkType("LTE");
+                        break;
+                    // to be continued
+                    default:
+                }
+
+                data.setActiveWifi(connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected());
+                data.setRunningApps(activityManager.getRunningAppProcesses().size());
+                data.setAndroidVersion(Build.VERSION.RELEASE);
+
+                MemoryInfo mi = new MemoryInfo();
+                activityManager.getMemoryInfo(mi);
+                data.setMemoryUsage((float) ((mi.totalMem - mi.availMem) / ((Long) mi.totalMem).doubleValue()));
+
+                // battery level
+                final IntentFilter iFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+                final Intent batteryStatus = this.registerReceiver(null, iFilter);
+                if (batteryStatus != null) {
+                    final int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                    final int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+                    data.setBatteryLevel(level / (float) scale);
+                }
+
+                // location
+                if (location != null && location.getTime() != lastLocation) {
+                    data.setLatitude(location.getLatitude());
+                    data.setLongitude(location.getLongitude());
+                    lastLocation = location.getTime();
+                }
+
+                // bytes sent/received
+                data.setBytesReceived(TrafficStats.getMobileRxBytes());
+                data.setBytesSent(TrafficStats.getMobileTxBytes());
+
+                // Custom data
+                data.setCustomIntUp1(customDataSource.getCustomIntUp1());
+                data.setCustomIntUp2(customDataSource.getCustomIntUp2());
+                data.setCustomIntDown1(customDataSource.getCustomIntDown1());
+                data.setCustomIntDown2(customDataSource.getCustomIntDown2());
+                data.setCustomStr1(customDataSource.getCustomStr1());
+                data.setCustomStr2(customDataSource.getCustomStr2());
+
+                customDataSource.next(new Date());
+
+                // save new data values
+                if (data.getExtras() != null) {
+                    lastData.putExtras(data.getExtras());
+                }
+
+                // dispatch new data event to update the activity UI
+                LocalBroadcastManager.getInstance(this).sendBroadcast(data);
+
+                this.client.push(data);
+                lastLog = data.size() + " data pushed to the server";
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog));
+
+                setUpLocationListeners();
             }
-
-            if (telephonyManager.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
-                data.setImei(telephonyManager.getDeviceId());
-            }
-
-            data.setOperator(telephonyManager.getNetworkOperatorName());
-
-            switch (telephonyManager.getNetworkType()) {
-                case TelephonyManager.NETWORK_TYPE_GPRS:
-                    data.setNetworkType("GPRS");
-                    break;
-                case TelephonyManager.NETWORK_TYPE_EDGE:
-                    data.setNetworkType("EDGE");
-                    break;
-                case TelephonyManager.NETWORK_TYPE_UMTS:
-                    data.setNetworkType("UMTS");
-                    break;
-                case TelephonyManager.NETWORK_TYPE_HSDPA:
-                    data.setNetworkType("HSDPA");
-                    break;
-                case TelephonyManager.NETWORK_TYPE_HSPAP:
-                    data.setNetworkType("HSPA+");
-                    break;
-                case TelephonyManager.NETWORK_TYPE_HSPA:
-                    data.setNetworkType("HSPA");
-                    break;
-                case TelephonyManager.NETWORK_TYPE_HSUPA:
-                    data.setNetworkType("HSUPA");
-                    break;
-                case TelephonyManager.NETWORK_TYPE_LTE:
-                    data.setNetworkType("LTE");
-                    break;
-                // to be continued
-                default:
-            }
-
-            data.setActiveWifi(connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected());
-            data.setRunningApps(activityManager.getRunningAppProcesses().size());
-            data.setAndroidVersion(Build.VERSION.RELEASE);
-
-            MemoryInfo mi = new MemoryInfo();
-            activityManager.getMemoryInfo(mi);
-            data.setMemoryUsage((float) ((mi.totalMem - mi.availMem) / ((Long) mi.totalMem).doubleValue()));
-
-            // battery level
-            final IntentFilter iFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-            final Intent batteryStatus = this.registerReceiver(null, iFilter);
-            if (batteryStatus != null) {
-                final int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-                final int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-                data.setBatteryLevel(level / (float) scale);
-            }
-
-            // location
-            if (location != null && location.getTime() != lastLocation) {
-                data.setLatitude(location.getLatitude());
-                data.setLongitude(location.getLongitude());
-                lastLocation = location.getTime();
-            }
-
-            // bytes sent/received
-            data.setBytesReceived(TrafficStats.getMobileRxBytes());
-            data.setBytesSent(TrafficStats.getMobileTxBytes());
-
-            // Custom data
-            data.setCustomIntUp1(customDataSource.getCustomIntUp1());
-            data.setCustomIntUp2(customDataSource.getCustomIntUp2());
-            data.setCustomIntDown1(customDataSource.getCustomIntDown1());
-            data.setCustomIntDown2(customDataSource.getCustomIntDown2());
-            data.setCustomStr1(customDataSource.getCustomStr1());
-            data.setCustomStr2(customDataSource.getCustomStr2());
-
-            customDataSource.next(new Date());
-
-            // save new data values
-            lastData.putExtras(data.getExtras());
-
-            // dispatch new data event to update the activity UI
-            LocalBroadcastManager.getInstance(this).sendBroadcast(data);
-
-            this.client.push(data);
-            lastLog = data.size() + " data pushed to the server";
-            LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog));
-
-            setUpLocationListeners();
-
 
         } catch (Exception e) {
             Crashlytics.logException(e);
-            Log.e(LOGTAG, "error", e);
+            Log.e(TAG, "error", e);
             lastLog = "ERROR: " + e.getMessage();
             LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog));
         }
@@ -266,7 +284,7 @@ public class MonitoringService extends Service {
                 this.client.disconnect();
             } catch (MqttException e) {
                 Crashlytics.logException(e);
-                Log.e(LOGTAG, "error", e);
+                Log.e(TAG, "error", e);
             }
         }
 
@@ -278,12 +296,17 @@ public class MonitoringService extends Service {
 
     private void setUpLocationListeners() {
         final LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (locManager == null) {
+            Log.e(TAG, "setUpLocationListeners: Can't get the location service");
+            Toast.makeText(getApplicationContext(), "can't get location service", Toast.LENGTH_SHORT).show();
+            return;
+        }
         LocationProvider networkLocationProvider = locManager.getProvider(LocationManager.NETWORK_PROVIDER);
         if (networkLocationProvider != null) {
             networkLocationListener = new LocationListenerAdapter() {
                 @Override
                 public void onLocationChanged(Location location) {
-                    Log.d(LOGTAG, "Received Network location update " + location.getLatitude() + ";" + location.getLongitude());
+                    Log.d(TAG, "Received Network location update " + location.getLatitude() + ";" + location.getLongitude());
                     networkLocation = location;
                 }
             };
@@ -294,7 +317,7 @@ public class MonitoringService extends Service {
             gpsLocationListener = new LocationListenerAdapter() {
                 @Override
                 public void onLocationChanged(Location location) {
-                    Log.d(LOGTAG, "Received GPS location update " + location.getLatitude() + ";" + location.getLongitude());
+                    Log.d(TAG, "Received GPS location update " + location.getLatitude() + ";" + location.getLongitude());
                     gpsLocation = location;
                 }
             };
@@ -304,6 +327,11 @@ public class MonitoringService extends Service {
 
     private void stopLocationListeners() {
         final LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (locManager == null) {
+            Log.e(TAG, "setUpLocationListeners: Can't get the location service");
+            Toast.makeText(getApplicationContext(), "can't get location service", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (networkLocationListener != null) {
             locManager.removeUpdates(networkLocationListener);
         }
@@ -315,26 +343,31 @@ public class MonitoringService extends Service {
 
     private Location getLastKnownLocation() {
         final LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (locManager == null) {
+            Log.e(TAG, "setUpLocationListeners: Can't get the location service");
+            Toast.makeText(getApplicationContext(), "can't get location service", Toast.LENGTH_SHORT).show();
+            return null;
+        }
         final String locationProvider = locManager.getBestProvider(new Criteria(), true);
-        Log.d(LOGTAG, "Getting last known location from provider: " + locationProvider);
+        Log.d(TAG, "Getting last known location from provider: " + locationProvider);
 
         Location location = null;
         if (locationProvider != null) {
             location = locManager.getLastKnownLocation(locationProvider);
             if (location != null) {
-                Log.d(LOGTAG, "Last known location : " + location.getLatitude() + "," + location.getLongitude());
+                Log.d(TAG, "Last known location : " + location.getLatitude() + "," + location.getLongitude());
             } else {
-                Log.d(LOGTAG, "Read null location");
+                Log.d(TAG, "Read null location");
             }
             if (networkLocation != null) {
-                Log.d(LOGTAG, "Last Network Location : " + networkLocation.getLatitude() + "," + networkLocation.getLongitude());
+                Log.d(TAG, "Last Network Location : " + networkLocation.getLatitude() + "," + networkLocation.getLongitude());
             } else {
-                Log.d(LOGTAG, "No known network location");
+                Log.d(TAG, "No known network location");
             }
             if (gpsLocation != null) {
-                Log.d(LOGTAG, "Last GPS Location : " + gpsLocation.getLatitude() + "," + gpsLocation.getLongitude());
+                Log.d(TAG, "Last GPS Location : " + gpsLocation.getLatitude() + "," + gpsLocation.getLongitude());
             } else {
-                Log.d(LOGTAG, "No known GPSlocation");
+                Log.d(TAG, "No known GPSlocation");
             }
         }
         return location;
@@ -343,22 +376,38 @@ public class MonitoringService extends Service {
     public void sendAlarmEvent(boolean activated) {
 
         if (this.client == null) {
-            // TODO: Propagate error message when client is not available yet
+            Toast.makeText(getApplicationContext(), "Alarm client is not available,wait...", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        if (!client.isConnected()) {
+            Log.e(TAG, "onStartCommand: client connect called");
+            try {
+                client.connect();
+            }
+             catch (Exception e) {
+                Crashlytics.logException(e);
+                Log.e(TAG, "error", e);
+                lastLog = "ERROR: " + e.getMessage();
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog));
+            }
+        }
+
 
         NewData data = new NewData();
         data.setAlarmActivated(activated);
 
         // save alarm state
-        lastData.putExtras(data.getExtras());
+        if (data.getExtras() != null) {
+            lastData.putExtras(data.getExtras());
+        }
 
         try {
             this.client.push(data);
         } catch (MqttException e) {
-            // TODO display something
+            Toast.makeText(getApplicationContext(), "Can't send Alarm ", Toast.LENGTH_SHORT).show();
             Crashlytics.logException(e);
-            Log.e(LOGTAG, "Could not push the alarm event", e);
+            Log.e(TAG, "Could not push the alarm event", e);
         }
     }
 
@@ -412,7 +461,7 @@ public class MonitoringService extends Service {
 
         @Override
         public void messageArrived(String topic, MqttMessage msg) throws Exception {
-            Log.d(LOGTAG, "MQTT msg received: " + new String(msg.getPayload()));
+            Log.d(TAG, "MQTT msg received: " + new String(msg.getPayload()));
 
             // parse json payload
             Message[] messages = new Gson().fromJson(new String(msg.getPayload(), "UTF-8"), Message[].class);
@@ -426,6 +475,11 @@ public class MonitoringService extends Service {
                     .build();
 
             NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (mNotificationManager == null) {
+                Log.e(TAG, "setUpLocationListeners: Can't get the notification service");
+                Toast.makeText(getApplicationContext(), "can't get notification service for incoming data", Toast.LENGTH_SHORT).show();
+                return;
+            }
             mNotificationManager.notify((int) messages[0].timestamp, notification);
         }
 

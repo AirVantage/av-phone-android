@@ -17,6 +17,7 @@ import net.airvantage.model.Variable;
 public class AvPhoneApplication {
 
     public static final String ALERT_RULE_NAME = "AV Phone raised an alert";
+    private static String type = "Printer";
 
     public static Application createApplication(final String userName) {
         Application application = new Application();
@@ -64,22 +65,7 @@ public class AvPhoneApplication {
 
         Data asset = new Data("phone", "Phone", "node");
         asset.data = new ArrayList<net.airvantage.model.Data>();
-
-        asset.data.add(new Variable(AvPhoneData.RSSI, "RSSI", "int"));
-        asset.data.add(new Variable(AvPhoneData.RSRP, "RSRP", "int"));
-        asset.data.add(new Variable(AvPhoneData.SERVICE, "Service type", "string"));
-        asset.data.add(new Variable(AvPhoneData.OPERATOR, "Operator", "string"));
-        asset.data.add(new Variable(AvPhoneData.IMEI, "IMEI", "string"));
-        asset.data.add(new Variable(AvPhoneData.LAT, "Latitude", "double"));
-        asset.data.add(new Variable(AvPhoneData.LONG, "Longitude", "double"));
-        asset.data.add(new Variable(AvPhoneData.BATTERY, "Battery level", "double"));
-        asset.data.add(new Variable(AvPhoneData.BYTES_RECEIVED, "Bytes received", "double"));
-        asset.data.add(new Variable(AvPhoneData.BYTES_SENT, "Bytes sent", "double"));
-        asset.data.add(new Variable(AvPhoneData.MEMORY_USAGE, "Memory usage", "double"));
-        asset.data.add(new Variable(AvPhoneData.RUNNING_APPS, "Running applications", "int"));
-        asset.data.add(new Variable(AvPhoneData.ACTIVE_WIFI, "Active Wi-Fi", "boolean"));
-        asset.data.add(new Variable(AvPhoneData.ANDROID_VERSION, "Android Version", "string"));
-
+        
         asset.data.add(new Variable(AvPhoneData.ALARM, "Active alarm", "boolean"));
 
         asset.data.add(new Variable(AvPhoneData.CUSTOM_1, customData.customUp1Label, "int"));
@@ -102,11 +88,11 @@ public class AvPhoneApplication {
     }
 
     public static String appName(final String userName) {
-        return "av_phone_demo_" + userName;
+        return "av_phone_" + type + "_" + userName;
     }
 
     public static String appType(final String userName) {
-        return "av.phone.demo." + userName;
+        return "av.phone.demo." + type  + userName;
     }
 
     public static AlertRule createAlertRule() {

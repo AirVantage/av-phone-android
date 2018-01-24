@@ -68,7 +68,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     style="@style/ItemLabel"
@@ -77,16 +77,14 @@
                     android:gravity="center"
                     android:text="@string/run_activate_alarm" />
 
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/alarm_switch"
-                    android:theme="@style/Switch"
+                <Button
+                    android:id="@+id/alarm_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:checked="false"
-                    android:enabled="false"
-                    android:textOff="OFF"
-                    android:textOn="ON" />
+                    android:baselineAligned="false"
+                    android:text="Send"
+                    android:textAlignment="center" />
             </LinearLayout>
         </LinearLayout>
 

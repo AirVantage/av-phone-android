@@ -32,10 +32,10 @@ public class AvSystem {
     public static class Gateway {
         public String uid;
         public String imei;
-        public String macAddress;
         public String serialNumber;
         public String type;
     }
+
 
     public static Predicate<AvSystem> hasSerialNumber(final String serialNumber) {
         return new Predicate<AvSystem>() {

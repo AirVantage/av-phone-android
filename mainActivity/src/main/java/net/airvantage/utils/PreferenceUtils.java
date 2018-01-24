@@ -14,12 +14,14 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.sierrawireless.avphone.R;
 import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 
 public class PreferenceUtils {
+    private static final String TAG = "PreferenceUtils";
 
     private static String LOGTAG = PreferenceUtils.class.getName();
 

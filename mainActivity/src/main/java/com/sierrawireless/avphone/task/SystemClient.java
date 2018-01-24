@@ -28,13 +28,17 @@ public class SystemClient implements ISystemClient {
     }
 
     @Override
-    public net.airvantage.model.AvSystem createSystem(String serialNumber, String imei, String type, String mqttPassword,
-            String applicationUid) throws IOException, AirVantageException {
+    public net.airvantage.model.AvSystem createSystem(String serialNumber, String iccid, String type, String mqttPassword,
+            String applicationUid, String deviceName, String userName, String imei) throws IOException, AirVantageException {
         net.airvantage.model.AvSystem system = new net.airvantage.model.AvSystem();
 
+        client.getGateway(serialNumber + "-" + type);
+
         net.airvantage.model.AvSystem.Gateway gateway = new net.airvantage.model.AvSystem.Gateway();
-        gateway.serialNumber = serialNumber;
+        gateway.serialNumber = serialNumber + "-ANDROID-" + type;
         gateway.imei = imei;
+        gateway.type = type;
+        system.name = deviceName + " de " + userName + "(" + type + ")";
 
         system.gateway = gateway;
 

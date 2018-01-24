@@ -3,6 +3,7 @@ package com.sierrawireless.avphone;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -50,7 +51,7 @@ public class AuthorizationActivity extends Activity {
 
         private final PreferenceUtils.Server server;
 
-        public OnHostClickListener(final PreferenceUtils.Server targetServer) {
+        private OnHostClickListener(final PreferenceUtils.Server targetServer) {
             server = targetServer;
         }
 
@@ -124,9 +125,9 @@ public class AuthorizationActivity extends Activity {
         // The 'authorize' page from AirVantage will store a cookie ;
         // if this cookie is passed between calls, the 'authorize' page
         // will not be displayed at all.
-        CookieSyncManager.createInstance(this);
         CookieManager cookieManager = CookieManager.getInstance();
-        cookieManager.removeAllCookie();
+        cookieManager.removeAllCookies(null);
+
 
         // Example :
         // https://na.airvantage.net/api/oauth/authorize?client_id=54d4faa5343d49fba03f2a2ec1f210b9&response_type=token&redirect_uri=oauth://airvantage
