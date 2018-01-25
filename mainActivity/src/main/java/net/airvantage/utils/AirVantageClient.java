@@ -234,11 +234,12 @@ public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactory
             urlString += "&gateway=serialNumber:" + serialNumber;
         }
         URL url = new URL(urlString);
+        Log.d(TAG, "getSystemsBySerialNumber: url " + url);
         InputStream in = this.get(url);
         return gson.fromJson(new InputStreamReader(in), SystemsList.class).items;
     }
 
-    public void getGateway(String serialNumber) throws IOException, AirVantageException {
+    public Boolean getGateway(String serialNumber) throws IOException, AirVantageException {
         String urlString = buildEndpoint("/gateways");
         Log.d(TAG, "getGateway: urlString " + urlString);
         URL url = new URL(urlString);
@@ -250,10 +251,22 @@ public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactory
         while ((line = reader.readLine()) != null) {
             sb.append(line);
         }
-
         in.close();
 
-        Log.d(TAG, "getGateway: answer " + sb.toString());
+        try {
+            JSONObject json = new JSONObject(sb.toString());
+            JSONArray jsonValues = json.getJSONArray("items");
+            for (int i = 0; i < jsonValues.length(); i++) {
+                JSONObject entry = jsonValues.getJSONObject(i);
+                String name = entry.getString("serialNumber");
+                if (name.equals(serialNumber)) {
+                    return true;
+                }
+            }
+        } catch (JSONException e) {
+            return false;
+        }
+        return false;
     }
 
     public net.airvantage.model.AvSystem createSystem(net.airvantage.model.AvSystem system)

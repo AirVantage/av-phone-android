@@ -5,7 +5,9 @@ import net.airvantage.utils.PreferenceUtils;
 
 import android.app.Activity;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Html;
@@ -17,8 +19,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.sierrawireless.avphone.adapter.RunListViewAdapter;
 import com.sierrawireless.avphone.model.AvPhoneObject;
 import com.sierrawireless.avphone.model.AvPhoneObjectData;
 import com.sierrawireless.avphone.model.CustomDataLabels;
@@ -26,6 +30,11 @@ import com.sierrawireless.avphone.service.LogMessage;
 import com.sierrawireless.avphone.service.MonitoringService;
 import com.sierrawireless.avphone.service.NewData;
 import com.sierrawireless.avphone.task.IAsyncTaskFactory;
+import com.sierrawireless.avphone.tools.Constant;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class RunFragment extends AvPhoneFragment implements MonitorServiceListener, CustomLabelsListener {
 
@@ -44,6 +53,15 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
     private IAsyncTaskFactory taskFactory;
     private String objectName;
     private ObjectsManager objectsManager;
+    Button phoneBtn;
+    Button objectBtn;
+    ListView phoneListView;
+    ListView objectListView;
+
+    private ArrayList<HashMap<String, String>> listPhone;
+    private ArrayList<HashMap<String, String>> listObject;
+
+
 
     public void setTaskFactory(IAsyncTaskFactory taskFactory) {
         this.taskFactory = taskFactory;
@@ -83,7 +101,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         viewUpdater = new DataViewUpdater(view, (MainActivity)getActivity());
 
         CustomDataLabels customLabels = PreferenceUtils.getCustomDataLabels(getActivity());
-        setCustomDataLabels(customLabels);
+
 
         // register service listener
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(viewUpdater,
@@ -132,6 +150,51 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         if (systemUid != null && systemName != null) {
             setLinkToSystem(systemUid, systemName);
         }
+
+        phoneBtn = (Button)view.findViewById(R.id.phone);
+        objectBtn = (Button)view.findViewById(R.id.object);
+        phoneListView = (ListView)view.findViewById(R.id.phoneListView);
+        objectListView = (ListView)view.findViewById(R.id.objectLstView);
+        objectBtn.setText(objectName);
+        phoneBtn.setBackgroundColor(getResources().getColor(R.color.grey_1));
+        phoneListView.setVisibility(View.VISIBLE);
+        objectListView.setVisibility(View.GONE);
+
+        phoneBtn.setOnClickListener(
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    phoneListView.setVisibility(View.VISIBLE);
+                    objectListView.setVisibility(View.GONE);
+                    phoneBtn.setSelected(true);
+                    phoneBtn.setPressed(true);
+                    phoneBtn.setBackgroundColor(getResources().getColor(R.color.grey_1));
+                    objectBtn.setSelected(false);
+                    objectBtn.setPressed(false);
+                    objectBtn.setBackgroundColor(getResources().getColor(R.color.grey_4));
+                }
+            }
+        );
+
+        objectBtn.setOnClickListener(
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    phoneListView.setVisibility(View.GONE);
+                    objectListView.setVisibility(View.VISIBLE);
+                    phoneBtn.setSelected(false);
+                    phoneBtn.setPressed(false);
+                    phoneBtn.setBackgroundColor(getResources().getColor(R.color.grey_4));
+                    objectBtn.setSelected(true);
+                    objectBtn.setPressed(true);
+                    objectBtn.setBackgroundColor(getResources().getColor(R.color.grey_1));
+                }
+            }
+        );
+
+        setCustomDataLabels(customLabels);
+        setPhoneDataLabels();
+
 
         return view;
     }
@@ -192,40 +255,84 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         } else {
             this.monitorServiceManager.startSendData();
         }
+        this.monitorServiceManager.getMonitoringService().startSendData();
 
     }
 
     private void stopMonitoringService() {
         this.monitorServiceManager.stopSendData();
+        this.monitorServiceManager.getMonitoringService().stopSendData();
+    }
+
+
+    private void setPhoneDataLabels(){
+        listPhone = new ArrayList<>();
+
+        String Rssi ;
+
+        HashMap<String, String> temp;
+
+
+        temp = new HashMap<>();
+        temp.put(Constant.NAME, "RSSI");
+        temp.put(Constant.VALUE, "");
+        listPhone.add(temp);
+
+        temp = new HashMap<>();
+        temp.put(Constant.NAME, "Operator");
+        temp.put(Constant.VALUE, "");
+        listPhone.add(temp);
+
+        temp = new HashMap<>();
+        temp.put(Constant.NAME, "Bytes Sent");
+        temp.put(Constant.VALUE, "0 Mo");
+        listPhone.add(temp);
+
+        temp = new HashMap<>();
+        temp.put(Constant.NAME, "Bytes Received");
+        temp.put(Constant.VALUE, "0 Mo");
+        listPhone.add(temp);
+
+        temp = new HashMap<>();
+        temp.put(Constant.NAME, "Network Type");
+        temp.put(Constant.VALUE, "");
+        listPhone.add(temp);
+
+        temp = new HashMap<>();
+        temp.put(Constant.NAME, "Latitude");
+        temp.put(Constant.VALUE, "");
+        listPhone.add(temp);
+
+        temp = new HashMap<>();
+        temp.put(Constant.NAME, "Longitude");
+        temp.put(Constant.VALUE, "");
+        listPhone.add(temp);
+        RunListViewAdapter adapter = new RunListViewAdapter(getActivity(), listPhone);
+        phoneListView.setAdapter(adapter);
+        phoneListView.invalidateViews();
+
     }
 
     protected void setCustomDataLabels(CustomDataLabels customDataLabels) {
-        TextView valueView = null;
+        listObject=new ArrayList<HashMap<String,String>>();
+
+
         objectsManager = ObjectsManager.getInstance();
         AvPhoneObject object = objectsManager.getObjectByName(objectName);
+        HashMap<String,String> temp;
         for (AvPhoneObjectData data : object.datas) {
-            switch (data.label) {
-                case "1":
-                    valueView = (TextView) view.findViewById(R.id.run_custom1_label);
-                    break;
-                case "2":
-                    valueView = (TextView) view.findViewById(R.id.run_custom2_label);
-                    break;
-                case "3":
-                    valueView = (TextView) view.findViewById(R.id.run_custom3_label);
-                    break;
-                case "4":
-                    valueView = (TextView) view.findViewById(R.id.run_custom4_label);
-                    break;
-                case "5":
-                    valueView = (TextView) view.findViewById(R.id.run_custom5_label);
-                    break;
-                case "6":
-                    valueView = (TextView) view.findViewById(R.id.run_custom6_label);
-                    break;
+            temp = new HashMap<String, String>();
+            temp.put(Constant.NAME, data.name);
+            if (data.isInteger()) {
+                temp.put(Constant.VALUE, data.current.toString());
+            }else{
+                temp.put(Constant.VALUE, data.defaults);
             }
-            valueView.setText(data.name);
+            listObject.add(temp);
         }
+        RunListViewAdapter adapter = new RunListViewAdapter(getActivity(), listObject);
+        objectListView.setAdapter(adapter);
+        objectListView.invalidateViews();
     }
 
     // Alarm button

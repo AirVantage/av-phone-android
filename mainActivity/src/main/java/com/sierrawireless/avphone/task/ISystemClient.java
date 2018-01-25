@@ -7,7 +7,7 @@ import net.airvantage.model.AvSystem;
 
 public interface ISystemClient {
 
-    AvSystem getSystem(String serialNumber) throws IOException, AirVantageException;
+    AvSystem getSystem(String serialNumber, String type) throws IOException, AirVantageException;
 
     AvSystem createSystem(String serialNumber, String iccid, String type, String mqttPassword, String applicationUid, String deviceName, String userName, String imei)
             throws IOException, AirVantageException;

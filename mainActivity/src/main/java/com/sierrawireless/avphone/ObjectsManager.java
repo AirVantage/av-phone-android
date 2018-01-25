@@ -47,11 +47,11 @@ public class ObjectsManager {
             model.name = "Printer";
             AvPhoneObjectData data = new AvPhoneObjectData("A6 Page Count", "page(s)", "0", AvPhoneObjectData.Mode.UP, "1");
             model.add(data);
-            data = new AvPhoneObjectData("Black Cartridge S/N", "", "NTOQN-7HUL9-NEPFL-13IOA", AvPhoneObjectData.Mode.None, "2");
+            data = new AvPhoneObjectData("A4 Page Count", "page(s)", "0", AvPhoneObjectData.Mode.UP, "2");
             model.add(data);
-            data = new AvPhoneObjectData("Black lnk Level", "%", "100", AvPhoneObjectData.Mode.DOWN, "3");
+            data = new AvPhoneObjectData("Black Cartridge S/N", "", "NTOQN-7HUL9-NEPFL-13IOA", AvPhoneObjectData.Mode.None, "3");
             model.add(data);
-            data = new AvPhoneObjectData("A4 Page Count", "page(s)", "0", AvPhoneObjectData.Mode.UP, "4");
+            data = new AvPhoneObjectData("Black lnk Level", "%", "100", AvPhoneObjectData.Mode.DOWN, "4");
             model.add(data);
             data = new AvPhoneObjectData("Color Cartridge S/N", "", "629U7-XLT5H-6SCGJ-@CENZ", AvPhoneObjectData.Mode.None, "5");
             model.add(data);
@@ -92,6 +92,9 @@ public class ObjectsManager {
     }
 
     public AvPhoneObject getCurrentObject() {
+        if (objects.isEmpty()) {
+            return null;
+        }
         return objects.get(current);
     }
 

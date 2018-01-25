@@ -184,11 +184,9 @@ public class MainActivity extends FragmentActivity
     @Override
     protected void onResume() {
         super.onResume();
-        Toast.makeText(getApplicationContext(), "On resume "+ lastPosition, Toast.LENGTH_SHORT).show();
         drawerListView.requestFocusFromTouch();
         drawerListView.setItemChecked(lastPosition, true);
         drawerListView.setSelection(lastPosition);
-        Toast.makeText(getApplicationContext(), "On resume "+ lastPosition + " " + drawerListView.getCheckedItemPosition(), Toast.LENGTH_SHORT).show();
         drawerListView.refreshDrawableState();
         //drawerListView.setSelection();
     }

@@ -1,5 +1,9 @@
 package com.sierrawireless.avphone.task;
 
+import android.util.Log;
+
+import com.sierrawireless.avphone.tools.Constant;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,6 +17,7 @@ import net.airvantage.utils.AirVantageClient;
 import net.airvantage.utils.Utils;
 
 public class SystemClient implements ISystemClient {
+    private static final String TAG = "SystemClient";
 
     private AirVantageClient client;
 
@@ -21,10 +26,10 @@ public class SystemClient implements ISystemClient {
     }
 
     @Override
-    public net.airvantage.model.AvSystem getSystem(final String serialNumber) throws IOException, AirVantageException {
-        List<net.airvantage.model.AvSystem> systems = client.getSystemsBySerialNumber(serialNumber);
+    public net.airvantage.model.AvSystem getSystem(final String serialNumber, String type) throws IOException, AirVantageException {
+        List<net.airvantage.model.AvSystem> systems = client.getSystemsBySerialNumber(Constant.buildSerialNumber(serialNumber, type));
 
-        return Utils.firstWhere(systems, AvSystem.hasSerialNumber(serialNumber));
+        return Utils.firstWhere(systems, AvSystem.hasSerialNumber(Constant.buildSerialNumber(serialNumber, type)));
     }
 
     @Override
@@ -32,12 +37,18 @@ public class SystemClient implements ISystemClient {
             String applicationUid, String deviceName, String userName, String imei) throws IOException, AirVantageException {
         net.airvantage.model.AvSystem system = new net.airvantage.model.AvSystem();
 
-        client.getGateway(serialNumber + "-" + type);
-
+        Boolean exist = client.getGateway((serialNumber + "-ANDROID-" + type).toUpperCase());
         net.airvantage.model.AvSystem.Gateway gateway = new net.airvantage.model.AvSystem.Gateway();
-        gateway.serialNumber = serialNumber + "-ANDROID-" + type;
-        gateway.imei = imei;
-        gateway.type = type;
+
+        if (!exist) {
+            gateway.serialNumber = (serialNumber + "-ANDROID-" + type).toUpperCase();
+            gateway.imei = imei;
+            gateway.type = type;
+        }else{
+            gateway.serialNumber = (serialNumber + "-ANDROID-" + type).toUpperCase();
+        }
+        Log.d(TAG, "createSystem: Gateway exit " + exist);
+        Log.d(TAG, "gateway is " + (serialNumber + "-ANDROID-" + type).toUpperCase() );
         system.name = deviceName + " de " + userName + "(" + type + ")";
 
         system.gateway = gateway;

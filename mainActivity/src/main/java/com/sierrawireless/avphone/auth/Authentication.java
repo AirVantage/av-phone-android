@@ -3,9 +3,7 @@ package com.sierrawireless.avphone.auth;
 import java.util.Date;
 
 public class Authentication {
-    public String code;
     private String accessToken;
-    public String refreshToken;
     private Date expirationDate;
     
     public String getAccessToken() {

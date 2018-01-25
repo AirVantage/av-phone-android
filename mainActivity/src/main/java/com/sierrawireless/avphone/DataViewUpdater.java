@@ -4,18 +4,22 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.sierrawireless.avphone.adapter.RunListViewAdapter;
 import com.sierrawireless.avphone.model.AvPhoneObject;
 import com.sierrawireless.avphone.model.AvPhoneObjectData;
 import com.sierrawireless.avphone.service.LogMessage;
 import com.sierrawireless.avphone.service.NewData;
+import com.sierrawireless.avphone.tools.Constant;
 import com.sierrawireless.avphone.tools.MyPreference;
 
 /**
@@ -28,6 +32,8 @@ public class DataViewUpdater extends BroadcastReceiver {
     private final View view;
     private MainActivity activity;
     private ObjectsManager objectsManager;
+    private ArrayList<HashMap<String, String>> listPhone;
+    private ArrayList<HashMap<String, String>> listObject;
 
     public DataViewUpdater(View view, MainActivity activity) {
         this.view = view;
@@ -83,57 +89,82 @@ public class DataViewUpdater extends BroadcastReceiver {
     }
 
     private void setNewData(NewData data) {
-        
+
+        ListView phoneListView = (ListView)view.findViewById(R.id.phoneListView);
+        listPhone = new ArrayList<>();
+
+        String Rssi ;
+
+        HashMap<String, String> temp;
+
         if (data.getRssi() != null) {
-            findView(R.id.signal_strength_value).setText(data.getRssi() + " dBm (RSSI)");
+            Rssi = data.getRssi() + " dBm (RSSI)";
         } else if (data.getRsrp() != null) {
-            findView(R.id.signal_strength_value).setText(data.getRsrp() + " dBm (RSRP)");
+            Rssi = data.getRsrp() + " dBm (RSRP)";
+        }else{
+            Rssi = "Unknown";
         }
+        temp = new HashMap<>();
+        temp.put(Constant.NAME, "RSSI");
+        temp.put(Constant.VALUE, Rssi);
+        listPhone.add(temp);
 
-        if (data.getBatteryLevel() != null) {
-            findView(R.id.battery_value).setText((int) (data.getBatteryLevel() * 100) + "%");
+        temp = new HashMap<>();
+        temp.put(Constant.NAME, "Operator");
+        if (data.getOperator() == null) {
+            temp.put(Constant.VALUE, "");
+        }else{
+            temp.put(Constant.VALUE, data.getOperator());
         }
+        listPhone.add(temp);
 
-        if (data.getOperator() != null) {
-            findView(R.id.operator_value).setText(data.getOperator());
+        temp = new HashMap<>();
+        temp.put(Constant.NAME, "Bytes Sent");
+        if (data.getBytesSent() == null) {
+            temp.put(Constant.VALUE, "0 Mo");
+        }else{
+            temp.put(Constant.VALUE, ((data.getBytesSent()) / (1024F * 1024F)) + " Mo");
         }
+        listPhone.add(temp);
 
-        if (data.getImei() != null) {
-            findView(R.id.imei_value).setText(data.getImei());
+        temp = new HashMap<>();
+        temp.put(Constant.NAME, "Bytes Received");
+        if (data.getBytesReceived() == null) {
+            temp.put(Constant.VALUE, "0 Mo");
+        }else{
+            temp.put(Constant.VALUE, ((data.getBytesReceived()) / (1024F * 1024F)) + " Mo");
         }
+        listPhone.add(temp);
 
-        if (data.getNetworkType() != null) {
-            findView(R.id.network_type_value).setText(data.getNetworkType());
+        temp = new HashMap<>();
+        temp.put(Constant.NAME, "Network Type");
+        if (data.getNetworkType() == null) {
+            temp.put(Constant.VALUE, "");
+        }else{
+            temp.put(Constant.VALUE, data.getNetworkType());
         }
+        listPhone.add(temp);
 
-        if (data.getLatitude() != null && data.getLongitude() != null) {
-            findView(R.id.latitude_value).setText(data.getLatitude().toString());
-            findView(R.id.longitude_value).setText(data.getLongitude().toString());
+        temp = new HashMap<>();
+        temp.put(Constant.NAME, "Latitude");
+        if (data.getLatitude() == null) {
+            temp.put(Constant.VALUE, "");
+        }else{
+            temp.put(Constant.VALUE, data.getLatitude().toString());
         }
+        listPhone.add(temp);
 
-        if (data.getBytesReceived() != null) {
-            findView(R.id.bytes_received_value).setText(((data.getBytesReceived()) / (1024F * 1024F)) + " Mo");
+        temp = new HashMap<>();
+        temp.put(Constant.NAME, "Longitude");
+        if (data.getLongitude() == null) {
+            temp.put(Constant.VALUE, "");
+        }else{
+            temp.put(Constant.VALUE, data.getLongitude().toString());
         }
-
-        if (data.getBytesSent() != null) {
-            findView(R.id.bytes_sent_value).setText(((data.getBytesSent()) / (1024F * 1024F)) + " Mo");
-        }
-
-        if (data.getMemoryUsage() != null) {
-            findView(R.id.memory_usage_value).setText((int) (data.getMemoryUsage() * 100) + "%");
-        }
-
-        if (data.getRunningApps() != null) {
-            findView(R.id.running_apps_value).setText(data.getRunningApps().toString());
-        }
-
-        if (data.isWifiActive() != null) {
-            findView(R.id.active_wifi_value).setText(data.isWifiActive() ? "On" : "Off");
-        }
-
-        if (data.getAndroidVersion() != null) {
-            findView(R.id.android_version_value).setText(data.getAndroidVersion());
-        }
+        listPhone.add(temp);
+        RunListViewAdapter adapter = new RunListViewAdapter(activity, listPhone);
+        phoneListView.setAdapter(adapter);
+        phoneListView.invalidateViews();
 
 
         setCustomDataValues(data);
@@ -141,39 +172,25 @@ public class DataViewUpdater extends BroadcastReceiver {
     }
 
     private void setCustomDataValues(NewData data) {
-        AvPhoneObject model = objectsManager.getCurrentObject();
-        for (AvPhoneObjectData ldata:model.datas){
-            TextView valueView = null;
-            String text;
-            if (ldata.isInteger()){
-                text = ldata.current.toString();
+
+        ListView objectListView = (ListView)view.findViewById(R.id.objectLstView);
+        objectsManager = ObjectsManager.getInstance();
+        AvPhoneObject object = objectsManager.getCurrentObject();
+        HashMap<String,String> temp;
+        listObject = new ArrayList<>();
+        for (AvPhoneObjectData ldata : object.datas) {
+            temp = new HashMap<String, String>();
+            temp.put(Constant.NAME, ldata.name);
+            if (ldata.isInteger()) {
+                temp.put(Constant.VALUE, ldata.current.toString());
             }else{
-                text = ldata.defaults;
+                temp.put(Constant.VALUE, ldata.defaults);
             }
-            switch (ldata.label) {
-                case "1":
-                    valueView = (TextView) view.findViewById(R.id.run_custom1_value);
-                    break;
-                case "2":
-                    valueView = (TextView) view.findViewById(R.id.run_custom2_value);
-                    break;
-                case "3":
-                    valueView = (TextView) view.findViewById(R.id.run_custom3_value);
-                    break;
-                case "4":
-                    valueView = (TextView) view.findViewById(R.id.run_custom4_value);
-                    break;
-                case "5":
-                    valueView = (TextView) view.findViewById(R.id.run_custom5_value);
-                    break;
-                case "6":
-                    valueView = (TextView) view.findViewById(R.id.run_custom6_value);
-                    break;
-            }
-            if (valueView != null) {
-                valueView.setText(text);
-            }
+            listObject.add(temp);
         }
+        RunListViewAdapter adapter = new RunListViewAdapter(activity, listObject);
+        objectListView.setAdapter(adapter);
+        objectListView.invalidateViews();
     }
 
     private TextView findView(int id) {

@@ -90,27 +90,14 @@ public class MonitoringService extends Service {
     @Override
     public void onCreate() {
         // Unique Identification Number for the Notification.
-        int NOTIFICATION = R.string.notif_title;
+
         objectsManager = ObjectsManager.getInstance();
 
         // Display a notification icon
 
-        // Create an intent to start the activity when clicking the notification
-        Intent resultIntent = new Intent(this, MainActivity.class);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(MainActivity.class);
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification notification = new Notification.Builder(this.getApplicationContext()) //
-                .setContentTitle(getText(R.string.notif_title)) //
-                .setContentText(getText(R.string.notif_desc)) //
-                .setSmallIcon(R.drawable.ic_notif) //
-                .setOngoing(true) //
-                .setContentIntent(resultPendingIntent) //
-                .build();
 
-        startForeground(NOTIFICATION, notification);
+
 
         telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -122,12 +109,37 @@ public class MonitoringService extends Service {
 
     }
 
+    public  void startSendData(){
+        int NOTIFICATION = R.string.notif_title;
+        // Create an intent to start the activity when clicking the notification
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification notification = new Notification.Builder(this.getApplicationContext()) //
+                .setContentTitle(getText(R.string.notif_title)) //
+                .setContentText(getText(R.string.notif_desc)) //
+                .setSmallIcon(R.drawable.ic_notif) //
+                .setOngoing(true) //
+                .setContentIntent(resultPendingIntent) //
+                .build();
+
+        startForeground(NOTIFICATION, notification);
+
+    }
+
+    public void stopSendData() {
+
+        // Cancel the persistent notification.
+        stopForeground(true);
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         lastRun = System.currentTimeMillis();
 
-        AvPhoneObject object = objectsManager.getCurrentObject();
 
         try {
             final Boolean mustConnect = intent.getBooleanExtra(CONNECT, true);

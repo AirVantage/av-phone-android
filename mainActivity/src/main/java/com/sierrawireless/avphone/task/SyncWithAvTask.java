@@ -99,7 +99,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
 
             publishProgress(SyncProgress.CHECKING_SYSTEM);
 
-            net.airvantage.model.AvSystem system = this.systemClient.getSystem(serialNumber);
+            net.airvantage.model.AvSystem system = this.systemClient.getSystem(serialNumber, systemType);
             if (system == null) {
 
                 publishProgress(SyncProgress.CREATING_SYSTEM);

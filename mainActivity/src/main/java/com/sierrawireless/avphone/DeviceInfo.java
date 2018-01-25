@@ -57,7 +57,6 @@ public class DeviceInfo {
     */
     @SuppressLint("DefaultLocale")
 	public static String generateSerial(final String userUid, final String systemType) {
-        Log.d(TAG, "generateSerial*****************: system_id is " + getDeviceName());
         return (userUid);
     }
 
