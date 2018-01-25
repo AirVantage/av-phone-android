@@ -19,7 +19,8 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
-import com.sierrawireless.avphone.model.AvPhoneModel;
+import com.sierrawireless.avphone.model.AvPhoneObject;
+import com.sierrawireless.avphone.model.AvPhoneObjectData;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 import com.sierrawireless.avphone.service.LogMessage;
 import com.sierrawireless.avphone.service.MonitoringService;
@@ -41,14 +42,15 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
     private String systemName;
 
     private IAsyncTaskFactory taskFactory;
-    private AvPhoneModel model;
+    private String objectName;
+    private ObjectsManager objectsManager;
 
     public void setTaskFactory(IAsyncTaskFactory taskFactory) {
         this.taskFactory = taskFactory;
     }
 
-    public void setModel(AvPhoneModel model) {
-        this.model = model;
+    public void setObjectName(String name) {
+        this.objectName = name;
     }
 
     @Override
@@ -78,7 +80,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_run, container, false);
-        viewUpdater = new DataViewUpdater(view);
+        viewUpdater = new DataViewUpdater(view, (MainActivity)getActivity());
 
         CustomDataLabels customLabels = PreferenceUtils.getCustomDataLabels(getActivity());
         setCustomDataLabels(customLabels);
@@ -198,23 +200,32 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
     }
 
     protected void setCustomDataLabels(CustomDataLabels customDataLabels) {
-        TextView labelView = (TextView) view.findViewById(R.id.run_custom1_label);
-        labelView.setText(customDataLabels.customUp1Label);
-
-        labelView = (TextView) view.findViewById(R.id.run_custom2_label);
-        labelView.setText(customDataLabels.customUp2Label);
-
-        labelView = (TextView) view.findViewById(R.id.run_custom3_label);
-        labelView.setText(customDataLabels.customDown1Label);
-
-        labelView = (TextView) view.findViewById(R.id.run_custom4_label);
-        labelView.setText(customDataLabels.customDown2Label);
-
-        labelView = (TextView) view.findViewById(R.id.run_custom5_label);
-        labelView.setText(customDataLabels.customStr1Label);
-
-        labelView = (TextView) view.findViewById(R.id.run_custom6_label);
-        labelView.setText(customDataLabels.customStr2Label);
+        TextView valueView = null;
+        objectsManager = ObjectsManager.getInstance();
+        AvPhoneObject object = objectsManager.getObjectByName(objectName);
+        for (AvPhoneObjectData data : object.datas) {
+            switch (data.label) {
+                case "1":
+                    valueView = (TextView) view.findViewById(R.id.run_custom1_label);
+                    break;
+                case "2":
+                    valueView = (TextView) view.findViewById(R.id.run_custom2_label);
+                    break;
+                case "3":
+                    valueView = (TextView) view.findViewById(R.id.run_custom3_label);
+                    break;
+                case "4":
+                    valueView = (TextView) view.findViewById(R.id.run_custom4_label);
+                    break;
+                case "5":
+                    valueView = (TextView) view.findViewById(R.id.run_custom5_label);
+                    break;
+                case "6":
+                    valueView = (TextView) view.findViewById(R.id.run_custom6_label);
+                    break;
+            }
+            valueView.setText(data.name);
+        }
     }
 
     // Alarm button

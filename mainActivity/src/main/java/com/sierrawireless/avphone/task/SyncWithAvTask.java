@@ -7,10 +7,13 @@ import java.util.List;
 import com.crashlytics.android.Crashlytics;
 import com.sierrawireless.avphone.DeviceInfo;
 import com.sierrawireless.avphone.MainActivity;
+import com.sierrawireless.avphone.ObjectsManager;
 import com.sierrawireless.avphone.R;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.model.AvPhoneApplication;
+import com.sierrawireless.avphone.model.AvPhoneObject;
 import com.sierrawireless.avphone.model.CustomDataLabels;
+import com.sierrawireless.avphone.tools.MyPreference;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -40,6 +43,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
     private IUserClient userClient;
 
     private Context context;
+    private ObjectsManager objectsManager;
 
     public SyncWithAvTask(IApplicationClient applicationClient, ISystemClient systemClient,
             IAlertRuleClient alertRuleClient, IUserClient userClient, Context context) {
@@ -67,7 +71,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
                 return new SyncWithAvResult(new AvError(AvError.MISSING_RIGHTS, missingRights));
             }
             
-            final String systemType = "Printer";
+            String systemType;
             final SyncWithAvParams syncParams = params[0];
             final User user = userClient.getUser();
             final String imei = syncParams.imei;
@@ -75,6 +79,10 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
             final String deviceName = syncParams.deviceName;
             final String mqttPassword = syncParams.mqttPassword;
             final CustomDataLabels customData = syncParams.customData;
+            final MainActivity activity = syncParams.activity;
+            objectsManager = ObjectsManager.getInstance();
+
+            systemType = objectsManager.getCurrentObjectName();
 
             // For emulator and iOs compatibility sake, using generated serial.
             final String serialNumber =  DeviceInfo.generateSerial(user.uid, systemType);
@@ -96,7 +104,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
 
                 publishProgress(SyncProgress.CREATING_SYSTEM);
 
-                system = systemClient.createSystem(serialNumber, iccid, "Printer", mqttPassword, application.uid, deviceName, user.name, imei);
+                system = systemClient.createSystem(serialNumber, iccid, systemType, mqttPassword, application.uid, deviceName, user.name, imei);
             }
 
             publishProgress(SyncProgress.CHECKING_ALERT_RULE);
@@ -111,7 +119,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
 
             publishProgress(SyncProgress.UPDATING_APPLICATION);
 
-            this.applicationClient.setApplicationData(application.uid, customData);
+            this.applicationClient.setApplicationData(application.uid, objectsManager.getCurrentObject().datas);
 
             if (!hasApplication(system, application)) {
 

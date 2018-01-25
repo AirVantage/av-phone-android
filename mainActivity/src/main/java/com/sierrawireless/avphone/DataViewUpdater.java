@@ -2,6 +2,7 @@ package com.sierrawireless.avphone;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -11,8 +12,11 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.sierrawireless.avphone.model.AvPhoneObject;
+import com.sierrawireless.avphone.model.AvPhoneObjectData;
 import com.sierrawireless.avphone.service.LogMessage;
 import com.sierrawireless.avphone.service.NewData;
+import com.sierrawireless.avphone.tools.MyPreference;
 
 /**
  * A component in charge of listening for service events (new data, logs) and updating the view accordingly.
@@ -22,9 +26,13 @@ public class DataViewUpdater extends BroadcastReceiver {
     private DateFormat hourFormat = new SimpleDateFormat("HH:mm:ss", Locale.FRENCH);
 
     private final View view;
+    private MainActivity activity;
+    private ObjectsManager objectsManager;
 
-    public DataViewUpdater(View view) {
+    public DataViewUpdater(View view, MainActivity activity) {
         this.view = view;
+        this.activity = activity;
+        objectsManager = ObjectsManager.getInstance();
     }
 
     @Override
@@ -133,34 +141,38 @@ public class DataViewUpdater extends BroadcastReceiver {
     }
 
     private void setCustomDataValues(NewData data) {
-        if (data.getCustomIntUp1() != null) {
-            TextView valueView = (TextView) view.findViewById(R.id.run_custom1_value);
-            valueView.setText(String.valueOf(data.getCustomIntUp1()));
-        }
-
-        if (data.getCustomIntUp2() != null) {
-            TextView valueView = (TextView) view.findViewById(R.id.run_custom2_value);
-            valueView.setText(String.valueOf(data.getCustomIntUp2()));
-        }
-
-        if (data.getCustomIntDown1() != null) {
-            TextView valueView = (TextView) view.findViewById(R.id.run_custom3_value);
-            valueView.setText(String.valueOf(data.getCustomIntDown1()));
-        }
-
-        if (data.getCustomIntDown2() != null) {
-            TextView valueView = (TextView) view.findViewById(R.id.run_custom4_value);
-            valueView.setText(String.valueOf(data.getCustomIntDown2()));
-        }
-
-        if (data.getCustomStr1() != null) {
-            TextView valueView = (TextView) view.findViewById(R.id.run_custom5_value);
-            valueView.setText(String.valueOf(data.getCustomStr1()));
-        }
-
-        if (data.getCustomStr2() != null) {
-            TextView valueView = (TextView) view.findViewById(R.id.run_custom6_value);
-            valueView.setText(String.valueOf(data.getCustomStr2()));
+        AvPhoneObject model = objectsManager.getCurrentObject();
+        for (AvPhoneObjectData ldata:model.datas){
+            TextView valueView = null;
+            String text;
+            if (ldata.isInteger()){
+                text = ldata.current.toString();
+            }else{
+                text = ldata.defaults;
+            }
+            switch (ldata.label) {
+                case "1":
+                    valueView = (TextView) view.findViewById(R.id.run_custom1_value);
+                    break;
+                case "2":
+                    valueView = (TextView) view.findViewById(R.id.run_custom2_value);
+                    break;
+                case "3":
+                    valueView = (TextView) view.findViewById(R.id.run_custom3_value);
+                    break;
+                case "4":
+                    valueView = (TextView) view.findViewById(R.id.run_custom4_value);
+                    break;
+                case "5":
+                    valueView = (TextView) view.findViewById(R.id.run_custom5_value);
+                    break;
+                case "6":
+                    valueView = (TextView) view.findViewById(R.id.run_custom6_value);
+                    break;
+            }
+            if (valueView != null) {
+                valueView.setText(text);
+            }
         }
     }
 

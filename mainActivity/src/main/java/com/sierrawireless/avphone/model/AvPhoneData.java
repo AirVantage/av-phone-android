@@ -16,6 +16,7 @@ public class AvPhoneData {
     public static final String RUNNING_APPS = "phone.runningapps";
     public static final String MEMORY_USAGE = "phone.memoryusage";
     public static final String ANDROID_VERSION = "phone.androidversion";
+    public static final String CUSTOM = "phone.custom.";
     public static final String CUSTOM_1 = "phone.custom.1";
     public static final String CUSTOM_2 = "phone.custom.2";
     public static final String CUSTOM_3 = "phone.custom.3";

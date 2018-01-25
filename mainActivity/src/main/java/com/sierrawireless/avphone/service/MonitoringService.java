@@ -10,6 +10,7 @@ import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -25,7 +26,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.CellInfo;
 import android.telephony.CellInfoGsm;
 import android.telephony.CellInfoLte;
-import android.telephony.CellInfoWcdma;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -33,8 +33,11 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.sierrawireless.avphone.MainActivity;
+import com.sierrawireless.avphone.ObjectsManager;
 import com.sierrawireless.avphone.R;
 import com.sierrawireless.avphone.auth.Authentication;
+import com.sierrawireless.avphone.model.AvPhoneObject;
+import com.sierrawireless.avphone.tools.MyPreference;
 
 import net.airvantage.utils.PreferenceUtils;
 
@@ -43,6 +46,7 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -80,12 +84,14 @@ public class MonitoringService extends Service {
     private Location networkLocation = null;
     private Location gpsLocation = null;
     private LocationListener networkLocationListener;
-    private LocationListener gpsLocationListener;
+    private LocationListener gpsLocationListener;;
+    private ObjectsManager objectsManager;
 
     @Override
     public void onCreate() {
         // Unique Identification Number for the Notification.
         int NOTIFICATION = R.string.notif_title;
+        objectsManager = ObjectsManager.getInstance();
 
         // Display a notification icon
 
@@ -121,18 +127,15 @@ public class MonitoringService extends Service {
 
         lastRun = System.currentTimeMillis();
 
+        AvPhoneObject object = objectsManager.getCurrentObject();
+
         try {
             final Boolean mustConnect = intent.getBooleanExtra(CONNECT, true);
-            Log.e(TAG, "onStartCommand: mustConnect here " + mustConnect  );
 
             /* First we have to create the system if it doesn't exist */
-
             Authentication auth =  PreferenceUtils.readAuthentication(getApplicationContext());
 
-
-
             if (this.client == null) {
-                Log.e(TAG, "onStartCommand: Start connect" );
 
                 //
                 // Ensure intent is valid
@@ -152,12 +155,10 @@ public class MonitoringService extends Service {
                 client = new MqttPushClient(deviceId, password, serverHost, mqttCallback);
             }
             if (!client.isConnected()) {
-                Log.e(TAG, "onStartCommand: client connect called");
                 client.connect();
             }
 
             if (mustConnect) {
-                Log.e(TAG, "onStartCommand: Send Data Called");
                 Location location = getLastKnownLocation();
 
                 // retrieve data
@@ -239,13 +240,11 @@ public class MonitoringService extends Service {
                 data.setBytesReceived(TrafficStats.getMobileRxBytes());
                 data.setBytesSent(TrafficStats.getMobileTxBytes());
 
+                //execute action on current object datas
+                objectsManager.execOnCurrent();
                 // Custom data
-                data.setCustomIntUp1(customDataSource.getCustomIntUp1());
-                data.setCustomIntUp2(customDataSource.getCustomIntUp2());
-                data.setCustomIntDown1(customDataSource.getCustomIntDown1());
-                data.setCustomIntDown2(customDataSource.getCustomIntDown2());
-                data.setCustomStr1(customDataSource.getCustomStr1());
-                data.setCustomStr2(customDataSource.getCustomStr2());
+                data.setCustom();
+
 
                 customDataSource.next(new Date());
 
@@ -392,7 +391,6 @@ public class MonitoringService extends Service {
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog));
             }
         }
-
 
         NewData data = new NewData();
         data.setAlarmActivated(activated);

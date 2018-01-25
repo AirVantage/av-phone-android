@@ -4,7 +4,7 @@ import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
-import com.sierrawireless.avphone.model.AvPhoneModel;
+import com.sierrawireless.avphone.model.AvPhoneObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,14 +34,14 @@ public class MyPreference {
         return new ArrayList<String>(Arrays.asList(TextUtils.split(preferences.getString(key, ""), "‚‗‚")));
     }
 
-    public ArrayList<AvPhoneModel> getListObject(String key, Class<AvPhoneModel> mClass){
+    public ArrayList<AvPhoneObject> getListObject(String key, Class<AvPhoneObject> mClass){
         Gson gson = new Gson();
 
         ArrayList<String> objStrings = getListString(key);
-        ArrayList<AvPhoneModel> objects =  new ArrayList<AvPhoneModel>();
+        ArrayList<AvPhoneObject> objects =  new ArrayList<AvPhoneObject>();
 
         for(String jObjString : objStrings){
-            AvPhoneModel value  = gson.fromJson(jObjString,  mClass);
+            AvPhoneObject value  = gson.fromJson(jObjString,  mClass);
             objects.add(value);
         }
         return objects;
@@ -127,7 +127,7 @@ public class MyPreference {
         putString(key, gson.toJson(obj));
     }
 
-    public void putListObject(String key, ArrayList<AvPhoneModel> objArray){
+    public void putListObject(String key, ArrayList<AvPhoneObject> objArray){
         checkForNullKey(key);
         Gson gson = new Gson();
         ArrayList<String> objStrings = new ArrayList<String>();

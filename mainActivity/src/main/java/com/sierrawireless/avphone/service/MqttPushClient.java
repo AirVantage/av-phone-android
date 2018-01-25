@@ -19,7 +19,10 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.sierrawireless.avphone.DeviceInfo;
+import com.sierrawireless.avphone.ObjectsManager;
 import com.sierrawireless.avphone.model.AvPhoneData;
+import com.sierrawireless.avphone.model.AvPhoneObject;
+import com.sierrawireless.avphone.model.AvPhoneObjectData;
 
 public class MqttPushClient {
     private static final String TAG = "MqttPushClient";
@@ -28,6 +31,8 @@ public class MqttPushClient {
     private MqttConnectOptions opt;
 
     private Gson gson = new Gson();
+
+    private ObjectsManager objectsManager;
 
     @SuppressLint("DefaultLocale")
     public MqttPushClient(String clientId, String password, String serverHost, MqttCallback callback)
@@ -44,6 +49,7 @@ public class MqttPushClient {
         opt.setUserName(clientId.toUpperCase());
         opt.setPassword(password.toCharArray());
         opt.setKeepAliveInterval(30);
+        objectsManager = ObjectsManager.getInstance();
     }
 
     public boolean isConnected() {
@@ -65,10 +71,6 @@ public class MqttPushClient {
         if (client.isConnected()) {
             Log.i(TAG, "Pushing data to the server : " + data);
             String message = this.convertToJson(data);
-
-            Log.d(TAG, "push: json data" + message);
-
-            Log.d(TAG, "Rest content : " + message);
 
             MqttMessage msg = null;
             try {
@@ -165,26 +167,13 @@ public class MqttPushClient {
             values.put(AvPhoneData.ALARM,
                     Collections.singletonList(new DataValue(timestamp, data.isAlarmActivated())));
         }
-
-        if (data.getCustomIntUp1() != null) {
-            values.put(AvPhoneData.CUSTOM_1, Collections.singletonList(new DataValue(timestamp, data.getCustomIntUp1())));
-        }
-        if (data.getCustomIntUp2() != null) {
-            values.put(AvPhoneData.CUSTOM_2, Collections.singletonList(new DataValue(timestamp, data.getCustomIntUp2())));
-        }
-        if (data.getCustomIntDown1() != null) {
-            values.put(AvPhoneData.CUSTOM_3,
-                    Collections.singletonList(new DataValue(timestamp, data.getCustomIntDown1())));
-        }
-        if (data.getCustomIntDown2() != null) {
-            values.put(AvPhoneData.CUSTOM_4,
-                    Collections.singletonList(new DataValue(timestamp, data.getCustomIntDown2())));
-        }
-        if (data.getCustomStr1() != null) {
-            values.put(AvPhoneData.CUSTOM_5, Collections.singletonList(new DataValue(timestamp, data.getCustomStr1())));
-        }
-        if (data.getCustomStr2() != null) {
-            values.put(AvPhoneData.CUSTOM_6, Collections.singletonList(new DataValue(timestamp, data.getCustomStr2())));
+        AvPhoneObject object = objectsManager.getCurrentObject();
+        for (AvPhoneObjectData ldata:object.datas) {
+            if (ldata.isInteger()) {
+                values.put(AvPhoneData.CUSTOM + ldata.label, Collections.singletonList(new DataValue(timestamp, ldata.current)));
+            }else{
+                values.put(AvPhoneData.CUSTOM + ldata.label, Collections.singletonList(new DataValue(timestamp, ldata.defaults)));
+            }
         }
 
         return gson.toJson(Collections.singletonList(values));

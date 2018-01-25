@@ -1,5 +1,6 @@
 package com.sierrawireless.avphone.task;
 
+import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 
 public class SyncWithAvParams {
@@ -9,4 +10,5 @@ public class SyncWithAvParams {
     public String iccid;
     public String deviceName;
     public CustomDataLabels customData;
+    public MainActivity activity;
 }

@@ -186,6 +186,8 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
         params.iccid = DeviceInfo.getICCID(getActivity());
         params.mqttPassword = avPhonePrefs.password;
         params.customData = PreferenceUtils.getCustomDataLabels(getActivity());
+   //     params.current = ((MainActivity)getActivity()).current;
+        params.activity = ((MainActivity)getActivity());
 
         syncAvTask.execute(params);
 

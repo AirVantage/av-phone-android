@@ -34,7 +34,7 @@ public class AvPhoneApplication {
         return Arrays.asList(mqtt);
     }
 
-    public static List<ApplicationData> createApplicationData(CustomDataLabels customData) {
+    public static List<ApplicationData> createApplicationData(ArrayList<AvPhoneObjectData> customData) {
 
         // <data>
         // <encoding type="MQTT">
@@ -68,12 +68,16 @@ public class AvPhoneApplication {
         
         asset.data.add(new Variable(AvPhoneData.ALARM, "Active alarm", "boolean"));
 
-        asset.data.add(new Variable(AvPhoneData.CUSTOM_1, customData.customUp1Label, "int"));
-        asset.data.add(new Variable(AvPhoneData.CUSTOM_2, customData.customUp2Label, "int"));
-        asset.data.add(new Variable(AvPhoneData.CUSTOM_3, customData.customDown1Label, "int"));
-        asset.data.add(new Variable(AvPhoneData.CUSTOM_4, customData.customDown2Label, "int"));
-        asset.data.add(new Variable(AvPhoneData.CUSTOM_5, customData.customStr1Label, "string"));
-        asset.data.add(new Variable(AvPhoneData.CUSTOM_6, customData.customStr2Label, "string"));
+        for (AvPhoneObjectData data:customData) {
+            String type;
+
+            if (data.isInteger()) {
+                type = "int";
+            } else {
+                type = "string";
+            }
+            asset.data.add(new Variable(AvPhoneData.CUSTOM + data.label, data.name, type));
+        }
 
         Command c = new Command(AvPhoneData.NOTIFY, "Notify");
         Parameter p = new Parameter("message", "string");

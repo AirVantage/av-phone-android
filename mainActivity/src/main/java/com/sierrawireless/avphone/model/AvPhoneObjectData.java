@@ -3,7 +3,7 @@ package com.sierrawireless.avphone.model;
 import android.text.TextUtils;
 
 
-public class AvPhoneModelData {
+public class AvPhoneObjectData {
     public enum Mode {
         None,
         UP,
@@ -15,10 +15,10 @@ public class AvPhoneModelData {
     public String unit;
     public String defaults;
     public Mode mode;
-    private Integer current=null;
-    private String label;
+    public Integer current=null;
+    public String label;
 
-    public AvPhoneModelData(String name, String unit, String defaults, Mode mode, String label) {
+    public AvPhoneObjectData(String name, String unit, String defaults, Mode mode, String label) {
         this.name = name;
         this.unit = unit;
         this.defaults = defaults;

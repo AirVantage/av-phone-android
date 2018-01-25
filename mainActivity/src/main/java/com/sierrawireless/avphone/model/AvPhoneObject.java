@@ -1,22 +1,16 @@
 package com.sierrawireless.avphone.model;
 
 import java.util.ArrayList;
-import java.util.List;
 
-/**
- * Created by JDamiano on 24/01/2018.
- */
-
-public class AvPhoneModel {
+public class AvPhoneObject {
     public String name;
-    ArrayList<AvPhoneModelData> datas;
-    private static AvPhoneModel instance = null;
+    public ArrayList<AvPhoneObjectData> datas;
 
-    public AvPhoneModel() {
+    public AvPhoneObject() {
         datas = new ArrayList<>();
     }
 
-    public void add(AvPhoneModelData data ) {
+    public void add(AvPhoneObjectData data ) {
         datas.add(data);
     }
 
@@ -24,13 +18,17 @@ public class AvPhoneModel {
         String returned = "{";
         returned = returned + "\"name\" : \"" + name + "\",";
         returned = returned + "\"datas\":[";
-        for (AvPhoneModelData data: datas) {
+        for (AvPhoneObjectData data: datas) {
             returned = returned + data.toString()+",";
         }
         returned = returned + "]}";
         return returned;
     }
 
-
+    public void exec() {
+        for (AvPhoneObjectData data: datas) {
+            data.execMode();
+        }
+    }
 
 }

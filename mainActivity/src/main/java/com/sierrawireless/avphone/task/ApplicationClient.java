@@ -14,6 +14,7 @@ import net.airvantage.utils.IAirVantageClient;
 import net.airvantage.utils.Utils;
 
 import com.sierrawireless.avphone.model.AvPhoneApplication;
+import com.sierrawireless.avphone.model.AvPhoneObjectData;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 
 public class ApplicationClient implements IApplicationClient {
@@ -36,7 +37,7 @@ public class ApplicationClient implements IApplicationClient {
     }
 
     @Override
-    public void setApplicationData(String applicationUid, CustomDataLabels customData)
+    public void setApplicationData(String applicationUid, ArrayList<AvPhoneObjectData> customData)
             throws IOException, AirVantageException {
         List<ApplicationData> data = AvPhoneApplication.createApplicationData(customData);
         client.setApplicationData(applicationUid, data);

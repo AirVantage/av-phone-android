@@ -3,6 +3,12 @@ package com.sierrawireless.avphone.service;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.sierrawireless.avphone.ObjectsManager;
+import com.sierrawireless.avphone.model.AvPhoneObject;
+import com.sierrawireless.avphone.model.AvPhoneObjectData;
+
+import java.util.ArrayList;
+
 public class NewData extends Intent {
 
     public static final String NEW_DATA = "com.sierrawireless.avphone.newdata";
@@ -26,12 +32,14 @@ public class NewData extends Intent {
 
     private static final String ALARM_KEY = NEW_DATA_PREFIX + "alarm";
 
+    private static final String CUSTOM = NEW_DATA_PREFIX + "custom.";
     private static final String CUSTOM_1 = NEW_DATA_PREFIX + "custom.1";
     private static final String CUSTOM_2 = NEW_DATA_PREFIX + "custom.2";
     private static final String CUSTOM_3 = NEW_DATA_PREFIX + "custom.3";
     private static final String CUSTOM_4 = NEW_DATA_PREFIX + "custom.4";
     private static final String CUSTOM_5 = NEW_DATA_PREFIX + "custom.5";
     private static final String CUSTOM_6 = NEW_DATA_PREFIX + "custom.6";
+    private ObjectsManager objectsManager;
 
     public NewData() {
         super(NEW_DATA);
@@ -193,63 +201,15 @@ public class NewData extends Intent {
         return this.getExtras().size();
     }
 
-    public Integer getCustomIntUp1() {
-        return (Integer) this.getExtras().get(CUSTOM_1);
-    }
-
-    public void setCustomIntUp1(Integer custom1) {
-        if (custom1 != null) {
-            this.putExtra(CUSTOM_1, custom1);
-        }
-    }
-
-    public Integer getCustomIntUp2() {
-        return (Integer) this.getExtras().get(CUSTOM_2);
-    }
-
-    public void setCustomIntUp2(Integer custom2) {
-        if (custom2 != null) {
-            this.putExtra(CUSTOM_2, custom2);
-        }
-    }
-
-    public Integer getCustomIntDown2() {
-        return (Integer) this.getExtras().get(CUSTOM_4);
-    }
-
-    public void setCustomIntDown2(Integer custom2) {
-        if (custom2 != null) {
-            this.putExtra(CUSTOM_4, custom2);
-        }
-    }
-
-    public Integer getCustomIntDown1() {
-        return (Integer) this.getExtras().get(CUSTOM_3);
-    }
-
-    public void setCustomIntDown1(Integer custom1) {
-        if (custom1 != null) {
-            this.putExtra(CUSTOM_3, custom1);
-        }
-    }
-
-    public String getCustomStr1() {
-        return (String) this.getExtras().get(CUSTOM_5);
-    }
-
-    public String getCustomStr2() {
-        return (String) this.getExtras().get(CUSTOM_6);
-    }
-
-    public void setCustomStr1(String customStr1) {
-        if (customStr1 != null) {
-            this.putExtra(CUSTOM_5, customStr1);
-        }
-    }
-
-    public void setCustomStr2(String customStr2) {
-        if (customStr2 != null) {
-            this.putExtra(CUSTOM_6, customStr2);
+    public void setCustom() {
+        objectsManager = ObjectsManager.getInstance();
+        AvPhoneObject object = objectsManager.getCurrentObject();
+        for (AvPhoneObjectData data:object.datas) {
+            if (data.isInteger()){
+                this.putExtra(CUSTOM+data.label, Integer.parseInt(data.execMode()));
+            }else{
+                this.putExtra(CUSTOM + data.label, data.defaults);
+            }
         }
     }
 

@@ -1,18 +1,19 @@
 package com.sierrawireless.avphone.task;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Application;
 import net.airvantage.model.AvSystem;
 
-import com.sierrawireless.avphone.model.CustomDataLabels;
+import com.sierrawireless.avphone.model.AvPhoneObjectData;
 
 public interface IApplicationClient {
 
     Application ensureApplicationExists() throws IOException, AirVantageException;
 
-    void setApplicationData(String applicationUid, CustomDataLabels customData) throws IOException, AirVantageException;
+    void setApplicationData(String applicationUid, ArrayList<AvPhoneObjectData> customData) throws IOException, AirVantageException;
 
     Application createApplication() throws IOException, AirVantageException;
 
