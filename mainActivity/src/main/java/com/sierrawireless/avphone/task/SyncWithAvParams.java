@@ -12,4 +12,5 @@ public class SyncWithAvParams {
     public CustomDataLabels customData;
     public MainActivity activity;
     public boolean delete = false;
+    public boolean user = false;
 }

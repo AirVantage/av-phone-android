@@ -42,6 +42,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
     @SuppressLint("StaticFieldLeak")
     private Context context;
 
+
     SyncWithAvTask(IApplicationClient applicationClient, ISystemClient systemClient,
                    IAlertRuleClient alertRuleClient, IUserClient userClient, Context context) {
         this.applicationClient = applicationClient;
@@ -71,6 +72,10 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
             String systemType;
             final SyncWithAvParams syncParams = params[0];
             final User user = userClient.getUser();
+            if (syncParams.user) {
+                publishProgress(SyncProgress.DONE);
+                new SyncWithAvResult(null, user);
+            }
             final String imei = syncParams.imei;
             final String iccid = syncParams.iccid;
             final String deviceName = syncParams.deviceName;
