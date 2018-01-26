@@ -204,12 +204,14 @@ public class NewData extends Intent {
     public void setCustom() {
         objectsManager = ObjectsManager.getInstance();
         AvPhoneObject object = objectsManager.getCurrentObject();
+        Integer pos = 1;
         for (AvPhoneObjectData data:object.datas) {
             if (data.isInteger()){
-                this.putExtra(CUSTOM+data.label, Integer.parseInt(data.execMode()));
+                this.putExtra(CUSTOM + pos.toString(), Integer.parseInt(data.execMode()));
             }else{
-                this.putExtra(CUSTOM + data.label, data.defaults);
+                this.putExtra(CUSTOM + pos.toString(), data.defaults);
             }
+            pos ++;
         }
     }
 

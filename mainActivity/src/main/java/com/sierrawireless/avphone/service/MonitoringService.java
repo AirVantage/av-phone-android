@@ -37,6 +37,7 @@ import com.sierrawireless.avphone.ObjectsManager;
 import com.sierrawireless.avphone.R;
 import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.model.AvPhoneObject;
+import com.sierrawireless.avphone.tools.Constant;
 import com.sierrawireless.avphone.tools.MyPreference;
 
 import net.airvantage.utils.PreferenceUtils;
@@ -67,6 +68,7 @@ public class MonitoringService extends Service {
     public static final String SERVER_HOST = "server_host";
     public static final String PASSWORD = "password";
     public static final String CONNECT = "connect";
+    public static final String OBJECT_NAME ="objname";
 
     private MqttPushClient client = null;
 
@@ -77,6 +79,7 @@ public class MonitoringService extends Service {
     private NewData lastData = new NewData();
     /* the date of the last location reading */
     private long lastLocation;
+
 
     private CustomDataSource customDataSource;
 
@@ -91,6 +94,7 @@ public class MonitoringService extends Service {
     public void onCreate() {
         // Unique Identification Number for the Notification.
 
+        Log.d(TAG, "onCreate: " + this);
         objectsManager = ObjectsManager.getInstance();
 
         // Display a notification icon
@@ -139,6 +143,8 @@ public class MonitoringService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         lastRun = System.currentTimeMillis();
+        objectsManager = ObjectsManager.getInstance();
+        AvPhoneObject object = objectsManager.getCurrentObject();
 
 
         try {
@@ -152,7 +158,7 @@ public class MonitoringService extends Service {
                 //
                 // Ensure intent is valid
                 //
-                final String deviceId = intent.getStringExtra(DEVICE_ID) + "-ANDROID-" + "PRINTER";
+                final String deviceId = Constant.buildSerialNumber(intent.getStringExtra(DEVICE_ID), object.name);;
                 final String password = intent.getStringExtra(PASSWORD);
                 final String serverHost = intent.getStringExtra(SERVER_HOST);
 

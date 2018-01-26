@@ -9,6 +9,8 @@ public interface ISystemClient {
 
     AvSystem getSystem(String serialNumber, String type) throws IOException, AirVantageException;
 
+    void deleteSystem(AvSystem system) throws IOException, AirVantageException;
+
     AvSystem createSystem(String serialNumber, String iccid, String type, String mqttPassword, String applicationUid, String deviceName, String userName, String imei)
             throws IOException, AirVantageException;
 

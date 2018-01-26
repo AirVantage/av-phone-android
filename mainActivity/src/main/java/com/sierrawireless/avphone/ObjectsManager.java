@@ -2,6 +2,7 @@ package com.sierrawireless.avphone;
 
 
 import android.content.Context;
+import android.util.Log;
 
 import com.sierrawireless.avphone.model.AvPhoneObject;
 import com.sierrawireless.avphone.model.AvPhoneObjectData;
@@ -18,8 +19,9 @@ public class ObjectsManager {
     public static String ACTIVE = "active";
     public int current;
     public String currentName;
+    public int savedPosition = -1;
 
-    private ArrayList<AvPhoneObject> objects;
+    public ArrayList<AvPhoneObject> objects;
 
 
     public static ObjectsManager getInstance(){
@@ -61,7 +63,16 @@ public class ObjectsManager {
             current = 0;
             saveOnPref();
         }
+        if (savedPosition == -1) {
+            savedPosition = current;
+        }
         currentName = objects.get(current).name;
+    }
+
+    public void removeSavedObject() {
+        objects.remove(savedPosition);
+        savedPosition = current;
+        saveOnPref();
     }
 
     private void saveOnPref() {
@@ -69,6 +80,16 @@ public class ObjectsManager {
         // Save the list for later
         pref.putListObject(MODELS, objects);
         pref.putInt(ACTIVE, current);
+    }
+
+    public void reload() {
+
+        MyPreference pref = new MyPreference(mainActivyty.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE));
+
+
+        objects = pref.getListObject(MODELS, AvPhoneObject.class);
+        current = pref.getInt(ACTIVE);
+
     }
 
     public void execOnCurrent() {
@@ -80,15 +101,36 @@ public class ObjectsManager {
     }
 
     public void changeCurrent(String name) {
+        Log.d(TAG, "changeCurrent: change axctive to " + name + " current before " + current);
         Integer indice = 0;
         for (AvPhoneObject object: objects) {
             if (object.name == name) {
                 current = indice;
+                Log.d(TAG, "changeCurrent: current after " + current);
                 saveOnPref();
                 return;
             }
             indice++;
         }
+    }
+
+    public void  setSavedPosition(int position) {
+        savedPosition = position;
+    }
+
+    public AvPhoneObject getSavecObject() {
+        return objects.get(savedPosition);
+    }
+
+    public String getSavedObjectName() {
+        return objects.get(savedPosition).name;
+    }
+
+    public AvPhoneObject getObjectByIndex(int position) {
+        if (position > objects.size()) {
+            return null;
+        }
+        return objects.get(position);
     }
 
     public AvPhoneObject getCurrentObject() {
@@ -109,6 +151,11 @@ public class ObjectsManager {
 
     public String getCurrentObjectName() {
         return objects.get(current).name;
+    }
+
+    public void save() {
+        saveOnPref();
+
     }
 
 

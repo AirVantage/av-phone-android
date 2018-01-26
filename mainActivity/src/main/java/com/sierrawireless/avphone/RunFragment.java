@@ -4,10 +4,9 @@ import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Html;
@@ -23,6 +22,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.sierrawireless.avphone.adapter.RunListViewAdapter;
+import com.sierrawireless.avphone.auth.AuthUtils;
+import com.sierrawireless.avphone.auth.Authentication;
+import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.model.AvPhoneObject;
 import com.sierrawireless.avphone.model.AvPhoneObjectData;
 import com.sierrawireless.avphone.model.CustomDataLabels;
@@ -30,13 +32,17 @@ import com.sierrawireless.avphone.service.LogMessage;
 import com.sierrawireless.avphone.service.MonitoringService;
 import com.sierrawireless.avphone.service.NewData;
 import com.sierrawireless.avphone.task.IAsyncTaskFactory;
+import com.sierrawireless.avphone.task.SyncWithAvListener;
+import com.sierrawireless.avphone.task.SyncWithAvParams;
+import com.sierrawireless.avphone.task.SyncWithAvResult;
+import com.sierrawireless.avphone.task.SyncWithAvTask;
 import com.sierrawireless.avphone.tools.Constant;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class RunFragment extends AvPhoneFragment implements MonitorServiceListener, CustomLabelsListener {
+    private static final String TAG = "RunFragment";
 
     private static final String LOGTAG = RunFragment.class.getName();
 
@@ -96,6 +102,9 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: " + this);
+        objectsManager = ObjectsManager.getInstance();
+        objectsManager.changeCurrent(objectName);
 
         view = inflater.inflate(R.layout.fragment_run, container, false);
         viewUpdater = new DataViewUpdater(view, (MainActivity)getActivity());
@@ -114,8 +123,13 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         SwitchCompat serviceSwitch = (SwitchCompat) view.findViewById(R.id.service_switch);
         serviceSwitch.setChecked(isServiceRunning);
 
-        if (!this.monitorServiceManager.isServiceStarted()) {
-            this.monitorServiceManager.startMonitoringService();
+        if (!this.monitorServiceManager.isServiceStarted(objectName)) {
+            if (this.monitorServiceManager.oneServiceStarted()) {
+                //stop the service
+                this.monitorServiceManager.stopMonitoringService();
+            }
+            //registerNewDevice();
+            this.monitorServiceManager.startMonitoringService(objectName);
         }
 
         serviceSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -197,6 +211,77 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
 
         return view;
+    }
+
+    private boolean checkCredentials() {
+
+        AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(getActivity());
+
+        if (!prefs.checkCredentials()) {
+            PreferenceUtils.showMissingPrefsDialog(getActivity());
+            return false;
+        }
+
+        return true;
+
+    }
+
+    private void registerNewDevice() {
+        if (checkCredentials()) {
+            Authentication auth = authManager.getAuthentication();
+            if (auth != null && !auth.isExpired()) {
+                syncWithAv(auth.getAccessToken());
+            } else {
+                requestAuthentication();
+            }
+        }
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == AuthorizationActivity.REQUEST_AUTHORIZATION) {
+            Authentication auth = AuthUtils.activityResultAsAuthentication(requestCode, resultCode, data);
+            if (auth != null) {
+                authManager.onAuthentication(auth);
+                syncWithAv(auth.getAccessToken());
+            }
+        }
+    }
+
+    private void syncWithAv(String token) {
+
+        AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(getActivity());
+        final IMessageDisplayer display = this;
+
+        final SyncWithAvTask syncAvTask = taskFactory.syncAvTask(prefs.serverHost, token);
+
+
+        final SyncWithAvParams params = new SyncWithAvParams();
+
+        params.deviceId = DeviceInfo.getUniqueId(getActivity());
+        params.imei = DeviceInfo.getIMEI(getActivity());
+        params.deviceName = DeviceInfo.getDeviceName();
+        params.iccid = DeviceInfo.getICCID(getActivity());
+        params.mqttPassword = prefs.password;
+        params.customData = PreferenceUtils.getCustomDataLabels(getActivity());
+        //     params.current = ((MainActivity)getActivity()).current;
+        params.activity = ((MainActivity)getActivity());
+
+        syncAvTask.execute(params);
+        syncAvTask.addProgressListener(new SyncWithAvListener() {
+            @Override
+            public void onSynced(SyncWithAvResult result) {
+                syncAvTask.showResult(result, display, getActivity());
+
+                if (!result.isError()) {
+                    syncListener.onSynced(result);
+                }
+
+            }
+        });
+
+
     }
 
     public void setLinkToSystem(String systemUid, String systemName) {

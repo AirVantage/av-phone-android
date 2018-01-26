@@ -80,6 +80,7 @@ public abstract class AvPhoneFragment extends Fragment implements IMessageDispla
     }
 
     protected void requestAuthentication() {
+
         Intent intent = new Intent(this.getActivity(), AuthorizationActivity.class);
         this.startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION);
     }

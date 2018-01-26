@@ -82,7 +82,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
             final MainActivity activity = syncParams.activity;
             objectsManager = ObjectsManager.getInstance();
 
-            systemType = objectsManager.getCurrentObjectName();
+            systemType = objectsManager.getSavedObjectName();
 
             // For emulator and iOs compatibility sake, using generated serial.
             final String serialNumber =  DeviceInfo.generateSerial(user.uid, systemType);
@@ -93,6 +93,17 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
                 mainActivity.setSystemSerial(serialNumber);
             }
 
+            if (syncParams.delete == true) {
+                publishProgress(SyncProgress.CHECKING_SYSTEM);
+                net.airvantage.model.AvSystem system = this.systemClient.getSystem(serialNumber, systemType);
+                if (system != null) {
+                    publishProgress(SyncProgress.DELETING_SYSTEM);
+                    systemClient.deleteSystem(system);
+                }
+                publishProgress(SyncProgress.DONE);
+                return new SyncWithAvResult(null, user);
+
+            }
             publishProgress(SyncProgress.CHECKING_APPLICATION);
 
             Application application = this.applicationClient.ensureApplicationExists();
@@ -119,7 +130,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
 
             publishProgress(SyncProgress.UPDATING_APPLICATION);
 
-            this.applicationClient.setApplicationData(application.uid, objectsManager.getCurrentObject().datas);
+            this.applicationClient.setApplicationData(application.uid, objectsManager.getSavecObject().datas);
 
             if (!hasApplication(system, application)) {
 

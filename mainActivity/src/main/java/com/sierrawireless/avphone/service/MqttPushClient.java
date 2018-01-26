@@ -71,6 +71,7 @@ public class MqttPushClient {
         if (client.isConnected()) {
             Log.i(TAG, "Pushing data to the server : " + data);
             String message = this.convertToJson(data);
+            Log.i(TAG, "push: message " + message);
 
             MqttMessage msg = null;
             try {
@@ -168,12 +169,14 @@ public class MqttPushClient {
                     Collections.singletonList(new DataValue(timestamp, data.isAlarmActivated())));
         }
         AvPhoneObject object = objectsManager.getCurrentObject();
+        Integer pos = 1;
         for (AvPhoneObjectData ldata:object.datas) {
             if (ldata.isInteger()) {
-                values.put(AvPhoneData.CUSTOM + ldata.label, Collections.singletonList(new DataValue(timestamp, ldata.current)));
+                values.put(AvPhoneData.CUSTOM + pos.toString(), Collections.singletonList(new DataValue(timestamp, ldata.current)));
             }else{
-                values.put(AvPhoneData.CUSTOM + ldata.label, Collections.singletonList(new DataValue(timestamp, ldata.defaults)));
+                values.put(AvPhoneData.CUSTOM + pos.toString(), Collections.singletonList(new DataValue(timestamp, ldata.defaults)));
             }
+            pos++;
         }
 
         return gson.toJson(Collections.singletonList(values));

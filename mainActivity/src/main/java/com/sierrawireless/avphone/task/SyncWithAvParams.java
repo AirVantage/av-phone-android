@@ -11,4 +11,5 @@ public class SyncWithAvParams {
     public String deviceName;
     public CustomDataLabels customData;
     public MainActivity activity;
+    public boolean delete = false;
 }

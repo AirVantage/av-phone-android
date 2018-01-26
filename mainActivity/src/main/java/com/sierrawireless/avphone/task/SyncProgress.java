@@ -13,7 +13,8 @@ public enum SyncProgress {
     CREATING_ALERT_RULE(R.string.progress_creating_alert_rule, 5),
     UPDATING_APPLICATION(R.string.progress_updating_application, 6),
     ADDING_APPLICATION(R.string.progress_adding_application, 7),
-    DONE(R.string.progress_done, 8);
+    DELETING_SYSTEM(R.string.progress_deleting_system, 8),
+    DONE(R.string.progress_done, 9);
     
     public final int stringId;
     public final int value;

@@ -85,6 +85,9 @@ public class AuthorizationActivity extends Activity {
         } else {
             btnCustom.setVisibility(Button.GONE);
         }
+        AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this);
+        final String serverHost = avPhonePrefs.serverHost;
+
 
         openAuthorizationPage();
     }

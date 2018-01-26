@@ -4,7 +4,7 @@ import android.text.TextUtils;
 
 
 public class AvPhoneObjectData {
-    public enum Mode {
+     public enum Mode {
         None,
         UP,
         DOWN
@@ -44,6 +44,7 @@ public class AvPhoneObjectData {
 
 
     public Boolean isInteger() {
+        if (defaults.isEmpty()) { return false;}
         return TextUtils.isDigitsOnly(defaults);
     }
 
@@ -83,6 +84,30 @@ public class AvPhoneObjectData {
         if (current > 0 )
             current --;
         return current.toString();
+    }
+
+    public int modePosition() {
+        switch (mode) {
+            case None:
+                return 0;
+            case UP:
+                return 1;
+            case DOWN:
+                return 2;
+        }
+        return 0;
+    }
+
+    static public Mode modeFromPosition(int position) {
+        switch (position) {
+            case 0:
+                return Mode.None;
+            case 1:
+                return Mode.UP;
+            case 2:
+                return Mode.DOWN;
+        }
+        return Mode.None;
     }
 
 

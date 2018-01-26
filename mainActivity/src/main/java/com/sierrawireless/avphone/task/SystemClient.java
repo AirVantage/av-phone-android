@@ -42,7 +42,7 @@ public class SystemClient implements ISystemClient {
 
         if (!exist) {
             gateway.serialNumber = (serialNumber + "-ANDROID-" + type).toUpperCase();
-            gateway.imei = imei;
+           // gateway.imei = imei + type;
             gateway.type = type;
         }else{
             gateway.serialNumber = (serialNumber + "-ANDROID-" + type).toUpperCase();
@@ -67,6 +67,11 @@ public class SystemClient implements ISystemClient {
         system.type = type;
 
         return client.createSystem(system);
+    }
+
+    @Override
+    public void deleteSystem(net.airvantage.model.AvSystem system)throws IOException, AirVantageException {
+        client.deleteSystem(system);
     }
 
 }

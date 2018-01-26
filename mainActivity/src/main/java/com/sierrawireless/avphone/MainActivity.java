@@ -35,6 +35,7 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.ndk.CrashlyticsNdk;
 import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.auth.AuthenticationManager;
+import com.sierrawireless.avphone.model.AvPhoneObject;
 import com.sierrawireless.avphone.service.MonitoringService;
 import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder;
 import com.sierrawireless.avphone.task.AsyncTaskFactory;
@@ -68,6 +69,7 @@ public class MainActivity extends FragmentActivity
     private static final String PREFERENCE_SYSTEM_SERIAL = "systemSerial";
     private static final String PREFERENCE_USER_NAME = "userName";
     private static final String PREFERENCE_USER_UID = "userUid";
+    private String objectName;
 
     private ActionBar actionBar;
     private AlarmManager alarmManager;
@@ -86,27 +88,29 @@ public class MainActivity extends FragmentActivity
 
     private final static String FRAGMENT_HOME = "Home";
     private final static String FRAGMENT_RUN = "Run";
-    private final static String FRAGMENT_CONFIGURE = "Objects";
+    private final static String FRAGMENT_CONFIGURE = "Objects...";
     private final static String FRAGMENT_SETTINGS = "Settings";
     private final static String FRAGMENT_FAQ = "FAQ";
 
     private ConfigureFragment configureFragment;
     private HomeFragment homeFragment;
-    private RunFragment runFragment;
+    private ArrayList<RunFragment> runFragment;
 
     private int lastPosition = 0;
 
     private Boolean serviceSendData = false;
     ObjectsManager objectsManager;
 
-    SharedPreferences preferences;
+    static MainActivity instance;
 
     private static String[] FRAGMENT_LIST;
 
     public String[] buildFragmentList() {
         ArrayList<String> tmp = new ArrayList<>();
         tmp.add(FRAGMENT_HOME);
-        tmp.add(objectsManager.getCurrentObjectName());
+        for (AvPhoneObject object: objectsManager.objects) {
+            tmp.add(object.name);
+        }
         tmp.add(FRAGMENT_CONFIGURE);
         tmp.add(FRAGMENT_SETTINGS);
         tmp.add(FRAGMENT_FAQ);
@@ -118,9 +122,15 @@ public class MainActivity extends FragmentActivity
         this.customLabelsListener = customLabelsListener;
     }
 
+    static MainActivity getInstance() {
+        return instance;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        MainActivity.instance = this;
         // Initialization og Object Manager
         objectsManager = ObjectsManager.getInstance();
         objectsManager.init(this);
@@ -136,13 +146,9 @@ public class MainActivity extends FragmentActivity
 
         taskFactory = new AsyncTaskFactory(MainActivity.this);
 
-        FRAGMENT_LIST = buildFragmentList();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerListView = (ListView) findViewById(R.id.left_drawer);
-        drawerListView.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_item, buildFragmentList()));
+        loadMenu();
 
-        drawerListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        // Set the list's click listener
         drawerListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView parent, View view, int position, long id) {
@@ -156,6 +162,18 @@ public class MainActivity extends FragmentActivity
                 R.string.drawer_close);
         drawerLayout.setDrawerListener(drawerToggle);
 
+
+    }
+
+    public void loadMenu() {
+        FRAGMENT_LIST = buildFragmentList();
+        drawerListView = (ListView) findViewById(R.id.left_drawer);
+
+        drawerListView.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_item, buildFragmentList()));
+
+        drawerListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        // Set the list's click listener
+        drawerListView.invalidateViews();
         final Map<String, Fragment> fragments = initFragments();
         final Fragment currentFragment;
         if (isLogged()) {
@@ -179,8 +197,8 @@ public class MainActivity extends FragmentActivity
         }
 
         selectItem(currentFragment);
-    }
 
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -189,6 +207,7 @@ public class MainActivity extends FragmentActivity
         drawerListView.setSelection(lastPosition);
         drawerListView.refreshDrawableState();
         //drawerListView.setSelection();
+
     }
 
     @Override
@@ -327,7 +346,28 @@ public class MainActivity extends FragmentActivity
 
     }
 
-    public boolean isServiceStarted() {
+    public boolean isServiceStarted(String name) {
+        if (this.objectName != name) {
+            return false;
+        }
+        //return serviceSendData;
+
+        ActivityManager manager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
+        if (manager == null) {
+            Log.e(TAG, "isServiceRunning: can't get activity service");
+            Toast.makeText(getApplicationContext(), "can't get activity service" ,Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (MonitoringService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    public boolean oneServiceStarted() {
         //return serviceSendData;
 
         ActivityManager manager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
@@ -388,7 +428,8 @@ public class MainActivity extends FragmentActivity
     }
 
     @Override
-    public void startMonitoringService() {
+    public void startMonitoringService(String name) {
+        this.objectName = name;
         AvPhonePrefs avPrefs = PreferenceUtils.getAvPhonePrefs(this);
 
         Intent intent = new Intent(this, MonitoringService.class);
@@ -396,6 +437,7 @@ public class MainActivity extends FragmentActivity
         intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost);
         intent.putExtra(MonitoringService.PASSWORD, avPrefs.password);
         intent.putExtra(MonitoringService.CONNECT, false);
+        intent.putExtra(MonitoringService.OBJECT_NAME, name);
 
 
         PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent,
@@ -449,7 +491,7 @@ public class MainActivity extends FragmentActivity
 
     private void restartMonitoringService() {
         stopMonitoringService();
-        startMonitoringService();
+        startMonitoringService(objectName);
     }
 
     @Override
@@ -472,6 +514,9 @@ public class MainActivity extends FragmentActivity
     public void onSynced(SyncWithAvResult result) {
 
         final AvSystem system = result.getSystem();
+        if (system == null){
+            return;
+        }
         prefs.edit().putString("systemUid", system.uid).apply();
         prefs.edit().putString(PREFERENCE_SYSTEM_NAME, system.name).apply();
 
@@ -485,7 +530,9 @@ public class MainActivity extends FragmentActivity
         if (runFragment != null) {
             String systemUid = this.getSystemUid();
             String systemName = this.getSystemName();
-            runFragment.setLinkToSystem(systemUid, systemName);
+            for (RunFragment tmp:runFragment) {
+                tmp.setLinkToSystem(systemUid, systemName);
+            }
         } else {
             Log.w(TAG, "RunFragment reference is null when onSynced is called");
         }
@@ -530,6 +577,7 @@ public class MainActivity extends FragmentActivity
         getFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content_frame, fragment)
+                .addToBackStack(null)
                 .commit();
 
         // Highlight the selected item, update the title, and close the drawer
@@ -540,6 +588,23 @@ public class MainActivity extends FragmentActivity
         lastPosition = position;
     }
 
+    public void goHomeFragment() {
+        final Fragment fragment = getFragment(0);
+        // Insert the fragment by replacing any existing fragment
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .addToBackStack(null)
+                .commit();
+
+        // Highlight the selected item, update the title, and close the drawer
+        drawerListView.setItemChecked(0, true);
+        setTitle(FRAGMENT_LIST[0]);
+        drawerListView.setSelection(0);
+        drawerLayout.closeDrawer(drawerListView);
+        lastPosition = 0;
+
+    }
     private void selectItem(final Fragment fragment) {
         final Iterator<Fragment> fragmentsIterator = initFragments().values().iterator();
         for (int position = 0; fragmentsIterator.hasNext(); position++) {
@@ -564,18 +629,26 @@ public class MainActivity extends FragmentActivity
             homeFragment.setTaskFactory(taskFactory);
         }
 
+        runFragment = new ArrayList<>();
 
-        if (runFragment == null) {
-            runFragment = new RunFragment();
-            runFragment.setTaskFactory(taskFactory);
-            runFragment.setObjectName(objectsManager.getCurrentObjectName());
+        RunFragment tmp;
+        for (AvPhoneObject object: objectsManager.objects) {
+            tmp = new RunFragment();
+            tmp.setTaskFactory(taskFactory);
+            tmp.setObjectName(object.name);
+            runFragment.add(tmp);
         }
+
 
         final HashMap<String, Fragment> fragmentsMapping = new HashMap<>();
         fragmentsMapping.put(FRAGMENT_CONFIGURE, configureFragment);
         fragmentsMapping.put(FRAGMENT_HOME, homeFragment);
         fragmentsMapping.put(FRAGMENT_SETTINGS, new SettingsActivity.SettingsFragment());
-        fragmentsMapping.put(objectsManager.getCurrentObjectName(), runFragment);
+        int pos = 0;
+        for (AvPhoneObject object: objectsManager.objects) {
+            fragmentsMapping.put(object.name, runFragment.get(pos));
+            pos++;
+        }
 
         return fragmentsMapping;
     }

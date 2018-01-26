@@ -111,6 +111,7 @@ public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactory
     protected InputStream sendString(String method, URL url, String bodyString)
             throws IOException, AirVantageException {
 
+
         OutputStream out = null;
         try {
 
@@ -139,7 +140,18 @@ public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactory
 
     protected InputStream put(URL url, Object body) throws IOException, AirVantageException {
         String bodyString = gson.toJson(body);
+        Log.d(TAG, "put: body string is " + bodyString);
         return sendString("PUT", url, bodyString);
+    }
+
+    protected InputStream delete(URL url, Object body) throws IOException, AirVantageException {
+
+
+        HttpURLConnection connection = client.open(url);
+
+        connection.addRequestProperty("Cache-Control", "no-cache");
+        connection.setRequestMethod("DELETE");
+        return readResponse(connection);
     }
 
     protected InputStream get(URL url) throws IOException, AirVantageException {
@@ -278,10 +290,17 @@ public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactory
 
     @Override
     public void updateSystem(AvSystem system) throws IOException, AirVantageException {
-        URL url = new URL(buildEndpoint("/systems/") + system.uid);
+      //  Log.d(TAG, "updateSystem: system is " + system.uid);
+        URL url = new URL(buildEndpoint("/systems/" + system.uid));
         put(url, system);
     }
 
+
+    public void deleteSystem(net.airvantage.model.AvSystem system)  throws IOException, AirVantageException {
+        //  Log.d(TAG, "updateSystem: system is " + system.uid);
+        URL url = new URL(buildEndpoint("/systems/" + system.uid)+"&deleteGateway=true");
+        delete(url, system);
+    }
     public List<net.airvantage.model.Application> getApplications(String type) throws IOException, AirVantageException {
         URL url = new URL(buildEndpoint("/applications") + "&type=" + type + "&fields=uid,name,revision,type,category");
         InputStream in = this.get(url);

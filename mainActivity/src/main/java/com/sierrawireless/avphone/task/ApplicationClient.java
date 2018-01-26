@@ -1,5 +1,7 @@
 package com.sierrawireless.avphone.task;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ import com.sierrawireless.avphone.model.AvPhoneObjectData;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 
 public class ApplicationClient implements IApplicationClient {
+    private static final String TAG = "ApplicationClient";
 
     private IAirVantageClient client;
     private User currentUser = null;
@@ -29,10 +32,13 @@ public class ApplicationClient implements IApplicationClient {
     @Override
     public Application ensureApplicationExists() throws IOException, AirVantageException {
         Application application = getApplication();
+
         if (application == null) {
+            Log.d(TAG, "ensureApplicationExists: Create new application");
             application = createApplication();
             setApplicationCommunication(application.uid);
         }
+        Log.d(TAG, "ensureApplicationExists: application is " + application.uid);
         return application;
     }
 

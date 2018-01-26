@@ -1,5 +1,9 @@
 package com.sierrawireless.avphone.model;
 
+import android.util.Log;
+
+import com.sierrawireless.avphone.ObjectsManager;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,8 +20,9 @@ import net.airvantage.model.Variable;
 
 public class AvPhoneApplication {
 
+    private static final String TAG = "AvPhoneApplication";
     public static final String ALERT_RULE_NAME = "AV Phone raised an alert";
-    private static String type = "Printer";
+    static ObjectsManager objectsManager;
 
     public static Application createApplication(final String userName) {
         Application application = new Application();
@@ -36,6 +41,7 @@ public class AvPhoneApplication {
 
     public static List<ApplicationData> createApplicationData(ArrayList<AvPhoneObjectData> customData) {
 
+        Log.d(TAG, "createApplicationData: ************applicationData called");
         // <data>
         // <encoding type="MQTT">
         // <asset default-label="Android Phone" id="phone">
@@ -68,6 +74,7 @@ public class AvPhoneApplication {
         
         asset.data.add(new Variable(AvPhoneData.ALARM, "Active alarm", "boolean"));
 
+        Integer pos = 1;
         for (AvPhoneObjectData data:customData) {
             String type;
 
@@ -76,7 +83,8 @@ public class AvPhoneApplication {
             } else {
                 type = "string";
             }
-            asset.data.add(new Variable(AvPhoneData.CUSTOM + data.label, data.name, type));
+            asset.data.add(new Variable(AvPhoneData.CUSTOM + pos.toString(), data.name, type));
+            pos ++;
         }
 
         Command c = new Command(AvPhoneData.NOTIFY, "Notify");
@@ -92,11 +100,14 @@ public class AvPhoneApplication {
     }
 
     public static String appName(final String userName) {
-        return "av_phone_" + type + "_" + userName;
+        objectsManager = ObjectsManager.getInstance();
+
+        return "av_phone_" + objectsManager.getSavecObject().name + "_" + userName;
     }
 
     public static String appType(final String userName) {
-        return "av.phone.demo." + type  + userName;
+        objectsManager = ObjectsManager.getInstance();
+        return "av.phone.demo." + objectsManager.getSavecObject().name  + userName;
     }
 
     public static AlertRule createAlertRule() {

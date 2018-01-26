@@ -5,9 +5,10 @@ import com.sierrawireless.avphone.service.MonitoringService;
 
 public interface MonitorServiceManager {
     boolean isServiceRunning();
-    boolean isServiceStarted();
+    boolean isServiceStarted(String name);
+    boolean oneServiceStarted();
     void stopMonitoringService();
-    void startMonitoringService();
+    void startMonitoringService(String name);
     void startSendData();
     void stopSendData();
     void sendAlarmEvent(boolean activated);
