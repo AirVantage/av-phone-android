@@ -30,10 +30,9 @@ public class AlertAdapterV2 extends DefaultAlertAdapter {
 
     private static String LOG_TAG = AlertAdapterV2.class.getName();
 
-    private static String API_PATH = "alertrules";
     private URL alertRuleUrl = null;
 
-    public AlertAdapterV2(String server, String accessToken) {
+    AlertAdapterV2(String server, String accessToken) {
         super(server, accessToken);
     }
 
@@ -59,26 +58,25 @@ public class AlertAdapterV2 extends DefaultAlertAdapter {
     }
 
     @Override
-    public net.airvantage.model.alert.v1.AlertRule createAlertRule(net.airvantage.model.alert.v1.AlertRule alertRule)
+    public void createAlertRule(net.airvantage.model.alert.v1.AlertRule alertRule)
             throws IOException, AirVantageException {
         try {
             AlertRule alertRuleV2 = new AlertRule();
             alertRuleV2.targetType = "SYSTEM";
             alertRuleV2.name = alertRule.name;
             alertRuleV2.message = "Alarm is ON";
-            alertRuleV2.conditions = new ArrayList<Condition>();
+            alertRuleV2.conditions = new ArrayList<>();
             for (net.airvantage.model.alert.v1.Condition condition : alertRule.conditions) {
                 alertRuleV2.conditions.add(convert(condition));
             }
             InputStream in = post(alertRuleUrl(), alertRuleV2);
             alertRuleV2 = gson.fromJson(new InputStreamReader(in), AlertRule.class);
             if (alertRuleV2 != null) {
-                return convert(alertRuleV2);
+                convert(alertRuleV2);
             }
         } catch (final JsonIOException e) {
             Log.e(LOG_TAG, "Unable to create Alert Rule", e);
         }
-        return null;
     }
 
     private static Condition convert(net.airvantage.model.alert.v1.Condition condition) {
@@ -93,24 +91,8 @@ public class AlertAdapterV2 extends DefaultAlertAdapter {
         final Operand rightOperand = new Operand();
         rightOperand.valueStr = condition.value;
 
-        conditionV2.operands = new ArrayList<Operand>(Arrays.asList(leftOperand, rightOperand));
+        conditionV2.operands = new ArrayList<>(Arrays.asList(leftOperand, rightOperand));
         return conditionV2;
-    }
-
-    @Override
-    public net.airvantage.model.alert.v1.AlertRule updateAlertRule(
-            net.airvantage.model.alert.v1.AlertRule alertRule)
-            throws IOException, AirVantageException {
-        try {
-            InputStream in = put(alertRuleUrl(), alertRule);
-            AlertRule alertRuleV2 = gson.fromJson(new InputStreamReader(in), AlertRule.class);
-            if (alertRuleV2 != null) {
-                return convert(alertRuleV2);
-            }
-        } catch (final JsonIOException e) {
-            Log.e(LOG_TAG, "Unable to update Alert Rule", e);
-        }
-        return null;
     }
 
     private URL alertRuleUrl() throws IOException {
@@ -118,6 +100,7 @@ public class AlertAdapterV2 extends DefaultAlertAdapter {
         if (alertRuleUrl != null)
             return alertRuleUrl;
 
+        String API_PATH = "alertrules";
         String urlString = Uri.parse(buildEndpoint(API_PATH)).toString();
         try {
             alertRuleUrl = new URL(urlString);
@@ -129,7 +112,7 @@ public class AlertAdapterV2 extends DefaultAlertAdapter {
         return alertRuleUrl;
     }
 
-    private static net.airvantage.model.alert.v1.AlertRule convert(AlertRule alertRule) {
+    private static void convert(AlertRule alertRule) {
         net.airvantage.model.alert.v1.AlertRule alertRuleV1;
         alertRuleV1 = new net.airvantage.model.alert.v1.AlertRule();
 
@@ -143,11 +126,10 @@ public class AlertAdapterV2 extends DefaultAlertAdapter {
         alertRuleV1.eventType = "event.system.incoming.communication";
 
         // Translating conditions
-        alertRuleV1.conditions = new ArrayList<net.airvantage.model.alert.v1.Condition>();
+        alertRuleV1.conditions = new ArrayList<>();
         for (final Condition condition : alertRule.conditions) {
             alertRuleV1.conditions.add(convert(condition));
         }
-        return alertRuleV1;
     }
 
     private static net.airvantage.model.alert.v1.Condition convert(Condition condition) {
@@ -159,13 +141,13 @@ public class AlertAdapterV2 extends DefaultAlertAdapter {
 
         // Finding values
         Operand operand = Utils.first(condition.operands);
-        List<Serializable> values = new ArrayList<Serializable>();
+        List<Serializable> values = new ArrayList<>();
         values.add(operand.valueStr);
         values.add(operand.valueNum);
         values.add(Utils.first(operand.valuesStr));
 
         // Trimming nulls
-        values.removeAll(Collections.singleton(null));
+     //   values.removeAll(Collections.singleton(null));
         values.removeAll(Collections.singleton(""));
 
         // Pick first one

@@ -1,19 +1,20 @@
 package com.sierrawireless.avphone.task;
 
-import com.sierrawireless.avphone.R;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.text.Html;
 import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
+
+import com.sierrawireless.avphone.R;
 
 public class ProgressSyncWithAvTask extends SyncWithAvTask {
 
     private ProgressDialog dialog;
 
-    public ProgressSyncWithAvTask(IApplicationClient applicationClient, ISystemClient systemClient,
-            IAlertRuleClient alertRuleClient, IUserClient userClient, Context context) {
+    ProgressSyncWithAvTask(IApplicationClient applicationClient, ISystemClient systemClient,
+                           IAlertRuleClient alertRuleClient, IUserClient userClient, Context context) {
         super(applicationClient, systemClient, alertRuleClient, userClient, context);
     }
 
@@ -31,9 +32,11 @@ public class ProgressSyncWithAvTask extends SyncWithAvTask {
 
         dialog.setMessage(getContext().getString(R.string.progress_starting));
         dialog.setProgressDrawable(getContext().getResources().getDrawable(
-                R.drawable.apptheme_progress_horizontal_holo_light));
+                R.drawable.apptheme_progress_horizontal_holo_light, getContext().getTheme()));
+
         dialog.setIndeterminateDrawable(getContext().getResources().getDrawable(
-                R.drawable.apptheme_progress_indeterminate_horizontal_holo_light));
+                R.drawable.apptheme_progress_indeterminate_horizontal_holo_light, getContext().getTheme()));
+
         dialog.show();
 
         // Color has to be set *after* the dialog is shown (see
@@ -45,9 +48,11 @@ public class ProgressSyncWithAvTask extends SyncWithAvTask {
 
         // See http://stackoverflow.com/questions/15271500/how-to-change-alert-dialog-header-divider-color-android
         int alertTitleId = getContext().getResources().getIdentifier("alertTitle", "id", "android");
-        TextView alertTitle = (TextView) dialog.getWindow().getDecorView().findViewById(alertTitleId);
-        alertTitle.setTextColor(getContext().getResources().getColor(R.color.sierrared)); // change title text color
-
+        Window windows = dialog.getWindow();
+        if (windows != null) {
+            TextView alertTitle = (TextView) windows.getDecorView().findViewById(alertTitleId);
+            alertTitle.setTextColor(getContext().getResources().getColor(R.color.sierrared)); // change title text color
+        }
     }
 
     @Override

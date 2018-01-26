@@ -14,10 +14,8 @@ import net.airvantage.model.UserRights;
 
 public interface IAirVantageClient {
 
-    AlertRule createAlertRule(AlertRule alertRule) throws IOException, AirVantageException;
+    void createAlertRule(AlertRule alertRule) throws IOException, AirVantageException;
 
-    AlertRule updateAlertRule(AlertRule alertRule) throws IOException, AirVantageException;
-    
     AlertRule getAlertRuleByName(String name) throws IOException, AirVantageException;
 
     void setApplicationData(String applicationUid, List<ApplicationData> data) throws IOException, AirVantageException;

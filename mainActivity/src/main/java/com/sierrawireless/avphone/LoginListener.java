@@ -1,7 +1,5 @@
 package com.sierrawireless.avphone;
 
-public interface LoginListener {
+interface LoginListener {
 
-    void OnLoginChanged(boolean logged);
-    
 }

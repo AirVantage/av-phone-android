@@ -4,10 +4,9 @@ import java.util.List;
 
 public class Data {
     public String id;
-    public String label;
+    private String label;
     public String type;
-    public String description;
-    public String elementType;
+    private String elementType;
     public List<Data> data;
 
     public Data(String id, String label, String elementType) {

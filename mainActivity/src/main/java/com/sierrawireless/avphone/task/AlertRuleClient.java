@@ -12,7 +12,7 @@ public class AlertRuleClient implements IAlertRuleClient {
 
     private IAirVantageClient client;
 
-    public AlertRuleClient(IAirVantageClient client) {
+    AlertRuleClient(IAirVantageClient client) {
         this.client = client;
     }
     
@@ -23,9 +23,9 @@ public class AlertRuleClient implements IAlertRuleClient {
     }
    
     @Override
-    public AlertRule createAlertRule() throws IOException, AirVantageException {
+    public void createAlertRule() throws IOException, AirVantageException {
         AlertRule alertRule = AvPhoneApplication.createAlertRule();
-        return client.createAlertRule(alertRule);
+        client.createAlertRule(alertRule);
     }
 
     

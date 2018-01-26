@@ -9,14 +9,13 @@ public class AvPhoneObjectData {
         UP,
         DOWN
     }
-    private static final String TAG = "AvPhoneModelData";
 
     public String name;
     public String unit;
     public String defaults;
     public Mode mode;
     public Integer current=null;
-    public String label;
+    private String label;
 
     public AvPhoneObjectData(String name, String unit, String defaults, Mode mode, String label) {
         this.name = name;
@@ -44,8 +43,7 @@ public class AvPhoneObjectData {
 
 
     public Boolean isInteger() {
-        if (defaults.isEmpty()) { return false;}
-        return TextUtils.isDigitsOnly(defaults);
+        return !defaults.isEmpty() && TextUtils.isDigitsOnly(defaults);
     }
 
     public String execMode()  {
@@ -57,7 +55,7 @@ public class AvPhoneObjectData {
         return defaults;
     }
 
-    public String modeToString(Mode mode){
+    private String modeToString(Mode mode){
         switch (mode) {
             case UP:
                 return "Increase indefinitely";

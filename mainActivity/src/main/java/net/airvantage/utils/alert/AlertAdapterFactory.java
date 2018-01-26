@@ -33,7 +33,7 @@ public class AlertAdapterFactory extends AsyncTask<Void, Void, DefaultAlertAdapt
     protected DefaultAlertAdapter doInBackground(Void... params) {
 
         // Mapping of _Alert APIs_ -> Functions handling them
-        HashMap<String, DefaultAlertAdapter> urls = new HashMap<String, DefaultAlertAdapter>();
+        HashMap<String, DefaultAlertAdapter> urls = new HashMap<>();
         urls.put(ALERT_V1_API_PREFIX, new AlertAdapterV1(server, accessToken));
         urls.put(ALERT_V2_API_PREFIX, new AlertAdapterV2(server, accessToken));
 

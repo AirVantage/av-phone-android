@@ -4,25 +4,25 @@ import android.util.Log;
 
 import com.sierrawireless.avphone.ObjectsManager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import net.airvantage.model.alert.v1.AlertRule;
 import net.airvantage.model.Application;
 import net.airvantage.model.ApplicationData;
 import net.airvantage.model.Command;
-import net.airvantage.model.alert.v1.Condition;
 import net.airvantage.model.Data;
 import net.airvantage.model.Parameter;
 import net.airvantage.model.Protocol;
 import net.airvantage.model.Variable;
+import net.airvantage.model.alert.v1.AlertRule;
+import net.airvantage.model.alert.v1.Condition;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class AvPhoneApplication {
 
     private static final String TAG = "AvPhoneApplication";
     public static final String ALERT_RULE_NAME = "AV Phone raised an alert";
-    static ObjectsManager objectsManager;
+    private static ObjectsManager objectsManager;
 
     public static Application createApplication(final String userName) {
         Application application = new Application();
@@ -36,7 +36,7 @@ public class AvPhoneApplication {
         Protocol mqtt = new Protocol();
         mqtt.type = "MQTT";
         mqtt.commIdType = "SERIAL";
-        return Arrays.asList(mqtt);
+        return Collections.singletonList(mqtt);
     }
 
     public static List<ApplicationData> createApplicationData(ArrayList<AvPhoneObjectData> customData) {
@@ -67,10 +67,10 @@ public class AvPhoneApplication {
         applicationData.label = "AV Phone Demo";
         applicationData.encoding = "MQTT";
         applicationData.elementType = "node";
-        applicationData.data = new ArrayList<net.airvantage.model.Data>();
+        applicationData.data = new ArrayList<>();
 
         Data asset = new Data("phone", "Phone", "node");
-        asset.data = new ArrayList<net.airvantage.model.Data>();
+        asset.data = new ArrayList<>();
         
         asset.data.add(new Variable(AvPhoneData.ALARM, "Active alarm", "boolean"));
 
@@ -89,17 +89,17 @@ public class AvPhoneApplication {
 
         Command c = new Command(AvPhoneData.NOTIFY, "Notify");
         Parameter p = new Parameter("message", "string");
-        c.parameters = Arrays.asList(p);
+        c.parameters = Collections.singletonList(p);
 
         asset.data.add(c);
 
         applicationData.data.add(asset);
 
-        return Arrays.asList(applicationData);
+        return Collections.singletonList(applicationData);
 
     }
 
-    public static String appName(final String userName) {
+    private static String appName(final String userName) {
         objectsManager = ObjectsManager.getInstance();
 
         return "av_phone_" + objectsManager.getSavecObject().name + "_" + userName;
@@ -123,7 +123,7 @@ public class AvPhoneApplication {
         alarmCondition.operator = "EQUALS";
         alarmCondition.value = "true";
 
-        rule.conditions = Arrays.asList(alarmCondition);
+        rule.conditions = Collections.singletonList(alarmCondition);
 
         return rule;
     }

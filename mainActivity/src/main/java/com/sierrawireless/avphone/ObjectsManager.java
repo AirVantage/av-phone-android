@@ -12,16 +12,15 @@ import java.util.ArrayList;
 
 public class ObjectsManager {
     private static final String TAG = "ObjectsManager";
-    static ObjectsManager instance = null;
-    MainActivity mainActivyty = null;
-    public static String SHARED_PREFS_FILE = "SavedModels";
-    public static String MODELS = "models";
-    public static String ACTIVE = "active";
+    private static ObjectsManager instance = null;
+    private MainActivity mainActivyty = null;
+    private static String SHARED_PREFS_FILE = "SavedModels";
+    private static String MODELS = "models";
+    private static String ACTIVE = "active";
     public int current;
-    public String currentName;
-    public int savedPosition = -1;
+    private int savedPosition = -1;
 
-    public ArrayList<AvPhoneObject> objects;
+    ArrayList<AvPhoneObject> objects;
 
 
     public static ObjectsManager getInstance(){
@@ -35,7 +34,7 @@ public class ObjectsManager {
         objects = new ArrayList<>();
     }
 
-    public void init(MainActivity activity){
+    void init(MainActivity activity) {
         this.mainActivyty = activity;
         MyPreference pref = new MyPreference(activity.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE));
 
@@ -66,10 +65,9 @@ public class ObjectsManager {
         if (savedPosition == -1) {
             savedPosition = current;
         }
-        currentName = objects.get(current).name;
     }
 
-    public void removeSavedObject() {
+    void removeSavedObject() {
         objects.remove(savedPosition);
         savedPosition = current;
         saveOnPref();
@@ -82,7 +80,7 @@ public class ObjectsManager {
         pref.putInt(ACTIVE, current);
     }
 
-    public void reload() {
+    void reload() {
 
         MyPreference pref = new MyPreference(mainActivyty.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE));
 
@@ -100,11 +98,11 @@ public class ObjectsManager {
         saveOnPref();
     }
 
-    public void changeCurrent(String name) {
+    void changeCurrent(String name) {
         Log.d(TAG, "changeCurrent: change axctive to " + name + " current before " + current);
         Integer indice = 0;
         for (AvPhoneObject object: objects) {
-            if (object.name == name) {
+            if (object.name.equals(name)) {
                 current = indice;
                 Log.d(TAG, "changeCurrent: current after " + current);
                 saveOnPref();
@@ -114,7 +112,7 @@ public class ObjectsManager {
         }
     }
 
-    public void  setSavedPosition(int position) {
+    void  setSavedPosition(int position) {
         savedPosition = position;
     }
 
@@ -126,7 +124,7 @@ public class ObjectsManager {
         return objects.get(savedPosition).name;
     }
 
-    public AvPhoneObject getObjectByIndex(int position) {
+    AvPhoneObject getObjectByIndex(int position) {
         if (position > objects.size()) {
             return null;
         }
@@ -140,20 +138,20 @@ public class ObjectsManager {
         return objects.get(current);
     }
 
-    public AvPhoneObject getObjectByName(String name) {
+    AvPhoneObject getObjectByName(String name) {
         for (AvPhoneObject object: objects) {
-            if (object.name == name) {
+            if (object.name.equals(name)) {
                 return object;
             }
         }
         return null;
     }
 
-    public String getCurrentObjectName() {
+    String getCurrentObjectName() {
         return objects.get(current).name;
     }
 
-    public void save() {
+    void save() {
         saveOnPref();
 
     }

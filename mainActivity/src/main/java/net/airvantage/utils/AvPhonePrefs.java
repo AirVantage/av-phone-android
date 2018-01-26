@@ -8,7 +8,7 @@ public class AvPhonePrefs {
     public String password;
     public String period;
 
-    public PreferenceUtils.Server usesServer;
+    PreferenceUtils.Server usesServer;
 
     public boolean checkCredentials() {
         return !(password == null || password.isEmpty() || serverHost == null || serverHost.isEmpty());
@@ -20,10 +20,6 @@ public class AvPhonePrefs {
 
     public boolean usesEU() {
         return usesServer == PreferenceUtils.Server.EU;
-    }
-
-    public boolean usesCustomServer() {
-        return usesServer == PreferenceUtils.Server.CUSTOM;
     }
 
 }

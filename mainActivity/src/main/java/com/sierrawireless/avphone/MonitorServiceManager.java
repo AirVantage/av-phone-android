@@ -11,7 +11,7 @@ public interface MonitorServiceManager {
     void startMonitoringService(String name);
     void startSendData();
     void stopSendData();
-    void sendAlarmEvent(boolean activated);
+    void sendAlarmEvent();
     void setMonitoringServiceListener(MonitorServiceListener listener);
     MonitoringService getMonitoringService();
 }

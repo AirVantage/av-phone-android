@@ -1,16 +1,16 @@
 package net.airvantage.model;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class AvError {
 
-    public static final String SYSTEM_EXISTS = "system.not.unique.identifiers";
-    public static final String GATEWAY_EXISTS = "gateway.not.unique.identifiers";
-    public static final String GATEWAY_ASSIGNED = "gateway.assigned";
+    private static final String SYSTEM_EXISTS = "system.not.unique.identifiers";
+    private static final String GATEWAY_EXISTS = "gateway.not.unique.identifiers";
+    private static final String GATEWAY_ASSIGNED = "gateway.assigned";
     public static final String FORBIDDEN = "forbidden";
-    public static final String APPLICATION_TYPE_EXISTS = "application.type.already.used";
-    public static final String ALERT_RULES_TOO_MANY = "alert.rule.too.many";
+    private static final String APPLICATION_TYPE_EXISTS = "application.type.already.used";
+    private static final String ALERT_RULES_TOO_MANY = "alert.rule.too.many";
     public static final String MISSING_RIGHTS = "missing.rights";
     
     public String error;
@@ -18,7 +18,7 @@ public class AvError {
 
     public AvError(String error) {
         this.error = error;
-        this.errorParameters = Arrays.asList();
+        this.errorParameters = Collections.emptyList();
     }
 
     public AvError(String error, List<String> errorParameters) {
@@ -67,7 +67,7 @@ public class AvError {
         return isForbiddenAction("PUT", "system");
     }
 
-    protected boolean isForbiddenAction(String method, String entity) {
+    private boolean isForbiddenAction(String method, String entity) {
         if (forbidden()) {
             String requestMethod = errorParameters.get(0);
             String requestUrl = errorParameters.get(1);

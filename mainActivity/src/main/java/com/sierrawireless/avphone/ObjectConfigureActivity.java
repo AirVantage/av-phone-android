@@ -8,7 +8,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -33,7 +32,6 @@ public class ObjectConfigureActivity extends Activity {
     ArrayList<String> menu;
     int position;
     AvPhoneObject object;
-    AvPhoneObject tmpObject;
     TextView title;
     TextView name;
     EditText nameEdit;
@@ -70,7 +68,7 @@ public class ObjectConfigureActivity extends Activity {
                         deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
                                 0x3F, 0x25)));
                         // set item width
-                        deleteItem.setWidth((int) Tools.dp2px(90, context));
+                        deleteItem.setWidth((int) Tools.dp2px(context));
                         // set a icon
                         deleteItem.setIcon(android.R.drawable.ic_menu_delete);
                         // add to menu
@@ -88,7 +86,7 @@ public class ObjectConfigureActivity extends Activity {
 
         if (position == -1) {
             object = new AvPhoneObject();
-            title.setText("Add New Object");
+            title.setText(R.string.add_new_object);
             objectsManager.objects.add(object);
             position = objectsManager.objects.size() -1;
         }else {
@@ -97,16 +95,8 @@ public class ObjectConfigureActivity extends Activity {
             nameEdit.setVisibility(View.GONE);
             title.setText(object.name);
         }
-        menu = new ArrayList<>();
-        for (AvPhoneObjectData data:object.datas) {
-            menu.add(data.name);
-        }
-        menu.add("Add new data....");
-        ObjectDataAdapter adapter = new ObjectDataAdapter(this, android.R.layout.simple_list_item_1, menu);
+        menu_generation();
 
-
-
-        listView.setAdapter(adapter);
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -140,17 +130,7 @@ public class ObjectConfigureActivity extends Activity {
                     case 0:
                         //delete
                         object.datas.remove(position);
-                        menu = new ArrayList<>();
-                        for (AvPhoneObjectData data:object.datas) {
-                            menu.add(data.name);
-                        }
-                        menu.add("Add new data....");
-                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(listView.getContext(), android.R.layout.simple_list_item_1, menu);
-
-
-
-                        listView.setAdapter(adapter);
-                        listView.invalidateViews();
+                        menu_generation();
                         break;
 
                 }
@@ -179,11 +159,15 @@ public class ObjectConfigureActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        menu_generation();
+    }
+
+    private void menu_generation() {
         menu = new ArrayList<>();
         for (AvPhoneObjectData data:object.datas) {
             menu.add(data.name);
         }
-        menu.add("Add new data....");
+        menu.add(getString(R.string.add_new_data));
         ObjectDataAdapter adapter = new ObjectDataAdapter(this, android.R.layout.simple_list_item_1, menu);
 
 

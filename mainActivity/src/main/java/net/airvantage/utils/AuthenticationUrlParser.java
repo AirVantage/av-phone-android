@@ -28,7 +28,7 @@ public class AuthenticationUrlParser {
                     String[] params = fragment.split("&");
                     for (String param : params) {
                         String[] kv = param.split("=");
-                        if (kv != null && kv.length == 2) {
+                        if (kv.length == 2) {
                             String key = kv[0];
                             String value = kv[1];
 

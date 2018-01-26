@@ -1,8 +1,11 @@
 package com.sierrawireless.avphone.task;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.text.Html;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.sierrawireless.avphone.DeviceInfo;
@@ -11,16 +14,7 @@ import com.sierrawireless.avphone.ObjectsManager;
 import com.sierrawireless.avphone.R;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.model.AvPhoneApplication;
-import com.sierrawireless.avphone.model.AvPhoneObject;
-import com.sierrawireless.avphone.model.CustomDataLabels;
-import com.sierrawireless.avphone.tools.MyPreference;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
-import android.os.AsyncTask;
-import android.text.Html;
-import android.util.Log;
 import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Application;
 import net.airvantage.model.AvError;
@@ -29,8 +23,11 @@ import net.airvantage.model.User;
 import net.airvantage.model.UserRights;
 import net.airvantage.model.alert.v1.AlertRule;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, SyncWithAvResult> {
-    private static final String TAG = "SyncWithAvTask";
 
     private IApplicationClient applicationClient;
 
@@ -38,15 +35,15 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
 
     private IAlertRuleClient alertRuleClient;
 
-    private List<SyncWithAvListener> syncListeners = new ArrayList<SyncWithAvListener>();
+    private List<SyncWithAvListener> syncListeners = new ArrayList<>();
 
     private IUserClient userClient;
 
+    @SuppressLint("StaticFieldLeak")
     private Context context;
-    private ObjectsManager objectsManager;
 
-    public SyncWithAvTask(IApplicationClient applicationClient, ISystemClient systemClient,
-            IAlertRuleClient alertRuleClient, IUserClient userClient, Context context) {
+    SyncWithAvTask(IApplicationClient applicationClient, ISystemClient systemClient,
+                   IAlertRuleClient alertRuleClient, IUserClient userClient, Context context) {
         this.applicationClient = applicationClient;
         this.systemClient = systemClient;
         this.alertRuleClient = alertRuleClient;
@@ -78,14 +75,12 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
             final String iccid = syncParams.iccid;
             final String deviceName = syncParams.deviceName;
             final String mqttPassword = syncParams.mqttPassword;
-            final CustomDataLabels customData = syncParams.customData;
-            final MainActivity activity = syncParams.activity;
-            objectsManager = ObjectsManager.getInstance();
+            ObjectsManager objectsManager = ObjectsManager.getInstance();
 
             systemType = objectsManager.getSavedObjectName();
 
             // For emulator and iOs compatibility sake, using generated serial.
-            final String serialNumber =  DeviceInfo.generateSerial(user.uid, systemType);
+            final String serialNumber =  DeviceInfo.generateSerial(user.uid);
 
             // Save Device serial in context
             if (context instanceof MainActivity) {
@@ -93,7 +88,7 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
                 mainActivity.setSystemSerial(serialNumber);
             }
 
-            if (syncParams.delete == true) {
+            if (syncParams.delete) {
                 publishProgress(SyncProgress.CHECKING_SYSTEM);
                 net.airvantage.model.AvSystem system = this.systemClient.getSystem(serialNumber, systemType);
                 if (system != null) {

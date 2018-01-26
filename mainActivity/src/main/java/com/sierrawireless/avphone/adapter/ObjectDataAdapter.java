@@ -14,10 +14,10 @@ import java.util.ArrayList;
 
 public class ObjectDataAdapter extends BaseAdapter {
     public ArrayList<String> list;
-    Activity activity;
-    TextView name;
-    int resource;
-    private static final String TAG = "AvPhoneObjectDataAdapte";
+    private Activity activity;
+    private TextView name;
+    private int resource;
+    private static final String TAG = "ObjectDataAdapter";
 
     public ObjectDataAdapter(Activity activity, int resource, ArrayList<String> list){
         super();

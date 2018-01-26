@@ -12,11 +12,11 @@ public class SyncWithAvResult {
 
     private User user;
 
-    public SyncWithAvResult(AvError error) {
+    SyncWithAvResult(AvError error) {
         this.error = error;
     }
 
-    public SyncWithAvResult(final AvSystem system, final User user) {
+    SyncWithAvResult(final AvSystem system, final User user) {
         this.system = system;
         this.user = user;
     }

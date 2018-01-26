@@ -1,12 +1,5 @@
 package net.airvantage.utils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,14 +7,18 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.sierrawireless.avphone.R;
 import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.model.CustomDataLabels;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Properties;
+
 public class PreferenceUtils {
-    private static final String TAG = "PreferenceUtils";
 
     private static String LOGTAG = PreferenceUtils.class.getName();
 
@@ -39,11 +36,11 @@ public class PreferenceUtils {
 
     public static final String PREF_PERIOD_KEY = "pref_period_key";
 
-    public static final String PREF_ACCESS_TOKEN = "pref_access_token";
+    private static final String PREF_ACCESS_TOKEN = "pref_access_token";
 
-    public static final String PREF_TOKEN_EXPIRES_AT = "pref_token_expires_at";
+    private static final String PREF_TOKEN_EXPIRES_AT = "pref_token_expires_at";
 
-    protected static Properties properties;
+    private static Properties properties;
 
     public static AvPhonePrefs getAvPhonePrefs(Context context) {
         AvPhonePrefs res = new AvPhonePrefs();
@@ -53,7 +50,7 @@ public class PreferenceUtils {
 
         res.clientId = prefs.getString(PREF_CLIENT_ID_KEY, getNaClientId(context));
 
-        HashMap<String, Server> serverMapping = new HashMap<String, Server>();
+        HashMap<String, Server> serverMapping = new HashMap<>();
         serverMapping.put(context.getString(R.string.pref_server_eu_value), Server.EU);
         serverMapping.put(context.getString(R.string.pref_server_na_value), Server.NA);
         serverMapping.put(context.getString(R.string.pref_server_custom_value), Server.CUSTOM);
@@ -97,16 +94,16 @@ public class PreferenceUtils {
         return getCustomClientId(context) != null;
     }
 
-    public static String getPreference(Context context, int prefKeyId, int defaultValueKeyId) {
+    private static String getPreference(Context context, int prefKeyId, int defaultValueKeyId) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String prefKey = context.getString(prefKeyId);
         String defaultValueKey = context.getString(defaultValueKeyId);
         return prefs.getString(prefKey, defaultValueKey);
     }
 
-    public static void setPreference(Context context, String prefKey, String value) {
+    private static void setPreference(Context context, String prefKey, String value) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().putString(prefKey, value).commit();
+        prefs.edit().putString(prefKey, value).apply();
     }
 
     public static void showMissingPrefsDialog(Activity activity) {
@@ -159,13 +156,13 @@ public class PreferenceUtils {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         prefs.edit().putString(PREF_ACCESS_TOKEN, auth.getAccessToken())
-                .putLong(PREF_TOKEN_EXPIRES_AT, auth.getExpirationDate().getTime()).commit();
+                .putLong(PREF_TOKEN_EXPIRES_AT, auth.getExpirationDate().getTime()).apply();
     }
 
     public static void resetAuthentication(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        prefs.edit().remove(PREF_ACCESS_TOKEN).remove(PREF_TOKEN_EXPIRES_AT).commit();
+        prefs.edit().remove(PREF_ACCESS_TOKEN).remove(PREF_TOKEN_EXPIRES_AT).apply();
 
     }
 

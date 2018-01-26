@@ -10,17 +10,12 @@ public class AlertRule {
 
     public String id;
     public boolean active;
-    public List<String> emails;
 
-    public String companyId;
     public String message;
     public String name;
-    public String notifMode;
     public String targetType;
 
     public List<Condition> conditions;
-
-    public Map<String, Object> metadata;
 
 
     public static Predicate<AlertRule> isNamed(final String name) {

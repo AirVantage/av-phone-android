@@ -9,8 +9,8 @@ public class Tools {
     public static String buildSerialNumber(String serial, String type) {
         return (serial + "-ANDROID-" + type).toUpperCase();
     }
-    public static float dp2px(int dip, Context context){
+    public static float dp2px(Context context){
         float scale = context.getResources().getDisplayMetrics().density;
-        return dip * scale + 0.5f;
+        return 90 * scale + 0.5f;
     }
 }

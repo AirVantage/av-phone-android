@@ -5,5 +5,4 @@ public class Application {
     public String name;
     public String revision;
     public String type;
-    public String category;
 }

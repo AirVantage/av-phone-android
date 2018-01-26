@@ -4,11 +4,6 @@ import android.util.Log;
 
 import com.sierrawireless.avphone.tools.Tools;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
 import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Application;
 import net.airvantage.model.AvSystem;
@@ -16,12 +11,17 @@ import net.airvantage.model.MqttCommunication;
 import net.airvantage.utils.AirVantageClient;
 import net.airvantage.utils.Utils;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
 public class SystemClient implements ISystemClient {
     private static final String TAG = "SystemClient";
 
     private AirVantageClient client;
 
-    public SystemClient(AirVantageClient client) {
+    SystemClient(AirVantageClient client) {
         this.client = client;
     }
 
@@ -57,12 +57,12 @@ public class SystemClient implements ISystemClient {
 
         Application application = new Application();
         application.uid = applicationUid;
-        system.applications = Arrays.asList(application);
+        system.applications = Collections.singletonList(application);
 
         MqttCommunication mqtt = new MqttCommunication();
         mqtt.password = mqttPassword;
 
-        system.communication = new HashMap<String, MqttCommunication>();
+        system.communication = new HashMap<>();
         system.communication.put("mqtt", mqtt);
         system.type = type;
 

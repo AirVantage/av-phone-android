@@ -17,7 +17,7 @@ public class AlertAdapterV1 extends DefaultAlertAdapter {
 
   private static String API_PATH ="/alerts/rules";
 
-    public AlertAdapterV1(String server, String accessToken) {
+    AlertAdapterV1(String server, String accessToken) {
         super(server, accessToken);
     }
 
@@ -44,17 +44,10 @@ public class AlertAdapterV1 extends DefaultAlertAdapter {
     }
 
     @Override
-    public AlertRule createAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
+    public void createAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
         URL url = new URL(buildEndpoint(API_PATH));
         InputStream in = post(url, alertRule);
-        return gson.fromJson(new InputStreamReader(in), AlertRule.class);
+        gson.fromJson(new InputStreamReader(in), AlertRule.class);
     }
 
-    @Override
-    public AlertRule updateAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
-        URL url = new URL(buildEndpoint(API_PATH + alertRule.uid));
-        put(url, alertRule);
-        InputStream in = put(url, alertRule);
-        return gson.fromJson(new InputStreamReader(in), AlertRule.class);
-    }
 }

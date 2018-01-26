@@ -3,13 +3,11 @@ package com.sierrawireless.avphone;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -27,23 +25,13 @@ import java.util.Date;
 
 public class AuthorizationActivity extends Activity {
 
-    private static final String LOGTAG = AuthorizationActivity.class.getName();
-
     public static final String AUTHENTICATION_TOKEN = "token";
     public static final String AUTHENTICATION_EXPIRATION_DATE = "expirationDate";
-
-    public static final String AUTHENTICATION_LISTENER = "listener";
 
     public static final int REQUEST_AUTHORIZATION = 1;
 
 
-    private WebView webview;
-
     private AuthenticationUrlParser authUrlParser = new AuthenticationUrlParser();
-
-    private Button btnCustom;
-    private Button btnEu;
-    private Button btnNa;
 
     private PreferenceUtils.Server currentServer;
 
@@ -71,9 +59,9 @@ public class AuthorizationActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authorization);
 
-        btnNa = (RadioButton) this.findViewById(R.id.auth_btn_na);
-        btnEu = (RadioButton) this.findViewById(R.id.auth_btn_eu);
-        btnCustom = (RadioButton) this.findViewById(R.id.auth_btn_custom);
+        Button btnNa = (RadioButton) this.findViewById(R.id.auth_btn_na);
+        Button btnEu = (RadioButton) this.findViewById(R.id.auth_btn_eu);
+        Button btnCustom = (RadioButton) this.findViewById(R.id.auth_btn_custom);
 
         btnNa.setOnClickListener(new OnHostClickListener(PreferenceUtils.Server.NA));
         btnEu.setOnClickListener(new OnHostClickListener(PreferenceUtils.Server.EU));
@@ -85,9 +73,6 @@ public class AuthorizationActivity extends Activity {
         } else {
             btnCustom.setVisibility(Button.GONE);
         }
-        AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this);
-        final String serverHost = avPhonePrefs.serverHost;
-
 
         openAuthorizationPage();
     }
@@ -101,7 +86,7 @@ public class AuthorizationActivity extends Activity {
         final String serverHost = avPhonePrefs.serverHost;
         final String clientId = avPhonePrefs.clientId;
 
-        webview = (WebView) findViewById(R.id.authorization_webview);
+        WebView webview = (WebView) findViewById(R.id.authorization_webview);
         webview.getSettings().setJavaScriptEnabled(true);
         // attach WebViewClient to intercept the callback url
         webview.setWebViewClient(new WebViewClient() {

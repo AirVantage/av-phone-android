@@ -1,5 +1,6 @@
 package com.sierrawireless.avphone.service;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.app.Notification;
@@ -34,11 +35,8 @@ import com.google.gson.Gson;
 import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.ObjectsManager;
 import com.sierrawireless.avphone.R;
-import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.model.AvPhoneObject;
 import com.sierrawireless.avphone.tools.Tools;
-
-import net.airvantage.utils.PreferenceUtils;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -46,7 +44,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -77,14 +74,11 @@ public class MonitoringService extends Service {
     /* the date of the last location reading */
     private long lastLocation;
 
-
-    private CustomDataSource customDataSource;
-
     // FIXME(pht) for testing, to compare with "last known location"
     private Location networkLocation = null;
     private Location gpsLocation = null;
     private LocationListener networkLocationListener;
-    private LocationListener gpsLocationListener;;
+    private LocationListener gpsLocationListener;
     private ObjectsManager objectsManager;
 
     @Override
@@ -104,7 +98,6 @@ public class MonitoringService extends Service {
         activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        customDataSource = new CustomDataSource(new java.util.Date());
 
         startedSince = System.currentTimeMillis();
 
@@ -136,6 +129,7 @@ public class MonitoringService extends Service {
         stopForeground(true);
     }
 
+    @SuppressLint("HardwareIds")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -148,14 +142,13 @@ public class MonitoringService extends Service {
             final Boolean mustConnect = intent.getBooleanExtra(CONNECT, true);
 
             /* First we have to create the system if it doesn't exist */
-            Authentication auth =  PreferenceUtils.readAuthentication(getApplicationContext());
 
             if (this.client == null) {
 
                 //
                 // Ensure intent is valid
                 //
-                final String deviceId = Tools.buildSerialNumber(intent.getStringExtra(DEVICE_ID), object.name);;
+                final String deviceId = Tools.buildSerialNumber(intent.getStringExtra(DEVICE_ID), object.name);
                 final String password = intent.getStringExtra(PASSWORD);
                 final String serverHost = intent.getStringExtra(SERVER_HOST);
 
@@ -261,7 +254,7 @@ public class MonitoringService extends Service {
                 data.setCustom();
 
 
-                customDataSource.next(new Date());
+                //customDataSource.next(new Date());
 
                 // save new data values
                 if (data.getExtras() != null) {
@@ -387,7 +380,7 @@ public class MonitoringService extends Service {
         return location;
     }
 
-    public void sendAlarmEvent(boolean activated) {
+    public void sendAlarmEvent() {
 
         if (this.client == null) {
             Toast.makeText(getApplicationContext(), "Alarm client is not available,wait...", Toast.LENGTH_SHORT).show();
@@ -408,7 +401,7 @@ public class MonitoringService extends Service {
         }
 
         NewData data = new NewData();
-        data.setAlarmActivated(activated);
+        data.setAlarmActivated();
 
         // save alarm state
         if (data.getExtras() != null) {

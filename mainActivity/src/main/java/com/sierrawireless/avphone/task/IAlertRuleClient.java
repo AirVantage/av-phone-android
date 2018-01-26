@@ -9,7 +9,7 @@ public interface IAlertRuleClient {
 
     AlertRule getAlertRule(String serialNumber) throws IOException, AirVantageException;
 
-    AlertRule createAlertRule() throws IOException, AirVantageException;
+    void createAlertRule() throws IOException, AirVantageException;
 
     
 }

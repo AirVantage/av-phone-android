@@ -7,7 +7,7 @@ import net.airvantage.model.User;
 
 public interface IUserClient {
 
-    public List<String> checkRights() throws AirVantageException;
+    List<String> checkRights() throws AirVantageException;
 
-    public User getUser();
+    User getUser();
 }

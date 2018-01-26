@@ -3,7 +3,6 @@ package net.airvantage.utils.alert;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.squareup.okhttp.OkHttpClient;
 
 import net.airvantage.model.AirVantageException;
@@ -20,23 +19,19 @@ import java.util.Arrays;
 
 public class DefaultAlertAdapter {
 
-    protected final String access_token;
-    protected final Gson gson;
+    final String access_token;
+    final Gson gson;
     protected final OkHttpClient client;
     protected final String server;
 
-    public DefaultAlertAdapter(String server, String token) {
+    DefaultAlertAdapter(String server, String token) {
         this.access_token = token;
         this.client = new OkHttpClient();
         this.gson = new Gson();
         this.server = server;
     }
 
-    public AlertRule createAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
-        throw new AirVantageException(new AvError(AvError.FORBIDDEN));
-    }
-
-    public AlertRule updateAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
+    public void createAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
         throw new AirVantageException(new AvError(AvError.FORBIDDEN));
     }
 
@@ -48,7 +43,7 @@ public class DefaultAlertAdapter {
     // After alert v2 migration, everything below this line HAVE TO GO: it is DUPLICATION.
     //
 
-    protected String buildPath(String api) {
+    private String buildPath(String api) {
         final String path = server + getPrefix() + api + "?access_token=" + access_token;
         Log.d(this.getClass().toString(), "About to call: " + path);
         return path;
@@ -58,11 +53,11 @@ public class DefaultAlertAdapter {
         return "Override me";
     }
 
-    protected String buildEndpoint(String api) {
+    String buildEndpoint(String api) {
         return "https://" + buildPath(api);
     }
 
-    protected InputStream readResponse(HttpURLConnection connection) throws IOException, AirVantageException {
+    private InputStream readResponse(HttpURLConnection connection) throws IOException, AirVantageException {
         InputStream in;
         if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
             in = connection.getInputStream();
@@ -92,7 +87,7 @@ public class DefaultAlertAdapter {
         return in;
     }
 
-    protected InputStream sendString(String method, URL url, String bodyString)
+    private InputStream sendString(String method, URL url, String bodyString)
             throws IOException, AirVantageException {
 
         OutputStream out = null;
@@ -119,7 +114,7 @@ public class DefaultAlertAdapter {
 
     }
 
-    protected InputStream post(URL url, Object body) throws IOException, AirVantageException {
+    InputStream post(URL url, Object body) throws IOException, AirVantageException {
         String bodyString = gson.toJson(body);
         return sendString("POST", url, bodyString);
     }

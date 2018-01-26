@@ -1,9 +1,8 @@
 package net.airvantage.model.alert.v1;
 
-import java.util.List;
-import java.util.Map;
-
 import net.airvantage.utils.Predicate;
+
+import java.util.List;
 
 public class AlertRule {
     public String uid;
@@ -11,7 +10,6 @@ public class AlertRule {
     public String name;
     public String eventType;
     public List<Condition> conditions;
-    public Map<String, String> metadata;
 
     public static Predicate<AlertRule> isNamed(final String name) {
         return new Predicate<AlertRule>() {

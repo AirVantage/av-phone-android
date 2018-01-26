@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -31,8 +32,6 @@ public class DataViewUpdater extends BroadcastReceiver {
     private final View view;
     private MainActivity activity;
     private ObjectsManager objectsManager;
-    private ArrayList<HashMap<String, String>> listPhone;
-    private ArrayList<HashMap<String, String>> listObject;
 
     public DataViewUpdater(View view, MainActivity activity) {
         this.view = view;
@@ -66,6 +65,7 @@ public class DataViewUpdater extends BroadcastReceiver {
         //view.findViewById(R.id.alarm_switch).setEnabled(false);
     }
 
+    @SuppressLint("SetTextI18n")
     private void setLogMessage(String log, Long timestamp) {
         TextView logView = findView(R.id.service_log);
         if (log != null) {
@@ -76,6 +76,7 @@ public class DataViewUpdater extends BroadcastReceiver {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void setStartedSince(Long startedSince) {
         TextView startedTextView = findView(R.id.started_since);
         if (startedSince != null) {
@@ -90,7 +91,7 @@ public class DataViewUpdater extends BroadcastReceiver {
     private void setNewData(NewData data) {
 
         ListView phoneListView = (ListView)view.findViewById(R.id.phoneListView);
-        listPhone = new ArrayList<>();
+        ArrayList<HashMap<String, String>> listPhone = new ArrayList<>();
 
         String Rssi ;
 
@@ -166,19 +167,19 @@ public class DataViewUpdater extends BroadcastReceiver {
         phoneListView.invalidateViews();
 
 
-        setCustomDataValues(data);
+        setCustomDataValues();
         
     }
 
-    private void setCustomDataValues(NewData data) {
+    private void setCustomDataValues() {
 
         ListView objectListView = (ListView)view.findViewById(R.id.objectLstView);
         objectsManager = ObjectsManager.getInstance();
         AvPhoneObject object = objectsManager.getCurrentObject();
         HashMap<String,String> temp;
-        listObject = new ArrayList<>();
+        ArrayList<HashMap<String, String>> listObject = new ArrayList<>();
         for (AvPhoneObjectData ldata : object.datas) {
-            temp = new HashMap<String, String>();
+            temp = new HashMap<>();
             temp.put(Tools.NAME, ldata.name);
             if (ldata.isInteger()) {
                 temp.put(Tools.VALUE, ldata.current.toString());

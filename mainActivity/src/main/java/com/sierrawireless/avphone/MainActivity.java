@@ -87,7 +87,6 @@ public class MainActivity extends FragmentActivity
     private ActionBarDrawerToggle drawerToggle;
 
     private final static String FRAGMENT_HOME = "Home";
-    private final static String FRAGMENT_RUN = "Run";
     private final static String FRAGMENT_CONFIGURE = "Objects...";
     private final static String FRAGMENT_SETTINGS = "Settings";
     private final static String FRAGMENT_FAQ = "FAQ";
@@ -101,6 +100,7 @@ public class MainActivity extends FragmentActivity
     private Boolean serviceSendData = false;
     ObjectsManager objectsManager;
 
+    @SuppressLint("StaticFieldLeak")
     static MainActivity instance;
 
     private static String[] FRAGMENT_LIST;
@@ -109,6 +109,7 @@ public class MainActivity extends FragmentActivity
         ArrayList<String> tmp = new ArrayList<>();
         tmp.add(FRAGMENT_HOME);
         for (AvPhoneObject object: objectsManager.objects) {
+            Log.d(TAG, "buildFragmentList: add object " + object.name);
             tmp.add(object.name);
         }
         tmp.add(FRAGMENT_CONFIGURE);
@@ -121,11 +122,6 @@ public class MainActivity extends FragmentActivity
     public void setCustomLabelsListener(CustomLabelsListener customLabelsListener) {
         this.customLabelsListener = customLabelsListener;
     }
-
-    static MainActivity getInstance() {
-        return instance;
-    }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +143,7 @@ public class MainActivity extends FragmentActivity
         taskFactory = new AsyncTaskFactory(MainActivity.this);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         loadMenu();
 
         drawerListView.setOnItemClickListener(new ListView.OnItemClickListener() {
@@ -269,10 +266,6 @@ public class MainActivity extends FragmentActivity
         this.auth = PreferenceUtils.readAuthentication(this);
     }
 
-    @Override
-    public void OnLoginChanged(boolean logged) {
-    }
-
     public boolean isLogged() {
         return (this.auth != null && !this.auth.isExpired(new Date()));
     }
@@ -347,7 +340,10 @@ public class MainActivity extends FragmentActivity
     }
 
     public boolean isServiceStarted(String name) {
-        if (this.objectName != name) {
+        if (this.objectName == null) {
+            return false;
+        }
+        if (!this.objectName.equals(name)) {
             return false;
         }
         //return serviceSendData;
@@ -421,9 +417,9 @@ public class MainActivity extends FragmentActivity
 
     };
 
-    public void sendAlarmEvent(boolean activated) {
+    public void sendAlarmEvent() {
         //if (boundToMonitoringService && monitoringService != null) {
-            monitoringService.sendAlarmEvent(activated);
+            monitoringService.sendAlarmEvent();
        // }
     }
 
@@ -524,7 +520,7 @@ public class MainActivity extends FragmentActivity
         prefs.edit().putString(PREFERENCE_USER_UID, user.uid).apply();
         prefs.edit().putString(PREFERENCE_USER_NAME, user.name).apply();
 
-        final String deviceSerial = DeviceInfo.generateSerial(user.uid, system.type);
+        final String deviceSerial = DeviceInfo.generateSerial(user.uid);
         prefs.edit().putString(PREFERENCE_SYSTEM_SERIAL, deviceSerial).apply();
 
         if (runFragment != null) {
@@ -564,7 +560,8 @@ public class MainActivity extends FragmentActivity
         final Fragment fragment = getFragment(position);
         if (fragment == null) {
             //No item check if the position is valid
-            if (FRAGMENT_LIST[position] == FRAGMENT_FAQ) {
+            Log.d(TAG, "selectItem: Fragment list " + FRAGMENT_LIST[position]);
+            if (FRAGMENT_LIST[position].equals(FRAGMENT_FAQ)) {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://doc.airvantage.net/alms/"));
                 startActivity(browserIntent);
                 drawerListView.setSelection(lastPosition);
@@ -635,6 +632,7 @@ public class MainActivity extends FragmentActivity
         for (AvPhoneObject object: objectsManager.objects) {
             tmp = new RunFragment();
             tmp.setTaskFactory(taskFactory);
+            Log.d(TAG, "initFragments: set " + object.name);
             tmp.setObjectName(object.name);
             runFragment.add(tmp);
         }

@@ -13,15 +13,11 @@ import com.sierrawireless.avphone.tools.Tools;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- * Created by JDamiano on 25/01/2018.
- */
-
 public class RunListViewAdapter extends BaseAdapter{
     public ArrayList<HashMap<String, String>> list;
-    Activity activity;
-    TextView name;
-    TextView value;
+    private Activity activity;
+    private TextView name;
+    private TextView value;
 
     public RunListViewAdapter(Activity activity, ArrayList<HashMap<String, String>> list){
         super();
@@ -59,10 +55,10 @@ public class RunListViewAdapter extends BaseAdapter{
 
         if(convertView == null){
 
-            convertView=inflater.inflate(R.layout.run_column_row, null);
+            convertView=inflater.inflate(R.layout.run_column_row, parent, false);
 
-            name=(TextView) convertView.findViewById(R.id.name);
-            value =(TextView) convertView.findViewById(R.id.value);
+            name = (TextView) convertView.findViewById(R.id.name);
+            value = (TextView) convertView.findViewById(R.id.value);
         }
 
         HashMap<String, String> map=list.get(position);

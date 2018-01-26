@@ -15,14 +15,14 @@ public class AvPhoneObject {
     }
 
     public String toString() {
-        String returned = "{";
-        returned = returned + "\"name\" : \"" + name + "\",";
-        returned = returned + "\"datas\":[";
+        StringBuilder returned = new StringBuilder("{");
+        returned.append("\"name\" : \"").append(name).append("\",");
+        returned.append("\"datas\":[");
         for (AvPhoneObjectData data: datas) {
-            returned = returned + data.toString()+",";
+            returned.append(data.toString()).append(",");
         }
-        returned = returned + "]}";
-        return returned;
+        returned.append("]}");
+        return returned.toString();
     }
 
     public void exec() {

@@ -1,22 +1,19 @@
 package com.sierrawireless.avphone;
 
 import android.annotation.SuppressLint;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Build;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.util.List;
 
 public class DeviceInfo {
-    private static final String TAG = "DeviceInfo";
 
     /** Returns the consumer friendly device name */
-    public static String getDeviceName() {
+    static String getDeviceName() {
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;
         if (model.toUpperCase().startsWith(manufacturer.toUpperCase())) {
@@ -56,12 +53,12 @@ public class DeviceInfo {
     * So to be AV Phone iOs compatible and able to run emulator, we use: uppercase(userUid + "-" + systemType)
     */
     @SuppressLint("DefaultLocale")
-	public static String generateSerial(final String userUid, final String systemType) {
+	public static String generateSerial(final String userUid) {
         return (userUid);
     }
 
     @SuppressLint("DefaultLocale")
-    public static String getUniqueId(final Context context) {
+    static String getUniqueId(final Context context) {
 
         if (context instanceof MainActivity) {
             final MainActivity mainActivity = (MainActivity) context;
@@ -71,22 +68,9 @@ public class DeviceInfo {
         return null;
     }
 
-    /**
-     * Is this SN one of the common ones used by cheap phones (eg wiko)?
-     *
-     * Currently we had issues with :
-     *
-     * - "123456789ABCD"
-     * - "0123456789ABCDEF"
-     *
-     * We simply check if "123456789ABCD" is a substring, this should do for a while.
-     */
-    @SuppressLint("DefaultLocale")
-    private static boolean isCommonSerialNumber(final String serialNumber) {
-        return serialNumber.toUpperCase().contains("123456789ABCD");
-    }
 
-    public static String getIMEI(final Context context) {
+    @SuppressLint("HardwareIds")
+    static String getIMEI(final Context context) {
 
         final TelephonyManager telManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         if (telManager != null && telManager.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
@@ -96,7 +80,7 @@ public class DeviceInfo {
         return null;
     }
 
-    public static String getICCID(final Context context) {
+    static String getICCID(final Context context) {
         SubscriptionManager sm = SubscriptionManager.from(context);
         List<SubscriptionInfo> sis = sm.getActiveSubscriptionInfoList();
         SubscriptionInfo si = sis.get(0);

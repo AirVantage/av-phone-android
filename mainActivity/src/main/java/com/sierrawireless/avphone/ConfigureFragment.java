@@ -37,11 +37,6 @@ import java.util.ArrayList;
 public class ConfigureFragment extends AvPhoneFragment {
     private static final String TAG = "ConfigureFragment";
 
-    private Button addBtn;
-    private Button doneBtn;
-
-    private SwipeMenuListView listView;
-
     private ObjectsManager objectsManager;
     ArrayList<String> menu;
     public static String INDEX = "index";
@@ -79,7 +74,7 @@ public class ConfigureFragment extends AvPhoneFragment {
             menu.add(object.name);
         }
 
-        listView = (SwipeMenuListView) view.findViewById(R.id.objectConfigure);
+        SwipeMenuListView listView = (SwipeMenuListView) view.findViewById(R.id.objectConfigure);
 
         SwipeMenuCreator creator = new SwipeMenuCreator() {
 
@@ -95,7 +90,7 @@ public class ConfigureFragment extends AvPhoneFragment {
                         deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
                                 0x3F, 0x25)));
                         // set item width
-                        deleteItem.setWidth((int) Tools.dp2px(90,
+                        deleteItem.setWidth((int) Tools.dp2px(
                                 getActivity().getBaseContext()));
                         // set a icon
                         deleteItem.setIcon(android.R.drawable.ic_menu_delete);
@@ -145,8 +140,8 @@ public class ConfigureFragment extends AvPhoneFragment {
         });
 
 
-        doneBtn = (Button) view.findViewById(R.id.doneConfigureBtn);
-        addBtn = (Button)view.findViewById(R.id.addConfigureBtn);
+        Button doneBtn = (Button) view.findViewById(R.id.doneConfigureBtn);
+        Button addBtn = (Button) view.findViewById(R.id.addConfigureBtn);
 
         doneBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -246,11 +241,7 @@ public class ConfigureFragment extends AvPhoneFragment {
         syncParams.iccid = DeviceInfo.getICCID(getActivity());
         syncParams.mqttPassword = prefs.password;
         syncParams.customData = PreferenceUtils.getCustomDataLabels(getActivity());
-        //     params.current = ((MainActivity)getActivity()).current;
-      //  syncParams.activity = getActivity();
-        if (delete) {
-            syncParams.delete = delete;
-        }
+        syncParams.delete = delete;
 
         syncTask.execute(syncParams);
 

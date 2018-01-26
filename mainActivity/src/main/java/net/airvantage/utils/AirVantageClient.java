@@ -2,9 +2,7 @@ package net.airvantage.utils;
 
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.OkHttpClient;
 
 import net.airvantage.model.AirVantageException;
@@ -12,7 +10,6 @@ import net.airvantage.model.ApplicationData;
 import net.airvantage.model.ApplicationsList;
 import net.airvantage.model.AvError;
 import net.airvantage.model.AvSystem;
-import net.airvantage.model.Datapoint;
 import net.airvantage.model.Protocol;
 import net.airvantage.model.SystemsList;
 import net.airvantage.model.User;
@@ -31,13 +28,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactoryListener {
     private static final String TAG = "AirVantageClient";
@@ -83,7 +77,7 @@ public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactory
         return SCHEME + buildPath(api);
     }
 
-    protected InputStream readResponse(HttpURLConnection connection) throws IOException, AirVantageException {
+    private InputStream readResponse(HttpURLConnection connection) throws IOException, AirVantageException {
         InputStream in;
         if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
             in = connection.getInputStream();
@@ -108,7 +102,7 @@ public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactory
         return in;
     }
 
-    protected InputStream sendString(String method, URL url, String bodyString)
+    private InputStream sendString(String method, URL url, String bodyString)
             throws IOException, AirVantageException {
 
 
@@ -133,7 +127,7 @@ public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactory
 
     }
 
-    protected InputStream post(URL url, Object body) throws IOException, AirVantageException {
+    private InputStream post(URL url, Object body) throws IOException, AirVantageException {
         String bodyString = gson.toJson(body);
         return sendString("POST", url, bodyString);
     }
@@ -144,14 +138,14 @@ public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactory
         return sendString("PUT", url, bodyString);
     }
 
-    protected InputStream delete(URL url, Object body) throws IOException, AirVantageException {
+    private void delete(URL url) throws IOException, AirVantageException {
 
 
         HttpURLConnection connection = client.open(url);
 
         connection.addRequestProperty("Cache-Control", "no-cache");
         connection.setRequestMethod("DELETE");
-        return readResponse(connection);
+        readResponse(connection);
     }
 
     protected InputStream get(URL url) throws IOException, AirVantageException {
@@ -169,74 +163,6 @@ public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactory
         return gson.fromJson(new InputStreamReader(in), User.class);
     }
 
-    public void expire() throws IOException, AirVantageException {
-        URL url = new URL(server + "/api/oauth/expire?access_token=" + access_token);
-        this.get(url);
-    }
-
-    public List<Datapoint> getLast24Hours(String systemUid, String data) throws IOException, AirVantageException {
-        URL url = new URL(buildEndpoint("/systems/" + systemUid + "/data/" + data + "/aggregated") + "&fn=mean&from="
-                + (System.currentTimeMillis() - 23 * 60 * 60 * 1000) + "&to="
-                + (System.currentTimeMillis() + 1 * 60 * 60 * 1000));
-
-        InputStream in = this.get(url);
-
-        // Deserialize HTTP response to concrete type.
-        Type collectionType = new TypeToken<List<Datapoint>>() {
-        }.getType();
-        return gson.fromJson(new InputStreamReader(in), collectionType);
-
-    }
-
-    public Map<String, Integer> getLast24HoursOccurences(String systemUid, String data)
-            throws IOException, AirVantageException {
-
-        URL url = new URL(buildEndpoint("/systems/" + systemUid + "/data/" + data + "/aggregated")
-                + "&fn=occ&interval=24hour&from=" + (System.currentTimeMillis() - 23 * 60 * 60 * 1000) + "&to="
-                + (System.currentTimeMillis() + 1 * 60 * 60 * 1000));
-
-        InputStream in = this.get(url);
-
-        Map<String, Integer> values = new HashMap<String, Integer>();
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            StringBuilder sb = new StringBuilder();
-            String line = null;
-
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-
-            in.close();
-            JSONArray json = new JSONArray(sb.toString());
-            JSONObject jsonValues = json.getJSONObject(0).getJSONObject("value");
-            for (int i = 0; i < jsonValues.names().length(); i++) {
-                values.put(jsonValues.names().getString(i).trim(), jsonValues.getInt(jsonValues.names().getString(i)));
-            }
-        } catch (JSONException e) {
-            Log.e(AirVantageClient.class.getName(), "Unable to parse json", e);
-            Crashlytics.logException(e);
-        }
-
-        return values;
-
-    }
-
-    public net.airvantage.model.AvSystem getSystemByUid(String uid) throws IOException, AirVantageException {
-        URL url = new URL(
-                buildEndpoint("/systems") + "&fields=uid,name,commStatus,lastCommDate,data,applications&uid=" + uid);
-        InputStream in = get(url);
-        List<net.airvantage.model.AvSystem> items = gson.fromJson(new InputStreamReader(in), SystemsList.class).items;
-        if (items.size() > 0) {
-            return items.get(0);
-        } else {
-            return null;
-        }
-    }
-
-    public List<net.airvantage.model.AvSystem> getSystems() throws IOException, AirVantageException {
-        return getSystemsBySerialNumber(null);
-    }
 
     public List<net.airvantage.model.AvSystem> getSystemsBySerialNumber(String serialNumber)
             throws IOException, AirVantageException {
@@ -258,7 +184,7 @@ public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactory
         InputStream in = this.get(url);
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         StringBuilder sb = new StringBuilder();
-        String line = null;
+        String line;
 
         while ((line = reader.readLine()) != null) {
             sb.append(line);
@@ -299,7 +225,7 @@ public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactory
     public void deleteSystem(net.airvantage.model.AvSystem system)  throws IOException, AirVantageException {
         //  Log.d(TAG, "updateSystem: system is " + system.uid);
         URL url = new URL(buildEndpoint("/systems/" + system.uid)+"&deleteGateway=true");
-        delete(url, system);
+        delete(url);
     }
     public List<net.airvantage.model.Application> getApplications(String type) throws IOException, AirVantageException {
         URL url = new URL(buildEndpoint("/applications") + "&type=" + type + "&fields=uid,name,revision,type,category");
@@ -344,15 +270,9 @@ public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactory
     }
 
     @Override
-    public AlertRule createAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
+    public void createAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
         checkAlertAdapter();
-        return this.alertAdapter.createAlertRule(alertRule);
-    }
-
-    @Override
-    public AlertRule updateAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
-        checkAlertAdapter();
-        return this.alertAdapter.updateAlertRule(alertRule);
+        this.alertAdapter.createAlertRule(alertRule);
     }
 
     @Override

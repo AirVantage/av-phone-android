@@ -2,15 +2,8 @@ package net.airvantage.model.alert.v1;
 
 public class Alert {
 
-    public String target;
     public long date;
-    public String eventType;
     public String uid;
-    public long acknowledgedAt;
-    public String acknowledgedBy;
-    public Rule rule;
-    public int nbOccurrence;
-    public long lastDate;
 
     public static class Rule {
         public String name;

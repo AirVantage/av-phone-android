@@ -58,7 +58,7 @@ public class ObjectDataActivity extends Activity implements AdapterView.OnItemSe
         object = objectsManager.getObjectByIndex(objectPosition);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<String> adapter =  new ArrayAdapter<String>(this,
+        ArrayAdapter<String> adapter =  new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, menuList);
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -67,7 +67,7 @@ public class ObjectDataActivity extends Activity implements AdapterView.OnItemSe
         simulationSpin.setAdapter(adapter);
         simulationSpin.setOnItemSelectedListener(this);
 
-        if (add== false) {
+        if (!add) {
             name.setVisibility(View.INVISIBLE);
             nameEdit.setVisibility(View.GONE);
             data = object.datas.get(dataPosition);
@@ -77,13 +77,12 @@ public class ObjectDataActivity extends Activity implements AdapterView.OnItemSe
             simulationSpin.setSelection(data.modePosition(), false);
 
         }else{
-            title.setText("Add new data");
+            title.setText(R.string.add_new_data);
         }
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent();
                 finish();
             }
         });
@@ -92,7 +91,7 @@ public class ObjectDataActivity extends Activity implements AdapterView.OnItemSe
             @Override
             public void onClick(View view) {
                 AvPhoneObjectData.Mode mode = AvPhoneObjectData.modeFromPosition(simulationSpin.getSelectedItemPosition());
-                if (add == true) {
+                if (add) {
                     data = new AvPhoneObjectData(
                             nameEdit.getText().toString(),
                             unitEdit.getText().toString(),

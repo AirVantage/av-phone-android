@@ -1,8 +1,5 @@
 package com.sierrawireless.avphone;
 
-import net.airvantage.utils.AvPhonePrefs;
-import net.airvantage.utils.PreferenceUtils;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -27,7 +24,6 @@ import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.model.AvPhoneObject;
 import com.sierrawireless.avphone.model.AvPhoneObjectData;
-import com.sierrawireless.avphone.model.CustomDataLabels;
 import com.sierrawireless.avphone.service.LogMessage;
 import com.sierrawireless.avphone.service.MonitoringService;
 import com.sierrawireless.avphone.service.NewData;
@@ -37,6 +33,9 @@ import com.sierrawireless.avphone.task.SyncWithAvParams;
 import com.sierrawireless.avphone.task.SyncWithAvResult;
 import com.sierrawireless.avphone.task.SyncWithAvTask;
 import com.sierrawireless.avphone.tools.Tools;
+
+import net.airvantage.utils.AvPhonePrefs;
+import net.airvantage.utils.PreferenceUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +51,6 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
     private MonitorServiceManager monitorServiceManager;
 
-    private CustomLabelsManager customLabelsManager;
     private String systemUid;
     private String systemName;
 
@@ -63,10 +61,6 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
     Button objectBtn;
     ListView phoneListView;
     ListView objectListView;
-
-    private ArrayList<HashMap<String, String>> listPhone;
-    private ArrayList<HashMap<String, String>> listObject;
-
 
 
     public void setTaskFactory(IAsyncTaskFactory taskFactory) {
@@ -96,8 +90,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
     }
 
     protected void setCustomLabelsManager(CustomLabelsManager manager) {
-        this.customLabelsManager = manager;
-        this.customLabelsManager.setCustomLabelsListener(this);
+        manager.setCustomLabelsListener(this);
     }
 
     @Override
@@ -108,8 +101,6 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
         view = inflater.inflate(R.layout.fragment_run, container, false);
         viewUpdater = new DataViewUpdater(view, (MainActivity)getActivity());
-
-        CustomDataLabels customLabels = PreferenceUtils.getCustomDataLabels(getActivity());
 
 
         // register service listener
@@ -206,36 +197,13 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
             }
         );
 
-        setCustomDataLabels(customLabels);
+        setCustomDataLabels();
         setPhoneDataLabels();
 
 
         return view;
     }
 
-    private boolean checkCredentials() {
-
-        AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(getActivity());
-
-        if (!prefs.checkCredentials()) {
-            PreferenceUtils.showMissingPrefsDialog(getActivity());
-            return false;
-        }
-
-        return true;
-
-    }
-
-    private void registerNewDevice() {
-        if (checkCredentials()) {
-            Authentication auth = authManager.getAuthentication();
-            if (auth != null && !auth.isExpired()) {
-                syncWithAv(auth.getAccessToken());
-            } else {
-                requestAuthentication();
-            }
-        }
-    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -351,9 +319,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
 
     private void setPhoneDataLabels(){
-        listPhone = new ArrayList<>();
-
-        String Rssi ;
+        ArrayList<HashMap<String, String>> listPhone = new ArrayList<>();
 
         HashMap<String, String> temp;
 
@@ -398,15 +364,15 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
     }
 
-    protected void setCustomDataLabels(CustomDataLabels customDataLabels) {
-        listObject=new ArrayList<HashMap<String,String>>();
+    protected void setCustomDataLabels() {
+        ArrayList<HashMap<String, String>> listObject = new ArrayList<>();
 
 
         objectsManager = ObjectsManager.getInstance();
         AvPhoneObject object = objectsManager.getObjectByName(objectName);
         HashMap<String,String> temp;
         for (AvPhoneObjectData data : object.datas) {
-            temp = new HashMap<String, String>();
+            temp = new HashMap<>();
             temp.put(Tools.NAME, data.name);
             if (data.isInteger()) {
                 temp.put(Tools.VALUE, data.current.toString());
@@ -426,7 +392,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         public void onClick(View view) {
             Log.d(LOGTAG, "On alarm button click");
 
-            monitorServiceManager.sendAlarmEvent(true);
+            monitorServiceManager.sendAlarmEvent();
         }
     };
 
@@ -456,8 +422,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         // The activity can be null if the change is done while the fragment is not active.
         // This can wait for the activity to be resumed.
         if (getActivity() != null) {
-            CustomDataLabels customLabels = PreferenceUtils.getCustomDataLabels(getActivity());
-            setCustomDataLabels(customLabels);
+            setCustomDataLabels();
         }
     }
 

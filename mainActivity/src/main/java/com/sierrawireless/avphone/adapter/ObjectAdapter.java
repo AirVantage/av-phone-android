@@ -13,25 +13,22 @@ import com.sierrawireless.avphone.ObjectsManager;
 
 import java.util.ArrayList;
 
-/**
- * Created by JDamiano on 26/01/2018.
- */
 
 public class ObjectAdapter extends BaseAdapter {
     public ArrayList<String> list;
-    Activity activity;
-    TextView name;
-    int resource;
+    private Activity activity;
+    private TextView name;
+    private int resource;
     private static final String TAG = "ObjectAdapter";
 
-    ObjectsManager objectsManager;
+    private ObjectsManager objectsManager;
 
     public ObjectAdapter(Activity activity, int resource,  ArrayList<String> list){
         super();
         this.activity=activity;
         this.list=list;
         this.resource = resource;
-        objectsManager =ObjectsManager.getInstance();
+        objectsManager = ObjectsManager.getInstance();
     }
 
     @Override

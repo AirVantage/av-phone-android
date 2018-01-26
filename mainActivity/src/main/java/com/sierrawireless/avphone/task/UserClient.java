@@ -18,14 +18,14 @@ public class UserClient implements IUserClient {
 
     private IAirVantageClient client;
 
-    public UserClient(IAirVantageClient client) {
+    UserClient(IAirVantageClient client) {
         this.client = client;
     }
 
     @Override
     public List<String> checkRights() throws AirVantageException {
 
-        List<String> requiredRights = new ArrayList<String>(Arrays.asList("entities.applications.view",
+        List<String> requiredRights = new ArrayList<>(Arrays.asList("entities.applications.view",
                 "entities.applications.create", "entities.applications.edit", "entities.systems.view",
                 "entities.systems.create", "entities.systems.edit", "entities.alerts.rule.view",
                 "entities.alerts.rule.create.edit.delete"));

@@ -9,13 +9,8 @@ import net.airvantage.utils.Predicate;
 public class AvSystem {
     public String uid;
     public String name;
-    public String commStatus;
-    public Long lastCommDate;
     public String type;
     public String state;
-    public String activityState;
-    public Long lastSyncDate;
-    public String syncStatus;
     public Gateway gateway;
     public Data data;
     public List<Application> applications;

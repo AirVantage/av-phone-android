@@ -1,13 +1,12 @@
 package com.sierrawireless.avphone.task;
 
-import net.airvantage.model.AvError;
-import net.airvantage.utils.AirVantageClient;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
+
+import net.airvantage.model.AvError;
+import net.airvantage.utils.AirVantageClient;
 
 public class AsyncTaskFactory implements IAsyncTaskFactory {
-    private static final String TAG = "AsyncTaskFactory";
 
     private Context context;
 

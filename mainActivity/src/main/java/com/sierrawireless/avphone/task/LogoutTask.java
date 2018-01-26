@@ -11,7 +11,7 @@ public class LogoutTask extends AsyncTask<String, Integer, AvError> {
 
     private IAirVantageClient client;
 
-    public LogoutTask(IAirVantageClient client) {
+    LogoutTask(IAirVantageClient client) {
         this.client = client;
     }
     

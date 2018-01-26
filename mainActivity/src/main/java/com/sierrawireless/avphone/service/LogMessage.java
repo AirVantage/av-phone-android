@@ -9,7 +9,7 @@ public class LogMessage extends Intent {
     // keys used for broadcasting log events
     private static final String LOG = "log";
 
-    public LogMessage(String message) {
+    LogMessage(String message) {
         super(LOG_EVENT);
 
         this.putExtra(LOG, message);

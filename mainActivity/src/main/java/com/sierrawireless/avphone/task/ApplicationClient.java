@@ -2,9 +2,8 @@ package com.sierrawireless.avphone.task;
 
 import android.util.Log;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.sierrawireless.avphone.model.AvPhoneApplication;
+import com.sierrawireless.avphone.model.AvPhoneObjectData;
 
 import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Application;
@@ -15,9 +14,9 @@ import net.airvantage.model.User;
 import net.airvantage.utils.IAirVantageClient;
 import net.airvantage.utils.Utils;
 
-import com.sierrawireless.avphone.model.AvPhoneApplication;
-import com.sierrawireless.avphone.model.AvPhoneObjectData;
-import com.sierrawireless.avphone.model.CustomDataLabels;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ApplicationClient implements IApplicationClient {
     private static final String TAG = "ApplicationClient";
@@ -25,7 +24,7 @@ public class ApplicationClient implements IApplicationClient {
     private IAirVantageClient client;
     private User currentUser = null;
 
-    public ApplicationClient(IAirVantageClient client) {
+    ApplicationClient(IAirVantageClient client) {
         this.client = client;
     }
 
@@ -58,9 +57,7 @@ public class ApplicationClient implements IApplicationClient {
         if (currentUser == null) {
             try {
                 currentUser = client.getCurrentUser();
-            } catch (final IOException e) {
-                return "";
-            } catch (final AirVantageException e) {
+            } catch (final IOException | AirVantageException e) {
                 return "";
             }
         }
@@ -84,12 +81,12 @@ public class ApplicationClient implements IApplicationClient {
         client.updateSystem(systemWithApplication(system, application));
     }
 
-    protected AvSystem systemWithApplication(AvSystem system, Application appToAdd) {
+    private AvSystem systemWithApplication(AvSystem system, Application appToAdd) {
 
         AvSystem res = new AvSystem();
         res.uid = system.uid;
         res.type = system.type;
-        res.applications = new ArrayList<Application>();
+        res.applications = new ArrayList<>();
 
         boolean appAlreadyLinked = false;
 
@@ -98,7 +95,7 @@ public class ApplicationClient implements IApplicationClient {
                 Application resApp = new Application();
                 resApp.uid = systemApp.uid;
                 res.applications.add(resApp);
-                if (resApp.uid == appToAdd.uid) {
+                if (resApp.uid.equals(appToAdd.uid)) {
                     appAlreadyLinked = true;
                 }
             }
