@@ -5,30 +5,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
-import com.sierrawireless.avphone.adapter.AvPhoneObjectDataAdapter;
+import com.sierrawireless.avphone.adapter.ObjectDataAdapter;
 import com.sierrawireless.avphone.model.AvPhoneObject;
 import com.sierrawireless.avphone.model.AvPhoneObjectData;
-import com.sierrawireless.avphone.tools.Constant;
-
-import org.w3c.dom.Text;
+import com.sierrawireless.avphone.tools.Tools;
 
 import java.util.ArrayList;
 
-public class ObjectConfigure extends Activity {
+public class ObjectConfigureActivity extends Activity {
 
     Button cancel;
     Button save;
@@ -74,7 +70,7 @@ public class ObjectConfigure extends Activity {
                         deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
                                 0x3F, 0x25)));
                         // set item width
-                        deleteItem.setWidth((int) Constant.dp2px(90, context));
+                        deleteItem.setWidth((int) Tools.dp2px(90, context));
                         // set a icon
                         deleteItem.setIcon(android.R.drawable.ic_menu_delete);
                         // add to menu
@@ -106,7 +102,7 @@ public class ObjectConfigure extends Activity {
             menu.add(data.name);
         }
         menu.add("Add new data....");
-        AvPhoneObjectDataAdapter adapter = new AvPhoneObjectDataAdapter(this, android.R.layout.simple_list_item_1, menu);
+        ObjectDataAdapter adapter = new ObjectDataAdapter(this, android.R.layout.simple_list_item_1, menu);
 
 
 
@@ -188,7 +184,7 @@ public class ObjectConfigure extends Activity {
             menu.add(data.name);
         }
         menu.add("Add new data....");
-        AvPhoneObjectDataAdapter adapter = new AvPhoneObjectDataAdapter(this, android.R.layout.simple_list_item_1, menu);
+        ObjectDataAdapter adapter = new ObjectDataAdapter(this, android.R.layout.simple_list_item_1, menu);
 
 
 

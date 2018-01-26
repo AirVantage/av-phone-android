@@ -4,42 +4,33 @@ import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
 
 import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
-import com.sierrawireless.avphone.adapter.AvPhoneObjectDataAdapter;
 import com.sierrawireless.avphone.adapter.ObjectAdapter;
 import com.sierrawireless.avphone.auth.AuthUtils;
 import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.model.AvPhoneObject;
-import com.sierrawireless.avphone.model.AvPhoneObjectData;
-import com.sierrawireless.avphone.model.CustomDataLabels;
 import com.sierrawireless.avphone.task.IAsyncTaskFactory;
 import com.sierrawireless.avphone.task.SyncWithAvListener;
 import com.sierrawireless.avphone.task.SyncWithAvParams;
 import com.sierrawireless.avphone.task.SyncWithAvResult;
 import com.sierrawireless.avphone.task.SyncWithAvTask;
-import com.sierrawireless.avphone.tools.Constant;
+import com.sierrawireless.avphone.tools.Tools;
 
 import java.util.ArrayList;
 
@@ -104,7 +95,7 @@ public class ConfigureFragment extends AvPhoneFragment {
                         deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
                                 0x3F, 0x25)));
                         // set item width
-                        deleteItem.setWidth((int) Constant.dp2px(90,
+                        deleteItem.setWidth((int) Tools.dp2px(90,
                                 getActivity().getBaseContext()));
                         // set a icon
                         deleteItem.setIcon(android.R.drawable.ic_menu_delete);
@@ -145,7 +136,7 @@ public class ConfigureFragment extends AvPhoneFragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 //Open a new intent with the selected Object
                 Log.d(TAG, "onItemClick: " + i + " " +menu.get(i));
-                Intent intent = new Intent(view.getContext(), ObjectConfigure.class);
+                Intent intent = new Intent(view.getContext(), ObjectConfigureActivity.class);
                 intent.putExtra(INDEX, i);
 
                 startActivityForResult(intent, CONFIGURE);
@@ -167,7 +158,7 @@ public class ConfigureFragment extends AvPhoneFragment {
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), ObjectConfigure.class);
+                Intent intent = new Intent(view.getContext(), ObjectConfigureActivity.class);
                 intent.putExtra(INDEX, -1);
 
                 startActivityForResult(intent, CONFIGURE);

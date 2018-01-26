@@ -2,7 +2,7 @@ package com.sierrawireless.avphone.task;
 
 import android.util.Log;
 
-import com.sierrawireless.avphone.tools.Constant;
+import com.sierrawireless.avphone.tools.Tools;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -27,9 +27,9 @@ public class SystemClient implements ISystemClient {
 
     @Override
     public net.airvantage.model.AvSystem getSystem(final String serialNumber, String type) throws IOException, AirVantageException {
-        List<net.airvantage.model.AvSystem> systems = client.getSystemsBySerialNumber(Constant.buildSerialNumber(serialNumber, type));
+        List<net.airvantage.model.AvSystem> systems = client.getSystemsBySerialNumber(Tools.buildSerialNumber(serialNumber, type));
 
-        return Utils.firstWhere(systems, AvSystem.hasSerialNumber(Constant.buildSerialNumber(serialNumber, type)));
+        return Utils.firstWhere(systems, AvSystem.hasSerialNumber(Tools.buildSerialNumber(serialNumber, type)));
     }
 
     @Override

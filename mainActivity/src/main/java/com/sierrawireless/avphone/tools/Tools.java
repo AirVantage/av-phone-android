@@ -2,11 +2,7 @@ package com.sierrawireless.avphone.tools;
 
 import android.content.Context;
 
-/**
- * Created by JDamiano on 25/01/2018.
- */
-
-public class Constant {
+public class Tools {
     public static final String NAME="name";
     public static final String VALUE="value";
 

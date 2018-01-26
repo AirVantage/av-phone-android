@@ -38,9 +38,9 @@ public class ObjectDataActivity extends Activity implements AdapterView.OnItemSe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_object_data);
         Intent intent = getIntent();
-        objectPosition = intent.getIntExtra(ObjectConfigure.OBJECT_POSITION, -1);
-        dataPosition = intent.getIntExtra(ObjectConfigure.DATA_POSITION, -1);
-        add= intent.getBooleanExtra(ObjectConfigure.ADD, true);
+        objectPosition = intent.getIntExtra(ObjectConfigureActivity.OBJECT_POSITION, -1);
+        dataPosition = intent.getIntExtra(ObjectConfigureActivity.DATA_POSITION, -1);
+        add= intent.getBooleanExtra(ObjectConfigureActivity.ADD, true);
 
         if (objectPosition == -1 || dataPosition == -1) {
             return;

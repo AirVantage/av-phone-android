@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.sierrawireless.avphone.R;
-import com.sierrawireless.avphone.tools.Constant;
+import com.sierrawireless.avphone.tools.Tools;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,8 +66,8 @@ public class RunListViewAdapter extends BaseAdapter{
         }
 
         HashMap<String, String> map=list.get(position);
-        name.setText(map.get(Constant.NAME));
-        value.setText(map.get(Constant.VALUE));
+        name.setText(map.get(Tools.NAME));
+        value.setText(map.get(Tools.VALUE));
 
         return convertView;
     }

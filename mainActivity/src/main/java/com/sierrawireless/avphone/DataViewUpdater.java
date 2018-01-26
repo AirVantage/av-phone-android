@@ -19,8 +19,7 @@ import com.sierrawireless.avphone.model.AvPhoneObject;
 import com.sierrawireless.avphone.model.AvPhoneObjectData;
 import com.sierrawireless.avphone.service.LogMessage;
 import com.sierrawireless.avphone.service.NewData;
-import com.sierrawireless.avphone.tools.Constant;
-import com.sierrawireless.avphone.tools.MyPreference;
+import com.sierrawireless.avphone.tools.Tools;
 
 /**
  * A component in charge of listening for service events (new data, logs) and updating the view accordingly.
@@ -105,61 +104,61 @@ public class DataViewUpdater extends BroadcastReceiver {
             Rssi = "Unknown";
         }
         temp = new HashMap<>();
-        temp.put(Constant.NAME, "RSSI");
-        temp.put(Constant.VALUE, Rssi);
+        temp.put(Tools.NAME, "RSSI");
+        temp.put(Tools.VALUE, Rssi);
         listPhone.add(temp);
 
         temp = new HashMap<>();
-        temp.put(Constant.NAME, "Operator");
+        temp.put(Tools.NAME, "Operator");
         if (data.getOperator() == null) {
-            temp.put(Constant.VALUE, "");
+            temp.put(Tools.VALUE, "");
         }else{
-            temp.put(Constant.VALUE, data.getOperator());
+            temp.put(Tools.VALUE, data.getOperator());
         }
         listPhone.add(temp);
 
         temp = new HashMap<>();
-        temp.put(Constant.NAME, "Bytes Sent");
+        temp.put(Tools.NAME, "Bytes Sent");
         if (data.getBytesSent() == null) {
-            temp.put(Constant.VALUE, "0 Mo");
+            temp.put(Tools.VALUE, "0 Mo");
         }else{
-            temp.put(Constant.VALUE, ((data.getBytesSent()) / (1024F * 1024F)) + " Mo");
+            temp.put(Tools.VALUE, ((data.getBytesSent()) / (1024F * 1024F)) + " Mo");
         }
         listPhone.add(temp);
 
         temp = new HashMap<>();
-        temp.put(Constant.NAME, "Bytes Received");
+        temp.put(Tools.NAME, "Bytes Received");
         if (data.getBytesReceived() == null) {
-            temp.put(Constant.VALUE, "0 Mo");
+            temp.put(Tools.VALUE, "0 Mo");
         }else{
-            temp.put(Constant.VALUE, ((data.getBytesReceived()) / (1024F * 1024F)) + " Mo");
+            temp.put(Tools.VALUE, ((data.getBytesReceived()) / (1024F * 1024F)) + " Mo");
         }
         listPhone.add(temp);
 
         temp = new HashMap<>();
-        temp.put(Constant.NAME, "Network Type");
+        temp.put(Tools.NAME, "Network Type");
         if (data.getNetworkType() == null) {
-            temp.put(Constant.VALUE, "");
+            temp.put(Tools.VALUE, "");
         }else{
-            temp.put(Constant.VALUE, data.getNetworkType());
+            temp.put(Tools.VALUE, data.getNetworkType());
         }
         listPhone.add(temp);
 
         temp = new HashMap<>();
-        temp.put(Constant.NAME, "Latitude");
+        temp.put(Tools.NAME, "Latitude");
         if (data.getLatitude() == null) {
-            temp.put(Constant.VALUE, "");
+            temp.put(Tools.VALUE, "");
         }else{
-            temp.put(Constant.VALUE, data.getLatitude().toString());
+            temp.put(Tools.VALUE, data.getLatitude().toString());
         }
         listPhone.add(temp);
 
         temp = new HashMap<>();
-        temp.put(Constant.NAME, "Longitude");
+        temp.put(Tools.NAME, "Longitude");
         if (data.getLongitude() == null) {
-            temp.put(Constant.VALUE, "");
+            temp.put(Tools.VALUE, "");
         }else{
-            temp.put(Constant.VALUE, data.getLongitude().toString());
+            temp.put(Tools.VALUE, data.getLongitude().toString());
         }
         listPhone.add(temp);
         RunListViewAdapter adapter = new RunListViewAdapter(activity, listPhone);
@@ -180,11 +179,11 @@ public class DataViewUpdater extends BroadcastReceiver {
         listObject = new ArrayList<>();
         for (AvPhoneObjectData ldata : object.datas) {
             temp = new HashMap<String, String>();
-            temp.put(Constant.NAME, ldata.name);
+            temp.put(Tools.NAME, ldata.name);
             if (ldata.isInteger()) {
-                temp.put(Constant.VALUE, ldata.current.toString());
+                temp.put(Tools.VALUE, ldata.current.toString());
             }else{
-                temp.put(Constant.VALUE, ldata.defaults);
+                temp.put(Tools.VALUE, ldata.defaults);
             }
             listObject.add(temp);
         }

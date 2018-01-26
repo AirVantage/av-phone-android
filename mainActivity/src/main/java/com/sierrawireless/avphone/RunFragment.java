@@ -36,7 +36,7 @@ import com.sierrawireless.avphone.task.SyncWithAvListener;
 import com.sierrawireless.avphone.task.SyncWithAvParams;
 import com.sierrawireless.avphone.task.SyncWithAvResult;
 import com.sierrawireless.avphone.task.SyncWithAvTask;
-import com.sierrawireless.avphone.tools.Constant;
+import com.sierrawireless.avphone.tools.Tools;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -359,38 +359,38 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
 
         temp = new HashMap<>();
-        temp.put(Constant.NAME, "RSSI");
-        temp.put(Constant.VALUE, "");
+        temp.put(Tools.NAME, "RSSI");
+        temp.put(Tools.VALUE, "");
         listPhone.add(temp);
 
         temp = new HashMap<>();
-        temp.put(Constant.NAME, "Operator");
-        temp.put(Constant.VALUE, "");
+        temp.put(Tools.NAME, "Operator");
+        temp.put(Tools.VALUE, "");
         listPhone.add(temp);
 
         temp = new HashMap<>();
-        temp.put(Constant.NAME, "Bytes Sent");
-        temp.put(Constant.VALUE, "0 Mo");
+        temp.put(Tools.NAME, "Bytes Sent");
+        temp.put(Tools.VALUE, "0 Mo");
         listPhone.add(temp);
 
         temp = new HashMap<>();
-        temp.put(Constant.NAME, "Bytes Received");
-        temp.put(Constant.VALUE, "0 Mo");
+        temp.put(Tools.NAME, "Bytes Received");
+        temp.put(Tools.VALUE, "0 Mo");
         listPhone.add(temp);
 
         temp = new HashMap<>();
-        temp.put(Constant.NAME, "Network Type");
-        temp.put(Constant.VALUE, "");
+        temp.put(Tools.NAME, "Network Type");
+        temp.put(Tools.VALUE, "");
         listPhone.add(temp);
 
         temp = new HashMap<>();
-        temp.put(Constant.NAME, "Latitude");
-        temp.put(Constant.VALUE, "");
+        temp.put(Tools.NAME, "Latitude");
+        temp.put(Tools.VALUE, "");
         listPhone.add(temp);
 
         temp = new HashMap<>();
-        temp.put(Constant.NAME, "Longitude");
-        temp.put(Constant.VALUE, "");
+        temp.put(Tools.NAME, "Longitude");
+        temp.put(Tools.VALUE, "");
         listPhone.add(temp);
         RunListViewAdapter adapter = new RunListViewAdapter(getActivity(), listPhone);
         phoneListView.setAdapter(adapter);
@@ -407,11 +407,11 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         HashMap<String,String> temp;
         for (AvPhoneObjectData data : object.datas) {
             temp = new HashMap<String, String>();
-            temp.put(Constant.NAME, data.name);
+            temp.put(Tools.NAME, data.name);
             if (data.isInteger()) {
-                temp.put(Constant.VALUE, data.current.toString());
+                temp.put(Tools.VALUE, data.current.toString());
             }else{
-                temp.put(Constant.VALUE, data.defaults);
+                temp.put(Tools.VALUE, data.defaults);
             }
             listObject.add(temp);
         }

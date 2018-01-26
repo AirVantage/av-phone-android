@@ -10,7 +10,6 @@ import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -37,8 +36,7 @@ import com.sierrawireless.avphone.ObjectsManager;
 import com.sierrawireless.avphone.R;
 import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.model.AvPhoneObject;
-import com.sierrawireless.avphone.tools.Constant;
-import com.sierrawireless.avphone.tools.MyPreference;
+import com.sierrawireless.avphone.tools.Tools;
 
 import net.airvantage.utils.PreferenceUtils;
 
@@ -47,7 +45,6 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -158,7 +155,7 @@ public class MonitoringService extends Service {
                 //
                 // Ensure intent is valid
                 //
-                final String deviceId = Constant.buildSerialNumber(intent.getStringExtra(DEVICE_ID), object.name);;
+                final String deviceId = Tools.buildSerialNumber(intent.getStringExtra(DEVICE_ID), object.name);;
                 final String password = intent.getStringExtra(PASSWORD);
                 final String serverHost = intent.getStringExtra(SERVER_HOST);
 
