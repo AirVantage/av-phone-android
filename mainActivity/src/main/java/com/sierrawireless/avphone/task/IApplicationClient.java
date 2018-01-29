@@ -13,7 +13,7 @@ public interface IApplicationClient {
 
     Application ensureApplicationExists() throws IOException, AirVantageException;
 
-    void setApplicationData(String applicationUid, ArrayList<AvPhoneObjectData> customData) throws IOException, AirVantageException;
+    void setApplicationData(String applicationUid, ArrayList<AvPhoneObjectData> customData, String object) throws IOException, AirVantageException;
 
     Application createApplication() throws IOException, AirVantageException;
 

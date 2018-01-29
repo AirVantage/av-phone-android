@@ -63,6 +63,7 @@ public class MonitoringService extends Service {
     public static final String PASSWORD = "password";
     public static final String CONNECT = "connect";
     public static final String OBJECT_NAME ="objname";
+    public Boolean set = false;
 
     private MqttPushClient client = null;
 
@@ -401,12 +402,13 @@ public class MonitoringService extends Service {
         }
 
         NewData data = new NewData();
-        data.setAlarmActivated();
+        set = !set;
+        data.setAlarmActivated(set);
 
         // save alarm state
-        if (data.getExtras() != null) {
-            lastData.putExtras(data.getExtras());
-        }
+     //   if (data.getExtras() != null) {
+     //       lastData.putExtras(data.getExtras());
+     //   }
 
         try {
             this.client.push(data);

@@ -7,9 +7,9 @@ import net.airvantage.model.alert.v1.AlertRule;
 
 public interface IAlertRuleClient {
 
-    AlertRule getAlertRule(String serialNumber) throws IOException, AirVantageException;
+    AlertRule getAlertRule(String serialNumber, String Application) throws IOException, AirVantageException;
 
-    void createAlertRule() throws IOException, AirVantageException;
+    void createAlertRule(String Application) throws IOException, AirVantageException;
 
     
 }

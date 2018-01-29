@@ -105,17 +105,17 @@ public class SyncWithAvTask extends AvPhoneTask<SyncWithAvParams, SyncProgress, 
 
             publishProgress(SyncProgress.CHECKING_ALERT_RULE);
 
-            AlertRule alertRule = this.alertRuleClient.getAlertRule(serialNumber);
+            AlertRule alertRule = this.alertRuleClient.getAlertRule(serialNumber, application.uid);
             if (alertRule == null) {
 
                 publishProgress(SyncProgress.CREATING_ALERT_RULE);
 
-                this.alertRuleClient.createAlertRule();
+                this.alertRuleClient.createAlertRule(application.uid);
             }
 
             publishProgress(SyncProgress.UPDATING_APPLICATION);
 
-            this.applicationClient.setApplicationData(application.uid, objectsManager.getSavecObject().datas);
+            this.applicationClient.setApplicationData(application.uid, objectsManager.getSavecObject().datas, objectsManager.getSavecObject().name);
 
             if (!hasApplication(system, application)) {
 

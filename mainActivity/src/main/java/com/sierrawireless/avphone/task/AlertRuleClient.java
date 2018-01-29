@@ -17,15 +17,15 @@ public class AlertRuleClient implements IAlertRuleClient {
     }
     
     @Override
-    public AlertRule getAlertRule(String serialNumber) throws IOException, AirVantageException {
+    public AlertRule getAlertRule(String serialNumber, String application) throws IOException, AirVantageException {
         String alertRuleName = AvPhoneApplication.ALERT_RULE_NAME;
-        return client.getAlertRuleByName(alertRuleName);
+        return client.getAlertRuleByName(alertRuleName, application);
     }
    
     @Override
-    public void createAlertRule() throws IOException, AirVantageException {
+    public void createAlertRule(String application) throws IOException, AirVantageException {
         AlertRule alertRule = AvPhoneApplication.createAlertRule();
-        client.createAlertRule(alertRule);
+        client.createAlertRule(alertRule, application);
     }
 
     

@@ -39,7 +39,7 @@ public class AvPhoneApplication {
         return Collections.singletonList(mqtt);
     }
 
-    public static List<ApplicationData> createApplicationData(ArrayList<AvPhoneObjectData> customData) {
+    public static List<ApplicationData> createApplicationData(ArrayList<AvPhoneObjectData> customData, String object) {
 
         Log.d(TAG, "createApplicationData: ************applicationData called");
         // <data>
@@ -83,7 +83,7 @@ public class AvPhoneApplication {
             } else {
                 type = "string";
             }
-            asset.data.add(new Variable(AvPhoneData.CUSTOM + pos.toString(), data.name, type));
+            asset.data.add(new Variable(object + "." + AvPhoneData.CUSTOM + pos.toString(), data.name, type));
             pos ++;
         }
 

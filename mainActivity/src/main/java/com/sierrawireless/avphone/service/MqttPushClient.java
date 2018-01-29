@@ -126,18 +126,19 @@ class MqttPushClient {
 
 
         if (data.isAlarmActivated() != null) {
-            values.put(AvPhoneData.ALARM,
+            values.put( AvPhoneData.ALARM,
                     Collections.singletonList(new DataValue(timestamp, data.isAlarmActivated())));
-        }
-        AvPhoneObject object = objectsManager.getCurrentObject();
-        Integer pos = 1;
-        for (AvPhoneObjectData ldata:object.datas) {
-            if (ldata.isInteger()) {
-                values.put(AvPhoneData.CUSTOM + pos.toString(), Collections.singletonList(new DataValue(timestamp, ldata.current)));
-            }else{
-                values.put(AvPhoneData.CUSTOM + pos.toString(), Collections.singletonList(new DataValue(timestamp, ldata.defaults)));
+        }else {
+            AvPhoneObject object = objectsManager.getCurrentObject();
+            Integer pos = 1;
+            for (AvPhoneObjectData ldata : object.datas) {
+                if (ldata.isInteger()) {
+                    values.put(object.name + "." + AvPhoneData.CUSTOM + pos.toString(), Collections.singletonList(new DataValue(timestamp, ldata.current)));
+                } else {
+                    values.put(object.name + "." + AvPhoneData.CUSTOM + pos.toString(), Collections.singletonList(new DataValue(timestamp, ldata.defaults)));
+                }
+                pos++;
             }
-            pos++;
         }
 
         return gson.toJson(Collections.singletonList(values));

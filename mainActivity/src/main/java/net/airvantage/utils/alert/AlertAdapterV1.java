@@ -27,7 +27,7 @@ public class AlertAdapterV1 extends DefaultAlertAdapter {
     }
 
     @Override
-    public AlertRule getAlertRuleByName(final String name) throws IOException, AirVantageException {
+    public AlertRule getAlertRuleByName(final String name, String application) throws IOException, AirVantageException {
 
         String str = Uri.parse(buildEndpoint(API_PATH))
                 .buildUpon()
@@ -44,7 +44,7 @@ public class AlertAdapterV1 extends DefaultAlertAdapter {
     }
 
     @Override
-    public void createAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
+    public void createAlertRule(AlertRule alertRule, String application) throws IOException, AirVantageException {
         URL url = new URL(buildEndpoint(API_PATH));
         InputStream in = post(url, alertRule);
         gson.fromJson(new InputStreamReader(in), AlertRule.class);

@@ -20,6 +20,7 @@ public class AlertAdapterFactory extends AsyncTask<Void, Void, DefaultAlertAdapt
     private final String server;
     private final String accessToken;
     private final OkHttpClient client;
+    private static final String TAG = "AlertAdapterFactory";
 
     public AlertAdapterFactory(String server, String token, IAlertAdapterFactoryListener adapterListener) {
         this.accessToken = token;
@@ -32,10 +33,12 @@ public class AlertAdapterFactory extends AsyncTask<Void, Void, DefaultAlertAdapt
     @Override
     protected DefaultAlertAdapter doInBackground(Void... params) {
 
-        // Mapping of _Alert APIs_ -> Functions handling them
+        // Mapping of _Alert APIs_ -> Functions handling them set V2 in first preferred
         HashMap<String, DefaultAlertAdapter> urls = new HashMap<>();
-        urls.put(ALERT_V1_API_PREFIX, new AlertAdapterV1(server, accessToken));
         urls.put(ALERT_V2_API_PREFIX, new AlertAdapterV2(server, accessToken));
+        urls.put(ALERT_V1_API_PREFIX, new AlertAdapterV1(server, accessToken));
+     //   urls.put(ALERT_V2_API_PREFIX, new AlertAdapterV2(server, accessToken));
+        HashMap<String,Boolean> founds = new HashMap<>();
 
         // We using first available
         for (HashMap.Entry<String, DefaultAlertAdapter> entry : urls.entrySet()) {
@@ -43,11 +46,13 @@ public class AlertAdapterFactory extends AsyncTask<Void, Void, DefaultAlertAdapt
 
                 String urlString = "https://" + server + entry.getKey() + accessToken;
                 URL url = new URL(urlString);
+                Log.d(TAG, "doInBackground: Send Data is" + urlString);
                 HttpURLConnection connection = client.open(url);
                 connection.setRequestMethod("GET");
                 if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    Log.d(this.getClass().getName(), "Using Alerts from " + urlString);
-                    return entry.getValue();
+                    founds.put(entry.getKey(), true);
+                }else{
+                    founds.put(entry.getKey(), false);
                 }
 
             } catch (MalformedURLException e) {
@@ -55,6 +60,14 @@ public class AlertAdapterFactory extends AsyncTask<Void, Void, DefaultAlertAdapt
             } catch (IOException e) {
                 Log.e(this.getClass().getName(), "Connection problem", e);
             }
+        }
+
+        if (founds.get(ALERT_V2_API_PREFIX)) {
+            Log.d(this.getClass().getName(), "Using Alerts from " + ALERT_V2_API_PREFIX);
+            return urls.get(ALERT_V2_API_PREFIX);
+        }else if (founds.get(ALERT_V1_API_PREFIX)) {
+            Log.d(this.getClass().getName(), "Using Alerts from " + ALERT_V1_API_PREFIX);
+            return urls.get(ALERT_V1_API_PREFIX);
         }
 
         // Neither is available?

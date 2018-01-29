@@ -184,8 +184,8 @@ public class NewData extends Intent {
         return (Boolean) this.getExtras().get(ALARM_KEY);
     }
 
-    void setAlarmActivated() {
-            this.putExtra(ALARM_KEY, ((Boolean) true).booleanValue());
+    void setAlarmActivated(Boolean  value) {
+            this.putExtra(ALARM_KEY, value);
     }
 
     public int size() {
@@ -198,9 +198,9 @@ public class NewData extends Intent {
         Integer pos = 1;
         for (AvPhoneObjectData data:object.datas) {
             if (data.isInteger()){
-                this.putExtra(CUSTOM + pos.toString(), Integer.parseInt(data.execMode()));
+                this.putExtra(object.name + "." + CUSTOM + pos.toString(), Integer.parseInt(data.execMode()));
             }else{
-                this.putExtra(CUSTOM + pos.toString(), data.defaults);
+                this.putExtra(object.name + "." + CUSTOM + pos.toString(), data.defaults);
             }
             pos ++;
         }

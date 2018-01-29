@@ -42,9 +42,9 @@ public class ApplicationClient implements IApplicationClient {
     }
 
     @Override
-    public void setApplicationData(String applicationUid, ArrayList<AvPhoneObjectData> customData)
+    public void setApplicationData(String applicationUid, ArrayList<AvPhoneObjectData> customData, String object)
             throws IOException, AirVantageException {
-        List<ApplicationData> data = AvPhoneApplication.createApplicationData(customData);
+        List<ApplicationData> data = AvPhoneApplication.createApplicationData(customData, object);
         client.setApplicationData(applicationUid, data);
     }
 

@@ -31,11 +31,11 @@ public class DefaultAlertAdapter {
         this.server = server;
     }
 
-    public void createAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
+    public void createAlertRule(AlertRule alertRule, String application) throws IOException, AirVantageException {
         throw new AirVantageException(new AvError(AvError.FORBIDDEN));
     }
 
-    public AlertRule getAlertRuleByName(String name) throws IOException, AirVantageException {
+    public AlertRule getAlertRuleByName(String name, String application) throws IOException, AirVantageException {
         throw new AirVantageException(new AvError(AvError.FORBIDDEN));
     }
 

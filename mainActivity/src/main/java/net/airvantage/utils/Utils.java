@@ -12,7 +12,8 @@ public class Utils {
         
         if (list != null) {
             for (T item : list) {
-                if (predicate.matches(item)) {
+                boolean match = predicate.matches(item);
+                if (match) {
                     return item;
                 }
             }

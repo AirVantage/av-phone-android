@@ -264,15 +264,15 @@ public class AirVantageClient implements IAirVantageClient, IAlertAdapterFactory
     }
 
     @Override
-    public AlertRule getAlertRuleByName(final String name) throws IOException, AirVantageException {
+    public AlertRule getAlertRuleByName(final String name, String application) throws IOException, AirVantageException {
         checkAlertAdapter();
-        return this.alertAdapter.getAlertRuleByName(name);
+        return this.alertAdapter.getAlertRuleByName(name, application);
     }
 
     @Override
-    public void createAlertRule(AlertRule alertRule) throws IOException, AirVantageException {
+    public void createAlertRule(AlertRule alertRule, String application) throws IOException, AirVantageException {
         checkAlertAdapter();
-        this.alertAdapter.createAlertRule(alertRule);
+        this.alertAdapter.createAlertRule(alertRule, application);
     }
 
     @Override

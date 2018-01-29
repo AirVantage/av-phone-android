@@ -23,10 +23,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 
+
 public class AlertAdapterV2 extends DefaultAlertAdapter {
+    private static final String TAG = "AlertAdapterV2";
 
     private static String LOG_TAG = AlertAdapterV2.class.getName();
 
@@ -42,14 +45,15 @@ public class AlertAdapterV2 extends DefaultAlertAdapter {
     }
 
     @Override
-    public net.airvantage.model.alert.v1.AlertRule getAlertRuleByName(final String name)
+    public net.airvantage.model.alert.v1.AlertRule getAlertRuleByName(final String name, String spplication)
             throws IOException, AirVantageException {
         try {
             InputStream in = get(alertRuleUrl());
             AlertRuleList rules = gson.fromJson(new InputStreamReader(in), AlertRuleList.class);
+            Log.d(TAG, "getAlertRuleByName: Get Alert Rule " + rules);
             AlertRule alertRuleV2 = Utils.firstWhere(rules, AlertRule.isNamed(name));
             if (alertRuleV2 != null) {
-                convert(alertRuleV2);
+                return convert(alertRuleV2);
             }
         } catch (final JsonIOException e) {
             Log.e(LOG_TAG, "Unable to read Alert Rules", e);
@@ -58,19 +62,29 @@ public class AlertAdapterV2 extends DefaultAlertAdapter {
     }
 
     @Override
-    public void createAlertRule(net.airvantage.model.alert.v1.AlertRule alertRule)
+    public void createAlertRule(net.airvantage.model.alert.v1.AlertRule alertRule, String application)
             throws IOException, AirVantageException {
         try {
             AlertRule alertRuleV2 = new AlertRule();
             alertRuleV2.targetType = "SYSTEM";
             alertRuleV2.name = alertRule.name;
             alertRuleV2.message = "Alarm is ON";
+            alertRuleV2.active = true;
             alertRuleV2.conditions = new ArrayList<>();
+            HashMap<String, Object> metadata = new HashMap<>();
+            metadata.put("templateId", "alertrule.template.custom");
+
+            HashMap<String, String> condi = new HashMap<>();
+            condi.put("application", application);
+            metadata.put("condition_0", condi);
+            alertRuleV2.metadata = metadata;
             for (net.airvantage.model.alert.v1.Condition condition : alertRule.conditions) {
                 alertRuleV2.conditions.add(convert(condition));
             }
+            Log.d(TAG, "createAlertRule: send  to " + alertRuleUrl() + " data " + alertRuleV2);
             InputStream in = post(alertRuleUrl(), alertRuleV2);
             alertRuleV2 = gson.fromJson(new InputStreamReader(in), AlertRule.class);
+            Log.d(TAG, "createAlertRule: created alert rule " + alertRuleV2);
             if (alertRuleV2 != null) {
                 convert(alertRuleV2);
             }
@@ -86,7 +100,7 @@ public class AlertAdapterV2 extends DefaultAlertAdapter {
 
         final Operand leftOperand = new Operand();
         leftOperand.attributeId = new AttributeId();
-        leftOperand.attributeId.name = "communication.data.value";
+        leftOperand.attributeId.name = "DATA.phone.alarm";
 
         final Operand rightOperand = new Operand();
         rightOperand.valueStr = condition.value;
@@ -112,7 +126,7 @@ public class AlertAdapterV2 extends DefaultAlertAdapter {
         return alertRuleUrl;
     }
 
-    private static void convert(AlertRule alertRule) {
+    private static net.airvantage.model.alert.v1.AlertRule convert(AlertRule alertRule) {
         net.airvantage.model.alert.v1.AlertRule alertRuleV1;
         alertRuleV1 = new net.airvantage.model.alert.v1.AlertRule();
 
@@ -130,21 +144,27 @@ public class AlertAdapterV2 extends DefaultAlertAdapter {
         for (final Condition condition : alertRule.conditions) {
             alertRuleV1.conditions.add(convert(condition));
         }
+        return alertRuleV1;
     }
 
     private static net.airvantage.model.alert.v1.Condition convert(Condition condition) {
         net.airvantage.model.alert.v1.Condition conditionV1;
         conditionV1 = new net.airvantage.model.alert.v1.Condition();
-        conditionV1.eventProperty = "communication.data.value";
+        conditionV1.eventProperty = "phone.alarm";
         conditionV1.eventPropertyKey = AvPhoneData.ALARM;
         conditionV1.operator = condition.operator;
 
         // Finding values
-        Operand operand = Utils.first(condition.operands);
+        //Operand operand = Utils.first(condition.operands);
         List<Serializable> values = new ArrayList<>();
-        values.add(operand.valueStr);
-        values.add(operand.valueNum);
-        values.add(Utils.first(operand.valuesStr));
+        for (Operand operand: condition.operands) {
+            if (operand.attributeId == null) {
+                values.add(operand.valueStr);
+                values.add(operand.valueNum);
+            } else {
+                //TODO
+            }
+        }//values.add(Utils.first(operand.valuesStr));
 
         // Trimming nulls
      //   values.removeAll(Collections.singleton(null));
