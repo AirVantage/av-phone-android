@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, SyncWithAvResult> {
+public class SyncWithAvTask extends AvPhoneTask<SyncWithAvParams, SyncProgress, SyncWithAvResult> {
 
     private IApplicationClient applicationClient;
 
@@ -68,14 +68,10 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
             if (!missingRights.isEmpty()) {
                 return new SyncWithAvResult(new AvError(AvError.MISSING_RIGHTS, missingRights));
             }
-            
+
             String systemType;
             final SyncWithAvParams syncParams = params[0];
             final User user = userClient.getUser();
-            if (syncParams.user) {
-                publishProgress(SyncProgress.DONE);
-                new SyncWithAvResult(null, user);
-            }
             final String imei = syncParams.imei;
             final String iccid = syncParams.iccid;
             final String deviceName = syncParams.deviceName;
@@ -93,17 +89,6 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
                 mainActivity.setSystemSerial(serialNumber);
             }
 
-            if (syncParams.delete) {
-                publishProgress(SyncProgress.CHECKING_SYSTEM);
-                net.airvantage.model.AvSystem system = this.systemClient.getSystem(serialNumber, systemType);
-                if (system != null) {
-                    publishProgress(SyncProgress.DELETING_SYSTEM);
-                    systemClient.deleteSystem(system);
-                }
-                publishProgress(SyncProgress.DONE);
-                return new SyncWithAvResult(null, user);
-
-            }
             publishProgress(SyncProgress.CHECKING_APPLICATION);
 
             Application application = this.applicationClient.ensureApplicationExists();
@@ -179,39 +164,6 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
 
         if (result.isError()) {
             AvError error = result.getError();
-            if (error.missingRights()) {
-                String message = missingRightsMessage(error, context);
-                displayer.showErrorMessage(Html.fromHtml(message));
-            } else if (error.systemAlreadyExists()) {
-                displayer.showError(R.string.sync_error_system_exists);
-            } else if (error.gatewayAlreadyExists()) {
-                displayer.showError(R.string.sync_error_gateway_exists);
-            } else if (error.applicationAlreadyUsed()) {
-                final User user = userClient.getUser();
-                if (user == null) {
-                    displayer.showError(R.string.sync_error_no_user_data);
-                } else {
-                    displayer.showError(R.string.sync_error_app_exists, AvPhoneApplication.appType(user.name));
-                }
-            } else if (error.tooManyAlerRules()) {
-                displayer.showError(R.string.sync_error_too_many_rules);
-            } else if (error.cantCreateApplication()) {
-                displayer.showError(R.string.sync_error_no_right_create_application);
-            } else if (error.cantCreateSystem()) {
-                displayer.showError(R.string.sync_error_no_right_create_system);
-            } else if (error.cantCreateAlertRule()) {
-                displayer.showError(R.string.sync_error_no_right_create_alert_rule);
-            } else if (error.cantUpdateApplication()) {
-                displayer.showError(R.string.sync_error_no_right_update_app);
-            } else if (error.cantUpdateSystem()) {
-                displayer.showError(R.string.sync_error_no_right_update_system);
-            } else if (error.forbidden()) {
-                String method = error.errorParameters.get(0);
-                String url = error.errorParameters.get(1);
-                displayer.showError(R.string.sync_error_forbidden, method, url);
-            } else {
-                displayer.showError(R.string.sync_error_unexpected, error.error);
-            }
         } else {
             displayer.showSuccess(R.string.sync_success);
         }
@@ -219,22 +171,6 @@ public class SyncWithAvTask extends AsyncTask<SyncWithAvParams, SyncProgress, Sy
 
     protected Context getContext() {
         return this.context;
-    }
-
-    private String missingRightsMessage(AvError error, Activity context) {
-        List<String> missingRights = error.errorParameters;
-        StringBuilder message = new StringBuilder();
-        message.append(context.getText(R.string.auth_not_enough_rights));
-        message.append("<br/>");
-        message.append(context.getText(R.string.auth_missing_rights));
-        message.append("<br/>");
-
-        for (String missingRight : missingRights) {
-            message.append("&#8226; ");
-            message.append(UserRights.asString(missingRight, context));
-            message.append("<br/>");
-        }
-        return message.toString();
     }
 
 }

@@ -26,6 +26,26 @@ public class AsyncTaskFactory implements IAsyncTaskFactory {
         return new ProgressSyncWithAvTask(appClient, systemClient, alertRuleClient, userClient, context);
     }
 
+    public GetUserTask getUserTak(String serverHost, String token) {
+
+        AirVantageClient avClient = new AirVantageClient(serverHost, token);
+
+        IUserClient userClient = new UserClient(avClient);
+
+        return new ProgressGetUserTask(userClient, context);
+    }
+
+    public DeleteSystemTask deleteSystemTak(String serverHost, String token) {
+
+        AirVantageClient avClient = new AirVantageClient(serverHost, token);
+        ISystemClient systemClient = new SystemClient(avClient);
+
+        IUserClient userClient = new UserClient(avClient);
+
+        return new ProgressDeleteSystemTask(systemClient, userClient, context);
+    }
+
+
     public AsyncTask<String, Integer, AvError> logoutTask(String serverHost, String token) {
         
         AirVantageClient client = new AirVantageClient(serverHost, token);

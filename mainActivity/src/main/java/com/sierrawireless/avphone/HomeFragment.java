@@ -2,7 +2,6 @@ package com.sierrawireless.avphone;
 
 import net.airvantage.model.AvError;
 import net.airvantage.model.User;
-import net.airvantage.utils.AirVantageClient;
 import net.airvantage.utils.AvPhonePrefs;
 import net.airvantage.utils.PreferenceUtils;
 
@@ -24,12 +23,14 @@ import com.sierrawireless.avphone.auth.AuthUtils;
 import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.task.IAsyncTaskFactory;
-import com.sierrawireless.avphone.task.IUserClient;
+import com.sierrawireless.avphone.task.GetUserListener;
+import com.sierrawireless.avphone.task.GetUserParams;
+import com.sierrawireless.avphone.task.GetUserResult;
+import com.sierrawireless.avphone.task.GetUserTask;
 import com.sierrawireless.avphone.task.SyncWithAvListener;
 import com.sierrawireless.avphone.task.SyncWithAvParams;
 import com.sierrawireless.avphone.task.SyncWithAvResult;
 import com.sierrawireless.avphone.task.SyncWithAvTask;
-import com.sierrawireless.avphone.task.UserClient;
 
 public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
@@ -57,7 +58,7 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
         this.taskFactory = taskFactory;
         if (retrySync) {
             retrySync = false;
-            syncWithAv(authForSync,false);
+            syncWithAv(authForSync);
         }
     }
 
@@ -155,11 +156,50 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
         Authentication auth = AuthUtils.activityResultAsAuthentication(requestCode, resultCode, data);
         if (auth != null) {
-            syncWithAv(auth, false);
+            syncWithAv(auth);
         }
     }
 
-    private void syncWithAv(final Authentication auth, boolean luser) {
+
+    private void syncGetUser(final Authentication auth) {
+        hideErrorMessage();
+
+        AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(getActivity());
+
+        // Without task factory, try later
+        if (taskFactory == null) {
+            authForSync = auth;
+            retrySync = true;
+            return;
+        }
+
+
+        final IMessageDisplayer displayer = this;
+        final GetUserTask getUserTask = taskFactory.getUserTak(avPhonePrefs.serverHost, auth.getAccessToken());
+
+        getUserTask.addProgressListener(new GetUserListener() {
+            @Override
+            public void onGetting(GetUserResult result) {
+                if (result.isError()) {
+                    authManager.forgetAuthentication();
+                    showLoggedOutState();
+                    getUserTask.showResult(result, displayer, getActivity());
+                } else {
+                    authManager.onAuthentication(auth);
+                    showLoggedInState();
+                    user = result.getUser();
+                }
+
+            }
+        });
+
+        final GetUserParams params = new GetUserParams();
+
+        getUserTask.execute(params);
+
+    }
+
+    private void syncWithAv(final Authentication auth) {
 
         hideErrorMessage();
 
@@ -193,19 +233,15 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
         });
 
         final SyncWithAvParams params = new SyncWithAvParams();
-        if (!luser) {
-            params.deviceId = DeviceInfo.getUniqueId(getActivity());
-            params.imei = DeviceInfo.getIMEI(getActivity());
-            params.deviceName = DeviceInfo.getDeviceName();
-            params.iccid = DeviceInfo.getICCID(getActivity());
-            params.mqttPassword = avPhonePrefs.password;
-            params.customData = PreferenceUtils.getCustomDataLabels(getActivity());
-            //     params.current = ((MainActivity)getActivity()).current;
-            params.activity = ((MainActivity) getActivity());
-            params.user = false;
-        }else{
-            params.user = true;
-        }
+
+        params.deviceId = DeviceInfo.getUniqueId(getActivity());
+        params.imei = DeviceInfo.getIMEI(getActivity());
+        params.deviceName = DeviceInfo.getDeviceName();
+        params.iccid = DeviceInfo.getICCID(getActivity());
+        params.mqttPassword = avPhonePrefs.password;
+        params.customData = PreferenceUtils.getCustomDataLabels(getActivity());
+        //     params.current = ((MainActivity)getActivity()).current;
+        params.activity = ((MainActivity) getActivity());
 
         syncAvTask.execute(params);
 
@@ -213,7 +249,7 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
     private void showLoggedInState() {
         if (user == null){
-            syncWithAv(authManager.getAuthentication(), true);
+            syncGetUser(authManager.getAuthentication());
         }
         showCurrentServer();
         showLogoutButton();

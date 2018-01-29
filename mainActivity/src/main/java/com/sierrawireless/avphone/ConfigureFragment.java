@@ -25,6 +25,9 @@ import com.sierrawireless.avphone.auth.AuthUtils;
 import com.sierrawireless.avphone.auth.Authentication;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
 import com.sierrawireless.avphone.model.AvPhoneObject;
+import com.sierrawireless.avphone.task.DeleteSystemListener;
+import com.sierrawireless.avphone.task.DeleteSystemResult;
+import com.sierrawireless.avphone.task.DeleteSystemTask;
 import com.sierrawireless.avphone.task.IAsyncTaskFactory;
 import com.sierrawireless.avphone.task.SyncWithAvListener;
 import com.sierrawireless.avphone.task.SyncWithAvParams;
@@ -188,7 +191,11 @@ public class ConfigureFragment extends AvPhoneFragment {
             Authentication auth = AuthUtils.activityResultAsAuthentication(requestCode, resultCode, data);
             if (auth != null) {
                 authManager.onAuthentication(auth);
-                syncWithAv(auth.getAccessToken(), this.delete);
+                if (delete) {
+                    deleteSysten(auth.getAccessToken());
+                }else {
+                    syncWithAv(auth.getAccessToken());
+                }
             }
         }else if (requestCode == CONFIGURE) {
             if (resultCode == Activity.RESULT_OK) {
@@ -201,7 +208,7 @@ public class ConfigureFragment extends AvPhoneFragment {
                 if (checkCredentials()) {
                     Authentication auth = authManager.getAuthentication();
                     if (auth != null && !auth.isExpired()) {
-                        syncWithAv(auth.getAccessToken(), false);
+                        syncWithAv(auth.getAccessToken());
                     } else {
                         this.delete = false;
                         requestAuthentication();
@@ -218,7 +225,7 @@ public class ConfigureFragment extends AvPhoneFragment {
         if (checkCredentials()) {
             Authentication auth = authManager.getAuthentication();
             if (auth != null && !auth.isExpired()) {
-                syncWithAv(auth.getAccessToken(), true);
+                deleteSysten(auth.getAccessToken());
             } else {
                 this.delete = true;
                 requestAuthentication();
@@ -226,7 +233,32 @@ public class ConfigureFragment extends AvPhoneFragment {
         }
     }
 
-    private void syncWithAv(String token, final boolean delete) {
+    private void deleteSysten(String token) {
+        AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(getActivity());
+
+        final IMessageDisplayer display = this;
+
+        final DeleteSystemTask deleteTask = taskFactory.deleteSystemTak(prefs.serverHost, token);
+        deleteTask.execute();
+
+        deleteTask.addProgressListener(new DeleteSystemListener() {
+
+            public void onDeleting(DeleteSystemResult result) {
+                Log.d(TAG, "onSynced: ICI");
+                if (delete) {
+                    objectsManager.removeSavedObject();
+                }
+
+                deleteTask.showResult(result, display, getActivity());
+                MainActivity.instance.loadMenu();
+
+
+            }
+        });
+
+    }
+
+    private void syncWithAv(String token) {
 
         AvPhonePrefs prefs = PreferenceUtils.getAvPhonePrefs(getActivity());
 
@@ -241,7 +273,6 @@ public class ConfigureFragment extends AvPhoneFragment {
         syncParams.iccid = DeviceInfo.getICCID(getActivity());
         syncParams.mqttPassword = prefs.password;
         syncParams.customData = PreferenceUtils.getCustomDataLabels(getActivity());
-        syncParams.delete = delete;
 
         syncTask.execute(syncParams);
 
