@@ -13,11 +13,8 @@ import com.sierrawireless.avphone.R;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
 
 import net.airvantage.model.AirVantageException;
-import net.airvantage.model.Application;
 import net.airvantage.model.AvError;
-import net.airvantage.model.AvSystem;
 import net.airvantage.model.User;
-import net.airvantage.model.alert.v1.AlertRule;
 
 import java.io.IOException;
 import java.util.ArrayList;

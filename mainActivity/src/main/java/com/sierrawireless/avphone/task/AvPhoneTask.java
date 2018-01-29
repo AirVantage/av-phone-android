@@ -17,7 +17,7 @@ import java.util.List;
 abstract class AvPhoneTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
 
 
-    public void displayTaskError(AvError error, IMessageDisplayer displayer, Activity context, IUserClient userClient) {
+    void displayTaskError(AvError error, IMessageDisplayer displayer, Activity context, IUserClient userClient) {
 
         if (error.missingRights()) {
             String message = missingRightsMessage(error, context);
