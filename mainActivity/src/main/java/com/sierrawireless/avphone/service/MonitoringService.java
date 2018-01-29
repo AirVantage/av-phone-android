@@ -32,11 +32,22 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
+import com.sierrawireless.avphone.DeviceInfo;
 import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.ObjectsManager;
 import com.sierrawireless.avphone.R;
 import com.sierrawireless.avphone.model.AvPhoneObject;
+import com.sierrawireless.avphone.task.DeleteSystemListener;
+import com.sierrawireless.avphone.task.DeleteSystemResult;
+import com.sierrawireless.avphone.task.DeleteSystemTask;
+import com.sierrawireless.avphone.task.SendDataListener;
+import com.sierrawireless.avphone.task.SendDataParams;
+import com.sierrawireless.avphone.task.SendDataResult;
+import com.sierrawireless.avphone.task.SendDataTask;
+import com.sierrawireless.avphone.task.SyncWithAvParams;
 import com.sierrawireless.avphone.tools.Tools;
+
+import net.airvantage.utils.PreferenceUtils;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -159,9 +170,7 @@ public class MonitoringService extends Service {
                 // Now, create client
                 client = new MqttPushClient(deviceId, password, serverHost, mqttCallback);
             }
-            if (!client.isConnected()) {
-                client.connect();
-            }
+
 
             if (mustConnect) {
                 Location location = getLastKnownLocation();
@@ -261,9 +270,22 @@ public class MonitoringService extends Service {
                 // dispatch new data event to update the activity UI
                 LocalBroadcastManager.getInstance(this).sendBroadcast(data);
 
-                this.client.push(data);
-                lastLog = data.size() + " data pushed to the server";
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog));
+                final SendDataTask sendDataTask = new SendDataTask();
+                SendDataParams params = new SendDataParams();
+                params.client = client;
+                params.data = data;
+                params.context = this;
+                params.alarm = false;
+
+                sendDataTask.execute(params);
+
+
+                sendDataTask.addProgressListener(new SendDataListener() {
+
+                    public void onSend(SendDataResult result) {
+                        lastLog = result.getLastLog();
+                    }
+                });
 
                 setUpLocationListeners();
             }
@@ -272,7 +294,7 @@ public class MonitoringService extends Service {
             Crashlytics.logException(e);
             Log.e(TAG, "error", e);
             lastLog = "ERROR: " + e.getMessage();
-            LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog));
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog, false));
         }
 
 
@@ -387,18 +409,6 @@ public class MonitoringService extends Service {
             return;
         }
 
-        if (!client.isConnected()) {
-            Log.e(TAG, "onStartCommand: client connect called");
-            try {
-                client.connect();
-            }
-             catch (Exception e) {
-                Crashlytics.logException(e);
-                Log.e(TAG, "error", e);
-                lastLog = "ERROR: " + e.getMessage();
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new LogMessage(lastLog));
-            }
-        }
 
         NewData data = new NewData();
         set = !set;
@@ -409,13 +419,24 @@ public class MonitoringService extends Service {
      //       lastData.putExtras(data.getExtras());
      //   }
 
-        try {
-            this.client.push(data);
-        } catch (MqttException e) {
-            Toast.makeText(getApplicationContext(), "Can't send Alarm ", Toast.LENGTH_SHORT).show();
-            Crashlytics.logException(e);
-            Log.e(TAG, "Could not push the alarm event", e);
-        }
+        final SendDataTask sendDataTask = new SendDataTask();
+        SendDataParams params = new SendDataParams();
+        params.client = client;
+        params.data = data;
+        params.context = this;
+        params.alarm = true;
+        params.value = set;
+
+        sendDataTask.execute(params);
+
+
+        sendDataTask.addProgressListener(new SendDataListener() {
+
+            public void onSend(SendDataResult result) {
+                lastLog = result.getLastLog();
+            }
+        });
+
     }
 
     // Service binding

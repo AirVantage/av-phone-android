@@ -65,7 +65,8 @@
         android:inputType="textPersonName"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/name" />
+        app:layout_constraintTop_toBottomOf="@+id/name"
+        tools:ignore="LabelFor" />
 
     <TextView
         android:id="@+id/textView3"
@@ -88,7 +89,8 @@
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="@+id/tmmmm"
         app:layout_constraintStart_toEndOf="@+id/tmmmm"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        tools:ignore="LabelFor" />
 
     <EditText
         android:id="@+id/defaultText"
@@ -99,7 +101,8 @@
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="@+id/tmmmm"
         app:layout_constraintStart_toEndOf="@+id/tmmmm"
-        app:layout_constraintTop_toBottomOf="@+id/tmmmm" />
+        app:layout_constraintTop_toBottomOf="@+id/tmmmm"
+        tools:ignore="LabelFor" />
 
     <TextView
         android:id="@+id/tmmmm"

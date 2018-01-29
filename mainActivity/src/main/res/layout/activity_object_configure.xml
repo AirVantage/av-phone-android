@@ -72,5 +72,6 @@
         android:ems="10"
         android:inputType="textPersonName"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nameObject" />
+        app:layout_constraintTop_toBottomOf="@+id/nameObject"
+        tools:ignore="LabelFor" />
 </android.support.constraint.ConstraintLayout>

@@ -45,14 +45,14 @@ public class DataViewUpdater extends BroadcastReceiver {
         if (intent instanceof NewData) {
             setNewData((NewData) intent);
         } else if (intent instanceof LogMessage) {
-            setLogMessage(((LogMessage) intent).getMessage(), System.currentTimeMillis());
+            setLogMessage(((LogMessage) intent).getMessage(), System.currentTimeMillis(), ((LogMessage) intent).getAlarm());
         }
     }
 
     public void onStart(Long startedSince, NewData lastData, String logMsg, Long lastRun) {
         this.setStartedSince(startedSince);
         this.setNewData(lastData);
-        this.setLogMessage(logMsg, lastRun);
+        this.setLogMessage(logMsg, lastRun, false);
 
         // activate alarm button
         //view.findViewById(R.id.alarm_switch).setEnabled(true);
@@ -66,8 +66,13 @@ public class DataViewUpdater extends BroadcastReceiver {
     }
 
     @SuppressLint("SetTextI18n")
-    private void setLogMessage(String log, Long timestamp) {
-        TextView logView = findView(R.id.service_log);
+    private void setLogMessage(String log, Long timestamp, boolean alarm) {
+        TextView logView;
+        if (alarm) {
+            logView = findView(R.id.alarm_log);
+        }else {
+            logView = findView(R.id.service_log);
+        }
         if (log != null) {
             logView.setText(hourFormat.format(timestamp != null ? new Date(timestamp) : new Date()) + " - " + log);
             logView.setVisibility(View.VISIBLE);

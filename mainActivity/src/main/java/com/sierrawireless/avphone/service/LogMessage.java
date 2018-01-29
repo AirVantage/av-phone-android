@@ -8,15 +8,18 @@ public class LogMessage extends Intent {
 
     // keys used for broadcasting log events
     private static final String LOG = "log";
+    private static final String ALARM = "alarm";
 
-    LogMessage(String message) {
+    public LogMessage(String message, boolean alarm) {
         super(LOG_EVENT);
 
         this.putExtra(LOG, message);
+        this.putExtra(ALARM, alarm);
     }
 
     public String getMessage() {
         return this.getStringExtra(LOG);
     }
+    public boolean getAlarm() { return this.getBooleanExtra(ALARM, false);}
 
 }

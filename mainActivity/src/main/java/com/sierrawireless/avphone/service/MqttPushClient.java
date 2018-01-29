@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class MqttPushClient {
+public class MqttPushClient {
     private static final String TAG = "MqttPushClient";
 
     private MqttClient client;
@@ -34,7 +34,7 @@ class MqttPushClient {
     private ObjectsManager objectsManager;
 
     @SuppressLint("DefaultLocale")
-    MqttPushClient(String clientId, String password, String serverHost, MqttCallback callback)
+    public MqttPushClient(String clientId, String password, String serverHost, MqttCallback callback)
             throws MqttException {
 
         DeviceInfo.generateSerial("");
@@ -51,11 +51,11 @@ class MqttPushClient {
         objectsManager = ObjectsManager.getInstance();
     }
 
-    boolean isConnected() {
+    public boolean isConnected() {
         return client.isConnected();
     }
 
-    void connect() throws MqttException {
+    public void connect() throws MqttException {
         Log.d(TAG, "connecting");
         client.connect(opt);
     }
@@ -66,7 +66,7 @@ class MqttPushClient {
         }
     }
 
-    void push(NewData data) throws MqttException {
+    public void push(NewData data) throws MqttException {
         if (client.isConnected()) {
             Log.i(TAG, "Pushing data to the server : " + data);
             String message = this.convertToJson(data);

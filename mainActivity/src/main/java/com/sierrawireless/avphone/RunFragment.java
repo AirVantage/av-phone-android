@@ -405,6 +405,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         view.findViewById(R.id.toggle_to_start).setVisibility(View.GONE);
         view.findViewById(R.id.started_since).setVisibility(View.VISIBLE);
         view.findViewById(R.id.service_log).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.alarm_log).setVisibility(View.VISIBLE);
         viewUpdater.onStart(service.getStartedSince(), service.getLastData(), service.getLastLog(),
                 service.getLastRun());
     }
@@ -414,6 +415,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
         view.findViewById(R.id.toggle_to_start).setVisibility(View.VISIBLE);
         view.findViewById(R.id.started_since).setVisibility(View.GONE);
         view.findViewById(R.id.service_log).setVisibility(View.GONE);
+        view.findViewById(R.id.alarm_log).setVisibility(View.GONE);
         viewUpdater.onStop();
     }
 
