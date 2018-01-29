@@ -69,7 +69,7 @@ public class DeviceInfo {
     }
 
 
-    @SuppressLint("HardwareIds")
+    @SuppressLint({"HardwareIds", "MissingPermission"})
     static String getIMEI(final Context context) {
 
         final TelephonyManager telManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);

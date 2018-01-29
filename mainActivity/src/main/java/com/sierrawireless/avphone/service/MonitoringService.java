@@ -49,12 +49,11 @@ import java.util.Map;
 
 public class MonitoringService extends Service {
     private static final String TAG = "MonitoringService";
-    
+
     // system services
     private TelephonyManager telephonyManager;
     private ActivityManager activityManager;
     private ConnectivityManager connManager;
-
 
 
     // Intent extra keys
@@ -62,7 +61,7 @@ public class MonitoringService extends Service {
     public static final String SERVER_HOST = "server_host";
     public static final String PASSWORD = "password";
     public static final String CONNECT = "connect";
-    public static final String OBJECT_NAME ="objname";
+    public static final String OBJECT_NAME = "objname";
     public Boolean set = false;
 
     private MqttPushClient client = null;
@@ -92,9 +91,6 @@ public class MonitoringService extends Service {
         // Display a notification icon
 
 
-
-
-
         telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -104,7 +100,7 @@ public class MonitoringService extends Service {
 
     }
 
-    public  void startSendData(){
+    public void startSendData() {
         int NOTIFICATION = R.string.notif_title;
         // Create an intent to start the activity when clicking the notification
         Intent resultIntent = new Intent(this, MainActivity.class);
@@ -130,7 +126,7 @@ public class MonitoringService extends Service {
         stopForeground(true);
     }
 
-    @SuppressLint("HardwareIds")
+    @SuppressLint({"HardwareIds", "MissingPermission"})
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -173,12 +169,12 @@ public class MonitoringService extends Service {
                 // retrieve data
                 NewData data = new NewData();
 
-                List<CellInfo> cellInfos = telephonyManager.getAllCellInfo();
+                @SuppressLint("MissingPermission") List<CellInfo> cellInfos = telephonyManager.getAllCellInfo();
                 if (cellInfos != null && !cellInfos.isEmpty()) {
                     CellInfo cellInfo = cellInfos.get(0);
                     if (cellInfo instanceof CellInfoGsm) {
                         data.setRssi(((CellInfoGsm) cellInfo).getCellSignalStrength().getDbm());
-                   // } else if (cellInfo instanceof CellInfoWcdma) {
+                        // } else if (cellInfo instanceof CellInfoWcdma) {
                         // RSSI ?
                         // data.setRssi(((CellInfoWcdma) cellInfo).getCellSignalStrength().getDbm());
                     } else if (cellInfo instanceof CellInfoLte) {
@@ -302,6 +298,7 @@ public class MonitoringService extends Service {
         stopLocationListeners();
     }
 
+    @SuppressLint("MissingPermission")
     private void setUpLocationListeners() {
         final LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (locManager == null) {
@@ -318,6 +315,7 @@ public class MonitoringService extends Service {
                     networkLocation = location;
                 }
             };
+
             locManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60 * 1000, 5, networkLocationListener);
         }
         LocationProvider gpsLocationProvider = locManager.getProvider(LocationManager.GPS_PROVIDER);
@@ -349,6 +347,7 @@ public class MonitoringService extends Service {
     }
 
 
+    @SuppressLint("MissingPermission")
     private Location getLastKnownLocation() {
         final LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (locManager == null) {

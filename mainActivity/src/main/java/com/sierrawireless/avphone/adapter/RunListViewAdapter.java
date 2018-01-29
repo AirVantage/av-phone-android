@@ -57,8 +57,8 @@ public class RunListViewAdapter extends BaseAdapter{
 
             convertView=inflater.inflate(R.layout.run_column_row, parent, false);
 
-            name = (TextView) convertView.findViewById(R.id.name);
-            value = (TextView) convertView.findViewById(R.id.value);
+            name = convertView.findViewById(R.id.name);
+            value = convertView.findViewById(R.id.value);
         }
 
         HashMap<String, String> map=list.get(position);

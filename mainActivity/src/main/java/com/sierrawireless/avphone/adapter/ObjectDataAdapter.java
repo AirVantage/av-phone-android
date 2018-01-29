@@ -74,7 +74,7 @@ public class ObjectDataAdapter extends BaseAdapter {
 
             convertView=inflater.inflate(resource, null);
 
-            name=(TextView) convertView.findViewById(android.R.id.text1);
+            name= convertView.findViewById(android.R.id.text1);
         }
 
         name.setText(list.get(position));

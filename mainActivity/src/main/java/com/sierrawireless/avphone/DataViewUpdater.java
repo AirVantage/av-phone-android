@@ -90,7 +90,7 @@ public class DataViewUpdater extends BroadcastReceiver {
 
     private void setNewData(NewData data) {
 
-        ListView phoneListView = (ListView)view.findViewById(R.id.phoneListView);
+        ListView phoneListView = view.findViewById(R.id.phoneListView);
         ArrayList<HashMap<String, String>> listPhone = new ArrayList<>();
 
         String Rssi ;
@@ -173,7 +173,7 @@ public class DataViewUpdater extends BroadcastReceiver {
 
     private void setCustomDataValues() {
 
-        ListView objectListView = (ListView)view.findViewById(R.id.objectLstView);
+        ListView objectListView = view.findViewById(R.id.objectLstView);
         objectsManager = ObjectsManager.getInstance();
         AvPhoneObject object = objectsManager.getCurrentObject();
         HashMap<String,String> temp;

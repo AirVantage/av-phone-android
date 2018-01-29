@@ -7,7 +7,6 @@ import net.airvantage.utils.Predicate;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AlertRule {
 
@@ -27,10 +26,7 @@ public class AlertRule {
         return new Predicate<AlertRule>() {
             @Override
             public boolean matches(AlertRule item) {
-                Log.d(TAG, "matches: " + name + " and " + item.name);
-                boolean match = name.equals(item.name);
-                Log.d(TAG, "matches: result " +match);
-                return match;
+                return name.equals(item.name);
             }
         };
     }

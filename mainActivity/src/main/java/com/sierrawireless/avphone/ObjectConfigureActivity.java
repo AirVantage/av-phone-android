@@ -45,13 +45,13 @@ public class ObjectConfigureActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_object_configure);
-        cancel = (Button)findViewById(R.id.cancel);
-        save = (Button)findViewById(R.id.save);
-        listView = (SwipeMenuListView)findViewById(R.id.listView);
+        cancel = findViewById(R.id.cancel);
+        save = findViewById(R.id.save);
+        listView = findViewById(R.id.listView);
         objectsManager = ObjectsManager.getInstance();
-        title = (TextView)findViewById(R.id.titleObject);
-        name = (TextView)findViewById(R.id.nameObject);
-        nameEdit = (EditText) findViewById(R.id.objectNameEdit);
+        title = findViewById(R.id.titleObject);
+        name = findViewById(R.id.nameObject);
+        nameEdit = findViewById(R.id.objectNameEdit);
 
         context = this;
         SwipeMenuCreator creator = new SwipeMenuCreator() {

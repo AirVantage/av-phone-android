@@ -77,7 +77,7 @@ public class ConfigureFragment extends AvPhoneFragment {
             menu.add(object.name);
         }
 
-        SwipeMenuListView listView = (SwipeMenuListView) view.findViewById(R.id.objectConfigure);
+        SwipeMenuListView listView = view.findViewById(R.id.objectConfigure);
 
         SwipeMenuCreator creator = new SwipeMenuCreator() {
 
@@ -143,8 +143,8 @@ public class ConfigureFragment extends AvPhoneFragment {
         });
 
 
-        Button doneBtn = (Button) view.findViewById(R.id.doneConfigureBtn);
-        Button addBtn = (Button) view.findViewById(R.id.addConfigureBtn);
+        Button doneBtn = view.findViewById(R.id.doneConfigureBtn);
+        Button addBtn = view.findViewById(R.id.addConfigureBtn);
 
         doneBtn.setOnClickListener(new View.OnClickListener() {
             @Override

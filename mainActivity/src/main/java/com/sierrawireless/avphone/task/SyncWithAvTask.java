@@ -3,8 +3,6 @@ package com.sierrawireless.avphone.task;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
-import android.text.Html;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -13,14 +11,12 @@ import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.ObjectsManager;
 import com.sierrawireless.avphone.R;
 import com.sierrawireless.avphone.message.IMessageDisplayer;
-import com.sierrawireless.avphone.model.AvPhoneApplication;
 
 import net.airvantage.model.AirVantageException;
 import net.airvantage.model.Application;
 import net.airvantage.model.AvError;
 import net.airvantage.model.AvSystem;
 import net.airvantage.model.User;
-import net.airvantage.model.UserRights;
 import net.airvantage.model.alert.v1.AlertRule;
 
 import java.io.IOException;
@@ -164,6 +160,7 @@ public class SyncWithAvTask extends AvPhoneTask<SyncWithAvParams, SyncProgress, 
 
         if (result.isError()) {
             AvError error = result.getError();
+            displayTaskError(error, displayer, context, userClient);
         } else {
             displayer.showSuccess(R.string.sync_success);
         }

@@ -12,7 +12,7 @@ public class UserRights extends ArrayList<String> {
 
     private static final long serialVersionUID = 1L;
 
-    private static Map<String, Integer> AS_STRING_ID = new HashMap<String, Integer>();
+    private static Map<String, Integer> AS_STRING_ID = new HashMap<>();
 
     static {
         AS_STRING_ID.put("entities.systems.view", R.string.entities_systems_view);

@@ -111,7 +111,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
         boolean isServiceRunning = monitorServiceManager.isServiceRunning();
 
-        SwitchCompat serviceSwitch = (SwitchCompat) view.findViewById(R.id.service_switch);
+        SwitchCompat serviceSwitch = view.findViewById(R.id.service_switch);
         serviceSwitch.setChecked(isServiceRunning);
 
         if (!this.monitorServiceManager.isServiceStarted(objectName)) {
@@ -143,11 +143,11 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
 
 
         // Alarm button
-        Button alarmButton = (Button) view.findViewById(R.id.alarm_btn);
+        Button alarmButton = view.findViewById(R.id.alarm_btn);
         alarmButton.setOnClickListener(onAlarmClick);
 
         // Make links clickable in info view.
-        TextView infoMessageView = (TextView) view.findViewById(R.id.run_info_message);
+        TextView infoMessageView = view.findViewById(R.id.run_info_message);
         infoMessageView.setLinksClickable(true);
         infoMessageView.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -156,10 +156,10 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
             setLinkToSystem(systemUid, systemName);
         }
 
-        phoneBtn = (Button)view.findViewById(R.id.phone);
-        objectBtn = (Button)view.findViewById(R.id.object);
-        phoneListView = (ListView)view.findViewById(R.id.phoneListView);
-        objectListView = (ListView)view.findViewById(R.id.objectLstView);
+        phoneBtn = view.findViewById(R.id.phone);
+        objectBtn = view.findViewById(R.id.object);
+        phoneListView = view.findViewById(R.id.phoneListView);
+        objectListView = view.findViewById(R.id.objectLstView);
         objectBtn.setText(objectName);
         phoneBtn.setBackgroundColor(getResources().getColor(R.color.grey_1));
         phoneListView.setVisibility(View.VISIBLE);
@@ -261,7 +261,7 @@ public class RunFragment extends AvPhoneFragment implements MonitorServiceListen
             return;
         }
 
-        final TextView infoMessageView = (TextView) view.findViewById(R.id.run_info_message);
+        final TextView infoMessageView = view.findViewById(R.id.run_info_message);
 
         String infoMessage;
         if (systemUid != null) {

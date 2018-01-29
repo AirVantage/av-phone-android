@@ -86,7 +86,7 @@ public class AuthorizationActivity extends Activity {
         final String serverHost = avPhonePrefs.serverHost;
         final String clientId = avPhonePrefs.clientId;
 
-        WebView webview = (WebView) findViewById(R.id.authorization_webview);
+        WebView webview = findViewById(R.id.authorization_webview);
         webview.getSettings().setJavaScriptEnabled(true);
         // attach WebViewClient to intercept the callback url
         webview.setWebViewClient(new WebViewClient() {

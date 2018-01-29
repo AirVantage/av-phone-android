@@ -18,7 +18,7 @@ public class UserClient implements IUserClient {
 
     private IAirVantageClient client;
 
-    public UserClient(IAirVantageClient client) {
+    UserClient(IAirVantageClient client) {
         this.client = client;
     }
 

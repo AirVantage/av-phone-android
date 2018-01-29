@@ -49,7 +49,7 @@ public class ProgressGetUserTask extends GetUserTask {
         int alertTitleId = getContext().getResources().getIdentifier("alertTitle", "id", "android");
         Window windows = dialog.getWindow();
         if (windows != null) {
-            TextView alertTitle = (TextView) windows.getDecorView().findViewById(alertTitleId);
+            TextView alertTitle = windows.getDecorView().findViewById(alertTitleId);
             alertTitle.setTextColor(getContext().getResources().getColor(R.color.sierrared)); // change title text color
         }
     }

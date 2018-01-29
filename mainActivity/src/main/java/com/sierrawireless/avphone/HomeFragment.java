@@ -74,12 +74,12 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        TextView loginMessage = (TextView) view.findViewById(R.id.home_login_message);
+        TextView loginMessage = view.findViewById(R.id.home_login_message);
         loginMessage.setText(Html.fromHtml(getString(R.string.home_login_message)));
 
-        btnLogin = (Button) view.findViewById(R.id.login_btn);
+        btnLogin = view.findViewById(R.id.login_btn);
 
-        btnLogout = (Button) view.findViewById(R.id.logout_btn);
+        btnLogout = view.findViewById(R.id.logout_btn);
 
         btnLogin.setOnClickListener(new OnClickListener() {
             @Override
@@ -135,9 +135,9 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
 
         infoMessageView.setText(message);
         infoMessageView.setVisibility(View.VISIBLE);
-        TextView welcome = (TextView)view.findViewById(R.id.home_login);
+        TextView welcome = view.findViewById(R.id.home_login);
         if(user != null) {
-            welcome.setText("Welcome " + user.name);
+            welcome.setText(String.format("%s%s", getString(R.string.welcome), user.name));
             welcome.setVisibility(View.VISIBLE);
         }
     }
@@ -145,7 +145,7 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
     private void hideCurrentServer() {
         TextView infoMessageView = getInfoMessageView();
         infoMessageView.setVisibility(View.GONE);
-        TextView welcome = (TextView)view.findViewById(R.id.home_login);
+        TextView welcome = view.findViewById(R.id.home_login);
         welcome.setVisibility(View.GONE);
         infoMessageView.setText("");
     }

@@ -161,8 +161,6 @@ public class AlertAdapterV2 extends DefaultAlertAdapter {
             if (operand.attributeId == null) {
                 values.add(operand.valueStr);
                 values.add(operand.valueNum);
-            } else {
-                //TODO
             }
         }//values.add(Utils.first(operand.valuesStr));
 

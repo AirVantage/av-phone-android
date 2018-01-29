@@ -45,14 +45,14 @@ public class ObjectDataActivity extends Activity implements AdapterView.OnItemSe
         if (objectPosition == -1 || dataPosition == -1) {
             return;
         }
-        title = (TextView)findViewById(R.id.title);
-        name = (TextView)findViewById(R.id.name);
-        nameEdit = (EditText)findViewById(R.id.nameText);
-        unitEdit = (EditText)findViewById(R.id.unitText);
-        defaulEdit = (EditText)findViewById(R.id.defaultText);
-        simulationSpin = (Spinner)findViewById(R.id.spinner);
-        saveBtn = (Button)findViewById(R.id.saveData);
-        cancelBtn = (Button)findViewById(R.id.cancelData);
+        title = findViewById(R.id.title);
+        name = findViewById(R.id.name);
+        nameEdit = findViewById(R.id.nameText);
+        unitEdit = findViewById(R.id.unitText);
+        defaulEdit = findViewById(R.id.defaultText);
+        simulationSpin = findViewById(R.id.spinner);
+        saveBtn = findViewById(R.id.saveData);
+        cancelBtn = findViewById(R.id.cancelData);
 
         objectsManager = ObjectsManager.getInstance();
         object = objectsManager.getObjectByIndex(objectPosition);
