@@ -1,11 +1,5 @@
 package com.sierrawireless.avphone.task;
 
-import net.airvantage.model.AvError;
-import net.airvantage.model.User;
-
-/**
- * Created by JDamiano on 29/01/2018.
- */
 
 public class SendDataResult {
     private boolean error;

@@ -34,7 +34,7 @@ public class MqttPushClient {
     private ObjectsManager objectsManager;
 
     @SuppressLint("DefaultLocale")
-    public MqttPushClient(String clientId, String password, String serverHost, MqttCallback callback)
+    MqttPushClient(String clientId, String password, String serverHost, MqttCallback callback)
             throws MqttException {
 
         DeviceInfo.generateSerial("");

@@ -32,22 +32,15 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
-import com.sierrawireless.avphone.DeviceInfo;
 import com.sierrawireless.avphone.MainActivity;
 import com.sierrawireless.avphone.ObjectsManager;
 import com.sierrawireless.avphone.R;
 import com.sierrawireless.avphone.model.AvPhoneObject;
-import com.sierrawireless.avphone.task.DeleteSystemListener;
-import com.sierrawireless.avphone.task.DeleteSystemResult;
-import com.sierrawireless.avphone.task.DeleteSystemTask;
 import com.sierrawireless.avphone.task.SendDataListener;
 import com.sierrawireless.avphone.task.SendDataParams;
 import com.sierrawireless.avphone.task.SendDataResult;
 import com.sierrawireless.avphone.task.SendDataTask;
-import com.sierrawireless.avphone.task.SyncWithAvParams;
 import com.sierrawireless.avphone.tools.Tools;
-
-import net.airvantage.utils.PreferenceUtils;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;

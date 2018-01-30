@@ -147,10 +147,6 @@ public class ObjectsManager {
         return null;
     }
 
-    String getCurrentObjectName() {
-        return objects.get(current).name;
-    }
-
     void save() {
         saveOnPref();
 
