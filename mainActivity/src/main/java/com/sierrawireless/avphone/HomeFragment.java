@@ -158,6 +158,9 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
         if (auth != null) {
             syncWithAv(auth);
         }
+        MainActivity.instance.onAuthentication(auth);
+        MainActivity.instance.readAuthenticationFromPreferences();
+        MainActivity.instance.loadMenu();
     }
 
 

@@ -286,7 +286,9 @@ public class MainActivity extends FragmentActivity
         drawerListView.invalidateViews();
 
         if (isLogged()) {
-
+            if (user == null) {
+                syncGetUser(auth);
+            }
 
             unlockDrawer();
             if (isServiceRunning()) {
@@ -364,7 +366,7 @@ public class MainActivity extends FragmentActivity
 
         if (drawerLayout != null) {
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-            drawerLayout.openDrawer(Gravity.START);
+           // drawerLayout.openDrawer(Gravity.START);
         }
 
         if (drawerToggle != null) {
@@ -372,7 +374,7 @@ public class MainActivity extends FragmentActivity
         }
     }
 
-    private void readAuthenticationFromPreferences() {
+    void readAuthenticationFromPreferences() {
         this.auth = PreferenceUtils.readAuthentication(this);
     }
 
