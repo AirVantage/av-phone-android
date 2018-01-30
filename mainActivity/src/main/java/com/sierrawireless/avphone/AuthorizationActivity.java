@@ -30,6 +30,9 @@ public class AuthorizationActivity extends Activity {
 
     public static final int REQUEST_AUTHORIZATION = 1;
 
+    Button btnNa;
+    Button btnEu;
+    Button btnCustom;
 
     private AuthenticationUrlParser authUrlParser = new AuthenticationUrlParser();
 
@@ -59,9 +62,9 @@ public class AuthorizationActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authorization);
 
-        Button btnNa = (RadioButton) this.findViewById(R.id.auth_btn_na);
-        Button btnEu = (RadioButton) this.findViewById(R.id.auth_btn_eu);
-        Button btnCustom = (RadioButton) this.findViewById(R.id.auth_btn_custom);
+        btnNa = (RadioButton) this.findViewById(R.id.auth_btn_na);
+        btnEu = (RadioButton) this.findViewById(R.id.auth_btn_eu);
+        btnCustom = (RadioButton) this.findViewById(R.id.auth_btn_custom);
 
         btnNa.setOnClickListener(new OnHostClickListener(PreferenceUtils.Server.NA));
         btnEu.setOnClickListener(new OnHostClickListener(PreferenceUtils.Server.EU));
@@ -82,6 +85,20 @@ public class AuthorizationActivity extends Activity {
     private void openAuthorizationPage() {
 
         AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this);
+
+        if (avPhonePrefs.usesNA()) {
+            btnNa.setSelected(true);
+            btnCustom.setSelected(false);
+            btnEu.setSelected(false);
+        } else if (avPhonePrefs.usesEU()) {
+            btnNa.setSelected(false);
+            btnCustom.setSelected(false);
+            btnEu.setSelected(true);
+        } else {
+            btnNa.setSelected(false);
+            btnCustom.setSelected(true);
+            btnEu.setSelected(false);
+        }
 
         final String serverHost = avPhonePrefs.serverHost;
         final String clientId = avPhonePrefs.clientId;

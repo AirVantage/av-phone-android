@@ -31,7 +31,6 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -43,6 +42,10 @@ import com.sierrawireless.avphone.model.AvPhoneObject;
 import com.sierrawireless.avphone.service.MonitoringService;
 import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder;
 import com.sierrawireless.avphone.task.AsyncTaskFactory;
+import com.sierrawireless.avphone.task.GetUserListener;
+import com.sierrawireless.avphone.task.GetUserParams;
+import com.sierrawireless.avphone.task.GetUserResult;
+import com.sierrawireless.avphone.task.GetUserTask;
 import com.sierrawireless.avphone.task.IAsyncTaskFactory;
 import com.sierrawireless.avphone.task.SyncWithAvListener;
 import com.sierrawireless.avphone.task.SyncWithAvResult;
@@ -55,7 +58,6 @@ import net.airvantage.utils.PreferenceUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
@@ -90,8 +92,9 @@ public class MainActivity extends FragmentActivity
     private ListView drawerListView;
     private ActionBarDrawerToggle drawerToggle;
 
-    private final static String FRAGMENT_HOME = "Home";
-    private final static String FRAGMENT_CONFIGURE = "Objects...";
+    private final static String FRAGMENT_LOGOUT = "Logout";
+    private final static String FRAGMENT_LOGIN = "Login";
+    private final static String FRAGMENT_CONFIGURE = "Add...";
     private final static String FRAGMENT_SETTINGS = "Settings";
     private final static String FRAGMENT_FAQ = "FAQ";
 
@@ -103,29 +106,78 @@ public class MainActivity extends FragmentActivity
 
     private Boolean serviceSendData = false;
     ObjectsManager objectsManager;
+    User user;
 
     @SuppressLint("StaticFieldLeak")
     static MainActivity instance;
 
-    private static String[] FRAGMENT_LIST;
+    private static ArrayList<MenuEntry> FRAGMENT_LIST;
 
-    public String[] buildFragmentList() {
-        ArrayList<String> tmp = new ArrayList<>();
-        tmp.add(FRAGMENT_HOME);
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public ArrayList<MenuEntry> buildFragmentList() {
+        ArrayList<MenuEntry> tmp = new ArrayList<>();
+        if (user != null) {
+            tmp.add(new MenuEntry("LOGGED AS", MenuEntryType.TITLE));
+            tmp.add(new MenuEntry(user.name, MenuEntryType.USER));
+            tmp.add(new MenuEntry(user.profile.name, MenuEntryType.USER));
+            tmp.add(new MenuEntry(user.company.name, MenuEntryType.USER));
+            tmp.add(new MenuEntry(user.server, MenuEntryType.USER));
+        }
+        tmp.add(new MenuEntry("SIMULATED OBJECTS", MenuEntryType.TITLE));
         for (AvPhoneObject object: objectsManager.objects) {
             Log.d(TAG, "buildFragmentList: add object " + object.name);
-            tmp.add(object.name);
+            tmp.add(new MenuEntry(object.name, MenuEntryType.COMMAND));
         }
-        tmp.add(FRAGMENT_CONFIGURE);
-        tmp.add(FRAGMENT_SETTINGS);
-        tmp.add(FRAGMENT_FAQ);
-        String[] array = new String[tmp.size()];
-        return tmp.toArray(array);
+        tmp.add(new MenuEntry(FRAGMENT_CONFIGURE, MenuEntryType.COMMAND));
+
+        //tmp.add(FRAGMENT_SETTINGS);
+        tmp.add(new MenuEntry("NEED HELP", MenuEntryType.TITLE));
+        tmp.add(new MenuEntry(FRAGMENT_FAQ, MenuEntryType.COMMAND));
+        tmp.add(new MenuEntry("", MenuEntryType.TITLE));
+        if (isLogged()) {
+            tmp.add(new MenuEntry(FRAGMENT_LOGOUT, MenuEntryType.COMMAND));
+        }else{
+            tmp.add(new MenuEntry(FRAGMENT_LOGIN, MenuEntryType.COMMAND));
+        }
+        return tmp;
     }
 
     public void setCustomLabelsListener(CustomLabelsListener customLabelsListener) {
         this.customLabelsListener = customLabelsListener;
     }
+
+    //Get user
+    private void syncGetUser(final Authentication auth) {
+
+
+        final AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this);
+
+
+
+        final GetUserTask getUserTask = taskFactory.getUserTak(avPhonePrefs.serverHost, auth.getAccessToken());
+
+        getUserTask.addProgressListener(new GetUserListener() {
+            @Override
+            public void onGetting(GetUserResult result) {
+                if (!result.isError()) {
+                    user = result.getUser();
+                    user.server = avPhonePrefs.serverHost;
+                    loadMenu();
+
+                }
+
+            }
+        });
+
+        final GetUserParams params = new GetUserParams();
+
+        getUserTask.execute(params);
+
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,14 +189,23 @@ public class MainActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
 
+
+
         setContentView(R.layout.activity_main);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefs.registerOnSharedPreferenceChangeListener(this);
 
+        //Auth is set here if exist
         readAuthenticationFromPreferences();
 
         taskFactory = new AsyncTaskFactory(MainActivity.this);
+        if (isLogged()) {
+            if (user == null) {
+                syncGetUser(auth);
+            }
+        }
+
 
         drawerLayout = findViewById(R.id.drawer_layout);
 
@@ -216,24 +277,23 @@ public class MainActivity extends FragmentActivity
         FRAGMENT_LIST = buildFragmentList();
         drawerListView = findViewById(R.id.left_drawer);
 
-        drawerListView.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_item, buildFragmentList()));
+        MenuAdapter adapter = new MenuAdapter(this, buildFragmentList());
+
+        drawerListView.setAdapter(adapter);
 
         drawerListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         // Set the list's click listener
         drawerListView.invalidateViews();
-        final Map<String, Fragment> fragments = initFragments();
-        final Fragment currentFragment;
+
         if (isLogged()) {
 
-            currentFragment = fragments.get(objectsManager.getCurrentObjectName());
+
             unlockDrawer();
             if (isServiceRunning()) {
                 connectToService();
             }
 
         } else {
-
-            currentFragment = fragments.get(FRAGMENT_HOME);
             lockDrawer();
             if (isServiceRunning()) {
                 // The token is probably expired.
@@ -242,8 +302,8 @@ public class MainActivity extends FragmentActivity
             }
 
         }
+        goHomeFragment();
 
-        selectItem(currentFragment);
 
     }
     @Override
@@ -608,10 +668,11 @@ public class MainActivity extends FragmentActivity
     private void selectItem(final int position) {
 
         final Fragment fragment = getFragment(position);
+        MenuEntry entry = FRAGMENT_LIST.get(position);
         if (fragment == null) {
             //No item check if the position is valid
-            Log.d(TAG, "selectItem: Fragment list " + FRAGMENT_LIST[position]);
-            if (FRAGMENT_LIST[position].equals(FRAGMENT_FAQ)) {
+            Log.d(TAG, "selectItem: Fragment list " +entry.name);
+            if (entry.name.equals(FRAGMENT_FAQ)) {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://doc.airvantage.net/alms/"));
                 startActivity(browserIntent);
                 drawerListView.setSelection(lastPosition);
@@ -619,7 +680,28 @@ public class MainActivity extends FragmentActivity
             }
             return;
         }
+        if (entry.type == MenuEntryType.COMMAND) {
 
+            // Insert the fragment by replacing any existing fragment
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.content_frame, fragment)
+                    .addToBackStack(null)
+                    .commit();
+
+            // Highlight the selected item, update the title, and close the drawer
+            drawerListView.setItemChecked(position, true);
+            setTitle(entry.name);
+            drawerListView.setSelection(position);
+            drawerLayout.closeDrawer(drawerListView);
+            lastPosition = position;
+        }
+    }
+
+    public void goHomeFragment() {
+        int position = FRAGMENT_LIST.size()-1;
+        Log.d(TAG, "******************************goHomeFragment: selected " + FRAGMENT_LIST.get(position).name);
+        final Fragment fragment = getFragment(position);
         // Insert the fragment by replacing any existing fragment
         getFragmentManager()
                 .beginTransaction()
@@ -629,40 +711,12 @@ public class MainActivity extends FragmentActivity
 
         // Highlight the selected item, update the title, and close the drawer
         drawerListView.setItemChecked(position, true);
-        setTitle(FRAGMENT_LIST[position]);
+        setTitle(FRAGMENT_LIST.get(position).name);
         drawerListView.setSelection(position);
         drawerLayout.closeDrawer(drawerListView);
         lastPosition = position;
-    }
-
-    public void goHomeFragment() {
-        final Fragment fragment = getFragment(0);
-        // Insert the fragment by replacing any existing fragment
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .addToBackStack(null)
-                .commit();
-
-        // Highlight the selected item, update the title, and close the drawer
-        drawerListView.setItemChecked(0, true);
-        setTitle(FRAGMENT_LIST[0]);
-        drawerListView.setSelection(0);
-        drawerLayout.closeDrawer(drawerListView);
-        lastPosition = 0;
 
     }
-    private void selectItem(final Fragment fragment) {
-        final Iterator<Fragment> fragmentsIterator = initFragments().values().iterator();
-        for (int position = 0; fragmentsIterator.hasNext(); position++) {
-            final Fragment currentFragment = fragmentsIterator.next();
-            if (fragment.getId() == currentFragment.getId()) {
-                selectItem(position);
-                return;
-            }
-        }
-    }
-
 
     private Map<String, Fragment> initFragments() {
 
@@ -690,7 +744,11 @@ public class MainActivity extends FragmentActivity
 
         final HashMap<String, Fragment> fragmentsMapping = new HashMap<>();
         fragmentsMapping.put(FRAGMENT_CONFIGURE, configureFragment);
-        fragmentsMapping.put(FRAGMENT_HOME, homeFragment);
+        if (isLogged()) {
+            fragmentsMapping.put(FRAGMENT_LOGOUT, homeFragment);
+        }else{
+            fragmentsMapping.put(FRAGMENT_LOGIN, homeFragment);
+        }
         fragmentsMapping.put(FRAGMENT_SETTINGS, new SettingsActivity.SettingsFragment());
         int pos = 0;
         for (AvPhoneObject object: objectsManager.objects) {
@@ -703,7 +761,7 @@ public class MainActivity extends FragmentActivity
 
     @Nullable
     private Fragment getFragment(final int fragmentPosition) {
-        final String fragmentName = FRAGMENT_LIST[fragmentPosition];
+        final String fragmentName = FRAGMENT_LIST.get(fragmentPosition).name;
         final Map<String, Fragment> fragmentMap = initFragments();
         return fragmentMap.containsKey(fragmentName) ? fragmentMap.get(fragmentName) : null;
     }

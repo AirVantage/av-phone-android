@@ -137,7 +137,7 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
         infoMessageView.setVisibility(View.VISIBLE);
         TextView welcome = view.findViewById(R.id.home_login);
         if(user != null) {
-            welcome.setText(String.format("%s%s", getString(R.string.welcome), user.name));
+            welcome.setText(String.format("%s %s", getString(R.string.welcome), user.name));
             welcome.setVisibility(View.VISIBLE);
         }
     }
@@ -164,7 +164,7 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
     private void syncGetUser(final Authentication auth) {
         hideErrorMessage();
 
-        AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(getActivity());
+        final AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(getActivity());
 
         // Without task factory, try later
         if (taskFactory == null) {
@@ -188,6 +188,9 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
                     authManager.onAuthentication(auth);
                     showLoggedInState();
                     user = result.getUser();
+                    user.server = avPhonePrefs.serverHost;
+                    MainActivity.instance.setUser(user);
+
                 }
 
             }
@@ -248,8 +251,12 @@ public class HomeFragment extends AvPhoneFragment implements IMessageDisplayer {
     }
 
     private void showLoggedInState() {
+        final AvPhonePrefs avPhonePrefs = PreferenceUtils.getAvPhonePrefs(getActivity());
         if (user == null){
             syncGetUser(authManager.getAuthentication());
+        }else{
+            user.server = avPhonePrefs.serverHost;
+            MainActivity.instance.setUser(user);
         }
         showCurrentServer();
         showLogoutButton();

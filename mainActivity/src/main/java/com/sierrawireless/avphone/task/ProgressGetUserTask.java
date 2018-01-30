@@ -54,13 +54,6 @@ public class ProgressGetUserTask extends GetUserTask {
         }
     }
 
-    @Override
-    public void onProgressUpdate(GetUserProgress... progress) {
-        dialog.setProgress(progress[0].value);
-        String stepMessage = getContext().getString(progress[0].stringId);
-        String htmlMessage = getContext().getString(R.string.progress_syncing_message, stepMessage);
-        dialog.setMessage(Html.fromHtml(htmlMessage));
-    }
 
     @Override
     protected void onPostExecute(GetUserResult result) {

@@ -15,7 +15,7 @@ import net.airvantage.model.User;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetUserTask extends AvPhoneTask<GetUserParams, GetUserProgress, GetUserResult> {
+public class GetUserTask extends AvPhoneTask<GetUserParams, Void, GetUserResult> {
 
 
     private List<GetUserListener> syncListeners = new ArrayList<>();
@@ -41,21 +41,19 @@ public class GetUserTask extends AvPhoneTask<GetUserParams, GetUserProgress, Get
 
         try {
 
-            publishProgress(GetUserProgress.CHECKING_RIGHTS);
+
 
             final List<String> missingRights = userClient.checkRights();
             if (!missingRights.isEmpty()) {
                 return new GetUserResult(new AvError(AvError.MISSING_RIGHTS, missingRights));
             }
 
-            publishProgress(GetUserProgress.GET_USER);
             final User user = userClient.getUser();
 
-            publishProgress(GetUserProgress.DONE);
             return new GetUserResult(user);
         }
         catch (AirVantageException e) {
-            publishProgress(GetUserProgress.DONE);
+
             return new GetUserResult(e.getError());
         }
     }
