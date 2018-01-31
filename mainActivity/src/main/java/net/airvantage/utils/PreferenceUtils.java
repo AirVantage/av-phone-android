@@ -117,18 +117,18 @@ public class PreferenceUtils {
 
     public static CustomDataLabels getCustomDataLabels(Context context) {
         CustomDataLabels labels = new CustomDataLabels();
-        labels.customUp1Label = getPreference(context, R.string.pref_custom1_label_key,
-                R.string.pref_custom1_label_default);
-        labels.customUp2Label = getPreference(context, R.string.pref_custom2_label_key,
-                R.string.pref_custom2_label_default);
-        labels.customDown1Label = getPreference(context, R.string.pref_custom3_label_key,
-                R.string.pref_custom3_label_default);
-        labels.customDown2Label = getPreference(context, R.string.pref_custom4_label_key,
-                R.string.pref_custom4_label_default);
-        labels.customStr1Label = getPreference(context, R.string.pref_custom5_label_key,
-                R.string.pref_custom5_label_default);
-        labels.customStr2Label = getPreference(context, R.string.pref_custom6_label_key,
-                R.string.pref_custom6_label_default);
+        labels.setCustomUp1Label(getPreference(context, R.string.pref_custom1_label_key,
+                R.string.pref_custom1_label_default));
+        labels.setCustomUp2Label(getPreference(context, R.string.pref_custom2_label_key,
+                R.string.pref_custom2_label_default));
+        labels.setCustomDown1Label(getPreference(context, R.string.pref_custom3_label_key,
+                R.string.pref_custom3_label_default));
+        labels.setCustomDown2Label(getPreference(context, R.string.pref_custom4_label_key,
+                R.string.pref_custom4_label_default));
+        labels.setCustomStr1Label(getPreference(context, R.string.pref_custom5_label_key,
+                R.string.pref_custom5_label_default));
+        labels.setCustomStr2Label(getPreference(context, R.string.pref_custom6_label_key,
+                R.string.pref_custom6_label_default));
 
         return labels;
     }

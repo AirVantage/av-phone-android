@@ -72,12 +72,12 @@ public class SyncWithAvTask extends AvPhoneTask<SyncWithAvParams, SyncProgress, 
             final String iccid = syncParams.iccid;
             final String deviceName = syncParams.deviceName;
             final String mqttPassword = syncParams.mqttPassword;
-            ObjectsManager objectsManager = ObjectsManager.getInstance();
+            ObjectsManager objectsManager = ObjectsManager.Companion.getInstance();
 
             systemType = objectsManager.getSavedObjectName();
 
             // For emulator and iOs compatibility sake, using generated serial.
-            final String serialNumber =  DeviceInfo.generateSerial(user.uid);
+            final String serialNumber =  DeviceInfo.INSTANCE.generateSerial(user.uid);
 
             // Save Device serial in context
             if (context instanceof MainActivity) {
@@ -111,7 +111,7 @@ public class SyncWithAvTask extends AvPhoneTask<SyncWithAvParams, SyncProgress, 
 
             publishProgress(SyncProgress.UPDATING_APPLICATION);
 
-            this.applicationClient.setApplicationData(application.uid, objectsManager.getSavecObject().datas, objectsManager.getSavecObject().name);
+            this.applicationClient.setApplicationData(application.uid, objectsManager.getSavecObject().getDatas(), objectsManager.getSavecObject().getName());
 
             if (!hasApplication(system, application)) {
 

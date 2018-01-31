@@ -177,5 +177,9 @@
     <string name="entities_alerts_rule_create_edit_delete">Create and edit an alert rule</string>
     <string name="drawer_open">AV Phone navigation is available</string>
     <string name="drawer_close">AV Phone navigation is no longer available</string>
+    <string name="welcome">welcome</string>
+    <string name="add_new_object">Add new system</string>
+    <string name="add_new_data">Add new data</string>
+    <string name="progress_deleting_system">Deleting system</string>
 
 </resources>

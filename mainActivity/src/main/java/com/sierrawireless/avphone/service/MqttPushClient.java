@@ -37,7 +37,7 @@ public class MqttPushClient {
     MqttPushClient(String clientId, String password, String serverHost, MqttCallback callback)
             throws MqttException {
 
-        DeviceInfo.generateSerial("");
+        DeviceInfo.INSTANCE.generateSerial("");
         Log.d(TAG, "new client: " + clientId + " - " + password + " - " + serverHost);
 
         this.client = new MqttClient("tcp://" + serverHost + ":1883", MqttClient.generateClientId(),
@@ -48,7 +48,7 @@ public class MqttPushClient {
         opt.setUserName(clientId.toUpperCase());
         opt.setPassword(password.toCharArray());
         opt.setKeepAliveInterval(30);
-        objectsManager = ObjectsManager.getInstance();
+        objectsManager = ObjectsManager.Companion.getInstance();
     }
 
     public boolean isConnected() {
@@ -126,16 +126,16 @@ public class MqttPushClient {
 
 
         if (data.isAlarmActivated() != null) {
-            values.put( AvPhoneData.ALARM,
+            values.put(AvPhoneData.INSTANCE.getALARM(),
                     Collections.singletonList(new DataValue(timestamp, data.isAlarmActivated())));
         }else {
             AvPhoneObject object = objectsManager.getCurrentObject();
             Integer pos = 1;
-            for (AvPhoneObjectData ldata : object.datas) {
+            for (AvPhoneObjectData ldata : object.getDatas()) {
                 if (ldata.isInteger()) {
-                    values.put(object.name + "." + AvPhoneData.CUSTOM + pos.toString(), Collections.singletonList(new DataValue(timestamp, ldata.current)));
+                    values.put(object.getName() + "." + AvPhoneData.INSTANCE.getCUSTOM() + pos.toString(), Collections.singletonList(new DataValue(timestamp, ldata.getCurrent())));
                 } else {
-                    values.put(object.name + "." + AvPhoneData.CUSTOM + pos.toString(), Collections.singletonList(new DataValue(timestamp, ldata.defaults)));
+                    values.put(object.getName() + "." + AvPhoneData.INSTANCE.getCUSTOM() + pos.toString(), Collections.singletonList(new DataValue(timestamp, ldata.getDefaults())));
                 }
                 pos++;
             }

@@ -90,7 +90,7 @@ public class MonitoringService extends Service {
         // Unique Identification Number for the Notification.
 
         Log.d(TAG, "onCreate: " + this);
-        objectsManager = ObjectsManager.getInstance();
+        objectsManager = ObjectsManager.Companion.getInstance();
 
         // Display a notification icon
 
@@ -135,7 +135,7 @@ public class MonitoringService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         lastRun = System.currentTimeMillis();
-        objectsManager = ObjectsManager.getInstance();
+        objectsManager = ObjectsManager.Companion.getInstance();
         AvPhoneObject object = objectsManager.getCurrentObject();
 
 
@@ -149,7 +149,7 @@ public class MonitoringService extends Service {
                 //
                 // Ensure intent is valid
                 //
-                final String deviceId = Tools.buildSerialNumber(intent.getStringExtra(DEVICE_ID), object.name);
+                final String deviceId = Tools.buildSerialNumber(intent.getStringExtra(DEVICE_ID), object.getName());
                 final String password = intent.getStringExtra(PASSWORD);
                 final String serverHost = intent.getStringExtra(SERVER_HOST);
 

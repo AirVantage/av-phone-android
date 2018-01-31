@@ -14,7 +14,7 @@ import net.airvantage.model.UserRights;
 
 import java.util.List;
 
-abstract class AvPhoneTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
+public abstract class AvPhoneTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
 
 
     void displayTaskError(AvError error, IMessageDisplayer displayer, Activity context, IUserClient userClient) {
@@ -31,7 +31,7 @@ abstract class AvPhoneTask<Params, Progress, Result> extends AsyncTask<Params, P
             if (user == null) {
                 displayer.showError(R.string.sync_error_no_user_data);
             } else {
-                displayer.showError(R.string.sync_error_app_exists, AvPhoneApplication.appType(user.name));
+                displayer.showError(R.string.sync_error_app_exists, AvPhoneApplication.INSTANCE.appType(user.name));
             }
         } else if (error.tooManyAlerRules()) {
             displayer.showError(R.string.sync_error_too_many_rules);

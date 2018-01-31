@@ -193,14 +193,14 @@ public class NewData extends Intent {
     }
 
     void setCustom() {
-        ObjectsManager objectsManager = ObjectsManager.getInstance();
+        ObjectsManager objectsManager = ObjectsManager.Companion.getInstance();
         AvPhoneObject object = objectsManager.getCurrentObject();
         Integer pos = 1;
-        for (AvPhoneObjectData data:object.datas) {
+        for (AvPhoneObjectData data: object.getDatas()) {
             if (data.isInteger()){
-                this.putExtra(object.name + "." + CUSTOM + pos.toString(), Integer.parseInt(data.execMode()));
+                this.putExtra(object.getName() + "." + CUSTOM + pos.toString(), Integer.parseInt(data.execMode()));
             }else{
-                this.putExtra(object.name + "." + CUSTOM + pos.toString(), data.defaults);
+                this.putExtra(object.getName() + "." + CUSTOM + pos.toString(), data.getDefaults());
             }
             pos ++;
         }

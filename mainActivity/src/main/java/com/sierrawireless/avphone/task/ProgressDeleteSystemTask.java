@@ -57,8 +57,8 @@ public class ProgressDeleteSystemTask extends DeleteSystemTask{
 
 
     public void onProgressUpdate(DeleteSystemProgress... progress) {
-        dialog.setProgress(progress[0].value);
-        String stepMessage = getContext().getString(progress[0].stringId);
+        dialog.setProgress(progress[0].getValue());
+        String stepMessage = getContext().getString(progress[0].getStringId());
         String htmlMessage = getContext().getString(R.string.progress_syncing_message, stepMessage);
         dialog.setMessage(Html.fromHtml(htmlMessage));
     }

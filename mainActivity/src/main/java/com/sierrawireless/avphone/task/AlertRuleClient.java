@@ -24,7 +24,7 @@ public class AlertRuleClient implements IAlertRuleClient {
    
     @Override
     public void createAlertRule(String application) throws IOException, AirVantageException {
-        AlertRule alertRule = AvPhoneApplication.createAlertRule();
+        AlertRule alertRule = AvPhoneApplication.INSTANCE.createAlertRule();
         client.createAlertRule(alertRule, application);
     }
 

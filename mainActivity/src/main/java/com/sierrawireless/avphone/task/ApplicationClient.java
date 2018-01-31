@@ -44,12 +44,12 @@ public class ApplicationClient implements IApplicationClient {
     @Override
     public void setApplicationData(String applicationUid, ArrayList<AvPhoneObjectData> customData, String object)
             throws IOException, AirVantageException {
-        List<ApplicationData> data = AvPhoneApplication.createApplicationData(customData, object);
+        List<ApplicationData> data = AvPhoneApplication.INSTANCE.createApplicationData(customData, object);
         client.setApplicationData(applicationUid, data);
     }
 
     protected Application getApplication() throws IOException, AirVantageException {
-        List<Application> applications = client.getApplications(AvPhoneApplication.appType(getCurrentUsername()));
+        List<Application> applications = client.getApplications(AvPhoneApplication.INSTANCE.appType(getCurrentUsername()));
         return Utils.first(applications);
     }
 
@@ -66,13 +66,13 @@ public class ApplicationClient implements IApplicationClient {
 
     @Override
     public Application createApplication() throws IOException, AirVantageException {
-        Application application = AvPhoneApplication.createApplication(getCurrentUsername());
+        Application application = AvPhoneApplication.INSTANCE.createApplication(getCurrentUsername());
         return client.createApplication(application);
     }
 
     @Override
     public void setApplicationCommunication(String applicationUid) throws IOException, AirVantageException {
-        List<Protocol> protocols = AvPhoneApplication.createProtocols();
+        List<Protocol> protocols = AvPhoneApplication.INSTANCE.createProtocols();
         client.setApplicationCommunication(applicationUid, protocols);
     }
 

@@ -151,7 +151,7 @@ public class AlertAdapterV2 extends DefaultAlertAdapter {
         net.airvantage.model.alert.v1.Condition conditionV1;
         conditionV1 = new net.airvantage.model.alert.v1.Condition();
         conditionV1.eventProperty = "phone.alarm";
-        conditionV1.eventPropertyKey = AvPhoneData.ALARM;
+        conditionV1.eventPropertyKey = AvPhoneData.INSTANCE.getALARM();
         conditionV1.operator = condition.operator;
 
         // Finding values
