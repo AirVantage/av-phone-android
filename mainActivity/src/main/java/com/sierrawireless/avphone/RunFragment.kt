@@ -1,45 +1,28 @@
 package com.sierrawireless.avphone
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.support.v4.content.LocalBroadcastManager
-import android.support.v7.widget.SwitchCompat
 import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CompoundButton
-import android.widget.CompoundButton.OnCheckedChangeListener
-import android.widget.ListView
 import android.widget.TextView
-
 import com.sierrawireless.avphone.adapter.RunListViewAdapter
 import com.sierrawireless.avphone.auth.AuthUtils
-import com.sierrawireless.avphone.auth.Authentication
-import com.sierrawireless.avphone.message.IMessageDisplayer
-import com.sierrawireless.avphone.model.AvPhoneObject
-import com.sierrawireless.avphone.model.AvPhoneObjectData
 import com.sierrawireless.avphone.service.LogMessage
 import com.sierrawireless.avphone.service.MonitoringService
 import com.sierrawireless.avphone.service.NewData
 import com.sierrawireless.avphone.task.IAsyncTaskFactory
-import com.sierrawireless.avphone.task.SyncWithAvListener
 import com.sierrawireless.avphone.task.SyncWithAvParams
-import com.sierrawireless.avphone.task.SyncWithAvResult
-import com.sierrawireless.avphone.task.SyncWithAvTask
 import com.sierrawireless.avphone.tools.Tools
-
-import net.airvantage.utils.AvPhonePrefs
+import kotlinx.android.synthetic.main.fragment_run.*
 import net.airvantage.utils.PreferenceUtils
-
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
 
 open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabelsListener {
 
@@ -55,14 +38,6 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     private var taskFactory: IAsyncTaskFactory? = null
     private var objectName: String? = null
     private var objectsManager: ObjectsManager = ObjectsManager.getInstance()
-    private lateinit var phoneBtn: Button
-    private lateinit var objectBtn: Button
-    private lateinit var phoneListView: ListView
-
-    private lateinit var objectListView: ListView
-
-    private val serviceSwitch: SwitchCompat
-        get() = lView!!.findViewById<View>(R.id.service_switch) as SwitchCompat
 
     // Alarm button
     private var onAlarmClick: View.OnClickListener = View.OnClickListener {
@@ -72,7 +47,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
     override var errorMessageView: TextView
-        get() = lView!!.findViewById<View>(R.id.run_error_message) as TextView
+        get() = run_error_message
         set(textView) {
 
         }
@@ -108,11 +83,17 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        Log.d(TAG, "onCreateView: " + this)
+
+        lView = inflater.inflate(R.layout.fragment_run, container, false)
+
+        return lView
+    }
+
+    override fun onStart() {
+        super.onStart()
         objectsManager = ObjectsManager.getInstance()
         objectsManager.changeCurrent(objectName!!)
 
-        lView = inflater.inflate(R.layout.fragment_run, container, false)
         viewUpdater = DataViewUpdater(lView!!, activity as MainActivity)
 
 
@@ -124,8 +105,8 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
         val isServiceRunning = monitorServiceManager!!.isServiceRunning()
 
-        val serviceSwitch = lView!!.findViewById<SwitchCompat>(R.id.service_switch)
-        serviceSwitch.isChecked = isServiceRunning
+
+        service_switch.isChecked = isServiceRunning
 
         if (!this.monitorServiceManager!!.isServiceStarted(objectName!!)) {
             if (this.monitorServiceManager!!.oneServiceStarted()) {
@@ -136,7 +117,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             this.monitorServiceManager!!.startMonitoringService(objectName!!)
         }
 
-        serviceSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
+        service_switch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 startMonitoringService()
             } else {
@@ -153,55 +134,49 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
 
         // Alarm button
-        val alarmButton = lView!!.findViewById<Button>(R.id.alarm_btn)
-        alarmButton.setOnClickListener(onAlarmClick)
+        alarm_btn.setOnClickListener(onAlarmClick)
 
         // Make links clickable in info view.
-        val infoMessageView = lView!!.findViewById<TextView>(R.id.run_info_message)
-        infoMessageView.linksClickable = true
-        infoMessageView.movementMethod = LinkMovementMethod.getInstance()
+
+        run_info_message.linksClickable = true
+        run_info_message.movementMethod = LinkMovementMethod.getInstance()
 
         // Might had those before initialization
         if (systemUid != null && systemName != null) {
             setLinkToSystem(systemUid, systemName)
         }
 
-        phoneBtn = lView!!.findViewById(R.id.phone)
-        objectBtn = lView!!.findViewById(R.id.`object`)
-        phoneListView = lView!!.findViewById(R.id.phoneListView)
-        objectListView = lView!!.findViewById(R.id.objectLstView)
-        objectBtn.text = objectName
-        phoneBtn.setBackgroundColor(resources.getColor(R.color.grey_1))
+        `object`.text = objectName
+        phone.setBackgroundColor(resources.getColor(R.color.grey_1))
         phoneListView.visibility = View.VISIBLE
-        objectListView.visibility = View.GONE
+        objectLstView.visibility = View.GONE
 
-        phoneBtn.setOnClickListener {
+        phone.setOnClickListener {
             phoneListView.visibility = View.VISIBLE
-            objectListView.visibility = View.GONE
-            phoneBtn.isSelected = true
-            phoneBtn.isPressed = true
-            phoneBtn.setBackgroundColor(resources.getColor(R.color.grey_1))
-            objectBtn.isSelected = false
-            objectBtn.isPressed = false
-            objectBtn.setBackgroundColor(resources.getColor(R.color.grey_4))
+            objectLstView.visibility = View.GONE
+            phone.isSelected = true
+            phone.isPressed = true
+            phone.setBackgroundColor(resources.getColor(R.color.grey_1))
+            `object`.isSelected = false
+            `object`.isPressed = false
+            `object`.setBackgroundColor(resources.getColor(R.color.grey_4))
         }
 
-        objectBtn.setOnClickListener {
+        `object`.setOnClickListener {
             phoneListView.visibility = View.GONE
-            objectListView.visibility = View.VISIBLE
-            phoneBtn.isSelected = false
-            phoneBtn.isPressed = false
-            phoneBtn.setBackgroundColor(resources.getColor(R.color.grey_4))
-            objectBtn.isSelected = true
-            objectBtn.isPressed = true
-            objectBtn.setBackgroundColor(resources.getColor(R.color.grey_1))
+            objectLstView.visibility = View.VISIBLE
+            phone.isSelected = false
+            phone.isPressed = false
+            phone.setBackgroundColor(resources.getColor(R.color.grey_4))
+            `object`.isSelected = true
+            `object`.isPressed = true
+            `object`.setBackgroundColor(resources.getColor(R.color.grey_1))
         }
 
         setCustomDataLabels()
         setPhoneDataLabels()
 
 
-        return lView
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -279,8 +254,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         super.onResume()
 
         val isServiceRunning = monitorServiceManager!!.isServiceRunning()
-        val serviceSwitch = serviceSwitch
-        serviceSwitch.isChecked = isServiceRunning
+        service_switch.isChecked = isServiceRunning
 
         val systemUid = (activity as MainActivity).systemUid
         val systemName = (activity as MainActivity).systemName
@@ -293,8 +267,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         val avPrefs = PreferenceUtils.getAvPhonePrefs(activity)
         if (!avPrefs.checkCredentials()) {
             PreferenceUtils.showMissingPrefsDialog(activity)
-            val serviceSwitch = serviceSwitch
-            serviceSwitch.isChecked = false
+            service_switch.isChecked = false
         } else {
             this.monitorServiceManager!!.startSendData()
         }
@@ -311,10 +284,9 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     private fun setPhoneDataLabels() {
         val listPhone = ArrayList<HashMap<String, String>>()
 
-        var temp: HashMap<String, String>
+        var temp: HashMap<String, String> = HashMap()
 
 
-        temp = HashMap()
         temp[Tools.NAME] = "RSSI"
         temp[Tools.VALUE] = ""
         listPhone.add(temp)
@@ -354,12 +326,12 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
     }
 
-    protected fun setCustomDataLabels() {
+    private fun setCustomDataLabels() {
         val listObject = ArrayList<HashMap<String, String>>()
 
 
         objectsManager = ObjectsManager.getInstance()
-        val `object` = objectsManager!!.getObjectByName(objectName!!)
+        val `object` = objectsManager.getObjectByName(objectName!!)
         var temp: HashMap<String, String>
         for (data in `object`!!.datas) {
             temp = HashMap()
@@ -372,24 +344,24 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             listObject.add(temp)
         }
         val adapter = RunListViewAdapter(activity, listObject)
-        objectListView.adapter = adapter
-        objectListView.invalidateViews()
+        objectLstView.adapter = adapter
+        objectLstView.invalidateViews()
     }
 
     override fun onServiceStarted(service: MonitoringService) {
-        lView!!.findViewById<View>(R.id.toggle_to_start).visibility = View.GONE
-        lView!!.findViewById<View>(R.id.started_since).visibility = View.VISIBLE
-        lView!!.findViewById<View>(R.id.service_log).visibility = View.VISIBLE
-        lView!!.findViewById<View>(R.id.alarm_log).visibility = View.VISIBLE
+        toggle_to_start.visibility = View.GONE
+        started_since.visibility = View.VISIBLE
+        service_log.visibility = View.VISIBLE
+        alarm_log.visibility = View.VISIBLE
         viewUpdater!!.onStart(service.startedSince, service.lastData, service.lastLog,
                 service.lastRun)
     }
 
     override fun onServiceStopped(service: MonitoringService) {
-        lView!!.findViewById<View>(R.id.toggle_to_start).visibility = View.VISIBLE
-        lView!!.findViewById<View>(R.id.started_since).visibility = View.GONE
-        lView!!.findViewById<View>(R.id.service_log).visibility = View.GONE
-        lView!!.findViewById<View>(R.id.alarm_log).visibility = View.GONE
+        toggle_to_start.visibility = View.VISIBLE
+        started_since.visibility = View.GONE
+        service_log.visibility = View.GONE
+        alarm_log.visibility = View.GONE
         viewUpdater!!.onStop()
     }
 
@@ -402,8 +374,8 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
     companion object {
-        private val TAG = "RunFragment"
+        private const val TAG = "RunFragment"
 
-        private val LOGTAG = RunFragment::class.java.name
+        private  val LOGTAG = RunFragment::class.java.name
     }
 }

@@ -10,22 +10,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.Button
 import android.widget.TextView
 import com.baoyz.swipemenulistview.SwipeMenuCreator
 import com.baoyz.swipemenulistview.SwipeMenuItem
-import com.baoyz.swipemenulistview.SwipeMenuListView
 import com.sierrawireless.avphone.adapter.ObjectAdapter
 import com.sierrawireless.avphone.auth.AuthUtils
 import com.sierrawireless.avphone.task.IAsyncTaskFactory
 import com.sierrawireless.avphone.task.SyncWithAvParams
 import com.sierrawireless.avphone.tools.Tools
+import kotlinx.android.synthetic.main.fragment_configure.*
 import net.airvantage.utils.PreferenceUtils
 import java.util.*
 
 open class ConfigureFragment : AvPhoneFragment() {
     override var errorMessageView: TextView
-        get() = lView!!.findViewById<View>(R.id.configure_error_message) as TextView
+        get() = configure_error_message
         set(value) {}
 
     private var objectsManager: ObjectsManager? = null
@@ -47,6 +46,13 @@ open class ConfigureFragment : AvPhoneFragment() {
 
         lView = inflater.inflate(R.layout.fragment_configure, container, false)
 
+
+
+        return lView
+    }
+
+    override fun onStart() {
+        super.onStart()
         objectsManager = ObjectsManager.getInstance()
 
 
@@ -56,7 +62,7 @@ open class ConfigureFragment : AvPhoneFragment() {
             menu.add(obj.name!!)
         }
 
-        val listView = lView!!.findViewById<SwipeMenuListView>(R.id.objectConfigure)
+
 
         val creator = SwipeMenuCreator { menu ->
             when (menu.viewType) {
@@ -79,7 +85,7 @@ open class ConfigureFragment : AvPhoneFragment() {
         }
 
 
-        listView.setOnMenuItemClickListener { position, _, index ->
+        objectConfigure.setOnMenuItemClickListener { position, _, index ->
             when (index) {
                 0 -> {
                     //delete
@@ -91,13 +97,13 @@ open class ConfigureFragment : AvPhoneFragment() {
             false
         }
 
-        listView.setMenuCreator(creator)
+        objectConfigure.setMenuCreator(creator)
 
         val adapter = ObjectAdapter(activity, android.R.layout.simple_list_item_1, menu)
 
-        listView.adapter = adapter
+        objectConfigure.adapter = adapter
 
-        listView.onItemClickListener = AdapterView.OnItemClickListener { _, view, i, _ ->
+        objectConfigure.onItemClickListener = AdapterView.OnItemClickListener { _, view, i, _ ->
             //Open a new intent with the selected Object
             Log.d(TAG, "onItemClick: " + i + " " + menu[i])
             val intent = Intent(view.context, ObjectConfigureActivity::class.java)
@@ -107,22 +113,16 @@ open class ConfigureFragment : AvPhoneFragment() {
         }
 
 
-        val doneBtn = lView!!.findViewById<Button>(R.id.doneConfigureBtn)
-        val addBtn = lView!!.findViewById<Button>(R.id.addConfigureBtn)
+        doneConfigureBtn.setOnClickListener { (activity as MainActivity).goHomeFragment() }
 
-        doneBtn.setOnClickListener { (activity as MainActivity).goHomeFragment() }
-
-        addBtn.setOnClickListener { view ->
+        addConfigureBtn.setOnClickListener { view ->
             val intent = Intent(view.context, ObjectConfigureActivity::class.java)
             intent.putExtra(INDEX, -1)
 
             startActivityForResult(intent, CONFIGURE)
         }
 
-
-        return lView
     }
-
 
     private fun checkCredentials(): Boolean {
 

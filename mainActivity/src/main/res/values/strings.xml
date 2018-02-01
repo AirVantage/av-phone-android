@@ -92,7 +92,7 @@
     
     <string name="home_simulate_message"><b>Simulate</b> any object with your phone</string>
     
-    <string name="home_login_message"> <![CDATA[<b>Create a simulated object</b> automatically in your <font color="#E53B30">AirVantage</font> account]]></string>
+    <string name="home_login_message_str"> <![CDATA[<b>Create a simulated object</b> automatically in your <font color="#E53B30">AirVantage</font> account]]></string>
 
     <string name="home_login">Login to your Airvantage account</string>
     

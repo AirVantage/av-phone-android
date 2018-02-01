@@ -8,43 +8,29 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-
 import com.baoyz.swipemenulistview.SwipeMenuCreator
 import com.baoyz.swipemenulistview.SwipeMenuItem
-import com.baoyz.swipemenulistview.SwipeMenuListView
 import com.sierrawireless.avphone.adapter.ObjectDataAdapter
 import com.sierrawireless.avphone.model.AvPhoneObject
 import com.sierrawireless.avphone.tools.Tools
-
-import java.util.ArrayList
+import kotlinx.android.synthetic.main.activity_object_configure.*
+import java.util.*
 
 class ObjectConfigureActivity : Activity() {
 
-    private lateinit var cancel: Button
-    private lateinit var save: Button
-    private lateinit var listView: SwipeMenuListView
+
     internal var objectsManager: ObjectsManager = ObjectsManager.getInstance()
     private var menu: ArrayList<String> = ArrayList()
     private var position: Int = 0
-    internal var obj: AvPhoneObject? = null
-    internal lateinit var title: TextView
-    internal lateinit var name: TextView
-    private lateinit  var nameEdit: EditText
+    private var obj: AvPhoneObject? = null
+
     private var context: Context? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_object_configure)
-        cancel = findViewById(R.id.cancel)
-        save = findViewById(R.id.save)
-        listView = findViewById(R.id.listView)
+
         objectsManager = ObjectsManager.getInstance()
-        title = findViewById(R.id.titleObject)
-        name = findViewById(R.id.nameObject)
-        nameEdit = findViewById(R.id.objectNameEdit)
 
         context = this
         val creator = SwipeMenuCreator { menu ->
@@ -74,14 +60,14 @@ class ObjectConfigureActivity : Activity() {
 
         if (position == -1) {
             obj = AvPhoneObject()
-            title.setText(R.string.add_new_object)
+            titleObject.setText(R.string.add_new_object)
             objectsManager.objects.add(obj!!)
             position = objectsManager.objects.size - 1
         } else {
             obj = objectsManager.getObjectByIndex(position)
-            name.visibility = View.GONE
-            nameEdit.visibility = View.GONE
-            title.text = obj!!.name
+            nameObject.visibility = View.GONE
+            objectNameEdit.visibility = View.GONE
+            titleObject.text = obj!!.name
         }
         menuGeneration()
 
@@ -94,8 +80,8 @@ class ObjectConfigureActivity : Activity() {
         }
 
         save.setOnClickListener {
-            if (nameEdit.visibility != View.GONE) {
-                obj!!.name = nameEdit.text.toString()
+            if (objectNameEdit.visibility != View.GONE) {
+                obj!!.name = objectNameEdit.text.toString()
             }
             objectsManager.save()
             val i = Intent()

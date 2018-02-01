@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
 import com.crashlytics.android.Crashlytics
 import com.sierrawireless.avphone.auth.AuthUtils
@@ -18,6 +17,7 @@ import com.sierrawireless.avphone.task.GetUserParams
 import com.sierrawireless.avphone.task.IAsyncTaskFactory
 import com.sierrawireless.avphone.task.SyncWithAvListener
 import com.sierrawireless.avphone.task.SyncWithAvParams
+import kotlinx.android.synthetic.main.fragment_home.*
 import net.airvantage.model.User
 import net.airvantage.utils.PreferenceUtils
 
@@ -28,18 +28,17 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     private var authForSync: Authentication? = null
     private var retrySync: Boolean = false
 
-    private var btnLogin: Button? = null
-    private var btnLogout: Button? = null
+
 
     private var taskFactory: IAsyncTaskFactory? = null
 
     private var user: User? = null
 
     private val infoMessageView: TextView
-        get() = this.lView!!.findViewById<View>(R.id.home_info_message) as TextView
+        get() = home_info_message
 
     override var errorMessageView: TextView
-        get() = this.lView!!.findViewById<View>(R.id.home_error_message) as TextView
+        get() = home_error_message
         set(textView) {
 
         }
@@ -68,16 +67,18 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
 
         this.lView = inflater.inflate(R.layout.fragment_home, container, false)
 
-        val loginMessage = lView!!.findViewById<TextView>(R.id.home_login_message)
-        loginMessage.text = Html.fromHtml(getString(R.string.home_login_message))
 
-        btnLogin = lView!!.findViewById(R.id.login_btn)
+        return lView
+    }
 
-        btnLogout = lView!!.findViewById(R.id.logout_btn)
+    override fun onStart() {
+        super.onStart()
+        val loginMessage = home_login_message
+        loginMessage.text = Html.fromHtml(getString(R.string.home_login_message_str))
 
-        btnLogin!!.setOnClickListener { requestAuthentication() }
+        login_btn.setOnClickListener { requestAuthentication() }
 
-        btnLogout!!.setOnClickListener { logout() }
+        logout_btn.setOnClickListener { logout() }
 
         if (authManager!!.isLogged) {
             showLoggedInState()
@@ -85,7 +86,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
             showLoggedOutState()
         }
 
-        return lView
+
     }
 
     override fun onResume() {
@@ -100,7 +101,8 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
 
     private fun showCurrentServer() {
         val phonePrefs = PreferenceUtils.getAvPhonePrefs(activity)
-        val infoMessageView = infoMessageView
+
+
 
         val message: String
         message = when {
@@ -111,18 +113,16 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
 
         infoMessageView.text = message
         infoMessageView.visibility = View.VISIBLE
-        val welcome = lView!!.findViewById<TextView>(R.id.home_login)
         if (user != null) {
-            welcome.text = String.format("%s %s", getString(R.string.welcome), user!!.name)
-            welcome.visibility = View.VISIBLE
+            home_login.text = String.format("%s %s", getString(R.string.welcome), user!!.name)
+            home_login.visibility = View.VISIBLE
         }
     }
 
     private fun hideCurrentServer() {
-        val infoMessageView = infoMessageView
+
         infoMessageView.visibility = View.GONE
-        val welcome = lView!!.findViewById<TextView>(R.id.home_login)
-        welcome.visibility = View.GONE
+        home_login.visibility = View.GONE
         infoMessageView.text = ""
     }
 
@@ -263,16 +263,16 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     }
 
     private fun showLogoutButton() {
-        btnLogout!!.visibility = View.VISIBLE
-        btnLogin!!.visibility = View.GONE
-        lView!!.findViewById<View>(R.id.home_login_message).visibility = View.GONE
+        logout_btn.visibility = View.VISIBLE
+        login_btn.visibility = View.GONE
+        home_login_message.visibility = View.GONE
     }
 
     private fun hideLogoutButton() {
-        btnLogout!!.visibility = View.GONE
-        btnLogin!!.visibility = View.VISIBLE
+        logout_btn.visibility = View.GONE
+        login_btn.visibility = View.VISIBLE
 
-        lView!!.findViewById<View>(R.id.home_login_message).visibility = View.VISIBLE
+        home_login_message.visibility = View.VISIBLE
     }
 
     companion object {

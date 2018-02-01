@@ -5,23 +5,12 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Spinner
-import android.widget.TextView
-
 import com.sierrawireless.avphone.model.AvPhoneObject
 import com.sierrawireless.avphone.model.AvPhoneObjectData
+import kotlinx.android.synthetic.main.activity_object_data.*
 
 class ObjectDataActivity : Activity(), AdapterView.OnItemSelectedListener {
-    internal lateinit var title: TextView
-    internal lateinit var name: TextView
-    private lateinit var nameEdit: EditText
-    private lateinit var unitEdit: EditText
-    private lateinit var defaultEdit: EditText
-    private lateinit var simulationSpin: Spinner
-    private lateinit var saveBtn: Button
-    private lateinit var cancelBtn: Button
+
     internal var objectsManager: ObjectsManager = ObjectsManager.getInstance()
     private var obj: AvPhoneObject? = null
     internal var data: AvPhoneObjectData? = null
@@ -43,14 +32,7 @@ class ObjectDataActivity : Activity(), AdapterView.OnItemSelectedListener {
         if (objectPosition == -1 || dataPosition == -1) {
             return
         }
-        title = findViewById(R.id.title)
-        name = findViewById(R.id.name)
-        nameEdit = findViewById(R.id.nameText)
-        unitEdit = findViewById(R.id.unitText)
-        defaultEdit = findViewById(R.id.defaultText)
-        simulationSpin = findViewById(R.id.spinner)
-        saveBtn = findViewById(R.id.saveData)
-        cancelBtn = findViewById(R.id.cancelData)
+
 
         objectsManager = ObjectsManager.getInstance()
         obj = objectsManager.getObjectByIndex(objectPosition)
@@ -62,38 +44,38 @@ class ObjectDataActivity : Activity(), AdapterView.OnItemSelectedListener {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         // Apply the adapter to the spinner
 
-        simulationSpin.adapter = adapter
-        simulationSpin.onItemSelectedListener = this
+        spinner.adapter = adapter
+        spinner.onItemSelectedListener = this
 
         if (!add) {
             name.visibility = View.INVISIBLE
-            nameEdit.visibility = View.GONE
+            nameText.visibility = View.GONE
             data = obj!!.datas[dataPosition]
-            title.text = data!!.name
-            unitEdit.setText(data!!.unit)
-            defaultEdit.setText(data!!.defaults)
-            simulationSpin.setSelection(data!!.modePosition(), false)
+            titleMenu.text = data!!.name
+            unitText.setText(data!!.unit)
+            defaultText.setText(data!!.defaults)
+            spinner.setSelection(data!!.modePosition(), false)
 
         } else {
-            title.setText(R.string.add_new_data)
+            titleMenu.setText(R.string.add_new_data)
         }
 
-        cancelBtn.setOnClickListener { finish() }
+        cancelData.setOnClickListener { finish() }
 
-        saveBtn.setOnClickListener {
-            val mode = AvPhoneObjectData.modeFromPosition(simulationSpin.selectedItemPosition)
+        saveData.setOnClickListener {
+            val mode = AvPhoneObjectData.modeFromPosition(spinner.selectedItemPosition)
             if (add) {
                 data = AvPhoneObjectData(
-                        nameEdit.text.toString(),
-                        unitEdit.text.toString(),
-                        defaultEdit.text.toString(),
+                        nameText.text.toString(),
+                        unitText.text.toString(),
+                        defaultText.text.toString(),
                         mode,
                         objectPosition.toString()
                 )
                 obj!!.datas.add(data!!)
             } else {
-                data!!.unit = unitEdit.text.toString()
-                data!!.defaults = defaultEdit.text.toString()
+                data!!.unit = unitText.text.toString()
+                data!!.defaults = defaultText.text.toString()
                 data!!.mode = mode
             }
             finish()

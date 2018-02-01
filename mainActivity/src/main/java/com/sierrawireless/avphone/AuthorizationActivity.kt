@@ -12,9 +12,9 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
-import android.widget.RadioButton
 import android.widget.RadioGroup
 import com.sierrawireless.avphone.auth.Authentication
+import kotlinx.android.synthetic.main.activity_authorization.*
 import net.airvantage.utils.AirVantageClient
 import net.airvantage.utils.AuthenticationUrlParser
 import net.airvantage.utils.PreferenceUtils
@@ -22,9 +22,6 @@ import java.util.*
 
 class AuthorizationActivity : Activity() {
 
-    private lateinit var btnNa: RadioButton
-    private lateinit var btnEu: RadioButton
-    private lateinit var btnCustom: RadioButton
 
     private val authUrlParser = AuthenticationUrlParser()
 
@@ -46,19 +43,15 @@ class AuthorizationActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_authorization)
 
-        btnNa = this.findViewById(R.id.auth_btn_na)
-        btnEu = this.findViewById(R.id.auth_btn_eu)
-        btnCustom = this.findViewById(R.id.auth_btn_custom)
-
-        btnNa.setOnClickListener(OnHostClickListener(PreferenceUtils.Server.NA))
-        btnEu.setOnClickListener(OnHostClickListener(PreferenceUtils.Server.EU))
-        btnCustom.setOnClickListener(OnHostClickListener(PreferenceUtils.Server.CUSTOM))
+        auth_btn_na.setOnClickListener(OnHostClickListener(PreferenceUtils.Server.NA))
+        auth_btn_eu.setOnClickListener(OnHostClickListener(PreferenceUtils.Server.EU))
+        auth_btn_custom.setOnClickListener(OnHostClickListener(PreferenceUtils.Server.CUSTOM))
 
         if (PreferenceUtils.isCustomDefined(this)) {
-            val parentRadioGroup = btnCustom.parent as RadioGroup
-            parentRadioGroup.check(btnCustom.id)
+            val parentRadioGroup = auth_btn_custom.parent as RadioGroup
+            parentRadioGroup.check(auth_btn_custom.id)
         } else {
-            btnCustom.visibility = Button.GONE
+            auth_btn_custom.visibility = Button.GONE
         }
 
         openAuthorizationPage()
@@ -72,19 +65,19 @@ class AuthorizationActivity : Activity() {
 
         when {
             avPhonePrefs.usesNA() -> {
-                btnNa.isChecked = true
-                btnCustom.isChecked = false
-                btnEu.isChecked = false
+                auth_btn_na.isChecked = true
+                auth_btn_custom.isChecked = false
+                auth_btn_eu.isChecked = false
             }
             avPhonePrefs.usesEU() -> {
-                btnNa.isChecked = false
-                btnCustom.isChecked = false
-                btnEu.isChecked = true
+                auth_btn_na.isChecked = false
+                auth_btn_custom.isChecked = false
+                auth_btn_eu.isChecked = true
             }
             else -> {
-                btnNa.isChecked = false
-                btnCustom.isChecked = true
-                btnEu.isChecked = false
+                auth_btn_na.isChecked = false
+                auth_btn_custom.isChecked = true
+                auth_btn_eu.isChecked = false
             }
         }
 

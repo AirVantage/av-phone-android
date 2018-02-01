@@ -48,6 +48,7 @@ import java.util.Date
 import java.util.HashMap
 
 import io.fabric.sdk.android.Fabric
+import kotlinx.android.synthetic.main.activity_main.*
 
 /**
  * The main activity, handling drawer and Fragments
@@ -69,8 +70,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     private var monitoringServiceListener: MonitorServiceListener? = null
 
     private var customLabelsListener: CustomLabelsListener? = null
-    private var drawerLayout: DrawerLayout? = null
-    private var drawerListView: ListView? = null
+
     private var drawerToggle: ActionBarDrawerToggle? = null
 
     private var configureFragment: ConfigureFragment? = null
@@ -204,17 +204,15 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         }
 
 
-        drawerLayout = findViewById(R.id.drawer_layout)
-
         loadMenu()
 
-        drawerListView!!.setOnItemClickListener { _, _, position, _ -> selectItem(position) }
+        left_drawer.setOnItemClickListener { _, _, position, _ -> selectItem(position) }
 
         alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        drawerToggle = ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open,
+        drawerToggle = ActionBarDrawerToggle(this, drawer_layout, R.string.drawer_open,
                 R.string.drawer_close)
-        drawerLayout!!.addDrawerListener(drawerToggle!!)
+        drawer_layout!!.addDrawerListener(drawerToggle!!)
 
         // Verify Permission
 
@@ -278,15 +276,15 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
     fun loadMenu() {
         FRAGMENT_LIST = buildFragmentList()
-        drawerListView = findViewById(R.id.left_drawer)
+
 
         val adapter = MenuAdapter(this, buildFragmentList())
 
-        drawerListView!!.adapter = adapter
+        left_drawer.adapter = adapter
 
-        drawerListView!!.choiceMode = ListView.CHOICE_MODE_SINGLE
+        left_drawer.choiceMode = ListView.CHOICE_MODE_SINGLE
         // Set the list's click listener
-        drawerListView!!.invalidateViews()
+        left_drawer.invalidateViews()
 
         if (isLogged) {
             if (user == null) {
@@ -314,10 +312,10 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
     override fun onResume() {
         super.onResume()
-        drawerListView!!.requestFocusFromTouch()
-        drawerListView!!.setItemChecked(lastPosition, true)
-        drawerListView!!.setSelection(lastPosition)
-        drawerListView!!.refreshDrawableState()
+        left_drawer.requestFocusFromTouch()
+        left_drawer.setItemChecked(lastPosition, true)
+        left_drawer.setSelection(lastPosition)
+        left_drawer.refreshDrawableState()
         //drawerListView.setSelection();
 
     }
@@ -346,9 +344,9 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             lActionBar!!.setHomeButtonEnabled(false)
         }
 
-        if (drawerLayout != null) {
-            drawerLayout!!.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-        }
+
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+
 
         if (drawerToggle != null) {
             drawerToggle!!.isDrawerIndicatorEnabled = false
@@ -363,10 +361,8 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             lActionBar!!.setHomeButtonEnabled(true)
         }
 
-        if (drawerLayout != null) {
-            drawerLayout!!.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-            // drawerLayout.openDrawer(Gravity.START);
-        }
+
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
 
         if (drawerToggle != null) {
             drawerToggle!!.isDrawerIndicatorEnabled = true
@@ -587,8 +583,8 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             if (entry.name == FRAGMENT_FAQ) {
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://doc.airvantage.net/alms/"))
                 startActivity(browserIntent)
-                drawerListView!!.setSelection(lastPosition)
-                drawerLayout!!.closeDrawer(drawerListView)
+                left_drawer.setSelection(lastPosition)
+                drawer_layout.closeDrawer(left_drawer)
             }
             return
         }
@@ -602,10 +598,10 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                     .commit()
 
             // Highlight the selected item, update the title, and close the drawer
-            drawerListView!!.setItemChecked(position, true)
+            left_drawer.setItemChecked(position, true)
             title = entry.name
-            drawerListView!!.setSelection(position)
-            drawerLayout!!.closeDrawer(drawerListView)
+            left_drawer.setSelection(position)
+            drawer_layout.closeDrawer(left_drawer)
             lastPosition = position
         }
     }
@@ -622,10 +618,10 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                 .commit()
 
         // Highlight the selected item, update the title, and close the drawer
-        drawerListView!!.setItemChecked(position, true)
+        left_drawer.setItemChecked(position, true)
         title = FRAGMENT_LIST!![position].name
-        drawerListView!!.setSelection(position)
-        drawerLayout!!.closeDrawer(drawerListView)
+        left_drawer.setSelection(position)
+        drawer_layout.closeDrawer(left_drawer)
         lastPosition = position
 
     }
