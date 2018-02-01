@@ -661,7 +661,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         private const val FRAGMENT_LOGOUT = "Logout"
 
         private const val FRAGMENT_LOGIN = "Login"
-        private const val FRAGMENT_CONFIGURE = "Add..."
+        private const val FRAGMENT_CONFIGURE = "Add/Modify/Delete"
         private const val FRAGMENT_SETTINGS = "Settings"
         private const val FRAGMENT_FAQ = "FAQ"
 
