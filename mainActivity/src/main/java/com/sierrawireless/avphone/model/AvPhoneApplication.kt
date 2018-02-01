@@ -5,8 +5,6 @@ import com.sierrawireless.avphone.ObjectsManager
 import net.airvantage.model.*
 import net.airvantage.model.alert.v1.AlertRule
 import net.airvantage.model.alert.v1.Condition
-import java.util.*
-import kotlin.collections.ArrayList
 
 object AvPhoneApplication {
 
@@ -112,7 +110,7 @@ object AvPhoneApplication {
         alarmCondition.operator = "EQUALS"
         alarmCondition.value = "true"
 
-        var tmp = ArrayList<Condition>()
+        val tmp = ArrayList<Condition>()
         tmp.add(alarmCondition)
         rule.conditions = tmp
 

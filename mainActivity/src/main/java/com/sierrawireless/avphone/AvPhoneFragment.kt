@@ -39,11 +39,11 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
         this.toast(id)
     }
 
-    fun showErrorMessage(id: Int, vararg params: Any) {
+    private fun showErrorMessage(id: Int, vararg params: Any) {
         showErrorMessage(activity.getString(id, *params))
     }
 
-    fun showErrorMessage(message: String) {
+    private fun showErrorMessage(message: String) {
         val errorMessageView = errorMessageView
         errorMessageView.text = message
         errorMessageView.visibility = View.VISIBLE

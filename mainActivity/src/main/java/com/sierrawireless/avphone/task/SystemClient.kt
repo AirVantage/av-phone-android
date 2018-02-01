@@ -1,19 +1,17 @@
 package com.sierrawireless.avphone.task
 
 import android.util.Log
-
 import com.sierrawireless.avphone.tools.Tools
-
 import net.airvantage.model.AirVantageException
 import net.airvantage.model.Application
 import net.airvantage.model.AvSystem
 import net.airvantage.model.MqttCommunication
 import net.airvantage.utils.AirVantageClient
 import net.airvantage.utils.Utils
-
 import java.io.IOException
-import java.util.Collections
 import java.util.HashMap
+import kotlin.collections.ArrayList
+import kotlin.collections.set
 
 class SystemClient internal constructor(private val client: AirVantageClient) : ISystemClient {
 
@@ -39,7 +37,7 @@ class SystemClient internal constructor(private val client: AirVantageClient) : 
         } else {
             gateway.serialNumber = (serialNumber + "-ANDROID-" + type).toUpperCase()
         }
-        Log.d(TAG, "createSystem: Gateway exit " + exist!!)
+        Log.d(TAG, "createSystem: Gateway exit " + exist)
         Log.d(TAG, "gateway is " + (serialNumber + "-ANDROID-" + type).toUpperCase())
         system.name = "$deviceName de $userName($type)"
 
@@ -49,8 +47,8 @@ class SystemClient internal constructor(private val client: AirVantageClient) : 
 
         val application = Application()
         application.uid = applicationUid
-        var tmp = ArrayList<Application>()
-        tmp.add(application!!)
+        val tmp = ArrayList<Application>()
+        tmp.add(application)
         system.applications = tmp
 
         val mqtt = MqttCommunication()
@@ -69,7 +67,7 @@ class SystemClient internal constructor(private val client: AirVantageClient) : 
     }
 
     companion object {
-        private val TAG = "SystemClient"
+        private const val TAG = "SystemClient"
     }
 
 }

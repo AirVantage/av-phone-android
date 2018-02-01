@@ -3,6 +3,7 @@ package com.sierrawireless.avphone
 import android.app.Activity
 import android.graphics.Color
 import android.graphics.Typeface
+import android.support.v4.content.ContextCompat
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
@@ -25,33 +26,29 @@ class MenuAdapter internal constructor(private val activity: Activity, var list:
 
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var lConvertView = convertView
+        val lConvertView: View?
 
 
         val inflater = activity.layoutInflater
 
 
         val name: TextView
-        if (convertView == null) {
-
-            lConvertView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false)
-
-        }
+        lConvertView = convertView ?: inflater.inflate(android.R.layout.simple_list_item_1, parent, false)
         val entry = list[position]
         if (entry.type == MenuEntryType.TITLE) {
             name = lConvertView!!.findViewById(android.R.id.text1)
             name.text = entry.name
             name.setTypeface(name.typeface, Typeface.BOLD)
-            name.setBackgroundColor(lConvertView!!.resources.getColor(R.color.navy))
+            name.setBackgroundColor(ContextCompat.getColor(lConvertView.context, R.color.navy))
             name.setTextColor(Color.WHITE)
         } else {
             name = lConvertView!!.findViewById(android.R.id.text1)
             name.text = entry.name
             name.setBackgroundColor(Color.WHITE)
-            name.setTextColor(lConvertView!!.resources.getColor(R.color.navy))
+            name.setTextColor(ContextCompat.getColor(lConvertView.context, R.color.navy))
         }
 
 
-        return lConvertView!!
+        return lConvertView
     }
 }

@@ -2,10 +2,10 @@ package com.sierrawireless.avphone.model
 
 object AvPhoneData {
 
-    val CUSTOM = "phone.custom."
+    const val CUSTOM = "phone.custom."
 
-    val ALARM = "phone.alarm"
+    const val ALARM = "phone.alarm"
 
-    internal val NOTIFY = "phone.notify"
+    internal const val NOTIFY = "phone.notify"
 
 }

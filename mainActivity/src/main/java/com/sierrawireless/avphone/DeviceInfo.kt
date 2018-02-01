@@ -67,6 +67,7 @@ object DeviceInfo {
 
         val telManager: TelephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         return if (telManager.phoneType == TelephonyManager.PHONE_TYPE_GSM) {
+            @Suppress("DEPRECATION")
             telManager.deviceId
         } else null
 

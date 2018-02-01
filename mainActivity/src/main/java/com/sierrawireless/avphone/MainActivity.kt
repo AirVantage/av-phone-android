@@ -2,16 +2,11 @@ package com.sierrawireless.avphone
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.ActionBar
 import android.app.ActivityManager
 import android.app.AlarmManager
 import android.app.Fragment
 import android.app.PendingIntent
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
-import android.content.SharedPreferences
+import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -27,28 +22,18 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.ListView
 import android.widget.Toast
-
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.ndk.CrashlyticsNdk
 import com.sierrawireless.avphone.auth.Authentication
 import com.sierrawireless.avphone.auth.AuthenticationManager
 import com.sierrawireless.avphone.service.MonitoringService
 import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder
-import com.sierrawireless.avphone.task.AsyncTaskFactory
-import com.sierrawireless.avphone.task.GetUserParams
-import com.sierrawireless.avphone.task.IAsyncTaskFactory
-import com.sierrawireless.avphone.task.SyncWithAvListener
-import com.sierrawireless.avphone.task.SyncWithAvResult
-
-import net.airvantage.model.User
-import net.airvantage.utils.PreferenceUtils
-
-import java.util.ArrayList
-import java.util.Date
-import java.util.HashMap
-
+import com.sierrawireless.avphone.task.*
 import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_main.*
+import net.airvantage.model.User
+import net.airvantage.utils.PreferenceUtils
+import java.util.*
 
 /**
  * The main activity, handling drawer and Fragments
@@ -57,7 +42,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     override var monitoringService: MonitoringService? = null
     private var objectName: String? = null
 
-    private var lActionBar: ActionBar? = null
     private var alarmManager: AlarmManager? = null
     private var taskFactory: IAsyncTaskFactory? = null
     override var authentication: Authentication? = null
@@ -130,10 +114,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             tmp.add(MenuEntry(user!!.server!!, MenuEntryType.USER))
         }
         tmp.add(MenuEntry("SIMULATED OBJECTS", MenuEntryType.TITLE))
-        for (obj in objectsManager.objects) {
-            Log.d(TAG, "buildFragmentList: add object " + obj.name)
-            tmp.add(MenuEntry(obj.name!!, MenuEntryType.COMMAND))
-        }
+        objectsManager.objects.mapTo(tmp) { MenuEntry(it.name!!, MenuEntryType.COMMAND) }
         tmp.add(MenuEntry(FRAGMENT_CONFIGURE, MenuEntryType.COMMAND))
 
         //tmp.add(FRAGMENT_SETTINGS);
@@ -216,12 +197,10 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
         // Verify Permission
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.READ_PHONE_STATE), 1)
-        } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 2)
-        } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 3)
+        when {
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED -> ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.READ_PHONE_STATE), 1)
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED -> ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 2)
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED -> ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 3)
         }
     }
 
@@ -338,10 +317,9 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
     private fun lockDrawer() {
 
-        lActionBar = getActionBar()
-        if (lActionBar != null) {
-            lActionBar!!.setDisplayHomeAsUpEnabled(false)
-            lActionBar!!.setHomeButtonEnabled(false)
+        if (actionBar != null) {
+            actionBar!!.setDisplayHomeAsUpEnabled(false)
+            actionBar!!.setHomeButtonEnabled(false)
         }
 
 
@@ -355,10 +333,9 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
     private fun unlockDrawer() {
 
-        lActionBar = getActionBar()
-        if (lActionBar != null) {
-            lActionBar!!.setDisplayHomeAsUpEnabled(true)
-            lActionBar!!.setHomeButtonEnabled(true)
+        if (actionBar != null) {
+            actionBar!!.setDisplayHomeAsUpEnabled(true)
+            actionBar!!.setHomeButtonEnabled(true)
         }
 
 
@@ -422,9 +399,10 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
         val manager = this.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
-        return if (manager.getRunningServices(Integer.MAX_VALUE).any { MonitoringService::class.java.name == it.service.className }) serviceSendData!! else false
+         @Suppress("DEPRECATION")
+         return if (manager.getRunningServices(Integer.MAX_VALUE).any { MonitoringService::class.java.name == it.service.className }) serviceSendData!! else false
 
-    }
+     }
 
     override fun isServiceStarted(name: String): Boolean {
         if (this.objectName == null) {
@@ -437,6 +415,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
         val manager = this.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
+        @Suppress("DEPRECATION")
         return manager.getRunningServices(Integer.MAX_VALUE).any { MonitoringService::class.java.name == it.service.className }
 
     }
@@ -446,6 +425,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
         val manager = this.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
+        @Suppress("DEPRECATION")
         return manager.getRunningServices(Integer.MAX_VALUE).any { MonitoringService::class.java.name == it.service.className }
 
     }
@@ -553,9 +533,9 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
         val user = result.user
         prefs!!.edit().putString(PREFERENCE_USER_UID, user!!.uid).apply()
-        prefs!!.edit().putString(PREFERENCE_USER_NAME, user!!.name).apply()
+        prefs!!.edit().putString(PREFERENCE_USER_NAME, user.name).apply()
 
-        val deviceSerial = DeviceInfo.generateSerial(user!!.uid!!)
+        val deviceSerial = DeviceInfo.generateSerial(user.uid!!)
         prefs!!.edit().putString(PREFERENCE_SYSTEM_SERIAL, deviceSerial).apply()
 
         if (runFragment != null) {
@@ -608,7 +588,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
     fun goHomeFragment() {
         val position = FRAGMENT_LIST!!.size - 1
-        Log.d(TAG, "******************************goHomeFragment: selected " + FRAGMENT_LIST!![position].name)
         val fragment = getFragment(position)
         // Insert the fragment by replacing any existing fragment
         fragmentManager
@@ -631,7 +610,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         if (configureFragment == null) {
             configureFragment = ConfigureFragment()
             configureFragment!!.setTaskFactory(taskFactory!!)
-            configureFragment!!.syncListener = this;
+            configureFragment!!.syncListener = this
         }
 
         if (homeFragment == null) {
@@ -645,7 +624,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         for (obj in objectsManager.objects) {
             tmp = RunFragment()
             tmp.setTaskFactory(taskFactory!!)
-            Log.d(TAG, "initFragments: set " + obj.name)
             tmp.setObjectName(obj.name!!)
             runFragment!!.add(tmp)
         }

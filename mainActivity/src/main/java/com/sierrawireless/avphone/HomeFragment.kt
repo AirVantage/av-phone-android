@@ -2,6 +2,7 @@ package com.sierrawireless.avphone
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
@@ -59,6 +60,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
+        @Suppress("UNCHECKED_CAST")
         syncListener = context as SyncWithAvListener
     }
 
@@ -74,7 +76,12 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     override fun onStart() {
         super.onStart()
         val loginMessage = home_login_message
-        loginMessage.text = Html.fromHtml(getString(R.string.home_login_message_str))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            loginMessage.text = Html.fromHtml(getString(R.string.home_login_message_str), Html.FROM_HTML_MODE_LEGACY)
+        }else{
+            @Suppress("DEPRECATION")
+            loginMessage.text = Html.fromHtml(getString(R.string.home_login_message_str))
+        }
 
         login_btn.setOnClickListener { requestAuthentication() }
 

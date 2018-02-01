@@ -1,12 +1,14 @@
+@file:Suppress("DEPRECATION")
+
 package com.sierrawireless.avphone.task
 
 import android.app.ProgressDialog
 import android.content.Context
+import android.os.Build
+import android.support.v4.content.ContextCompat
 import android.text.Html
 import android.view.View
-import android.view.Window
 import android.widget.TextView
-
 import com.sierrawireless.avphone.R
 
 class ProgressSyncWithAvTask internal constructor(applicationClient: IApplicationClient, systemClient: ISystemClient,
@@ -38,14 +40,14 @@ class ProgressSyncWithAvTask internal constructor(applicationClient: IApplicatio
         // http://blog.supenta.com/2014/07/02/how-to-style-alertdialogs-like-a-pro/)
         val titleDividerId = context.resources.getIdentifier("titleDivider", "id", "android")
         val titleDivider = dialog!!.findViewById<View>(titleDividerId)
-        titleDivider?.setBackgroundColor(context.resources.getColor(R.color.sierrared))
+        titleDivider?.setBackgroundColor(ContextCompat.getColor(context, R.color.sierrared))
 
         // See http://stackoverflow.com/questions/15271500/how-to-change-alert-dialog-header-divider-color-android
         val alertTitleId = context.resources.getIdentifier("alertTitle", "id", "android")
         val windows = dialog!!.window
         if (windows != null) {
             val alertTitle = windows.decorView.findViewById<TextView>(alertTitleId)
-            alertTitle.setTextColor(context.resources.getColor(R.color.sierrared)) // change title text color
+            alertTitle.setTextColor(ContextCompat.getColor(context, R.color.sierrared)) // change title text color
         }
     }
 
@@ -53,7 +55,12 @@ class ProgressSyncWithAvTask internal constructor(applicationClient: IApplicatio
         dialog!!.progress = progress[0].value
         val stepMessage = context.getString(progress[0].stringId)
         val htmlMessage = context.getString(R.string.progress_syncing_message, stepMessage)
-        dialog!!.setMessage(Html.fromHtml(htmlMessage))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            dialog!!.setMessage(Html.fromHtml(htmlMessage, Html.FROM_HTML_MODE_LEGACY))
+        }else{
+            @Suppress("DEPRECATION")
+            dialog!!.setMessage(Html.fromHtml(htmlMessage))
+        }
     }
 
     override fun onPostExecute(result: SyncWithAvResult) {

@@ -47,18 +47,6 @@ class NewData internal constructor() : Intent(NEW_DATA) {
         }
     }
 
-    val isWifiActive: Boolean?
-    get() = if (this.extras == null) null else (this.extras!!.get(ACTIVE_WIFI_KEY) as Boolean?)
-
-    var batteryLevel: Float?
-    get() =if (this.extras == null) null else (this.extras!!.get(BATTERY_KEY) as Float?)
-    internal set(batteryLevel) {
-        if (batteryLevel != null && batteryLevel > 0f) {
-            this.putExtra(BATTERY_KEY, batteryLevel)
-        }
-
-    }
-
     var latitude: Double?
     get() = if (this.extras == null) null else (this.extras!!.get(LATITUDE_KEY) as Double?)
     internal set(latitude) {
@@ -91,30 +79,6 @@ class NewData internal constructor() : Intent(NEW_DATA) {
         }
     }
 
-    var runningApps: Int?
-    get() = if (this.extras == null) null else (this.extras!!.get(RUNNING_APPS_KEY) as Int?)
-    internal set(nbApps) {
-        if (nbApps != null && nbApps > 0) {
-            this.putExtra(RUNNING_APPS_KEY, nbApps.toInt())
-        }
-    }
-
-    var memoryUsage: Float?
-    get() = if (this.extras == null) null else (this.extras!!.get(MEMORY_USAGE_KEY) as Float?)
-    internal set(memoryUsage) {
-        if (memoryUsage != null && memoryUsage > 0f) {
-            this.putExtra(MEMORY_USAGE_KEY, memoryUsage)
-        }
-    }
-
-    var androidVersion: String?
-    get() = if (this.extras == null) null else (this.extras!!.get(ANDROID_VERSION_KEY) as String?)
-    internal set(version) {
-        if (version != null) {
-            this.putExtra(ANDROID_VERSION_KEY, version)
-        }
-    }
-
     internal var isAlarmActivated: Boolean?
     get() = if (this.extras == null) null else (this.extras!!.get(ALARM_KEY) as Boolean?)
     set(value) {
@@ -124,12 +88,6 @@ class NewData internal constructor() : Intent(NEW_DATA) {
 
     init {
         this.putExtras(Bundle())
-    }
-
-    internal fun setActiveWifi(activeWifi: Boolean?) {
-        if (activeWifi != null) {
-            this.putExtra(ACTIVE_WIFI_KEY, activeWifi)
-        }
     }
 
     fun size(): Int {
@@ -158,7 +116,6 @@ class NewData internal constructor() : Intent(NEW_DATA) {
         private const val NEW_DATA_PREFIX = "newdata."
         private const val RSSI_KEY = NEW_DATA_PREFIX + "rssi"
         private const val RSRP_KEY = NEW_DATA_PREFIX + "rsrp"
-        private const val BATTERY_KEY = NEW_DATA_PREFIX + "battery"
         private const val OPERATOR_KEY = NEW_DATA_PREFIX + "operator"
         private const val NETWORK_TYPE_KEY = NEW_DATA_PREFIX + "networktype"
         private const val IMEI_KEY = NEW_DATA_PREFIX + "imei"
@@ -166,10 +123,6 @@ class NewData internal constructor() : Intent(NEW_DATA) {
         private const val LONGITUDE_KEY = NEW_DATA_PREFIX + "longitude"
         private const val BYTES_SENT_KEY = NEW_DATA_PREFIX + "bytessent"
         private const val BYTES_RECEIVED_KEY = NEW_DATA_PREFIX + "bytesreceived"
-        private const val ACTIVE_WIFI_KEY = NEW_DATA_PREFIX + "activewifi"
-        private const val RUNNING_APPS_KEY = NEW_DATA_PREFIX + "runningapps"
-        private const val MEMORY_USAGE_KEY = NEW_DATA_PREFIX + "memory"
-        private const val ANDROID_VERSION_KEY = NEW_DATA_PREFIX + "androidversion"
 
         private const val ALARM_KEY = NEW_DATA_PREFIX + "alarm"
 

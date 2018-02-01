@@ -1,11 +1,12 @@
+@file:Suppress("DEPRECATION")
+
 package com.sierrawireless.avphone.task
 
 import android.app.ProgressDialog
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.view.View
-import android.view.Window
 import android.widget.TextView
-
 import com.sierrawireless.avphone.R
 
 class ProgressGetUserTask internal constructor(userClient: IUserClient, context: Context) : GetUserTask(userClient, context) {
@@ -36,14 +37,14 @@ class ProgressGetUserTask internal constructor(userClient: IUserClient, context:
         // http://blog.supenta.com/2014/07/02/how-to-style-alertdialogs-like-a-pro/)
         val titleDividerId = context.resources.getIdentifier("titleDivider", "id", "android")
         val titleDivider = dialog!!.findViewById<View>(titleDividerId)
-        titleDivider?.setBackgroundColor(context.resources.getColor(R.color.sierrared))
+        titleDivider?.setBackgroundColor(ContextCompat.getColor(context, R.color.sierrared))
 
         // See http://stackoverflow.com/questions/15271500/how-to-change-alert-dialog-header-divider-color-android
         val alertTitleId = context.resources.getIdentifier("alertTitle", "id", "android")
         val windows = dialog!!.window
         if (windows != null) {
             val alertTitle = windows.decorView.findViewById<TextView>(alertTitleId)
-            alertTitle.setTextColor(context.resources.getColor(R.color.sierrared)) // change title text color
+            alertTitle.setTextColor(ContextCompat.getColor(context, R.color.sierrared)) // change title text color
         }
     }
 

@@ -11,15 +11,15 @@ import com.sierrawireless.avphone.model.AvPhoneApplication
 class AlertRuleClient internal constructor(private val client: IAirVantageClient) : IAlertRuleClient {
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun getAlertRule(serialNumber: String, application: String): AlertRule? {
+    override fun getAlertRule(serialNumber: String, Application: String): AlertRule? {
         val alertRuleName = AvPhoneApplication.ALERT_RULE_NAME
-        return client.getAlertRuleByName(alertRuleName, application)
+        return client.getAlertRuleByName(alertRuleName, Application)
     }
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun createAlertRule(application: String) {
+    override fun createAlertRule(Application: String) {
         val alertRule = AvPhoneApplication.createAlertRule()
-        client.createAlertRule(alertRule, application)
+        client.createAlertRule(alertRule, Application)
     }
 
 

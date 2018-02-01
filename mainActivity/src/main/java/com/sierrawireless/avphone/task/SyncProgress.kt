@@ -2,7 +2,7 @@ package com.sierrawireless.avphone.task
 
 import com.sierrawireless.avphone.R
 
-enum class SyncProgress private constructor(val stringId: Int, val value: Int) {
+enum class SyncProgress(val stringId: Int, val value: Int) {
     // There is no "CREATING_SYSTEM', since it is done
     // in the single 'ensureApplicationExists' method
     CHECKING_RIGHTS(R.string.progress_checking_rights, 0),

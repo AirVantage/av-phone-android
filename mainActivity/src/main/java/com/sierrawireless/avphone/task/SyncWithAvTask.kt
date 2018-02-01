@@ -4,23 +4,18 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.util.Log
-
 import com.crashlytics.android.Crashlytics
 import com.sierrawireless.avphone.DeviceInfo
 import com.sierrawireless.avphone.MainActivity
 import com.sierrawireless.avphone.ObjectsManager
 import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.message.IMessageDisplayer
-
 import net.airvantage.model.AirVantageException
 import net.airvantage.model.Application
 import net.airvantage.model.AvError
 import net.airvantage.model.AvSystem
-import net.airvantage.model.User
-import net.airvantage.model.alert.v1.AlertRule
-
 import java.io.IOException
-import java.util.ArrayList
+import java.util.*
 
 
 typealias SyncWithAvListener = (SyncWithAvResult) -> Unit
@@ -77,7 +72,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
                 publishProgress(SyncProgress.CREATING_SYSTEM)
 
-                system = systemClient.createSystem(serialNumber, iccid!!, systemType, mqttPassword!!, application.uid!!, deviceName!!, user!!.name!!, imei!!)
+                system = systemClient.createSystem(serialNumber, iccid!!, systemType, mqttPassword!!, application.uid!!, deviceName!!, user.name!!, imei!!)
             }
 
             publishProgress(SyncProgress.CHECKING_ALERT_RULE)

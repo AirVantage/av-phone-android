@@ -15,7 +15,7 @@ import java.util.*
 class ApplicationClient internal constructor(private val client: IAirVantageClient) : IApplicationClient {
     private var currentUser: User? = null
 
-    protected val application: Application?
+    private val application: Application?
         @Throws(IOException::class, AirVantageException::class)
         get() {
             val applications = client.getApplications(AvPhoneApplication.appType(currentUsername))
@@ -103,7 +103,7 @@ class ApplicationClient internal constructor(private val client: IAirVantageClie
     }
 
     companion object {
-        private val TAG = "ApplicationClient"
+        private const val TAG = "ApplicationClient"
     }
 
 }

@@ -3,11 +3,12 @@ package com.sierrawireless.avphone
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.text.Html
 import android.text.method.LinkMovementMethod
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,8 +42,6 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
     // Alarm button
     private var onAlarmClick: View.OnClickListener = View.OnClickListener {
-        Log.d(LOGTAG, "On alarm button click")
-
         monitorServiceManager!!.sendAlarmEvent()
     }
 
@@ -147,7 +146,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         }
 
         `object`.text = objectName
-        phone.setBackgroundColor(resources.getColor(R.color.grey_1))
+        phone.setBackgroundColor(ContextCompat.getColor(MainActivity.instance.baseContext, R.color.grey_1))
         phoneListView.visibility = View.VISIBLE
         objectLstView.visibility = View.GONE
 
@@ -156,10 +155,10 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             objectLstView.visibility = View.GONE
             phone.isSelected = true
             phone.isPressed = true
-            phone.setBackgroundColor(resources.getColor(R.color.grey_1))
+            phone.setBackgroundColor(ContextCompat.getColor(MainActivity.instance.baseContext, R.color.grey_1))
             `object`.isSelected = false
             `object`.isPressed = false
-            `object`.setBackgroundColor(resources.getColor(R.color.grey_4))
+            `object`.setBackgroundColor(ContextCompat.getColor(MainActivity.instance.baseContext, R.color.grey_4))
         }
 
         `object`.setOnClickListener {
@@ -167,10 +166,10 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             objectLstView.visibility = View.VISIBLE
             phone.isSelected = false
             phone.isPressed = false
-            phone.setBackgroundColor(resources.getColor(R.color.grey_4))
+            phone.setBackgroundColor(ContextCompat.getColor(MainActivity.instance.baseContext, R.color.grey_4))
             `object`.isSelected = true
             `object`.isPressed = true
-            `object`.setBackgroundColor(resources.getColor(R.color.grey_1))
+            `object`.setBackgroundColor(ContextCompat.getColor(MainActivity.instance.baseContext, R.color.grey_1))
         }
 
         setCustomDataLabels()
@@ -241,7 +240,12 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
                     systemUid)
 
             infoMessage = getString(R.string.run_info_message_link, link, systemName)
-            infoMessageView.text = Html.fromHtml(infoMessage)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                infoMessageView.text = Html.fromHtml(infoMessage, Html.FROM_HTML_MODE_LEGACY)
+            }else{
+                @Suppress("DEPRECATION")
+                infoMessageView.text = Html.fromHtml(infoMessage)
+            }
 
         } else {
             infoMessage = getString(R.string.run_info_message, DeviceInfo.getUniqueId(activity))
@@ -373,9 +377,4 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         }
     }
 
-    companion object {
-        private const val TAG = "RunFragment"
-
-        private  val LOGTAG = RunFragment::class.java.name
-    }
 }

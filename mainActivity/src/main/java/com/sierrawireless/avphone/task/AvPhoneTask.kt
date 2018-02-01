@@ -2,14 +2,12 @@ package com.sierrawireless.avphone.task
 
 import android.app.Activity
 import android.os.AsyncTask
+import android.os.Build
 import android.text.Html
-
 import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.message.IMessageDisplayer
 import com.sierrawireless.avphone.model.AvPhoneApplication
-
 import net.airvantage.model.AvError
-import net.airvantage.model.User
 import net.airvantage.model.UserRights
 
 abstract class AvPhoneTask<Params, Progress, Result> : AsyncTask<Params, Progress, Result>() {
@@ -19,7 +17,12 @@ abstract class AvPhoneTask<Params, Progress, Result> : AsyncTask<Params, Progres
 
         if (error.missingRights()) {
             val message = missingRightsMessage(error, context)
-            displayer.showErrorMessage(Html.fromHtml(message))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                displayer.showErrorMessage(Html.fromHtml(message, Html.FROM_HTML_MODE_LEGACY))
+            }else{
+                @Suppress("DEPRECATION")
+                displayer.showErrorMessage(Html.fromHtml(message))
+            }
         } else if (error.systemAlreadyExists()) {
             displayer.showError(R.string.sync_error_system_exists)
         } else if (error.gatewayAlreadyExists()) {

@@ -2,24 +2,14 @@ package com.sierrawireless.avphone.service
 
 import android.annotation.SuppressLint
 import android.util.Log
-
 import com.google.gson.Gson
 import com.sierrawireless.avphone.DeviceInfo
 import com.sierrawireless.avphone.ObjectsManager
 import com.sierrawireless.avphone.model.AvPhoneData
-import com.sierrawireless.avphone.model.AvPhoneObject
-import com.sierrawireless.avphone.model.AvPhoneObjectData
-
-import org.eclipse.paho.client.mqttv3.MqttCallback
-import org.eclipse.paho.client.mqttv3.MqttClient
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions
-import org.eclipse.paho.client.mqttv3.MqttException
-import org.eclipse.paho.client.mqttv3.MqttMessage
+import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
-
 import java.io.UnsupportedEncodingException
-import java.util.Collections
-import java.util.HashMap
+import java.util.*
 
 class MqttPushClient @SuppressLint("DefaultLocale")
 @Throws(MqttException::class)

@@ -1,51 +1,35 @@
 package com.sierrawireless.avphone.service
 
 import android.annotation.SuppressLint
-import android.app.ActivityManager
-import android.app.ActivityManager.MemoryInfo
-import android.app.Notification
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
-import android.app.TaskStackBuilder
+import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.location.LocationProvider
 import android.net.ConnectivityManager
 import android.net.TrafficStats
-import android.os.BatteryManager
 import android.os.Binder
-import android.os.Build
 import android.os.IBinder
 import android.support.v4.content.LocalBroadcastManager
 import android.telephony.*
 import android.util.Log
 import android.widget.Toast
-
 import com.crashlytics.android.Crashlytics
 import com.google.gson.Gson
 import com.sierrawireless.avphone.MainActivity
 import com.sierrawireless.avphone.ObjectsManager
 import com.sierrawireless.avphone.R
-import com.sierrawireless.avphone.model.AvPhoneObject
-import com.sierrawireless.avphone.task.SendDataListener
 import com.sierrawireless.avphone.task.SendDataParams
-import com.sierrawireless.avphone.task.SendDataResult
 import com.sierrawireless.avphone.task.SendDataTask
 import com.sierrawireless.avphone.tools.Tools
-
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallback
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import java.nio.charset.Charset
-
-import java.util.Arrays
+import java.util.*
 
 class MonitoringService : Service() {
 
@@ -116,13 +100,11 @@ class MonitoringService : Service() {
     private val mqttCallback = object : MqttCallback {
 
         internal inner class Message {
-            var uid: String? = null
             var timestamp: Long = 0
             var command: Command? = null
         }
 
         internal inner class Command {
-            var id: String? = null
             var params: Map<String, String>? = null
         }
 
@@ -134,6 +116,7 @@ class MonitoringService : Service() {
             val messages = Gson().fromJson(String(msg.payload, Charset.forName("UTF-8")), Array<Message>::class.java)
 
             // display a new notification
+            @Suppress("DEPRECATION")
             val notification = Notification.Builder(this@MonitoringService.applicationContext) //
                     .setContentTitle(getText(R.string.notif_new_message)) //
                     .setContentText(messages[0].command!!.params!!["message"]) //
@@ -177,8 +160,8 @@ class MonitoringService : Service() {
                     dbm = parts[8].toInt() - 240
                     Log.d(TAG, "Dbm is " + dbm)
                 }else{
-                    if (signalStrength!!.gsmSignalStrength != 99) {
-                        dbm = -113 + 2 * signalStrength!!.gsmSignalStrength
+                    if (signalStrength.gsmSignalStrength != 99) {
+                        dbm = -113 + 2 * signalStrength.gsmSignalStrength
                     }
                 }
 
@@ -201,6 +184,7 @@ class MonitoringService : Service() {
         stackBuilder.addParentStack(MainActivity::class.java)
         stackBuilder.addNextIntent(resultIntent)
         val resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+        @Suppress("DEPRECATION")
         val notification = Notification.Builder(this.applicationContext) //
                 .setContentTitle(getText(R.string.notif_title)) //
                 .setContentText(getText(R.string.notif_desc)) //
@@ -278,6 +262,7 @@ class MonitoringService : Service() {
                 }
 
                 if (telephonyManager!!.phoneType == TelephonyManager.PHONE_TYPE_GSM) {
+                    @Suppress("DEPRECATION")
                     data.imei = telephonyManager!!.deviceId
                 }
 
@@ -370,11 +355,7 @@ class MonitoringService : Service() {
     @SuppressLint("MissingPermission")
     private fun setUpLocationListeners() {
         val locManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (locManager == null) {
-            Log.e(TAG, "setUpLocationListeners: Can't get the location service")
-            Toast.makeText(applicationContext, "can't get location service", Toast.LENGTH_SHORT).show()
-            return
-        }
+
         val networkLocationProvider = locManager.getProvider(LocationManager.NETWORK_PROVIDER)
         if (networkLocationProvider != null) {
             networkLocationListener = object : LocationListenerAdapter() {
@@ -400,11 +381,7 @@ class MonitoringService : Service() {
 
     private fun stopLocationListeners() {
         val locManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (locManager == null) {
-            Log.e(TAG, "setUpLocationListeners: Can't get the location service")
-            Toast.makeText(applicationContext, "can't get location service", Toast.LENGTH_SHORT).show()
-            return
-        }
+
         if (networkLocationListener != null) {
             locManager.removeUpdates(networkLocationListener)
         }
@@ -455,20 +432,16 @@ class MonitoringService : Service() {
             get() = this@MonitoringService
     }
 
-    fun getStartedSince(): Long {
-        return startedSince!!
-    }
-
     companion object {
-        private val TAG = "MonitoringService"
+        private const val TAG = "MonitoringService"
 
 
         // Intent extra keys
-        val DEVICE_ID = "device_id"
-        val SERVER_HOST = "server_host"
-        val PASSWORD = "password"
-        val CONNECT = "connect"
-        val OBJECT_NAME = "objname"
+        const val DEVICE_ID = "device_id"
+        const val SERVER_HOST = "server_host"
+        const val PASSWORD = "password"
+        const val CONNECT = "connect"
+        const val OBJECT_NAME = "objname"
     }
 
 }
