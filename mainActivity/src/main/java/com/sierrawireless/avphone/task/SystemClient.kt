@@ -32,7 +32,7 @@ class SystemClient internal constructor(private val client: AirVantageClient) : 
         val exist = client.getGateway((serialNumber + "-ANDROID-" + type).toUpperCase())
         val gateway = net.airvantage.model.AvSystem.Gateway()
 
-        if (!exist) {
+        if (!(exist!!)) {
             gateway.serialNumber = (serialNumber + "-ANDROID-" + type).toUpperCase()
             // gateway.imei = imei + type;
             gateway.type = type
@@ -49,13 +49,15 @@ class SystemClient internal constructor(private val client: AirVantageClient) : 
 
         val application = Application()
         application.uid = applicationUid
-        system.applications = listOf(application)
+        var tmp = ArrayList<Application>()
+        tmp.add(application!!)
+        system.applications = tmp
 
         val mqtt = MqttCommunication()
         mqtt.password = mqttPassword
 
         system.communication = HashMap()
-        system.communication["mqtt"] = mqtt
+        system.communication!!["mqtt"] = mqtt
         system.type = type
 
         return client.createSystem(system)

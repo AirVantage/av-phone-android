@@ -6,6 +6,7 @@ import net.airvantage.model.*
 import net.airvantage.model.alert.v1.AlertRule
 import net.airvantage.model.alert.v1.Condition
 import java.util.*
+import kotlin.collections.ArrayList
 
 object AvPhoneApplication {
 
@@ -61,7 +62,7 @@ object AvPhoneApplication {
         val asset = Data("phone", "Phone", "node")
         asset.data = ArrayList()
 
-        asset.data.add(Variable(AvPhoneData.ALARM, "Active alarm", "boolean"))
+        asset.data!!.add(Variable(AvPhoneData.ALARM, "Active alarm", "boolean"))
 
         var pos = 1
         for (data in customData) {
@@ -71,7 +72,7 @@ object AvPhoneApplication {
                 "string"
             }
 
-            asset.data.add(Variable(`object` + "." + AvPhoneData.CUSTOM + pos.toString(), data.name, type))
+            asset.data!!.add(Variable(`object` + "." + AvPhoneData.CUSTOM + pos.toString(), data.name, type))
             pos++
         }
 
@@ -79,9 +80,9 @@ object AvPhoneApplication {
         val p = Parameter("message", "string")
         c.parameters = listOf(p)
 
-        asset.data.add(c)
+        asset.data!!.add(c)
 
-        applicationData.data.add(asset)
+        applicationData.data!!.add(asset)
 
         return listOf(applicationData)
 
@@ -111,7 +112,9 @@ object AvPhoneApplication {
         alarmCondition.operator = "EQUALS"
         alarmCondition.value = "true"
 
-        rule.conditions = listOf(alarmCondition)
+        var tmp = ArrayList<Condition>()
+        tmp.add(alarmCondition)
+        rule.conditions = tmp
 
         return rule
     }

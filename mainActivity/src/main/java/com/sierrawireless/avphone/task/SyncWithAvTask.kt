@@ -59,7 +59,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
             systemType = objectsManager.savedObjectName
 
             // For emulator and iOs compatibility sake, using generated serial.
-            val serialNumber = DeviceInfo.generateSerial(user!!.uid)
+            val serialNumber = DeviceInfo.generateSerial(user!!.uid!!)
 
             // Save Device serial in context
             if (context is MainActivity) {
@@ -77,22 +77,22 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
                 publishProgress(SyncProgress.CREATING_SYSTEM)
 
-                system = systemClient.createSystem(serialNumber, iccid!!, systemType, mqttPassword!!, application.uid, deviceName!!, user!!.name, imei!!)
+                system = systemClient.createSystem(serialNumber, iccid!!, systemType, mqttPassword!!, application.uid!!, deviceName!!, user!!.name!!, imei!!)
             }
 
             publishProgress(SyncProgress.CHECKING_ALERT_RULE)
 
-            val alertRule = this.alertRuleClient.getAlertRule(serialNumber, application.uid)
+            val alertRule = this.alertRuleClient.getAlertRule(serialNumber, application.uid!!)
             if (alertRule == null) {
 
                 publishProgress(SyncProgress.CREATING_ALERT_RULE)
 
-                this.alertRuleClient.createAlertRule(application.uid)
+                this.alertRuleClient.createAlertRule(application.uid!!)
             }
 
             publishProgress(SyncProgress.UPDATING_APPLICATION)
 
-            this.applicationClient.setApplicationData(application.uid, objectsManager.savecObject.datas, objectsManager.savecObject.name!!)
+            this.applicationClient.setApplicationData(application.uid!!, objectsManager.savecObject.datas, objectsManager.savecObject.name!!)
 
             if (!hasApplication(system, application)) {
 
@@ -107,7 +107,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
         } catch (e: AirVantageException) {
             publishProgress(SyncProgress.DONE)
-            return SyncWithAvResult(e.error)
+            return SyncWithAvResult(e.error!!)
         } catch (e: IOException) {
             Crashlytics.logException(e)
             Log.e(MainActivity::class.java.name, "Error when trying to synchronize with server", e)
@@ -127,7 +127,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
     private fun hasApplication(system: AvSystem, application: Application): Boolean {
         var found = false
         if (system.applications != null) {
-            system.applications
+            system.applications!!
                     .filter { it.uid == application.uid }
                     .forEach { found = true }
         }

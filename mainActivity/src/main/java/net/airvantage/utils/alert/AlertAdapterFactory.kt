@@ -1,0 +1,72 @@
+package net.airvantage.utils.alert
+
+import android.os.AsyncTask
+import android.util.Log
+
+import com.squareup.okhttp.OkHttpClient
+
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.MalformedURLException
+import java.net.URL
+import java.util.HashMap
+
+class AlertAdapterFactory(private val server: String, private val accessToken: String, private val listener: IAlertAdapterFactoryListener) : AsyncTask<Void, Void, DefaultAlertAdapter>() {
+    private val client: OkHttpClient = OkHttpClient()
+
+    init {
+        this.execute()
+    }
+
+    override fun doInBackground(vararg params: Void): DefaultAlertAdapter {
+
+        // Mapping of _Alert APIs_ -> Functions handling them set V2 in first preferred
+        val urls = HashMap<String, DefaultAlertAdapter>()
+        urls[ALERT_V2_API_PREFIX] = AlertAdapterV2(server, accessToken)
+        urls[ALERT_V1_API_PREFIX] = AlertAdapterV1(server, accessToken)
+        //   urls.put(ALERT_V2_API_PREFIX, new AlertAdapterV2(server, accessToken));
+        val founds = HashMap<String, Boolean>()
+
+        // We using first available
+        for ((key) in urls) {
+            try {
+
+                val urlString = "https://" + server + key + accessToken
+                val url = URL(urlString)
+                Log.d(TAG, "doInBackground: Send Data is" + urlString)
+                val connection = client.open(url)
+                connection.requestMethod = "GET"
+                founds[key] = connection.responseCode == HttpURLConnection.HTTP_OK
+
+            } catch (e: MalformedURLException) {
+                Log.e(this.javaClass.name, "Bad Url generated for " + key, e)
+            } catch (e: IOException) {
+                Log.e(this.javaClass.name, "Connection problem", e)
+            }
+
+        }
+
+        if (founds[ALERT_V2_API_PREFIX]!!) {
+            Log.d(this.javaClass.name, "Using Alerts from " + ALERT_V2_API_PREFIX)
+            return urls[ALERT_V2_API_PREFIX]!!
+        } else if (founds[ALERT_V1_API_PREFIX]!!) {
+            Log.d(this.javaClass.name, "Using Alerts from " + ALERT_V1_API_PREFIX)
+            return urls[ALERT_V1_API_PREFIX]!!
+        }
+
+        // Neither is available?
+        // This adapter provides error messages at each call
+        return DefaultAlertAdapter(server, accessToken)
+    }
+
+    override fun onPostExecute(adapter: DefaultAlertAdapter) {
+        this.listener.alertAdapterAvailable(adapter)
+    }
+
+    companion object {
+
+        private const val ALERT_V1_API_PREFIX = "/api/v1/alerts/rules?size=0&access_token="
+        private const val ALERT_V2_API_PREFIX = "/api/v2/alertstates?access_token="
+        private const val TAG = "AlertAdapterFactory"
+    }
+}

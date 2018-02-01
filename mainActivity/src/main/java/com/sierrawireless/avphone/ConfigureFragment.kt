@@ -191,7 +191,7 @@ open class ConfigureFragment : AvPhoneFragment() {
 
         val display = this
 
-        val deleteTask = taskFactory!!.deleteSystemTak(prefs.serverHost, token)
+        val deleteTask = taskFactory!!.deleteSystemTak(prefs.serverHost!!, token)
         deleteTask.execute()
 
         deleteTask.addProgressListener({ result ->
@@ -211,7 +211,7 @@ open class ConfigureFragment : AvPhoneFragment() {
 
         val display = this
 
-        val syncTask = taskFactory!!.syncAvTask(prefs.serverHost, token)
+        val syncTask = taskFactory!!.syncAvTask(prefs.serverHost!!, token)
 
         val syncParams = SyncWithAvParams()
         syncParams.deviceId = DeviceInfo.getUniqueId(activity)

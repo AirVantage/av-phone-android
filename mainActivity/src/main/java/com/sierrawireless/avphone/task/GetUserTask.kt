@@ -38,7 +38,7 @@ protected val context: Context) : AvPhoneTask<GetUserParams, Void, GetUserResult
             return GetUserResult(user)
         } catch (e: AirVantageException) {
 
-            return GetUserResult(e.error)
+            return GetUserResult(e.error!!)
         }
 
     }

@@ -196,7 +196,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         val prefs = PreferenceUtils.getAvPhonePrefs(activity)
         val display = this
 
-        val syncAvTask = taskFactory!!.syncAvTask(prefs.serverHost, token!!)
+        val syncAvTask = taskFactory!!.syncAvTask(prefs.serverHost!!, token!!)
 
 
         val params = SyncWithAvParams()

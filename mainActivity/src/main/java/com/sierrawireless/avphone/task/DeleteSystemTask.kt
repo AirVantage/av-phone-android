@@ -50,7 +50,7 @@ protected val context: Context) : AvPhoneTask<Void, DeleteSystemProgress, Delete
             systemType = objectsManager.savedObjectName!!
 
             // For emulator and iOs compatibility sake, using generated serial.
-            val serialNumber = DeviceInfo.generateSerial(user!!.uid)
+            val serialNumber = DeviceInfo.generateSerial(user!!.uid!!)
 
             // Save Device serial in context
             if (context is MainActivity) {
@@ -70,7 +70,7 @@ protected val context: Context) : AvPhoneTask<Void, DeleteSystemProgress, Delete
 
         } catch (e: AirVantageException) {
             publishProgress(DeleteSystemProgress.DONE)
-            return DeleteSystemResult(e.error)
+            return DeleteSystemResult(e.error!!)
         } catch (e: IOException) {
             Crashlytics.logException(e)
             Log.e(MainActivity::class.java.name, "Error when trying to synchronize with server", e)

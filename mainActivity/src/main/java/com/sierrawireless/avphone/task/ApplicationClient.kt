@@ -34,7 +34,7 @@ class ApplicationClient internal constructor(private val client: IAirVantageClie
                 }
 
             }
-            return currentUser!!.email
+            return currentUser!!.email!!
         }
 
     @Throws(IOException::class, AirVantageException::class)
@@ -44,7 +44,7 @@ class ApplicationClient internal constructor(private val client: IAirVantageClie
         if (application == null) {
             Log.d(TAG, "ensureApplicationExists: Create new application")
             application = createApplication()
-            setApplicationCommunication(application.uid)
+            setApplicationCommunication(application.uid!!)
         }
         Log.d(TAG, "ensureApplicationExists: application is " + application.uid)
         return application
@@ -83,10 +83,10 @@ class ApplicationClient internal constructor(private val client: IAirVantageClie
         var appAlreadyLinked = false
 
         if (system.applications != null) {
-            for (systemApp in system.applications) {
+            for (systemApp in system.applications!!) {
                 val resApp = Application()
                 resApp.uid = systemApp.uid
-                res.applications.add(resApp)
+                res.applications!!.add(resApp)
                 if (resApp.uid == appToAdd.uid) {
                     appAlreadyLinked = true
                 }
@@ -95,7 +95,7 @@ class ApplicationClient internal constructor(private val client: IAirVantageClie
         if (!appAlreadyLinked) {
             val addedApp = Application()
             addedApp.uid = appToAdd.uid
-            res.applications.add(addedApp)
+            res.applications!!.add(addedApp)
         }
 
         return res

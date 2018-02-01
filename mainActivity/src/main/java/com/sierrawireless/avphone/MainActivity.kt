@@ -124,10 +124,10 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         val tmp = ArrayList<MenuEntry>()
         if (user != null) {
             tmp.add(MenuEntry("LOGGED AS", MenuEntryType.TITLE))
-            tmp.add(MenuEntry(user!!.name, MenuEntryType.USER))
-            tmp.add(MenuEntry(user!!.profile.name, MenuEntryType.USER))
-            tmp.add(MenuEntry(user!!.company.name, MenuEntryType.USER))
-            tmp.add(MenuEntry(user!!.server, MenuEntryType.USER))
+            tmp.add(MenuEntry(user!!.name!!, MenuEntryType.USER))
+            tmp.add(MenuEntry(user!!.profile!!.name!!, MenuEntryType.USER))
+            tmp.add(MenuEntry(user!!.company!!.name!!, MenuEntryType.USER))
+            tmp.add(MenuEntry(user!!.server!!, MenuEntryType.USER))
         }
         tmp.add(MenuEntry("SIMULATED OBJECTS", MenuEntryType.TITLE))
         for (obj in objectsManager.objects) {
@@ -159,7 +159,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this)
 
 
-        val getUserTask = taskFactory!!.getUserTak(avPhonePrefs.serverHost, auth!!.accessToken!!)
+        val getUserTask = taskFactory!!.getUserTak(avPhonePrefs.serverHost!!, auth!!.accessToken!!)
 
         getUserTask.addProgressListener { result ->
             if (!result.isError) {
@@ -555,7 +555,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         prefs!!.edit().putString(PREFERENCE_USER_UID, user!!.uid).apply()
         prefs!!.edit().putString(PREFERENCE_USER_NAME, user!!.name).apply()
 
-        val deviceSerial = DeviceInfo.generateSerial(user!!.uid)
+        val deviceSerial = DeviceInfo.generateSerial(user!!.uid!!)
         prefs!!.edit().putString(PREFERENCE_SYSTEM_SERIAL, deviceSerial).apply()
 
         if (runFragment != null) {

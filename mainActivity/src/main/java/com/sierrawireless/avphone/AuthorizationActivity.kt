@@ -104,7 +104,7 @@ class AuthorizationActivity : Activity() {
             }
 
         }
-        val authUrl = AirVantageClient.buildImplicitFlowURL(serverHost, clientId)
+        val authUrl = AirVantageClient.buildImplicitFlowURL(serverHost!!, clientId!!)
         Log.d(AuthorizationActivity::class.java.name, "Auth URL: " + authUrl)
 
         // The 'authorize' page from AirVantage will store a cookie ;
