@@ -14,11 +14,12 @@ import java.util.*
 
 class ApplicationClient internal constructor(private val client: IAirVantageClient) : IApplicationClient {
     private var currentUser: User? = null
+    private var mPhoneName: String? = null
 
     private val application: Application?
         @Throws(IOException::class, AirVantageException::class)
         get() {
-            val applications = client.getApplications(AvPhoneApplication.appType(currentUsername))
+            val applications = client.getApplications(AvPhoneApplication.appType(currentUsername, mPhoneName!!))
             return Utils.first(applications)
         }
 
@@ -38,12 +39,13 @@ class ApplicationClient internal constructor(private val client: IAirVantageClie
         }
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun ensureApplicationExists(): Application {
+    override fun ensureApplicationExists(phoneName: String): Application {
+        mPhoneName = phoneName
         var application = application
 
         if (application == null) {
             Log.d(TAG, "ensureApplicationExists: Create new application")
-            application = createApplication()
+            application = createApplication(phoneName)
             setApplicationCommunication(application.uid!!)
         }
         Log.d(TAG, "ensureApplicationExists: application is " + application.uid)
@@ -57,8 +59,8 @@ class ApplicationClient internal constructor(private val client: IAirVantageClie
     }
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun createApplication(): Application {
-        val application = AvPhoneApplication.createApplication(currentUsername)
+    override fun createApplication(phoneName: String): Application {
+        val application = AvPhoneApplication.createApplication(currentUsername, phoneName)
         return client.createApplication(application)
     }
 

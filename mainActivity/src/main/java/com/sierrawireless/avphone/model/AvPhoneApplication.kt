@@ -1,6 +1,5 @@
 package com.sierrawireless.avphone.model
 
-import android.util.Log
 import com.sierrawireless.avphone.ObjectsManager
 import net.airvantage.model.*
 import net.airvantage.model.alert.v1.AlertRule
@@ -8,14 +7,13 @@ import net.airvantage.model.alert.v1.Condition
 
 object AvPhoneApplication {
 
-    private const val TAG = "AvPhoneApplication"
     const val ALERT_RULE_NAME = "AV Phone raised an alert"
     private var objectsManager: ObjectsManager? = null
 
-    fun createApplication(userName: String): Application {
+    fun createApplication(userName: String, phoneName:String): Application {
         val application = Application()
-        application.name = AvPhoneApplication.appName(userName)
-        application.type = AvPhoneApplication.appType(userName)
+        application.name = AvPhoneApplication.appName(userName, phoneName)
+        application.type = AvPhoneApplication.appType(userName, phoneName)
         application.revision = "0.0.0"
         return application
     }
@@ -29,7 +27,6 @@ object AvPhoneApplication {
 
     fun createApplicationData(customData: ArrayList<AvPhoneObjectData>, `object`: String): List<ApplicationData> {
 
-        Log.d(TAG, "createApplicationData: ************applicationData called")
         // <data>
         // <encoding type="MQTT">
         // <asset default-label="Android Phone" id="phone">
@@ -86,15 +83,15 @@ object AvPhoneApplication {
 
     }
 
-    private fun appName(userName: String): String {
+    private fun appName(userName: String, phoneName: String): String {
         objectsManager = ObjectsManager.getInstance()
 
-        return "av_phone_" + objectsManager!!.savecObject.name + "_" + userName
+        return phoneName.replace(" ", "_") + "_av_phone_" + objectsManager!!.savecObject.name + "_" + userName
     }
 
-    fun appType(userName: String): String {
+    fun appType(userName: String, phoneName: String): String {
         objectsManager = ObjectsManager.getInstance()
-        return "av.phone.demo." + objectsManager!!.savecObject.name + userName
+        return phoneName.replace(" ", ".") + ".av.phone.demo." + objectsManager!!.savecObject.name + userName
     }
 
     fun createAlertRule(): AlertRule {

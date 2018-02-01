@@ -12,13 +12,13 @@ import com.sierrawireless.avphone.model.AvPhoneObjectData
 interface IApplicationClient {
 
     @Throws(IOException::class, AirVantageException::class)
-    fun ensureApplicationExists(): Application
+    fun ensureApplicationExists(phoneName:String): Application
 
     @Throws(IOException::class, AirVantageException::class)
     fun setApplicationData(applicationUid: String, customData: ArrayList<AvPhoneObjectData>, `object`: String)
 
     @Throws(IOException::class, AirVantageException::class)
-    fun createApplication(): Application
+    fun createApplication(phoneName: String): Application
 
     @Throws(IOException::class, AirVantageException::class)
     fun setApplicationCommunication(applicationUid: String)

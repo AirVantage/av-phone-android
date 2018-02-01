@@ -13,7 +13,7 @@ import java.net.URL
 class AlertAdapterV1 internal constructor(server: String, accessToken: String) : DefaultAlertAdapter(server, accessToken) {
 
     override  val prefix: String
-        get() = "/api/v1"
+        get() = "/api/v1/"
 
 
     @Throws(IOException::class, AirVantageException::class)

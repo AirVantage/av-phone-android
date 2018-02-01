@@ -5,5 +5,4 @@ class Operand {
     var attributeId: AttributeId? = null
     var valueStr: String? = null
     var valueNum: Number? = null
-    var valuesStr: List<String>? = null
 }

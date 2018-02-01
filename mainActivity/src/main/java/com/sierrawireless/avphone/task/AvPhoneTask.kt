@@ -13,7 +13,7 @@ import net.airvantage.model.UserRights
 abstract class AvPhoneTask<Params, Progress, Result> : AsyncTask<Params, Progress, Result>() {
 
 
-     fun displayTaskError(error: AvError, displayer: IMessageDisplayer, context: Activity, userClient: IUserClient) {
+     fun displayTaskError(error: AvError, displayer: IMessageDisplayer, context: Activity, userClient: IUserClient, deviceName: String) {
 
         if (error.missingRights()) {
             val message = missingRightsMessage(error, context)
@@ -32,7 +32,7 @@ abstract class AvPhoneTask<Params, Progress, Result> : AsyncTask<Params, Progres
             if (user == null) {
                 displayer.showError(R.string.sync_error_no_user_data)
             } else {
-                displayer.showError(R.string.sync_error_app_exists, AvPhoneApplication.appType(user.name!!))
+                displayer.showError(R.string.sync_error_app_exists, AvPhoneApplication.appType(user.name!!, deviceName))
             }
         } else if (error.tooManyAlerRules()) {
             displayer.showError(R.string.sync_error_too_many_rules)

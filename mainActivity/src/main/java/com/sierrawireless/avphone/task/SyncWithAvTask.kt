@@ -25,6 +25,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
                                                protected val context: Context) : AvPhoneTask<SyncWithAvParams, SyncProgress, SyncWithAvResult>() {
 
     private val syncListeners = ArrayList<SyncWithAvListener>()
+    var deviceName:String? = null
 
     fun addProgressListener(listener: SyncWithAvListener) {
         this.syncListeners.add(listener)
@@ -47,7 +48,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
             val user = userClient.user
             val imei = syncParams.imei
             val iccid = syncParams.iccid
-            val deviceName = syncParams.deviceName
+            deviceName = syncParams.deviceName
             val mqttPassword = syncParams.mqttPassword
             val objectsManager = ObjectsManager.getInstance()
 
@@ -63,7 +64,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
             publishProgress(SyncProgress.CHECKING_APPLICATION)
 
-            val application = this.applicationClient.ensureApplicationExists()
+            val application = this.applicationClient.ensureApplicationExists(deviceName!!)
 
             publishProgress(SyncProgress.CHECKING_SYSTEM)
 
@@ -133,7 +134,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
         if (result.isError) {
             val error = result.error
-            displayTaskError(error!!, displayer, context, userClient)
+            displayTaskError(error!!, displayer, context, userClient, deviceName!!)
         } else {
             displayer.showSuccess(R.string.sync_success)
         }

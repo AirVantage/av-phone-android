@@ -16,8 +16,6 @@ class AlertRule {
     var metadata: MutableMap<String, Any>? = null
 
     companion object {
-        private const val TAG = "AlertRule"
-
 
         fun isNamed(name: String): Predicate<AlertRule> {
             return  { item -> name == item.name }

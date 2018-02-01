@@ -23,9 +23,7 @@ import net.airvantage.utils.PreferenceUtils
 import java.util.*
 
 open class ConfigureFragment : AvPhoneFragment() {
-    override var errorMessageView: TextView
-        get() = configure_error_message
-        set(value) {}
+    override lateinit var errorMessageView: TextView
 
     private var objectsManager: ObjectsManager? = null
     private var menu: ArrayList<String> = ArrayList()
@@ -54,6 +52,7 @@ open class ConfigureFragment : AvPhoneFragment() {
     override fun onStart() {
         super.onStart()
         objectsManager = ObjectsManager.getInstance()
+        errorMessageView = configure_error_message
 
 
         menu = ArrayList()
@@ -195,7 +194,6 @@ open class ConfigureFragment : AvPhoneFragment() {
         deleteTask.execute()
 
         deleteTask.addProgressListener({ result ->
-            Log.d(TAG, "onSynced: ICI")
             if (delete) {
                 objectsManager!!.removeSavedObject()
             }

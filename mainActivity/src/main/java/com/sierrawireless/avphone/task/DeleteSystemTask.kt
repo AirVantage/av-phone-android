@@ -91,7 +91,7 @@ protected val context: Context) : AvPhoneTask<Void, DeleteSystemProgress, Delete
 
         if (result.isError) {
             val error = result.error!!
-            displayTaskError(error, displayer, context, userClient)
+            displayTaskError(error, displayer, context, userClient, "")
 
         } else {
             displayer.showSuccess(R.string.sync_success)

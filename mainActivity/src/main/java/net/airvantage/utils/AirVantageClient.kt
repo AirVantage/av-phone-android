@@ -1,36 +1,19 @@
 package net.airvantage.utils
 
 import android.util.Log
-
 import com.google.gson.Gson
 import com.squareup.okhttp.OkHttpClient
-
-import net.airvantage.model.AirVantageException
-import net.airvantage.model.ApplicationData
-import net.airvantage.model.ApplicationsList
-import net.airvantage.model.AvError
-import net.airvantage.model.AvSystem
-import net.airvantage.model.Protocol
-import net.airvantage.model.SystemsList
-import net.airvantage.model.User
-import net.airvantage.model.UserRights
+import net.airvantage.model.*
 import net.airvantage.model.alert.v1.AlertRule
 import net.airvantage.utils.alert.AlertAdapterFactory
-import net.airvantage.utils.alert.IAlertAdapterFactoryListener
 import net.airvantage.utils.alert.DefaultAlertAdapter
-
-import org.json.JSONArray
+import net.airvantage.utils.alert.IAlertAdapterFactoryListener
 import org.json.JSONException
 import org.json.JSONObject
-
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.io.OutputStream
+import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.Arrays
+import java.util.*
 
 class AirVantageClient(private val server: String, private val access_token: String) : IAirVantageClient, IAlertAdapterFactoryListener {
 
@@ -220,11 +203,11 @@ class AirVantageClient(private val server: String, private val access_token: Str
     }
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun getApplications(type: String): List<net.airvantage.model.Application>? {
-        val url = URL(buildEndpoint("/applications") + "&type=" + type + "&fields=uid,name,revision,type,category")
+    override fun getApplications(appType: String): List<net.airvantage.model.Application>? {
+        val url = URL(buildEndpoint("/applications") + "&type=" + appType + "&fields=uid,name,revision,type,category")
         val inputStream = this[url]
-        inputStream.use { inputStream ->
-            return gson.fromJson(InputStreamReader(inputStream!!), ApplicationsList::class.java).items
+        inputStream.use { inStream ->
+            return gson.fromJson(InputStreamReader(inStream!!), ApplicationsList::class.java).items
         }
     }
 
@@ -282,11 +265,11 @@ class AirVantageClient(private val server: String, private val access_token: Str
 
 
     companion object {
-        private val TAG = "AirVantageClient"
+        private const val TAG = "AirVantageClient"
 
-        private val SCHEME = "https://"
+        private const val SCHEME = "https://"
 
-        private val API_PREFIX = "/api/v1"
+        private const val API_PREFIX = "/api/v1"
 
         fun buildImplicitFlowURL(server: String, clientId: String): String {
             return (SCHEME + server + "/api/oauth/authorize?client_id=" + clientId

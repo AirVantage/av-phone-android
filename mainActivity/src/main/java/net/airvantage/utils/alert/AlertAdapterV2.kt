@@ -24,10 +24,10 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
     private var alertRuleUrl: URL? = null
 
     override val prefix: String
-        get() = "/api/v2"
+        get() = "/api/v2/"
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun getAlertRuleByName(name: String, spplication: String): net.airvantage.model.alert.v1.AlertRule? {
+    override fun getAlertRuleByName(name: String, application: String): net.airvantage.model.alert.v1.AlertRule? {
         try {
             val `in` = get(alertRuleUrl())
             val rules = gson.fromJson(InputStreamReader(`in`), AlertRuleList::class.java)
@@ -145,8 +145,8 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
             val values = ArrayList<Serializable>()
             for (operand in condition.operands!!) {
                 if (operand.attributeId == null) {
-                    values.add(operand.valueStr!!)
-                    values.add(operand.valueNum!!)
+                    if (operand.valueStr != null) values.add(operand.valueStr!!)
+                    if (operand.valueNum != null) values.add(operand.valueNum!!)
                 }
             }//values.add(Utils.first(operand.valuesStr));
 
