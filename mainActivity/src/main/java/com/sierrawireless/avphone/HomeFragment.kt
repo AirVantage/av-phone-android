@@ -153,7 +153,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
 
 
         val displayer = this
-        val getUserTask = taskFactory!!.getUserTak(avPhonePrefs.serverHost, auth.accessToken)
+        val getUserTask = taskFactory!!.getUserTak(avPhonePrefs.serverHost, auth.accessToken!!)
 
         getUserTask.addProgressListener { result ->
             if (result.isError) {
@@ -190,7 +190,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         }
 
         val displayer = this
-        val syncAvTask = taskFactory!!.syncAvTask(avPhonePrefs.serverHost, auth!!.accessToken)
+        val syncAvTask = taskFactory!!.syncAvTask(avPhonePrefs.serverHost, auth!!.accessToken!!)
 
         syncAvTask.addProgressListener { result ->
             if (result.isError) {
@@ -201,7 +201,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
                 authManager!!.onAuthentication(auth)
                 showLoggedInState()
                 user = result.user
-                syncListener!!.onSynced(result)
+                syncListener!!.invoke(result)
             }
         }
 
@@ -245,7 +245,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
 
         val accessToken = authManager!!.authentication!!.accessToken
 
-        val logoutTask = taskFactory!!.logoutTask(avPhonePrefs.serverHost, accessToken)
+        val logoutTask = taskFactory!!.logoutTask(avPhonePrefs.serverHost, accessToken!!)
 
         logoutTask.execute()
 

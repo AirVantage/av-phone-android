@@ -29,7 +29,7 @@ class ObjectConfigureActivity : Activity() {
     internal var objectsManager: ObjectsManager = ObjectsManager.getInstance()
     private var menu: ArrayList<String> = ArrayList()
     private var position: Int = 0
-    internal var `object`: AvPhoneObject? = null
+    internal var obj: AvPhoneObject? = null
     internal lateinit var title: TextView
     internal lateinit var name: TextView
     private lateinit  var nameEdit: EditText
@@ -73,15 +73,15 @@ class ObjectConfigureActivity : Activity() {
         position = intent.getIntExtra(ConfigureFragment.INDEX, -1)
 
         if (position == -1) {
-            val obj = AvPhoneObject()
+            obj = AvPhoneObject()
             title.setText(R.string.add_new_object)
-            objectsManager.objects.add(obj)
+            objectsManager.objects.add(obj!!)
             position = objectsManager.objects.size - 1
         } else {
-            `object` = objectsManager.getObjectByIndex(position)
+            obj = objectsManager.getObjectByIndex(position)
             name.visibility = View.GONE
             nameEdit.visibility = View.GONE
-            title.text = `object`!!.name
+            title.text = obj!!.name
         }
         menuGeneration()
 
@@ -95,7 +95,7 @@ class ObjectConfigureActivity : Activity() {
 
         save.setOnClickListener {
             if (nameEdit.visibility != View.GONE) {
-                `object`!!.name = nameEdit.text.toString()
+                obj!!.name = nameEdit.text.toString()
             }
             objectsManager.save()
             val i = Intent()
@@ -109,7 +109,7 @@ class ObjectConfigureActivity : Activity() {
             when (index) {
                 0 -> {
                     //delete
-                    `object`!!.datas.removeAt(position)
+                    obj!!.datas.removeAt(position)
                     menuGeneration()
                 }
             }
@@ -136,7 +136,7 @@ class ObjectConfigureActivity : Activity() {
 
     private fun menuGeneration() {
         menu = ArrayList()
-        for (data in `object`!!.datas) {
+        for (data in obj!!.datas) {
             menu.add(data.name)
         }
         menu.add(getString(R.string.add_new_data))

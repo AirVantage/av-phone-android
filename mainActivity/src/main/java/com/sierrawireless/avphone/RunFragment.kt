@@ -221,7 +221,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         val prefs = PreferenceUtils.getAvPhonePrefs(activity)
         val display = this
 
-        val syncAvTask = taskFactory!!.syncAvTask(prefs.serverHost, token)
+        val syncAvTask = taskFactory!!.syncAvTask(prefs.serverHost, token!!)
 
 
         val params = SyncWithAvParams()
@@ -240,7 +240,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             syncAvTask.showResult(result, display, activity)
 
             if (!result.isError) {
-                syncListener!!.onSynced(result)
+                syncListener!!.invoke(result)
             }
         }
 

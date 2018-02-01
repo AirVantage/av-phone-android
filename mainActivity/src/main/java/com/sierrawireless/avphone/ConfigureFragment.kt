@@ -233,7 +233,7 @@ open class ConfigureFragment : AvPhoneFragment() {
             MainActivity.instance.loadMenu()
 
             if (!result.isError) {
-                syncListener!!.onSynced(result)
+                syncListener!!.invoke(result)
             }
         }
 

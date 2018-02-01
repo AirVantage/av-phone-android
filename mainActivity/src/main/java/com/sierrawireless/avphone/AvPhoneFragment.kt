@@ -15,7 +15,7 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
 
     var authManager: AuthenticationManager? = null
 
-    protected var syncListener: SyncWithAvListener? = null
+    var syncListener: SyncWithAvListener? = null
 
     abstract var errorMessageView: TextView
 
@@ -27,9 +27,6 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
             authManager = context
         }
 
-        if (context is SyncWithAvListener) {
-            this.syncListener = context
-        }
     }
 
 

@@ -4,20 +4,17 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.util.Log
-
 import com.crashlytics.android.Crashlytics
 import com.sierrawireless.avphone.DeviceInfo
 import com.sierrawireless.avphone.MainActivity
 import com.sierrawireless.avphone.ObjectsManager
 import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.message.IMessageDisplayer
-
 import net.airvantage.model.AirVantageException
 import net.airvantage.model.AvError
-import net.airvantage.model.User
-
 import java.io.IOException
-import java.util.ArrayList
+import java.util.*
+
 typealias DeleteSystemListenerAlias = (DeleteSystemResult) -> Unit
 
 open class DeleteSystemTask internal constructor(private val systemClient: ISystemClient, private val userClient: IUserClient, @field:SuppressLint("StaticFieldLeak")
@@ -53,7 +50,7 @@ protected val context: Context) : AvPhoneTask<Void, DeleteSystemProgress, Delete
             systemType = objectsManager.savedObjectName!!
 
             // For emulator and iOs compatibility sake, using generated serial.
-            val serialNumber = DeviceInfo.generateSerial(user.uid)
+            val serialNumber = DeviceInfo.generateSerial(user!!.uid)
 
             // Save Device serial in context
             if (context is MainActivity) {
@@ -93,8 +90,8 @@ protected val context: Context) : AvPhoneTask<Void, DeleteSystemProgress, Delete
     fun showResult(result: DeleteSystemResult, displayer: IMessageDisplayer, context: Activity) {
 
         if (result.isError) {
-            val error = result.error
-            displayTaskError(error, displayer, context, userClient)
+            val error = result.error!!
+            displayTaskError(error!!, displayer, context, userClient)
 
         } else {
             displayer.showSuccess(R.string.sync_success)

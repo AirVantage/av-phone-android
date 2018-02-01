@@ -159,7 +159,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this)
 
 
-        val getUserTask = taskFactory!!.getUserTak(avPhonePrefs.serverHost, auth!!.accessToken)
+        val getUserTask = taskFactory!!.getUserTak(avPhonePrefs.serverHost, auth!!.accessToken!!)
 
         getUserTask.addProgressListener { result ->
             if (!result.isError) {
@@ -549,17 +549,17 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     }
 
     @SuppressLint("DefaultLocale")
-    override fun onSynced(result: SyncWithAvResult) {
+    override fun invoke(result: SyncWithAvResult) {
 
         val system = result.system ?: return
         prefs!!.edit().putString("systemUid", system.uid).apply()
         prefs!!.edit().putString(PREFERENCE_SYSTEM_NAME, system.name).apply()
 
         val user = result.user
-        prefs!!.edit().putString(PREFERENCE_USER_UID, user.uid).apply()
-        prefs!!.edit().putString(PREFERENCE_USER_NAME, user.name).apply()
+        prefs!!.edit().putString(PREFERENCE_USER_UID, user!!.uid).apply()
+        prefs!!.edit().putString(PREFERENCE_USER_NAME, user!!.name).apply()
 
-        val deviceSerial = DeviceInfo.generateSerial(user.uid)
+        val deviceSerial = DeviceInfo.generateSerial(user!!.uid)
         prefs!!.edit().putString(PREFERENCE_SYSTEM_SERIAL, deviceSerial).apply()
 
         if (runFragment != null) {
@@ -635,6 +635,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         if (configureFragment == null) {
             configureFragment = ConfigureFragment()
             configureFragment!!.setTaskFactory(taskFactory!!)
+            configureFragment!!.syncListener = this;
         }
 
         if (homeFragment == null) {

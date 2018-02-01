@@ -100,7 +100,7 @@ class DataViewUpdater(private val view: View, private val activity: MainActivity
         if (data.operator == null) {
             temp[Tools.VALUE] = ""
         } else {
-            temp[Tools.VALUE] = data.operator
+            temp[Tools.VALUE] = data.operator!!
         }
         listPhone.add(temp)
 
@@ -109,7 +109,7 @@ class DataViewUpdater(private val view: View, private val activity: MainActivity
         if (data.bytesSent == null) {
             temp[Tools.VALUE] = "0 Mo"
         } else {
-            temp[Tools.VALUE] = (data.bytesSent / (1024f * 1024f)).toString() + " Mo"
+            temp[Tools.VALUE] = (data.bytesSent!! / (1024f * 1024f)).toString() + " Mo"
         }
         listPhone.add(temp)
 
@@ -118,7 +118,7 @@ class DataViewUpdater(private val view: View, private val activity: MainActivity
         if (data.bytesReceived == null) {
             temp[Tools.VALUE] = "0 Mo"
         } else {
-            temp[Tools.VALUE] = (data.bytesReceived / (1024f * 1024f)).toString() + " Mo"
+            temp[Tools.VALUE] = (data.bytesReceived!! / (1024f * 1024f)).toString() + " Mo"
         }
         listPhone.add(temp)
 
@@ -127,7 +127,7 @@ class DataViewUpdater(private val view: View, private val activity: MainActivity
         if (data.networkType == null) {
             temp[Tools.VALUE] = ""
         } else {
-            temp[Tools.VALUE] = data.networkType
+            temp[Tools.VALUE] = data.networkType!!
         }
         listPhone.add(temp)
 
