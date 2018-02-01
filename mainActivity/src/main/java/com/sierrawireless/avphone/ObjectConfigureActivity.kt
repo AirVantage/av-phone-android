@@ -57,7 +57,7 @@ class ObjectConfigureActivity : Activity() {
                     deleteItem.background = ColorDrawable(Color.rgb(0xF9,
                             0x3F, 0x25))
                     // set item width
-                    deleteItem.width = Tools.dp2px(context).toInt()
+                    deleteItem.width = Tools.dp2px(context!!).toInt()
                     // set a icon
                     deleteItem.setIcon(android.R.drawable.ic_menu_delete)
                     // add to menu

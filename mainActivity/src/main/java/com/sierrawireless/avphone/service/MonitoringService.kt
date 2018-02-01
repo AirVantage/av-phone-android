@@ -215,7 +215,7 @@ class MonitoringService : Service() {
                 //
                 // Ensure intent is valid
                 //
-                val deviceId = Tools.buildSerialNumber(intent.getStringExtra(DEVICE_ID), `object`!!.name)
+                val deviceId = Tools.buildSerialNumber(intent.getStringExtra(DEVICE_ID), `object`!!.name!!)
                 val password = intent.getStringExtra(PASSWORD)
                 val serverHost = intent.getStringExtra(SERVER_HOST)
 
