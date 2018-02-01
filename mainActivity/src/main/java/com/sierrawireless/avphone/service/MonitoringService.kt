@@ -23,10 +23,7 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.content.LocalBroadcastManager
-import android.telephony.CellInfo
-import android.telephony.CellInfoGsm
-import android.telephony.CellInfoLte
-import android.telephony.TelephonyManager
+import android.telephony.*
 import android.util.Log
 import android.widget.Toast
 
@@ -76,6 +73,10 @@ class MonitoringService : Service() {
     private var networkLocationListener: LocationListener? = null
     private var gpsLocationListener: LocationListener? = null
     private var objectsManager: ObjectsManager? = null
+
+    private var phoneStateListener: PhoneStateListener? = null
+
+    private var dbm: Int? = null
 
 
     private val lastKnownLocation: Location?
@@ -166,6 +167,27 @@ class MonitoringService : Service() {
         activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
+        phoneStateListener = object : PhoneStateListener() {
+            override fun onSignalStrengthsChanged(signalStrength: SignalStrength?) {
+                super.onSignalStrengthsChanged(signalStrength)
+                if (signalStrength == null)
+                    return
+                if (telephonyManager!!.networkType == TelephonyManager.NETWORK_TYPE_LTE) {
+                    val parts = signalStrength.toString().split(" ")
+                    dbm = parts[8].toInt() - 240
+                    Log.d(TAG, "Dbm is " + dbm)
+                }else{
+                    if (signalStrength!!.gsmSignalStrength != 99) {
+                        dbm = -113 + 2 * signalStrength!!.gsmSignalStrength
+                    }
+                }
+
+            }
+
+        }
+
+        telephonyManager!!.listen(phoneStateListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS)
+
 
         startedSince = System.currentTimeMillis()
 
@@ -237,16 +259,21 @@ class MonitoringService : Service() {
                 // retrieve data
                 val data = NewData()
 
-                @SuppressLint("MissingPermission") val cellInfos = telephonyManager!!.allCellInfo
-                if (cellInfos != null && !cellInfos.isEmpty()) {
-                    val cellInfo = cellInfos[0]
-                    if (cellInfo is CellInfoGsm) {
-                        data.rssi = cellInfo.cellSignalStrength.dbm
-                        // } else if (cellInfo instanceof CellInfoWcdma) {
-                        // RSSI ?
-                        // data.setRssi(((CellInfoWcdma) cellInfo).getCellSignalStrength().getDbm());
-                    } else if (cellInfo is CellInfoLte) {
-                        data.rsrp = cellInfo.cellSignalStrength.dbm
+                if (dbm != null) {
+                    data.rssi = dbm!!
+                }else {
+
+                    @SuppressLint("MissingPermission") val cellInfos = telephonyManager!!.allCellInfo
+                    if (cellInfos != null && !cellInfos.isEmpty()) {
+                        val cellInfo = cellInfos[0]
+                        if (cellInfo is CellInfoGsm) {
+                            data.rssi = cellInfo.cellSignalStrength.dbm
+                            // } else if (cellInfo instanceof CellInfoWcdma) {
+                            // RSSI ?
+                            // data.setRssi(((CellInfoWcdma) cellInfo).getCellSignalStrength().getDbm());
+                        } else if (cellInfo is CellInfoLte) {
+                            data.rsrp = cellInfo.cellSignalStrength.dbm
+                        }
                     }
                 }
 
@@ -267,22 +294,6 @@ class MonitoringService : Service() {
                     TelephonyManager.NETWORK_TYPE_LTE -> data.networkType = "LTE"
                 }// to be continued
 
-                data.setActiveWifi(connManager!!.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected)
-                data.runningApps = activityManager!!.runningAppProcesses.size
-                data.androidVersion = Build.VERSION.RELEASE
-
-                val mi = MemoryInfo()
-                activityManager!!.getMemoryInfo(mi)
-                data.memoryUsage = ((mi.totalMem - mi.availMem) / mi.totalMem.toDouble()).toFloat()
-
-                // battery level
-                val iFilter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
-                val batteryStatus = this.registerReceiver(null, iFilter)
-                if (batteryStatus != null) {
-                    val level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-                    val scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-                    data.batteryLevel = level / scale.toFloat()
-                }
 
                 // location
                 if (location != null && location.time != lastLocation) {
