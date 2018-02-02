@@ -30,6 +30,8 @@ import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import java.nio.charset.Charset
 import java.util.*
+import kotlin.concurrent.fixedRateTimer
+import kotlin.concurrent.schedule
 
 class MonitoringService : Service() {
 
@@ -61,6 +63,8 @@ class MonitoringService : Service() {
     private var phoneStateListener: PhoneStateListener? = null
 
     private var dbm: Int? = null
+
+    var timer:Timer? = null
 
 
     private val lastKnownLocation: Location?
@@ -168,12 +172,28 @@ class MonitoringService : Service() {
 
         }
 
+
         telephonyManager!!.listen(phoneStateListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS)
 
 
         startedSince = System.currentTimeMillis()
+        start()
 
     }
+
+    fun start() {
+        Log.d(TAG, "start")
+        //protect multiple start
+        if (timer == null) {
+            //periodic timer of 5 s do avoid
+            timer = fixedRateTimer("UItimer", false, 0, 2000L) {
+                setCustomDataForUi()
+            }
+        }
+        setUpLocationListeners()
+    }
+
+
 
     fun startSendData() {
         val notif = R.string.notif_title
@@ -200,6 +220,73 @@ class MonitoringService : Service() {
 
         // Cancel the persistent notification.
         stopForeground(true)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun setCustomDataForUi():NewData {
+        Log.d(TAG, "SetCustomDataForUi")
+        val location = lastKnownLocation
+
+        // retrieve data
+        val data = NewData()
+
+        if (dbm != null) {
+            data.rssi = dbm!!
+        }else {
+
+            val cellInfos = telephonyManager!!.allCellInfo
+            if (cellInfos != null && !cellInfos.isEmpty()) {
+                val cellInfo = cellInfos[0]
+                if (cellInfo is CellInfoGsm) {
+                    data.rssi = cellInfo.cellSignalStrength.dbm
+                    // } else if (cellInfo instanceof CellInfoWcdma) {
+                    // RSSI ?
+                    // data.setRssi(((CellInfoWcdma) cellInfo).getCellSignalStrength().getDbm());
+                } else if (cellInfo is CellInfoLte) {
+                    data.rsrp = cellInfo.cellSignalStrength.dbm
+                }
+            }
+        }
+
+        if (telephonyManager!!.phoneType == TelephonyManager.PHONE_TYPE_GSM) {
+            @Suppress("DEPRECATION")
+            data.imei = telephonyManager!!.deviceId
+        }
+
+        data.operator = telephonyManager!!.networkOperatorName
+
+        when (telephonyManager!!.networkType) {
+            TelephonyManager.NETWORK_TYPE_GPRS -> data.networkType = "GPRS"
+            TelephonyManager.NETWORK_TYPE_EDGE -> data.networkType = "EDGE"
+            TelephonyManager.NETWORK_TYPE_UMTS -> data.networkType = "UMTS"
+            TelephonyManager.NETWORK_TYPE_HSDPA -> data.networkType = "HSDPA"
+            TelephonyManager.NETWORK_TYPE_HSPAP -> data.networkType = "HSPA+"
+            TelephonyManager.NETWORK_TYPE_HSPA -> data.networkType = "HSPA"
+            TelephonyManager.NETWORK_TYPE_HSUPA -> data.networkType = "HSUPA"
+            TelephonyManager.NETWORK_TYPE_LTE -> data.networkType = "LTE"
+        }// to be continued
+
+
+        // location
+        if (location != null) {
+            data.latitude = location.latitude
+            data.longitude = location.longitude
+            lastLocation = location.time
+        }
+
+        // bytes sent/received
+        data.bytesReceived = TrafficStats.getMobileRxBytes()
+        data.bytesSent = TrafficStats.getMobileTxBytes()
+
+        //execute action on current object datas
+        //objectsManager!!.execOnCurrent()
+        // Custom data
+        data.setCustom()
+
+
+        // dispatch new data event to update the activity UI
+        LocalBroadcastManager.getInstance(this).sendBroadcast(data)
+        return data
     }
 
     @SuppressLint("HardwareIds", "MissingPermission")
@@ -237,74 +324,15 @@ class MonitoringService : Service() {
 
 
             if (mustConnect) {
-                val location = lastKnownLocation
 
-                // retrieve data
-                val data = NewData()
+                val data = setCustomDataForUi()
 
-                if (dbm != null) {
-                    data.rssi = dbm!!
-                }else {
-
-                    @SuppressLint("MissingPermission") val cellInfos = telephonyManager!!.allCellInfo
-                    if (cellInfos != null && !cellInfos.isEmpty()) {
-                        val cellInfo = cellInfos[0]
-                        if (cellInfo is CellInfoGsm) {
-                            data.rssi = cellInfo.cellSignalStrength.dbm
-                            // } else if (cellInfo instanceof CellInfoWcdma) {
-                            // RSSI ?
-                            // data.setRssi(((CellInfoWcdma) cellInfo).getCellSignalStrength().getDbm());
-                        } else if (cellInfo is CellInfoLte) {
-                            data.rsrp = cellInfo.cellSignalStrength.dbm
-                        }
-                    }
-                }
-
-                if (telephonyManager!!.phoneType == TelephonyManager.PHONE_TYPE_GSM) {
-                    @Suppress("DEPRECATION")
-                    data.imei = telephonyManager!!.deviceId
-                }
-
-                data.operator = telephonyManager!!.networkOperatorName
-
-                when (telephonyManager!!.networkType) {
-                    TelephonyManager.NETWORK_TYPE_GPRS -> data.networkType = "GPRS"
-                    TelephonyManager.NETWORK_TYPE_EDGE -> data.networkType = "EDGE"
-                    TelephonyManager.NETWORK_TYPE_UMTS -> data.networkType = "UMTS"
-                    TelephonyManager.NETWORK_TYPE_HSDPA -> data.networkType = "HSDPA"
-                    TelephonyManager.NETWORK_TYPE_HSPAP -> data.networkType = "HSPA+"
-                    TelephonyManager.NETWORK_TYPE_HSPA -> data.networkType = "HSPA"
-                    TelephonyManager.NETWORK_TYPE_HSUPA -> data.networkType = "HSUPA"
-                    TelephonyManager.NETWORK_TYPE_LTE -> data.networkType = "LTE"
-                }// to be continued
-
-
-                // location
-                if (location != null && location.time != lastLocation) {
-                    data.latitude = location.latitude
-                    data.longitude = location.longitude
-                    lastLocation = location.time
-                }
-
-                // bytes sent/received
-                data.bytesReceived = TrafficStats.getMobileRxBytes()
-                data.bytesSent = TrafficStats.getMobileTxBytes()
-
-                //execute action on current object datas
-                //objectsManager!!.execOnCurrent()
-                // Custom data
-                data.setCustom()
-
-
-                //customDataSource.next(new Date());
 
                 // save new data values
                 if (data.extras != null) {
                     lastData.putExtras(data.extras!!)
                 }
 
-                // dispatch new data event to update the activity UI
-                LocalBroadcastManager.getInstance(this).sendBroadcast(data)
 
                 val sendDataTask = SendDataTask()
                 val params = SendDataParams()
@@ -318,7 +346,7 @@ class MonitoringService : Service() {
 
                 sendDataTask.addProgressListener { result -> lastLog = result.lastLog }
 
-                setUpLocationListeners()
+               // setUpLocationListeners()
             }
 
         } catch (e: Exception) {
@@ -349,6 +377,13 @@ class MonitoringService : Service() {
         stopForeground(true)
 
         stopLocationListeners()
+        timer?.cancel()
+    }
+
+    fun cancel(){
+        timer?.cancel()
+        stopLocationListeners()
+        timer = null
     }
 
     @SuppressLint("MissingPermission")

@@ -15,4 +15,6 @@ interface MonitorServiceManager {
     fun sendAlarmEvent()
     fun setMonitoringServiceListener(listener: MonitorServiceListener)
     fun isServiceRunning(): Boolean
+    fun cancel()
+    fun start()
 }

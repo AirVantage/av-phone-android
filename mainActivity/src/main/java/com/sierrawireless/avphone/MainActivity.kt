@@ -445,6 +445,13 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         }
     }
 
+    override fun cancel() {
+        monitoringService?.cancel()
+    }
+    override fun start() {
+        monitoringService?.start()
+    }
+
     override fun sendAlarmEvent() {
         //if (boundToMonitoringService && monitoringService != null) {
         monitoringService!!.sendAlarmEvent()
@@ -508,6 +515,8 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
         disconnectFromService()
     }
+
+
 
     private fun restartMonitoringService() {
         stopMonitoringService()
