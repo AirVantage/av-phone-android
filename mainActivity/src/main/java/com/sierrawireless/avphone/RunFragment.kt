@@ -25,6 +25,7 @@ import com.sierrawireless.avphone.task.SyncWithAvParams
 import com.sierrawireless.avphone.tools.Tools
 import kotlinx.android.synthetic.main.fragment_run.*
 import net.airvantage.utils.PreferenceUtils
+import java.lang.Exception
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -426,7 +427,17 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
         }
         objectsManager.saveOnPref()
-        MainActivity.instance.runOnUiThread { setCustomDataLabels() }
+        MainActivity.instance.runOnUiThread {
+            try {
+                setCustomDataLabels()
+            }catch(e:Exception) {
+                // catch to avoid crash when the user choices another view
+                // and this thread is working access to object can be null
+                // but not critical for the application
+                
+                Log.d(TAG,"Catch non displayed exception")
+            }
+        }
         // MainActivity.instance.setCustomDataLabels(run)
         startTimer()
 
