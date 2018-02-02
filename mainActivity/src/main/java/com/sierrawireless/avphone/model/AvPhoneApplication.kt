@@ -61,7 +61,7 @@ object AvPhoneApplication {
 
         var pos = 1
         for (data in customData) {
-            val type: String = if (data.isInteger!!) {
+            val type: String = if (data.isInteger) {
                 "int"
             } else {
                 "string"

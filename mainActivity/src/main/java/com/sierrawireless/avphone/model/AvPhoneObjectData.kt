@@ -8,7 +8,7 @@ class AvPhoneObjectData(var name: String, var unit: String, var defaults: String
     var current: Int? = null
 
 
-    val isInteger: Boolean?
+    val isInteger: Boolean
         get() = !defaults.isEmpty() && TextUtils.isDigitsOnly(defaults)
 
     enum class Mode {
@@ -18,7 +18,7 @@ class AvPhoneObjectData(var name: String, var unit: String, var defaults: String
     }
 
     init {
-        if (isInteger!!) {
+        if (isInteger) {
             this.mode = mode
             current = Integer.parseInt(defaults)
         } else {

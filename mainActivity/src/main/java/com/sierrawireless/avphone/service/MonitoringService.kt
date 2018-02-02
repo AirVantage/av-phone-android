@@ -158,7 +158,6 @@ class MonitoringService : Service() {
                 if (telephonyManager!!.networkType == TelephonyManager.NETWORK_TYPE_LTE) {
                     val parts = signalStrength.toString().split(" ")
                     dbm = parts[8].toInt() - 240
-                    Log.d(TAG, "Dbm is " + dbm)
                 }else{
                     if (signalStrength.gsmSignalStrength != 99) {
                         dbm = -113 + 2 * signalStrength.gsmSignalStrength
@@ -292,7 +291,7 @@ class MonitoringService : Service() {
                 data.bytesSent = TrafficStats.getMobileTxBytes()
 
                 //execute action on current object datas
-                objectsManager!!.execOnCurrent()
+                //objectsManager!!.execOnCurrent()
                 // Custom data
                 data.setCustom()
 

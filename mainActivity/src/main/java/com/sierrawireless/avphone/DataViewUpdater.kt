@@ -167,7 +167,7 @@ class DataViewUpdater(private val view: View, private val activity: MainActivity
         for (ldata in `object`!!.datas) {
             temp = HashMap()
             temp[Tools.NAME] = ldata.name
-            if (ldata.isInteger!!) {
+            if (ldata.isInteger) {
                 temp[Tools.VALUE] = ldata.current.toString()
             } else {
                 temp[Tools.VALUE] = ldata.defaults

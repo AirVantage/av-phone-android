@@ -9,12 +9,14 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.text.Html
 import android.text.method.LinkMovementMethod
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.sierrawireless.avphone.adapter.RunListViewAdapter
 import com.sierrawireless.avphone.auth.AuthUtils
+import com.sierrawireless.avphone.model.AvPhoneObjectData
 import com.sierrawireless.avphone.service.LogMessage
 import com.sierrawireless.avphone.service.MonitoringService
 import com.sierrawireless.avphone.service.NewData
@@ -24,6 +26,7 @@ import com.sierrawireless.avphone.tools.Tools
 import kotlinx.android.synthetic.main.fragment_run.*
 import net.airvantage.utils.PreferenceUtils
 import java.util.*
+import kotlin.concurrent.schedule
 
 open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabelsListener {
 
@@ -39,6 +42,9 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     private var taskFactory: IAsyncTaskFactory? = null
     private var objectName: String? = null
     private var objectsManager: ObjectsManager = ObjectsManager.getInstance()
+
+
+    private var timer:TimerTask? = null
 
     // Alarm button
     private var onAlarmClick: View.OnClickListener = View.OnClickListener {
@@ -227,6 +233,9 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             // View is unavailable, bear it in mind for later
             this.systemUid = systemUid
             this.systemName = systemName
+
+
+
             return
         }
 
@@ -264,7 +273,13 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         val systemName = (activity as MainActivity).systemName
 
         this.setLinkToSystem(systemUid, systemName)
+        startTimer()
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopTimer()
     }
 
     private fun startMonitoringService() {
@@ -340,7 +355,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         for (data in `object`!!.datas) {
             temp = HashMap()
             temp[Tools.NAME] = data.name
-            if (data.isInteger!!) {
+            if (data.isInteger) {
                 temp[Tools.VALUE] = data.current!!.toString()
             } else {
                 temp[Tools.VALUE] = data.defaults
@@ -377,4 +392,49 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         }
     }
 
+
+    // Manage object data for action
+
+
+    private fun startTimer() {
+
+        Log.d(TAG, "custom data timer started for " + objectName)
+
+        timer = Timer().schedule(Tools.rand(1000, 5000)) {
+            execMode()
+        }
+    }
+
+    private fun stopTimer() {
+        Log.d(TAG, "custom data timer stopped for " + objectName)
+        if (timer != null) {
+            timer!!.cancel()
+        }
+    }
+
+    private fun execMode() {
+        val obj =  objectsManager.getObjectByName(objectName!!)!!
+
+        for (data in obj.datas) {
+
+            @Suppress("UNUSED_EXPRESSION")
+            when (data.mode){
+                AvPhoneObjectData.Mode.UP -> if (Tools.rand(0, 2000) > 500) data.execMode()
+                AvPhoneObjectData.Mode.DOWN -> if (Tools.rand(0, 2000) > 1500) data.execMode()
+                else -> ""
+            }
+
+        }
+        objectsManager.saveOnPref()
+        MainActivity.instance.runOnUiThread { setCustomDataLabels() }
+        // MainActivity.instance.setCustomDataLabels(run)
+        startTimer()
+
+    }
+    companion object {
+        const val TAG = "RunFragment"
+    }
+
+
 }
+

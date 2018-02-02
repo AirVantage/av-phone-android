@@ -99,7 +99,7 @@ class NewData internal constructor() : Intent(NEW_DATA) {
         val `object` = objectsManager.currentObject
         var pos: Int? = 1
         for (data in `object`!!.datas) {
-            if (data.isInteger!!) {
+            if (data.isInteger) {
                 this.putExtra(`object`.name + "." + CUSTOM + pos!!.toString(), Integer.parseInt(data.execMode()))
             } else {
                 this.putExtra(`object`.name + "." + CUSTOM + pos!!.toString(), data.defaults)

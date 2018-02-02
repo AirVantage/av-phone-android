@@ -83,6 +83,9 @@ class ObjectConfigureActivity : Activity() {
             if (objectNameEdit.visibility != View.GONE) {
                 obj!!.name = objectNameEdit.text.toString()
             }
+            obj!!.datas
+                    .filter { it.isInteger }
+                    .forEach { it.current = it.defaults.toInt() }
             objectsManager.save()
             val i = Intent()
             i.putExtra(ConfigureFragment.POS, position)

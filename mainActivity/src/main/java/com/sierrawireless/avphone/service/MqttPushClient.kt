@@ -120,7 +120,7 @@ internal constructor(clientId: String, password: String, serverHost: String, cal
             val `object` = objectsManager.currentObject
             var pos: Int? = 1
             for (ldata in `object`!!.datas) {
-                if (ldata.isInteger!!) {
+                if (ldata.isInteger) {
                     values[`object`.name + "." + AvPhoneData.CUSTOM + pos!!.toString()] = listOf(DataValue(timestamp, ldata.current!!))
                 } else {
                     values[`object`.name + "." + AvPhoneData.CUSTOM + pos!!.toString()] = listOf(DataValue(timestamp, ldata.defaults))

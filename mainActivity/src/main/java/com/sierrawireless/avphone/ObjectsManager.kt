@@ -71,7 +71,7 @@ class ObjectsManager private constructor() {
         saveOnPref()
     }
 
-    private fun saveOnPref() {
+    fun saveOnPref() {
         val pref = MyPreference(mainActivyty!!.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE))
         // Save the list for later
         pref.putListObject(MODELS, objects)
@@ -88,12 +88,6 @@ class ObjectsManager private constructor() {
 
     }
 
-    fun execOnCurrent() {
-        val obj = objects[current]
-        obj.exec()
-        // Save the list for later
-        saveOnPref()
-    }
 
      fun changeCurrent(name: String) {
         Log.d(TAG, "changeCurrent: change axctive to $name current before $current")
