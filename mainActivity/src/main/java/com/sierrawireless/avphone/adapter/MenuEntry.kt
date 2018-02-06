@@ -1,5 +1,6 @@
 package com.sierrawireless.avphone.adapter
 
+import android.graphics.drawable.Drawable
 
 internal enum class MenuEntryType {
     TITLE,
@@ -7,4 +8,4 @@ internal enum class MenuEntryType {
     COMMAND
 }
 
-class MenuEntry internal constructor(var name: String, var type: MenuEntryType)
+class MenuEntry internal constructor(var name: String, var type: MenuEntryType, var drawable:Drawable? = null)

@@ -42,11 +42,16 @@ class MenuAdapter internal constructor(private val activity: Activity, var list:
             name.setTypeface(name.typeface, Typeface.BOLD)
             name.setBackgroundColor(ContextCompat.getColor(lConvertView.context, R.color.navy))
             name.setTextColor(Color.WHITE)
+          //  name.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(lConvertView.context, android.R.drawable.ic_lock_silent_mode), null, null, null)
+
         } else {
             name = lConvertView!!.findViewById(android.R.id.text1)
             name.text = entry.name
             name.setBackgroundColor(Color.WHITE)
             name.setTextColor(ContextCompat.getColor(lConvertView.context, R.color.navy))
+        }
+        if (entry.drawable != null) {
+            name.setCompoundDrawablesWithIntrinsicBounds(entry.drawable, null, null, null)
         }
 
         return lConvertView
