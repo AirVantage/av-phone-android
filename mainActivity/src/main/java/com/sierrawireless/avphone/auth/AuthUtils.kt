@@ -2,7 +2,7 @@ package com.sierrawireless.avphone.auth
 
 import java.util.Date
 
-import com.sierrawireless.avphone.AuthorizationActivity
+import com.sierrawireless.avphone.activity.AuthorizationActivity
 
 import android.app.Activity
 import android.content.Intent

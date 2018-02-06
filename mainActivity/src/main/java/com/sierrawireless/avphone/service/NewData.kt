@@ -96,20 +96,19 @@ class NewData internal constructor() : Intent(NEW_DATA) {
 
     internal fun setCustom() {
         val objectsManager = ObjectsManager.getInstance()
-        val `object` = objectsManager.currentObject
+        val obj = objectsManager.currentObject
         var pos: Int? = 1
-        for (data in `object`!!.datas) {
+        for (data in obj!!.datas) {
             if (data.isInteger) {
-                this.putExtra(`object`.name + "." + CUSTOM + pos!!.toString(), Integer.parseInt(data.execMode()))
+                this.putExtra(obj.name + "." + CUSTOM + pos!!.toString(), Integer.parseInt(data.execMode()))
             } else {
-                this.putExtra(`object`.name + "." + CUSTOM + pos!!.toString(), data.defaults)
+                this.putExtra(obj.name + "." + CUSTOM + pos!!.toString(), data.defaults)
             }
             pos++
         }
     }
 
     companion object {
-
         const val NEW_DATA = "com.sierrawireless.avphone.newdata"
 
         // keys used for broadcasting new data events

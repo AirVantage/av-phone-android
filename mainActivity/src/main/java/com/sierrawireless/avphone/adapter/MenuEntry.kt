@@ -1,4 +1,4 @@
-package com.sierrawireless.avphone
+package com.sierrawireless.avphone.adapter
 
 
 internal enum class MenuEntryType {

@@ -12,7 +12,6 @@ import net.airvantage.model.UserRights
 
 abstract class AvPhoneTask<Params, Progress, Result> : AsyncTask<Params, Progress, Result>() {
 
-
      fun displayTaskError(error: AvError, displayer: IMessageDisplayer, context: Activity, userClient: IUserClient, deviceName: String) {
 
         if (error.missingRights()) {

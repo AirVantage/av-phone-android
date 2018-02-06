@@ -1,4 +1,4 @@
-package com.sierrawireless.avphone
+package com.sierrawireless.avphone.tools
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,6 +6,7 @@ import android.os.Build
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import android.text.TextUtils
+import com.sierrawireless.avphone.activity.MainActivity
 
 object DeviceInfo {
 

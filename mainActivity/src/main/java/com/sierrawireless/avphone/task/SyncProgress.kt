@@ -14,5 +14,4 @@ enum class SyncProgress(val stringId: Int, val value: Int) {
     UPDATING_APPLICATION(R.string.progress_updating_application, 6),
     ADDING_APPLICATION(R.string.progress_adding_application, 7),
     DONE(R.string.progress_done, 8)
-
 }

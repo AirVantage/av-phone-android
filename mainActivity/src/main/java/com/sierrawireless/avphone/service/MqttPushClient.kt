@@ -3,7 +3,7 @@ package com.sierrawireless.avphone.service
 import android.annotation.SuppressLint
 import android.util.Log
 import com.google.gson.Gson
-import com.sierrawireless.avphone.DeviceInfo
+import com.sierrawireless.avphone.tools.DeviceInfo
 import com.sierrawireless.avphone.ObjectsManager
 import com.sierrawireless.avphone.model.AvPhoneData
 import org.eclipse.paho.client.mqttv3.*
@@ -14,21 +14,18 @@ import java.util.*
 class MqttPushClient @SuppressLint("DefaultLocale")
 @Throws(MqttException::class)
 internal constructor(clientId: String, password: String, serverHost: String, callback: MqttCallback) {
-
+    private val TAG = this::class.java.name
     private val client: MqttClient
     private val opt: MqttConnectOptions
-
     private val gson = Gson()
-
     private val objectsManager: ObjectsManager
-
     val isConnected: Boolean
         get() = client.isConnected
 
     init {
 
         DeviceInfo.generateSerial("")
-        Log.d(TAG, "new client: $clientId - $password - $serverHost")
+        Log.i(TAG, "new client: $clientId - $password - $serverHost")
 
         this.client = MqttClient("tcp://$serverHost:1883", MqttClient.generateClientId(),
                 MemoryPersistence())
@@ -43,7 +40,6 @@ internal constructor(clientId: String, password: String, serverHost: String, cal
 
     @Throws(MqttException::class)
     fun connect() {
-        Log.d(TAG, "connecting")
         client.connect(opt)
     }
 
@@ -113,29 +109,24 @@ internal constructor(clientId: String, password: String, serverHost: String, cal
             values["_BYTES_SENT"] = listOf(DataValue(timestamp, data.bytesSent!!))
         }
 
-
         if (data.isAlarmActivated != null) {
             values[AvPhoneData.ALARM] = listOf(DataValue(timestamp, data.isAlarmActivated!!))
         } else {
-            val `object` = objectsManager.currentObject
+            val obj = objectsManager.currentObject
             var pos: Int? = 1
-            for (ldata in `object`!!.datas) {
+            for (ldata in obj!!.datas) {
                 if (ldata.isInteger) {
-                    values[`object`.name + "." + AvPhoneData.CUSTOM + pos!!.toString()] = listOf(DataValue(timestamp, ldata.current!!))
+                    values[obj.name + "." + AvPhoneData.CUSTOM + pos!!.toString()] = listOf(DataValue(timestamp, ldata.current!!))
                 } else {
-                    values[`object`.name + "." + AvPhoneData.CUSTOM + pos!!.toString()] = listOf(DataValue(timestamp, ldata.defaults))
+                    values[obj.name + "." + AvPhoneData.CUSTOM + pos!!.toString()] = listOf(DataValue(timestamp, ldata.defaults))
                 }
                 pos++
             }
         }
-
         return gson.toJson(listOf<Map<String, List<DataValue>>>(values))
     }
 
+    //timestamp is used when the massage is sent for each entry. don't remove it...
+    @Suppress("UNUSED")
     internal inner class DataValue(var timestamp: Long, var value: Any)
-
-    companion object {
-        private const val TAG = "MqttPushClient"
-    }
-
 }

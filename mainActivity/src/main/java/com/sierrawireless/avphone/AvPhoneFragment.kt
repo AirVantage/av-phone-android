@@ -6,10 +6,11 @@ import android.content.Intent
 import android.text.Spanned
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
+import com.sierrawireless.avphone.activity.AuthorizationActivity
 import com.sierrawireless.avphone.auth.AuthenticationManager
 import com.sierrawireless.avphone.message.IMessageDisplayer
 import com.sierrawireless.avphone.task.SyncWithAvListener
+import org.jetbrains.anko.toast
 
 abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
 
@@ -36,7 +37,7 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
 
     override fun showSuccess(id: Int, vararg params: Any) {
         this.hideErrorMessage()
-        this.toast(id)
+        this.lToast(id)
     }
 
     private fun showErrorMessage(id: Int, vararg params: Any) {
@@ -59,12 +60,8 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
         errorMessageView.visibility = View.GONE
     }
 
-    private fun toast(id: Int) {
+    private fun lToast(id: Int) {
         toast(activity.getString(id))
-    }
-
-    private fun toast(message: String) {
-        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 
     protected fun requestAuthentication() {

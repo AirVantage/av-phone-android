@@ -1,7 +1,9 @@
-package com.sierrawireless.avphone;
+package com.sierrawireless.avphone.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+
+import com.sierrawireless.avphone.R;
 
 public class TestFragmentActivity extends FragmentActivity {
    @Override

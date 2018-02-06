@@ -2,13 +2,11 @@ package com.sierrawireless.avphone
 
 
 import android.content.Context
-import android.util.Log
-
+import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.model.AvPhoneObject
 import com.sierrawireless.avphone.model.AvPhoneObjectData
 import com.sierrawireless.avphone.tools.MyPreference
-
-import java.util.ArrayList
+import java.util.*
 
 class ObjectsManager private constructor() {
     private var mainActivyty: MainActivity? = null
@@ -90,11 +88,9 @@ class ObjectsManager private constructor() {
 
 
      fun changeCurrent(name: String) {
-        Log.d(TAG, "changeCurrent: change axctive to $name current before $current")
-        for ((indice, obj) in objects.withIndex()) {
+        for ((index, obj) in objects.withIndex()) {
             if (obj.name == name) {
-                current = indice
-                Log.d(TAG, "changeCurrent: current after " + current)
+                current = index
                 saveOnPref()
                 return
             }
@@ -121,12 +117,10 @@ class ObjectsManager private constructor() {
     }
 
     companion object {
-        private const val TAG = "ObjectsManager"
         private var lInstance:ObjectsManager? = null
         private const val SHARED_PREFS_FILE = "SavedModels"
         private const val MODELS = "models"
         private const val ACTIVE = "active"
-
 
         fun getInstance(): ObjectsManager {
             if (lInstance == null) {
@@ -135,6 +129,4 @@ class ObjectsManager private constructor() {
             return lInstance!!
         }
     }
-
-
 }

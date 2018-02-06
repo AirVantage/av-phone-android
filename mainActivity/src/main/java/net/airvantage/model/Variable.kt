@@ -5,5 +5,4 @@ class Variable(id: String, label: String, type: String) : Data(id, label, "varia
     init {
         this.type = type
     }
-
 }

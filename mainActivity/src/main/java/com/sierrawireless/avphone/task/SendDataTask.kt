@@ -76,7 +76,7 @@ class SendDataTask : AsyncTask<SendDataParams, Void, SendDataResult>() {
                 MqttException.REASON_CODE_WRITE_TIMEOUT -> "Client timed out while waiting to write messages to the server"
                 else -> "Unkown reason code "+ e.reasonCode
             }
-            Log.d("SendDataTasK", "Mqtt error " + lastLog )
+            Log.w("SendDataTasK", "Mqtt error " + lastLog )
             LocalBroadcastManager.getInstance(context).sendBroadcast(LogMessage(lastLog, alarm))
             return SendDataResult(lastLog, true)
 

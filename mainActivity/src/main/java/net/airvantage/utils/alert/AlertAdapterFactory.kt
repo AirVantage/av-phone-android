@@ -13,6 +13,7 @@ import java.util.HashMap
 
 class AlertAdapterFactory(private val server: String, private val accessToken: String, private val listener: IAlertAdapterFactoryListener) : AsyncTask<Void, Void, DefaultAlertAdapter>() {
     private val client: OkHttpClient = OkHttpClient()
+    private val TAG = this.javaClass.name
 
     init {
         this.execute()
@@ -24,7 +25,6 @@ class AlertAdapterFactory(private val server: String, private val accessToken: S
         val urls = HashMap<String, DefaultAlertAdapter>()
         urls[ALERT_V2_API_PREFIX] = AlertAdapterV2(server, accessToken)
         urls[ALERT_V1_API_PREFIX] = AlertAdapterV1(server, accessToken)
-        //   urls.put(ALERT_V2_API_PREFIX, new AlertAdapterV2(server, accessToken));
         val founds = HashMap<String, Boolean>()
 
         // We using first available
@@ -33,24 +33,20 @@ class AlertAdapterFactory(private val server: String, private val accessToken: S
 
                 val urlString = "https://" + server + key + accessToken
                 val url = URL(urlString)
-                Log.d(TAG, "doInBackground: Send Data is" + urlString)
                 val connection = client.open(url)
                 connection.requestMethod = "GET"
                 founds[key] = connection.responseCode == HttpURLConnection.HTTP_OK
 
             } catch (e: MalformedURLException) {
-                Log.e(this.javaClass.name, "Bad Url generated for " + key, e)
+                Log.e(TAG, "Bad Url generated for " + key, e)
             } catch (e: IOException) {
-                Log.e(this.javaClass.name, "Connection problem", e)
+                Log.e(TAG, "Connection problem", e)
             }
-
         }
 
         if (founds[ALERT_V2_API_PREFIX]!!) {
-            Log.d(this.javaClass.name, "Using Alerts from " + ALERT_V2_API_PREFIX)
             return urls[ALERT_V2_API_PREFIX]!!
         } else if (founds[ALERT_V1_API_PREFIX]!!) {
-            Log.d(this.javaClass.name, "Using Alerts from " + ALERT_V1_API_PREFIX)
             return urls[ALERT_V1_API_PREFIX]!!
         }
 
@@ -64,9 +60,7 @@ class AlertAdapterFactory(private val server: String, private val accessToken: S
     }
 
     companion object {
-
         private const val ALERT_V1_API_PREFIX = "/api/v1/alerts/rules?size=0&access_token="
         private const val ALERT_V2_API_PREFIX = "/api/v2/alertstates?access_token="
-        private const val TAG = "AlertAdapterFactory"
     }
 }

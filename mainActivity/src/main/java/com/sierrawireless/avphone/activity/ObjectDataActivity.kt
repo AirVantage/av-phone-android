@@ -1,10 +1,12 @@
-package com.sierrawireless.avphone
+package com.sierrawireless.avphone.activity
 
 import android.app.Activity
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import com.sierrawireless.avphone.ObjectsManager
+import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.model.AvPhoneObject
 import com.sierrawireless.avphone.model.AvPhoneObjectData
 import kotlinx.android.synthetic.main.activity_object_data.*

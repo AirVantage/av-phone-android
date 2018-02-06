@@ -15,7 +15,7 @@ interface IApplicationClient {
     fun ensureApplicationExists(phoneName:String): Application
 
     @Throws(IOException::class, AirVantageException::class)
-    fun setApplicationData(applicationUid: String, customData: ArrayList<AvPhoneObjectData>, `object`: String)
+    fun setApplicationData(applicationUid: String, customData: ArrayList<AvPhoneObjectData>, obj: String)
 
     @Throws(IOException::class, AirVantageException::class)
     fun createApplication(phoneName: String): Application
@@ -25,5 +25,4 @@ interface IApplicationClient {
 
     @Throws(IOException::class, AirVantageException::class)
     fun addApplication(system: AvSystem, application: Application)
-
 }

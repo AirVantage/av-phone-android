@@ -16,16 +16,11 @@ import java.net.URL
 import java.util.*
 
 class AirVantageClient(private val server: String, private val access_token: String) : IAirVantageClient, IAlertAdapterFactoryListener {
-
     private var alertAdapter: DefaultAlertAdapter? = null
-
     private val gson: Gson = Gson()
-
     private val client: OkHttpClient = OkHttpClient()
-
     init {
         AlertAdapterFactory(server, access_token, this)
-
     }
 
     override fun alertAdapterAvailable(adapter: DefaultAlertAdapter) {
@@ -89,7 +84,6 @@ class AirVantageClient(private val server: String, private val access_token: Str
             if (out != null)
                 out.close()
         }
-
     }
 
     @Throws(IOException::class, AirVantageException::class)
@@ -101,7 +95,6 @@ class AirVantageClient(private val server: String, private val access_token: Str
     @Throws(IOException::class, AirVantageException::class)
     private fun put(url: URL, body: Any): InputStream {
         val bodyString = gson.toJson(body)
-        Log.d(TAG, "put: body string is " + bodyString)
         return sendString("PUT", url, bodyString)
     }
 
@@ -142,7 +135,6 @@ class AirVantageClient(private val server: String, private val access_token: Str
             urlString += "&gateway=serialNumber:" + serialNumber
         }
         val url = URL(urlString)
-        Log.d(TAG, "getSystemsBySerialNumber: url " + url)
         val inputStream = this[url]
         return gson.fromJson(InputStreamReader(inputStream!!), SystemsList::class.java).items
     }
@@ -150,7 +142,6 @@ class AirVantageClient(private val server: String, private val access_token: Str
     @Throws(IOException::class, AirVantageException::class)
     fun getGateway(serialNumber: String): Boolean? {
         val urlString = buildEndpoint("/gateways")
-        Log.d(TAG, "getGateway: urlString " + urlString)
         val url = URL(urlString)
         val inputStream = this[url]
         val reader = BufferedReader(InputStreamReader(inputStream!!))
@@ -189,7 +180,6 @@ class AirVantageClient(private val server: String, private val access_token: Str
 
     @Throws(IOException::class, AirVantageException::class)
     override fun updateSystem(system: AvSystem) {
-        //  Log.d(TAG, "updateSystem: system is " + system.uid);
         val url = URL(buildEndpoint("/systems/" + system.uid!!))
         put(url, system)
     }
@@ -197,7 +187,6 @@ class AirVantageClient(private val server: String, private val access_token: Str
 
     @Throws(IOException::class, AirVantageException::class)
     fun deleteSystem(system: net.airvantage.model.AvSystem) {
-        //  Log.d(TAG, "updateSystem: system is " + system.uid);
         val url = URL(buildEndpoint("/systems/" + system.uid!!) + "&deleteGateway=true")
         delete(url)
     }
@@ -254,7 +243,6 @@ class AirVantageClient(private val server: String, private val access_token: Str
         get(url)
     }
 
-
     override val userRights: UserRights
         get() {
             val url = URL(buildEndpoint("/users/rights"))
@@ -262,13 +250,8 @@ class AirVantageClient(private val server: String, private val access_token: Str
             return gson.fromJson(InputStreamReader(inputStream!!), UserRights::class.java)
         }
 
-
-
     companion object {
-        private const val TAG = "AirVantageClient"
-
         private const val SCHEME = "https://"
-
         private const val API_PREFIX = "/api/v1"
 
         fun buildImplicitFlowURL(server: String, clientId: String): String {

@@ -13,22 +13,14 @@ import java.util.*
 
 object PreferenceUtils {
 
-    private val LOGTAG = PreferenceUtils::class.java.name
-
+    private val TAG = PreferenceUtils::class.java.name
     private const val DEFAULT_COMM_PERIOD = "2"
-
     const val PREF_SERVER_KEY = "pref_server_key"
-
     const val PREF_CLIENT_ID_KEY = "pref_client_id_key"
-
     const val PREF_PASSWORD_KEY = "pref_password_key"
-
     const val PREF_PERIOD_KEY = "pref_period_key"
-
     private const val PREF_ACCESS_TOKEN = "pref_access_token"
-
     private const val PREF_TOKEN_EXPIRES_AT = "pref_token_expires_at"
-
     private var properties: Properties? = null
 
     enum class Server {
@@ -178,12 +170,12 @@ object PreferenceUtils {
                 }
             } catch (nfe: NumberFormatException) {
                 // The string was not even a valid one, we'll ignore it.
-                Log.w(LOGTAG, "pref_token_expires_at stored as invalid String : '$expiresAtSt'", nfe)
+                Log.w(TAG, "pref_token_expires_at stored as invalid String : '$expiresAtSt'", nfe)
             }
 
         }
 
-        if (accessToken != null && expiresAtMs != null && (expiresAtMs!!) != 0L) {
+        if (accessToken != null && expiresAtMs != null && (expiresAtMs) != 0L) {
             val expiresAt = Date(expiresAtMs)
             auth = Authentication()
             auth.accessToken = accessToken
@@ -191,7 +183,6 @@ object PreferenceUtils {
         }
 
         return auth
-
     }
 
 }

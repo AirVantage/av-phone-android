@@ -5,8 +5,8 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 import com.crashlytics.android.Crashlytics
-import com.sierrawireless.avphone.DeviceInfo
-import com.sierrawireless.avphone.MainActivity
+import com.sierrawireless.avphone.tools.DeviceInfo
+import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.ObjectsManager
 import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.message.IMessageDisplayer

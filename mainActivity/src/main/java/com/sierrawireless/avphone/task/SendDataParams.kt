@@ -11,5 +11,4 @@ class SendDataParams {
     var alarm: Boolean = false
     var value: Boolean = false
     var context: Context? = null
-
 }

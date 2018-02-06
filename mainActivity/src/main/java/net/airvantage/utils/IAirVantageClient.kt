@@ -40,5 +40,4 @@ interface IAirVantageClient {
 
     @Throws(IOException::class, AirVantageException::class)
     fun logout()
-
 }

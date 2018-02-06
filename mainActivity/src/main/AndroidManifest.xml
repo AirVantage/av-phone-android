@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.Avactionbar">
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:theme="@style/AppTheme"
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/app_name"
@@ -28,24 +28,24 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activity.SettingsActivity"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ObjectConfigureActivity"
+            android:name=".activity.ObjectConfigureActivity"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".AuthorizationActivity"
+            android:name=".activity.AuthorizationActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name" />
-        <activity android:name=".TestFragmentActivity" />
+        <activity android:name=".activity.TestFragmentActivity" />
 
         <service android:name=".service.MonitoringService" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="de8a3057ae740f20f5f7b26850063e7abb9a5cd1" />
+            android:value="9a96a8b13fb7d66d3faa24132dfc4d1891d1604e" />
 
-        <activity android:name=".ObjectDataActivity"
+        <activity android:name=".activity.ObjectDataActivity"
             android:theme="@style/AppTheme"/>
     </application>
 

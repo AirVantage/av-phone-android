@@ -15,6 +15,7 @@ import java.util.*
 class ApplicationClient internal constructor(private val client: IAirVantageClient) : IApplicationClient {
     private var currentUser: User? = null
     private var mPhoneName: String? = null
+    private val TAG = this::class.java.name
 
     private val application: Application?
         @Throws(IOException::class, AirVantageException::class)
@@ -44,17 +45,16 @@ class ApplicationClient internal constructor(private val client: IAirVantageClie
         var application = application
 
         if (application == null) {
-            Log.d(TAG, "ensureApplicationExists: Create new application")
             application = createApplication(phoneName)
             setApplicationCommunication(application.uid!!)
         }
-        Log.d(TAG, "ensureApplicationExists: application is " + application.uid)
+        Log.i(TAG, "ensureApplicationExists: application is " + application.uid)
         return application
     }
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun setApplicationData(applicationUid: String, customData: ArrayList<AvPhoneObjectData>, `object`: String) {
-        val data = AvPhoneApplication.createApplicationData(customData, `object`)
+    override fun setApplicationData(applicationUid: String, customData: ArrayList<AvPhoneObjectData>, obj: String) {
+        val data = AvPhoneApplication.createApplicationData(customData, obj)
         client.setApplicationData(applicationUid, data)
     }
 
@@ -103,9 +103,4 @@ class ApplicationClient internal constructor(private val client: IAirVantageClie
         return res
 
     }
-
-    companion object {
-        private const val TAG = "ApplicationClient"
-    }
-
 }

@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
     android:showDividers="middle"
-    tools:context=".MainActivity" >
+    tools:context=".activity.MainActivity" >
 
     <LinearLayout
         android:id="@+id/action_layout"
@@ -145,12 +145,12 @@
                     android:layout_weight="1"
                     android:background="@color/grey_4"
                     android:text="Phone"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/object"
-                    app:layout_constraintEnd_toStartOf="@+id/object"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/obj"
+                    app:layout_constraintEnd_toStartOf="@+id/obj"
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <Button
-                    android:id="@+id/object"
+                    android:id="@+id/obj"
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="91dp"

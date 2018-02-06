@@ -1,4 +1,4 @@
-package com.sierrawireless.avphone
+package com.sierrawireless.avphone.activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -13,6 +13,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.RadioGroup
+import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.auth.Authentication
 import kotlinx.android.synthetic.main.activity_authorization.*
 import net.airvantage.utils.AirVantageClient
@@ -22,10 +23,9 @@ import java.util.*
 
 class AuthorizationActivity : Activity() {
 
-
     private val authUrlParser = AuthenticationUrlParser()
-
     private var currentServer: PreferenceUtils.Server? = null
+    private val TAG = this::class.java.name
 
     private inner class OnHostClickListener (private val server: PreferenceUtils.Server) : OnClickListener {
 
@@ -36,7 +36,6 @@ class AuthorizationActivity : Activity() {
                 openAuthorizationPage()
             }
         }
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,19 +92,15 @@ class AuthorizationActivity : Activity() {
                 val auth = authUrlParser.parseUrl(request.url.toString(), Date())
 
                 if (auth != null) {
-                    Log.d(AuthorizationActivity::class.java.name, "Access token: " + auth.accessToken!!)
-                    Log.d(AuthorizationActivity::class.java.name, "Expiration date : " + auth.expirationDate!!)
-
+                    Log.i(TAG, "Access token: " + auth.accessToken!!)
+                    Log.i(TAG, "Expiration date : " + auth.expirationDate!!)
                     sendAuthentication(auth)
-
                 }
-
                 return super.shouldOverrideUrlLoading(view, request)
             }
-
         }
         val authUrl = AirVantageClient.buildImplicitFlowURL(serverHost!!, clientId!!)
-        Log.d(AuthorizationActivity::class.java.name, "Auth URL: " + authUrl)
+        Log.i(TAG, "Auth URL: " + authUrl)
 
         // The 'authorize' page from AirVantage will store a cookie ;
         // if this cookie is passed between calls, the 'authorize' page
@@ -113,14 +108,12 @@ class AuthorizationActivity : Activity() {
         val cookieManager = CookieManager.getInstance()
         cookieManager.removeAllCookies(null)
 
-
         // Example :
         // https://na.airvantage.net/api/oauth/authorize?client_id=54d4faa5343d49fba03f2a2ec1f210b9&response_type=token&redirect_uri=oauth://airvantage
         webview.loadUrl(authUrl)
     }
 
     private fun sendAuthentication(auth: Authentication?) {
-
         val resultIntent = Intent()
 
         resultIntent.putExtra(AUTHENTICATION_TOKEN, auth!!.accessToken)
@@ -131,11 +124,8 @@ class AuthorizationActivity : Activity() {
     }
 
     companion object {
-
         const val AUTHENTICATION_TOKEN = "token"
         const val AUTHENTICATION_EXPIRATION_DATE = "expirationDate"
-
         const val REQUEST_AUTHORIZATION = 1
     }
-
 }

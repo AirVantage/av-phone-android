@@ -1,4 +1,4 @@
-package com.sierrawireless.avphone
+package com.sierrawireless.avphone.activity
 
 import android.app.Activity
 import android.content.Context
@@ -10,6 +10,9 @@ import android.view.View
 import android.widget.AdapterView
 import com.baoyz.swipemenulistview.SwipeMenuCreator
 import com.baoyz.swipemenulistview.SwipeMenuItem
+import com.sierrawireless.avphone.ConfigureFragment
+import com.sierrawireless.avphone.ObjectsManager
+import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.adapter.ObjectDataAdapter
 import com.sierrawireless.avphone.model.AvPhoneObject
 import com.sierrawireless.avphone.tools.Tools
@@ -17,8 +20,6 @@ import kotlinx.android.synthetic.main.activity_object_configure.*
 import java.util.*
 
 class ObjectConfigureActivity : Activity() {
-
-
     internal var objectsManager: ObjectsManager = ObjectsManager.getInstance()
     private var menu: ArrayList<String> = ArrayList()
     private var position: Int = 0
@@ -54,7 +55,6 @@ class ObjectConfigureActivity : Activity() {
 
         listView.setMenuCreator(creator)
 
-
         val intent = intent
         position = intent.getIntExtra(ConfigureFragment.INDEX, -1)
 
@@ -69,6 +69,7 @@ class ObjectConfigureActivity : Activity() {
             objectNameEdit.visibility = View.GONE
             titleObject.text = obj!!.name
         }
+
         menuGeneration()
 
         cancel.setOnClickListener {
@@ -86,13 +87,13 @@ class ObjectConfigureActivity : Activity() {
             obj!!.datas
                     .filter { it.isInteger }
                     .forEach { it.current = it.defaults.toInt() }
+
             objectsManager.save()
             val i = Intent()
             i.putExtra(ConfigureFragment.POS, position)
             setResult(Activity.RESULT_OK, i)
             finish()
         }
-
 
         listView.setOnMenuItemClickListener { position, _, index ->
             when (index) {
@@ -131,15 +132,11 @@ class ObjectConfigureActivity : Activity() {
         menu.add(getString(R.string.add_new_data))
         val adapter = ObjectDataAdapter(this, android.R.layout.simple_list_item_1, menu)
 
-
-
-
         listView.adapter = adapter
         listView.invalidateViews()
     }
 
     companion object {
-
         var OBJECT_POSITION = "object_pos"
         var DATA_POSITION = "data_position"
         var ADD = "add"

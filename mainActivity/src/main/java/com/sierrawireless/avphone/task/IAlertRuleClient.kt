@@ -12,6 +12,4 @@ interface IAlertRuleClient {
 
     @Throws(IOException::class, AirVantageException::class)
     fun createAlertRule(Application: String)
-
-
 }

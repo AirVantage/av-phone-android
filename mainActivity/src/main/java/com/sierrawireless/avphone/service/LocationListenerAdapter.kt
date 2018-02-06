@@ -13,5 +13,4 @@ open class LocationListenerAdapter : LocationListener {
     override fun onProviderEnabled(provider: String) {}
 
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
-
 }

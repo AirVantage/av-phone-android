@@ -46,5 +46,4 @@ class AsyncTaskFactory(private val context: Context) : IAsyncTaskFactory {
 
         return LogoutTask(client)
     }
-
 }

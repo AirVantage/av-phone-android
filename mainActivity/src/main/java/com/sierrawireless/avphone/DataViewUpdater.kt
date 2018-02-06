@@ -7,6 +7,7 @@ import android.content.Intent
 import android.view.View
 import android.widget.ListView
 import android.widget.TextView
+import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.adapter.RunListViewAdapter
 import com.sierrawireless.avphone.service.LogMessage
 import com.sierrawireless.avphone.service.NewData
@@ -84,8 +85,8 @@ class DataViewUpdater(private val view: View, private val activity: MainActivity
         val listPhone = ArrayList<HashMap<String, String>>()
 
         val rssi: String = when {
-            data.rssi != null -> data.rssi!!.toString() + " dBm (RSSI)"
-            data.rsrp != null -> data.rsrp!!.toString() + " dBm (RSRP)"
+            data.rssi != null -> data.rssi!!.toString() + " dBm"
+            data.rsrp != null -> data.rsrp!!.toString() + " dBm"
             else -> "Unknown"
         }
 
@@ -152,19 +153,16 @@ class DataViewUpdater(private val view: View, private val activity: MainActivity
         phoneListView.adapter = adapter
         phoneListView.invalidateViews()
 
-
         setCustomDataValues()
-
     }
 
     private fun setCustomDataValues() {
-
         val objectListView = view.findViewById<ListView>(R.id.objectLstView)
         objectsManager = ObjectsManager.getInstance()
-        val `object` = objectsManager!!.currentObject
+        val obj = objectsManager!!.currentObject
         var temp: HashMap<String, String>
         val listObject = ArrayList<HashMap<String, String>>()
-        for (ldata in `object`!!.datas) {
+        for (ldata in obj!!.datas) {
             temp = HashMap()
             temp[Tools.NAME] = ldata.name
             if (ldata.isInteger) {

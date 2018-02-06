@@ -1,4 +1,4 @@
-package com.sierrawireless.avphone
+package com.sierrawireless.avphone.adapter
 
 import android.app.Activity
 import android.graphics.Color
@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import com.sierrawireless.avphone.R
 import java.util.*
 
 class MenuAdapter internal constructor(private val activity: Activity, var list: ArrayList<MenuEntry>) : BaseAdapter() {
@@ -47,7 +48,6 @@ class MenuAdapter internal constructor(private val activity: Activity, var list:
             name.setBackgroundColor(Color.WHITE)
             name.setTextColor(ContextCompat.getColor(lConvertView.context, R.color.navy))
         }
-
 
         return lConvertView
     }

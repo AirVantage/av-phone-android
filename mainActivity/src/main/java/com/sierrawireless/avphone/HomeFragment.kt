@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.crashlytics.android.Crashlytics
+import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.auth.AuthUtils
 import com.sierrawireless.avphone.auth.Authentication
 import com.sierrawireless.avphone.message.IMessageDisplayer
@@ -18,36 +19,25 @@ import com.sierrawireless.avphone.task.GetUserParams
 import com.sierrawireless.avphone.task.IAsyncTaskFactory
 import com.sierrawireless.avphone.task.SyncWithAvListener
 import com.sierrawireless.avphone.task.SyncWithAvParams
+import com.sierrawireless.avphone.tools.DeviceInfo
 import kotlinx.android.synthetic.main.fragment_home.*
 import net.airvantage.model.User
 import net.airvantage.utils.PreferenceUtils
 
 class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
-
+    private val TAG = this::class.java.name
     private var lView: View? = null
-
     private var authForSync: Authentication? = null
     private var retrySync: Boolean = false
-
-
-
     private var taskFactory: IAsyncTaskFactory? = null
-
     private var user: User? = null
-
     private val infoMessageView: TextView
         get() = home_info_message
 
     override var errorMessageView: TextView
         get() = home_error_message
         set(textView) {
-
         }
-
-    init {
-        retrySync = false
-        taskFactory = null
-    }
 
     fun setTaskFactory(taskFactory: IAsyncTaskFactory) {
         this.taskFactory = taskFactory
@@ -67,8 +57,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     @SuppressWarnings("deprecation")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        this.lView = inflater.inflate(R.layout.fragment_home, container, false)
-
+        lView = inflater.inflate(R.layout.fragment_home, container, false)
 
         return lView
     }
@@ -84,7 +73,6 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         }
 
         login_btn.setOnClickListener { requestAuthentication() }
-
         logout_btn.setOnClickListener { logout() }
 
         if (authManager!!.isLogged) {
@@ -92,8 +80,6 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         } else {
             showLoggedOutState()
         }
-
-
     }
 
     override fun onResume() {
@@ -108,8 +94,6 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
 
     private fun showCurrentServer() {
         val phonePrefs = PreferenceUtils.getAvPhonePrefs(activity)
-
-
 
         val message: String
         message = when {
@@ -127,7 +111,6 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     }
 
     private fun hideCurrentServer() {
-
         infoMessageView.visibility = View.GONE
         home_login.visibility = View.GONE
         infoMessageView.text = ""
@@ -158,7 +141,6 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
             return
         }
 
-
         val displayer = this
         val getUserTask = taskFactory!!.getUserTak(avPhonePrefs.serverHost!!, auth.accessToken!!)
 
@@ -172,19 +154,16 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
                 showLoggedInState()
                 user = result.user
                 user!!.server = avPhonePrefs.serverHost
-                MainActivity.instance.setUser(user!!)
+                MainActivity.instance.user = user!!
 
             }
         }
-
         val params = GetUserParams()
 
         getUserTask.execute(params)
-
     }
 
     private fun syncWithAv(auth: Authentication?) {
-
         hideErrorMessage()
 
         val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(activity)
@@ -224,7 +203,6 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         params.activity = activity as MainActivity
 
         syncAvTask.execute(params)
-
     }
 
     private fun showLoggedInState() {
@@ -233,12 +211,10 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
             syncGetUser(authManager!!.authentication!!)
         } else {
             user!!.server = avPhonePrefs.serverHost
-            MainActivity.instance.setUser(user!!)
+            MainActivity.instance.user = user!!
         }
         showCurrentServer()
         showLogoutButton()
-
-
     }
 
     private fun showLoggedOutState() {
@@ -247,7 +223,6 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     }
 
     private fun logout() {
-
         val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(activity)
 
         val accessToken = authManager!!.authentication!!.accessToken
@@ -255,18 +230,16 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         val logoutTask = taskFactory!!.logoutTask(avPhonePrefs.serverHost!!, accessToken!!)
 
         logoutTask.execute()
-
         try {
             logoutTask.get()
         } catch (e: Exception) {
-            Log.w(LOGTAG, "Exception while logging out")
+            Log.w(TAG, "Exception while logging out")
             Crashlytics.logException(e)
         } finally {
             authManager!!.forgetAuthentication()
 
             showLoggedOutState()
         }
-
     }
 
     private fun showLogoutButton() {
@@ -280,10 +253,5 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         login_btn.visibility = View.VISIBLE
 
         home_login_message.visibility = View.VISIBLE
-    }
-
-    companion object {
-
-        private val LOGTAG = HomeFragment::class.java.name
     }
 }

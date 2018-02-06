@@ -1,4 +1,4 @@
-package com.sierrawireless.avphone
+package com.sierrawireless.avphone.activity
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -21,24 +21,34 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.util.Log
 import android.view.MenuItem
 import android.widget.ListView
-import android.widget.Toast
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.ndk.CrashlyticsNdk
+import com.sierrawireless.avphone.*
+import com.sierrawireless.avphone.adapter.MenuAdapter
+import com.sierrawireless.avphone.adapter.MenuEntry
+import com.sierrawireless.avphone.adapter.MenuEntryType
 import com.sierrawireless.avphone.auth.Authentication
 import com.sierrawireless.avphone.auth.AuthenticationManager
+import com.sierrawireless.avphone.listener.CustomLabelsListener
+import com.sierrawireless.avphone.listener.LoginListener
+import com.sierrawireless.avphone.listener.MonitorServiceListener
+import com.sierrawireless.avphone.service.MonitorServiceManager
 import com.sierrawireless.avphone.service.MonitoringService
 import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder
 import com.sierrawireless.avphone.task.*
+import com.sierrawireless.avphone.tools.DeviceInfo
 import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_main.*
 import net.airvantage.model.User
 import net.airvantage.utils.PreferenceUtils
+import org.jetbrains.anko.longToast
 import java.util.*
 
 /**
  * The main activity, handling drawer and Fragments
  */
 class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, OnSharedPreferenceChangeListener, MonitorServiceManager, CustomLabelsManager, SyncWithAvListener {
+    private val TAG = this::class.java.name
     override var monitoringService: MonitoringService? = null
     private var objectName: String? = null
 
@@ -65,7 +75,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
     private var serviceSendData: Boolean? = false
     internal lateinit var objectsManager: ObjectsManager
-    internal var user: User? = null
+    var user: User? = null
 
     override val isLogged: Boolean
         get() = this.authentication != null && !this.authentication!!.isExpired(Date())
@@ -73,7 +83,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     private var connection: ServiceConnection = object : ServiceConnection {
 
         override fun onServiceConnected(arg0: ComponentName, binder: IBinder) {
-            Log.d(TAG, "Connected to the monitoring service")
             monitoringService = (binder as ServiceBinder).service
 
             if (monitoringServiceListener != null) {
@@ -83,10 +92,8 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
-            Log.d(TAG, "Disconnected from the monitoring service")
             boundToMonitoringService = false
         }
-
     }
 
     val systemUid: String?
@@ -99,10 +106,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
     val systemName: String?
         get() = prefs!!.getString(PREFERENCE_SYSTEM_NAME, null)
-
-    fun setUser(user: User) {
-        this.user = user
-    }
 
     private fun buildFragmentList(): ArrayList<MenuEntry> {
         val tmp = ArrayList<MenuEntry>()
@@ -135,10 +138,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
     //Get user
     private fun syncGetUser(auth: Authentication?) {
-
-
         val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this)
-
 
         val getUserTask = taskFactory!!.getUserTak(avPhonePrefs.serverHost!!, auth!!.accessToken!!)
 
@@ -147,30 +147,22 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                 user = result.user
                 user!!.server = avPhonePrefs.serverHost
                 loadMenu()
-
             }
         }
-
         val params = GetUserParams()
-
         getUserTask.execute(params)
-
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        MainActivity.instance = this
+        instance = this
         // Initialization og Object Manager
         objectsManager = ObjectsManager.getInstance()
         objectsManager.init(this)
         super.onCreate(savedInstanceState)
         Fabric.with(this, Crashlytics(), CrashlyticsNdk())
 
-
-
         setContentView(R.layout.activity_main)
-
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         prefs!!.registerOnSharedPreferenceChangeListener(this)
 
@@ -183,7 +175,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                 syncGetUser(authentication)
             }
         }
-
 
         loadMenu()
 
@@ -198,9 +189,18 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         // Verify Permission
 
         when {
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED -> ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.READ_PHONE_STATE), 1)
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED -> ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 2)
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED -> ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 3)
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED -> {
+                Log.d(TAG, "Ask for READ PHONE STATE")
+                ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.READ_PHONE_STATE), 1)
+            }
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED -> {
+                Log.d(TAG, "Ask for COARSE LOCATION STATE")
+                ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 2)
+            }
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED -> {
+                Log.d(TAG, "Ask for FINE LOCATION STATE")
+                ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 3)
+            }
         }
     }
 
@@ -211,13 +211,15 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
                     if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
 
-                        Log.d(TAG, "onRequestPermissionsResult: answer ko")
-
-                        Toast.makeText(applicationContext, "Permission not granted please grant permission", Toast.LENGTH_LONG).show()
+                        Log.w(TAG, "onRequestPermissionsResult: READ_PHONE_STATE answer ko")
+                        longToast("Permission not granted please grant permission")
                     } else {
+                        Log.d(TAG, " for READ PHONE STATE ok")
                         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            Log.d(TAG, "Ask for COARSE LOCATION  STATE")
                             ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 2)
-                        } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+                            Log.d(TAG, "Ask for FINE LOCATION STATE")
                             ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 3)
                         }
                     }
@@ -228,11 +230,12 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
                     if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
 
-                        Log.d(TAG, "onRequestPermissionsResult: answer ko")
-
-                        Toast.makeText(applicationContext, "Permission not granted please grant permission", Toast.LENGTH_LONG).show()
+                        Log.w(TAG, "onRequestPermissionsResult: ACCESS_COARSE_LOCATION answer ko")
+                        longToast("Permission not granted please grant permission")
                     } else {
-                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        Log.d(TAG, " for COARSE LOCATION ok")
+                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+                            Log.d(TAG, "Ask for FINE LOCATION STATE")
                             ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 3)
                         }
                     }
@@ -242,9 +245,10 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                 if (grantResults.isNotEmpty()) {
                     if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
 
-                        Log.d(TAG, "onRequestPermissionsResult: answer ko")
-
-                        Toast.makeText(applicationContext, "Permission not granted please grant permission", Toast.LENGTH_LONG).show()
+                        Log.w(TAG, "onRequestPermissionsResult: answer ACCESS_FINE_LOCATION ko")
+                        longToast("Permission not granted please grant permission")
+                    }else{
+                        Log.d(TAG, "for FINE LOCATION STATE ok")
                     }
                 }
             }
@@ -285,8 +289,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
         }
         goHomeFragment()
-
-
     }
 
     override fun onResume() {
@@ -295,7 +297,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         left_drawer.setItemChecked(lastPosition, true)
         left_drawer.setSelection(lastPosition)
         left_drawer.refreshDrawableState()
-        //drawerListView.setSelection();
 
     }
 
@@ -322,9 +323,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             actionBar!!.setHomeButtonEnabled(false)
         }
 
-
         drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-
 
         if (drawerToggle != null) {
             drawerToggle!!.isDrawerIndicatorEnabled = false
@@ -332,12 +331,10 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     }
 
     private fun unlockDrawer() {
-
         if (actionBar != null) {
             actionBar!!.setDisplayHomeAsUpEnabled(true)
             actionBar!!.setHomeButtonEnabled(true)
         }
-
 
         drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
 
@@ -391,7 +388,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                 this.customLabelsListener!!.onCustomLabelsChanged()
             }
         }
-
     }
 
      override fun isServiceRunning(): Boolean {
@@ -401,7 +397,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
          @Suppress("DEPRECATION")
          return if (manager.getRunningServices(Integer.MAX_VALUE).any { MonitoringService::class.java.name == it.service.className }) serviceSendData!! else false
-
      }
 
     override fun isServiceStarted(name: String): Boolean {
@@ -417,7 +412,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
         @Suppress("DEPRECATION")
         return manager.getRunningServices(Integer.MAX_VALUE).any { MonitoringService::class.java.name == it.service.className }
-
     }
 
     override fun oneServiceStarted(): Boolean {
@@ -469,7 +463,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         intent.putExtra(MonitoringService.CONNECT, false)
         intent.putExtra(MonitoringService.OBJECT_NAME, name)
 
-
         val pendingIntent = PendingIntent.getService(this, 0, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT)
         // registering our pending intent with alarm manager
@@ -516,8 +509,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         disconnectFromService()
     }
 
-
-
     private fun restartMonitoringService() {
         stopMonitoringService()
         startMonitoringService(objectName!!)
@@ -527,7 +518,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         super.onDestroy()
         disconnectFromService()
     }
-
 
     override fun setMonitoringServiceListener(listener: MonitorServiceListener) {
         this.monitoringServiceListener = listener
@@ -556,7 +546,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         } else {
             Log.w(TAG, "RunFragment reference is null when onSynced is called")
         }
-
     }
 
     /**
@@ -568,7 +557,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         val entry = FRAGMENT_LIST!![position]
         if (fragment == null) {
             //No item check if the position is valid
-            Log.d(TAG, "selectItem: Fragment list " + entry.name)
             if (entry.name == FRAGMENT_FAQ) {
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://doc.airvantage.net/alms/"))
                 startActivity(browserIntent)
@@ -660,8 +648,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     }
 
     companion object {
-
-        private const val TAG = "MainActivity"
         private const val PREFERENCE_SYSTEM_NAME = "systemName"
         private const val PREFERENCE_SYSTEM_SERIAL = "systemSerial"
         private const val PREFERENCE_USER_NAME = "userName"

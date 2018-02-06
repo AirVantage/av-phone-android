@@ -15,12 +15,11 @@ import android.os.IBinder
 import android.support.v4.content.LocalBroadcastManager
 import android.telephony.*
 import android.util.Log
-import android.widget.Toast
 import com.crashlytics.android.Crashlytics
 import com.google.gson.Gson
-import com.sierrawireless.avphone.MainActivity
 import com.sierrawireless.avphone.ObjectsManager
 import com.sierrawireless.avphone.R
+import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.task.SendDataParams
 import com.sierrawireless.avphone.task.SendDataTask
 import com.sierrawireless.avphone.tools.Tools
@@ -28,12 +27,14 @@ import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallback
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
+import org.jetbrains.anko.toast
 import java.nio.charset.Charset
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
-import kotlin.concurrent.schedule
 
 class MonitoringService : Service() {
+
+    private val TAG = this::class.java.name
 
     // system services
     private var telephonyManager: TelephonyManager? = null
@@ -53,7 +54,6 @@ class MonitoringService : Service() {
     /* the date of the last location reading */
     private var lastLocation: Long = 0
 
-    // FIXME(pht) for testing, to compare with "last known location"
     private var networkLocation: Location? = null
     private var gpsLocation: Location? = null
     private var networkLocationListener: LocationListener? = null
@@ -64,7 +64,7 @@ class MonitoringService : Service() {
 
     private var dbm: Int? = null
 
-    var timer:Timer? = null
+    private var timer:Timer? = null
 
 
     private val lastKnownLocation: Location?
@@ -73,23 +73,23 @@ class MonitoringService : Service() {
             val locManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
             val locationProvider = locManager.getBestProvider(Criteria(), true)
-            Log.d(TAG, "Getting last known location from provider: " + locationProvider!!)
+            Log.i(TAG, "Getting last known location from provider: " + locationProvider!!)
 
             val location: Location? = locManager.getLastKnownLocation(locationProvider)
             if (location != null) {
-                Log.d(TAG, "Last known location : " + location.latitude + "," + location.longitude)
+                Log.i(TAG, "Last known location : " + location.latitude + "," + location.longitude)
             } else {
-                Log.d(TAG, "Read null location")
+                Log.i(TAG, "Read null location")
             }
             if (networkLocation != null) {
-                Log.d(TAG, "Last Network Location : " + networkLocation!!.latitude + "," + networkLocation!!.longitude)
+                Log.i(TAG, "Last Network Location : " + networkLocation!!.latitude + "," + networkLocation!!.longitude)
             } else {
-                Log.d(TAG, "No known network location")
+                Log.i(TAG, "No known network location")
             }
             if (gpsLocation != null) {
-                Log.d(TAG, "Last GPS Location : " + gpsLocation!!.latitude + "," + gpsLocation!!.longitude)
+                Log.i(TAG, "Last GPS Location : " + gpsLocation!!.latitude + "," + gpsLocation!!.longitude)
             } else {
-                Log.d(TAG, "No known GPSlocation")
+                Log.i(TAG, "No known GPSlocation")
             }
 
             return location
@@ -114,7 +114,7 @@ class MonitoringService : Service() {
 
         @Throws(Exception::class)
         override fun messageArrived(topic: String, msg: MqttMessage) {
-            Log.d(TAG, "MQTT msg received: " + String(msg.payload))
+            Log.i(TAG, "MQTT msg received: " + String(msg.payload))
 
             // parse json payload
             val messages = Gson().fromJson(String(msg.payload, Charset.forName("UTF-8")), Array<Message>::class.java)
@@ -143,8 +143,6 @@ class MonitoringService : Service() {
 
     override fun onCreate() {
         // Unique Identification Number for the Notification.
-
-        Log.d(TAG, "onCreate: " + this)
         objectsManager = ObjectsManager.getInstance()
 
         // Display a notification icon
@@ -182,7 +180,6 @@ class MonitoringService : Service() {
     }
 
     fun start() {
-        Log.d(TAG, "start")
         //protect multiple start
         if (timer == null) {
             //periodic timer of 5 s do avoid
@@ -213,7 +210,6 @@ class MonitoringService : Service() {
                 .build()
 
         startForeground(notif, notification)
-
     }
 
     fun stopSendData() {
@@ -224,7 +220,6 @@ class MonitoringService : Service() {
 
     @SuppressLint("MissingPermission")
     private fun setCustomDataForUi():NewData {
-        Log.d(TAG, "SetCustomDataForUi")
         val location = lastKnownLocation
 
         // retrieve data
@@ -294,7 +289,7 @@ class MonitoringService : Service() {
 
         lastRun = System.currentTimeMillis()
         objectsManager = ObjectsManager.getInstance()
-        val `object` = objectsManager!!.currentObject
+        val obj = objectsManager!!.currentObject
 
 
         try {
@@ -307,7 +302,7 @@ class MonitoringService : Service() {
                 //
                 // Ensure intent is valid
                 //
-                val deviceId = Tools.buildSerialNumber(intent.getStringExtra(DEVICE_ID), `object`!!.name!!)
+                val deviceId = Tools.buildSerialNumber(intent.getStringExtra(DEVICE_ID), obj!!.name!!)
                 val password = intent.getStringExtra(PASSWORD)
                 val serverHost = intent.getStringExtra(SERVER_HOST)
 
@@ -361,16 +356,11 @@ class MonitoringService : Service() {
     }
 
     override fun onDestroy() {
-        Log.d("MonitoringService", "Stopping service")
-
-        if (this.client != null) {
-            try {
-                this.client!!.disconnect()
-            } catch (e: MqttException) {
-                Crashlytics.logException(e)
-                Log.e(TAG, "error", e)
-            }
-
+        try {
+            this.client?.disconnect()
+        } catch (e: MqttException) {
+            Crashlytics.logException(e)
+            Log.e(TAG, "error", e)
         }
 
         // Cancel the persistent notification.
@@ -394,7 +384,7 @@ class MonitoringService : Service() {
         if (networkLocationProvider != null) {
             networkLocationListener = object : LocationListenerAdapter() {
                 override fun onLocationChanged(location: Location) {
-                    Log.d(TAG, "Received Network location update " + location.latitude + ";" + location.longitude)
+                    Log.i(TAG, "Received Network location update " + location.latitude + ";" + location.longitude)
                     networkLocation = location
                 }
             }
@@ -405,7 +395,7 @@ class MonitoringService : Service() {
         if (gpsLocationProvider != null) {
             gpsLocationListener = object : LocationListenerAdapter() {
                 override fun onLocationChanged(location: Location) {
-                    Log.d(TAG, "Received GPS location update " + location.latitude + ";" + location.longitude)
+                    Log.i(TAG, "Received GPS location update " + location.latitude + ";" + location.longitude)
                     gpsLocation = location
                 }
             }
@@ -427,10 +417,9 @@ class MonitoringService : Service() {
     fun sendAlarmEvent() {
 
         if (this.client == null) {
-            Toast.makeText(applicationContext, "Alarm client is not available,wait...", Toast.LENGTH_SHORT).show()
+            toast("Alarm client is not available,wait...")
             return
         }
-
 
         val data = NewData()
         set = !(set!!)
@@ -467,9 +456,6 @@ class MonitoringService : Service() {
     }
 
     companion object {
-        private const val TAG = "MonitoringService"
-
-
         // Intent extra keys
         const val DEVICE_ID = "device_id"
         const val SERVER_HOST = "server_host"

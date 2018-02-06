@@ -17,6 +17,4 @@ class SendDataResult {
         this.lastLog = lastLog
         this.isError = false
     }
-
-
 }

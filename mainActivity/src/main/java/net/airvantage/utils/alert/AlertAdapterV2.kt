@@ -29,15 +29,14 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
     @Throws(IOException::class, AirVantageException::class)
     override fun getAlertRuleByName(name: String, application: String): net.airvantage.model.alert.v1.AlertRule? {
         try {
-            val `in` = get(alertRuleUrl())
-            val rules = gson.fromJson(InputStreamReader(`in`), AlertRuleList::class.java)
-            Log.d(TAG, "getAlertRuleByName: Get Alert Rule " + rules)
+            val inp = get(alertRuleUrl())
+            val rules = gson.fromJson(InputStreamReader(inp), AlertRuleList::class.java)
             val alertRuleV2 = Utils.firstWhere(rules, AlertRule.isNamed(name))
             if (alertRuleV2 != null) {
                 return convert(alertRuleV2)
             }
         } catch (e: JsonIOException) {
-            Log.e(LOG_TAG, "Unable to read Alert Rules", e)
+            Log.e(TAG, "Unable to read Alert Rules", e)
         }
 
         return null
@@ -62,15 +61,12 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
             for (condition in alertRule.conditions!!) {
                 alertRuleV2.conditions!!.add(convert(condition))
             }
-            Log.d(TAG, "createAlertRule: send  to " + alertRuleUrl() + " data " + alertRuleV2)
-            val `in` = post(alertRuleUrl(), alertRuleV2)
-            alertRuleV2 = gson.fromJson(InputStreamReader(`in`), AlertRule::class.java)
-            Log.d(TAG, "createAlertRule: created alert rule " + alertRuleV2!!)
-
+            val inp = post(alertRuleUrl(), alertRuleV2)
+            alertRuleV2 = gson.fromJson(InputStreamReader(inp), AlertRule::class.java)
             convert(alertRuleV2)
 
         } catch (e: JsonIOException) {
-            Log.e(LOG_TAG, "Unable to create Alert Rule", e)
+            Log.e(TAG, "Unable to create Alert Rule", e)
         }
 
     }
@@ -86,7 +82,7 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
         try {
             alertRuleUrl = URL(urlString)
         } catch (e: MalformedURLException) {
-            Log.e(this.javaClass.name, "Sure of URL?", e)
+            Log.e(TAG, "Sure of URL?", e)
             throw e
         }
 
@@ -95,8 +91,6 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
 
     companion object {
         private const val TAG = "AlertAdapterV2"
-
-        private val LOG_TAG = AlertAdapterV2::class.java.name
 
         private fun convert(condition: net.airvantage.model.alert.v1.Condition): Condition {
 

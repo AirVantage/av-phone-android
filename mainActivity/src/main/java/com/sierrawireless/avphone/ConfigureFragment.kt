@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,10 +12,14 @@ import android.widget.AdapterView
 import android.widget.TextView
 import com.baoyz.swipemenulistview.SwipeMenuCreator
 import com.baoyz.swipemenulistview.SwipeMenuItem
+import com.sierrawireless.avphone.activity.AuthorizationActivity
+import com.sierrawireless.avphone.activity.MainActivity
+import com.sierrawireless.avphone.activity.ObjectConfigureActivity
 import com.sierrawireless.avphone.adapter.ObjectAdapter
 import com.sierrawireless.avphone.auth.AuthUtils
 import com.sierrawireless.avphone.task.IAsyncTaskFactory
 import com.sierrawireless.avphone.task.SyncWithAvParams
+import com.sierrawireless.avphone.tools.DeviceInfo
 import com.sierrawireless.avphone.tools.Tools
 import kotlinx.android.synthetic.main.fragment_configure.*
 import net.airvantage.utils.PreferenceUtils
@@ -104,7 +107,6 @@ open class ConfigureFragment : AvPhoneFragment() {
 
         objectConfigure.onItemClickListener = AdapterView.OnItemClickListener { _, view, i, _ ->
             //Open a new intent with the selected Object
-            Log.d(TAG, "onItemClick: " + i + " " + menu[i])
             val intent = Intent(view.context, ObjectConfigureActivity::class.java)
             intent.putExtra(INDEX, i)
 
@@ -222,7 +224,6 @@ open class ConfigureFragment : AvPhoneFragment() {
         syncTask.execute(syncParams)
 
         syncTask.addProgressListener { result ->
-            Log.d(TAG, "onSynced: ICI")
             if (delete) {
                 objectsManager!!.removeSavedObject()
             }
@@ -238,7 +239,6 @@ open class ConfigureFragment : AvPhoneFragment() {
     }
 
     companion object {
-        private const val TAG = "ConfigureFragment"
         var INDEX = "index"
         var CONFIGURE = 0
         var POS = "position"

@@ -21,5 +21,4 @@ class AvPhonePrefs {
     fun usesEU(): Boolean {
         return usesServer == PreferenceUtils.Server.EU
     }
-
 }

@@ -1,5 +1,6 @@
-package com.sierrawireless.avphone
+package com.sierrawireless.avphone.service
 
+import com.sierrawireless.avphone.listener.MonitorServiceListener
 import com.sierrawireless.avphone.service.MonitoringService
 
 

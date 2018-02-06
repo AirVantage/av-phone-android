@@ -1,7 +1,6 @@
 package com.sierrawireless.avphone.adapter
 
 import android.app.Activity
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
@@ -31,8 +30,8 @@ class ObjectDataAdapter(private val activity: Activity, private val resource: In
 
     override fun getItemViewType(position: Int): Int {
         // current menu type
+        // The last item must not be deleted
         return if (position == list.size - 1) {
-            Log.d(TAG, "getItemViewType: position " + position)
             1
         } else {
             0
@@ -57,9 +56,4 @@ class ObjectDataAdapter(private val activity: Activity, private val resource: In
 
         return lConvertView!!
     }
-
-    companion object {
-        private const val TAG = "ObjectDataAdapter"
-    }
-
 }

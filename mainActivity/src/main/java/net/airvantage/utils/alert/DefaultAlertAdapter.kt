@@ -20,8 +20,9 @@ import java.util.Arrays
 open class DefaultAlertAdapter internal constructor(protected val server: String, internal val access_token: String) {
     internal val gson: Gson = Gson()
     protected val client: OkHttpClient = OkHttpClient()
+    private val TAG = this.javaClass.name
 
-     open val prefix: String
+    open val prefix: String
         get() = "Override me"
 
     @Throws(IOException::class, AirVantageException::class)
@@ -39,9 +40,7 @@ open class DefaultAlertAdapter internal constructor(protected val server: String
     //
 
     private fun buildPath(api: String): String {
-        val path = server + prefix + api + "?access_token=" + access_token
-        Log.d(this.javaClass.toString(), "About to call: " + path)
-        return path
+        return server + prefix + api + "?access_token=" + access_token
     }
 
     internal fun buildEndpoint(api: String): String {
@@ -50,19 +49,19 @@ open class DefaultAlertAdapter internal constructor(protected val server: String
 
     @Throws(IOException::class, AirVantageException::class)
     private fun readResponse(connection: HttpURLConnection): InputStream {
-        val `in`: InputStream
+        val inp: InputStream
         when {
             connection.responseCode == HttpURLConnection.HTTP_OK -> {
-                `in` = connection.inputStream
-                Log.d(this.javaClass.name, "Just read : " + connection.url.toString()
+                inp = connection.inputStream
+                Log.i(TAG, "Just read : " + connection.url.toString()
                         + " with status " + HttpURLConnection.HTTP_OK)
             }
             connection.responseCode == HttpURLConnection.HTTP_BAD_REQUEST -> {
-                `in` = connection.errorStream
-                val isr = InputStreamReader(`in`)
+                inp = connection.errorStream
+                val isr = InputStreamReader(inp)
 
                 val error = gson.fromJson(isr, net.airvantage.model.AvError::class.java)
-                Log.e(this.javaClass.name, "AirVantage Error : " + error.error + "," + error.errorParameters)
+                Log.e(TAG, "AirVantage Error : " + error.error + "," + error.errorParameters)
 
                 throw AirVantageException(error)
             }
@@ -77,16 +76,15 @@ open class DefaultAlertAdapter internal constructor(protected val server: String
                         + " got unexpected HTTP response " + connection.responseCode + ", "
                         + connection.responseMessage)
                 val ioException = IOException(message)
-                Log.e(this.javaClass.name, message, ioException)
+                Log.e(TAG, message, ioException)
                 throw ioException
             }
         }
-        return `in`
+        return inp
     }
 
     @Throws(IOException::class, AirVantageException::class)
     private fun sendString(method: String, url: URL, bodyString: String): InputStream {
-
         var out: OutputStream? = null
         try {
 
@@ -98,8 +96,6 @@ open class DefaultAlertAdapter internal constructor(protected val server: String
             connection.requestMethod = method
 
             val message = method + " on " + url.toString() + "\n" + bodyString
-            Log.d(this.javaClass.name, message)
-
             out = connection.outputStream
             out!!.write(bodyString.toByteArray())
             return readResponse(connection)

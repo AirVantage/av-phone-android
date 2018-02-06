@@ -14,37 +14,36 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.sierrawireless.avphone.activity.AuthorizationActivity
+import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.adapter.RunListViewAdapter
 import com.sierrawireless.avphone.auth.AuthUtils
+import com.sierrawireless.avphone.listener.CustomLabelsListener
+import com.sierrawireless.avphone.listener.MonitorServiceListener
 import com.sierrawireless.avphone.model.AvPhoneObjectData
 import com.sierrawireless.avphone.service.LogMessage
+import com.sierrawireless.avphone.service.MonitorServiceManager
 import com.sierrawireless.avphone.service.MonitoringService
 import com.sierrawireless.avphone.service.NewData
 import com.sierrawireless.avphone.task.IAsyncTaskFactory
 import com.sierrawireless.avphone.task.SyncWithAvParams
+import com.sierrawireless.avphone.tools.DeviceInfo
 import com.sierrawireless.avphone.tools.Tools
 import kotlinx.android.synthetic.main.fragment_run.*
 import net.airvantage.utils.PreferenceUtils
-import org.jetbrains.anko.runOnUiThread
-import java.lang.Exception
 import java.util.*
 import kotlin.concurrent.schedule
 
 open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabelsListener {
-
+    private val TAG = this::class.java.name
     private var viewUpdater: DataViewUpdater? = null
-
     private var lView: View? = null
-
     private var monitorServiceManager: MonitorServiceManager? = null
-
     private var systemUid: String? = null
     private var systemName: String? = null
-
     private var taskFactory: IAsyncTaskFactory? = null
     private var objectName: String? = null
     private var objectsManager: ObjectsManager = ObjectsManager.getInstance()
-
 
     private var timer:TimerTask? = null
 
@@ -58,7 +57,6 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         set(textView) {
 
         }
-
 
     fun setTaskFactory(taskFactory: IAsyncTaskFactory) {
         this.taskFactory = taskFactory
@@ -153,7 +151,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             setLinkToSystem(systemUid, systemName)
         }
 
-        `object`.text = objectName
+        obj.text = objectName
         phone.setBackgroundColor(ContextCompat.getColor(MainActivity.instance.baseContext, R.color.grey_1))
         phoneListView.visibility = View.VISIBLE
         objectLstView.visibility = View.GONE
@@ -164,26 +162,24 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             phone.isSelected = true
             phone.isPressed = true
             phone.setBackgroundColor(ContextCompat.getColor(MainActivity.instance.baseContext, R.color.grey_1))
-            `object`.isSelected = false
-            `object`.isPressed = false
-            `object`.setBackgroundColor(ContextCompat.getColor(MainActivity.instance.baseContext, R.color.grey_4))
+            obj.isSelected = false
+            obj.isPressed = false
+            obj.setBackgroundColor(ContextCompat.getColor(MainActivity.instance.baseContext, R.color.grey_4))
         }
 
-        `object`.setOnClickListener {
+        obj.setOnClickListener {
             phoneListView.visibility = View.GONE
             objectLstView.visibility = View.VISIBLE
             phone.isSelected = false
             phone.isPressed = false
             phone.setBackgroundColor(ContextCompat.getColor(MainActivity.instance.baseContext, R.color.grey_4))
-            `object`.isSelected = true
-            `object`.isPressed = true
-            `object`.setBackgroundColor(ContextCompat.getColor(MainActivity.instance.baseContext, R.color.grey_1))
+            obj.isSelected = true
+            obj.isPressed = true
+            obj.setBackgroundColor(ContextCompat.getColor(MainActivity.instance.baseContext, R.color.grey_1))
         }
 
         setCustomDataLabels()
         setPhoneDataLabels()
-
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -225,8 +221,6 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
                 syncListener!!.invoke(result)
             }
         }
-
-
     }
 
     fun setLinkToSystem(systemUid: String?, systemName: String?) {
@@ -262,7 +256,6 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             infoMessage = getString(R.string.run_info_message, DeviceInfo.getUniqueId(activity))
             infoMessageView.text = infoMessage
         }
-
     }
 
     override fun onResume() {
@@ -276,16 +269,13 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
         this.setLinkToSystem(systemUid, systemName)
         startTimer()
-        Log.d(TAG, "onResume called")
         monitorServiceManager?.start()
-
     }
 
     override fun onPause() {
         super.onPause()
         stopTimer()
         this.monitorServiceManager?.cancel()
-
     }
 
     private fun startMonitoringService() {
@@ -297,7 +287,6 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             this.monitorServiceManager!!.startSendData()
         }
         this.monitorServiceManager!!.monitoringService!!.startSendData()
-
     }
 
     private fun stopMonitoringService() {
@@ -306,46 +295,17 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
 
+
+
     private fun setPhoneDataLabels() {
-        val listPhone = ArrayList<HashMap<String, String>>()
-
-        var temp: HashMap<String, String> = HashMap()
-
-
-        temp[Tools.NAME] = "RSSI"
-        temp[Tools.VALUE] = ""
-        listPhone.add(temp)
-
-        temp = HashMap()
-        temp[Tools.NAME] = "Operator"
-        temp[Tools.VALUE] = ""
-        listPhone.add(temp)
-
-        temp = HashMap()
-        temp[Tools.NAME] = "Bytes Sent"
-        temp[Tools.VALUE] = "0 Mo"
-        listPhone.add(temp)
-
-        temp = HashMap()
-        temp[Tools.NAME] = "Bytes Received"
-        temp[Tools.VALUE] = "0 Mo"
-        listPhone.add(temp)
-
-        temp = HashMap()
-        temp[Tools.NAME] = "Network Type"
-        temp[Tools.VALUE] = ""
-        listPhone.add(temp)
-
-        temp = HashMap()
-        temp[Tools.NAME] = "Latitude"
-        temp[Tools.VALUE] = ""
-        listPhone.add(temp)
-
-        temp = HashMap()
-        temp[Tools.NAME] = "Longitude"
-        temp[Tools.VALUE] = ""
-        listPhone.add(temp)
-        val adapter = RunListViewAdapter(activity, listPhone)
+        val adapter = RunListViewAdapter(activity,  arrayListOf(
+                hashMapOf("RSSI" to ""),
+                hashMapOf("Operator" to ""),
+                hashMapOf("Bytes Sent" to "0 Mo"),
+                hashMapOf("Bytes received" to "0 Mo"),
+                hashMapOf("Network Type" to ""),
+                hashMapOf("Latitude" to ""),
+                hashMapOf("Longitude" to "")))
         phoneListView.adapter = adapter
         phoneListView.invalidateViews()
 
@@ -354,11 +314,10 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     private fun setCustomDataLabels() {
         val listObject = ArrayList<HashMap<String, String>>()
 
-
         objectsManager = ObjectsManager.getInstance()
-        val `object` = objectsManager.getObjectByName(objectName!!)
+        val obj = objectsManager.getObjectByName(objectName!!)
         var temp: HashMap<String, String>
-        for (data in `object`!!.datas) {
+        for (data in obj!!.datas) {
             temp = HashMap()
             temp[Tools.NAME] = data.name
             if (data.isInteger) {
@@ -403,8 +362,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
 
     private fun startTimer() {
-
-        Log.d(TAG, "custom data timer started for " + objectName)
+        Log.i(TAG, "custom data timer started for " + objectName)
 
         timer = Timer().schedule(Tools.rand(1000, 5000)) {
             execMode()
@@ -412,7 +370,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
     private fun stopTimer() {
-        Log.d(TAG, "custom data timer stopped for " + objectName)
+        Log.i(TAG, "custom data timer stopped for " + objectName)
         if (timer != null) {
             timer!!.cancel()
         }
@@ -422,7 +380,6 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         val obj =  objectsManager.getObjectByName(objectName!!)!!
 
         for (data in obj.datas) {
-
             @Suppress("UNUSED_EXPRESSION")
             when (data.mode){
                 AvPhoneObjectData.Mode.UP -> if (Tools.rand(0, 2000) > 500) data.execMode()
@@ -433,12 +390,6 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         }
         objectsManager.saveOnPref()
         startTimer()
-
     }
-    companion object {
-        const val TAG = "RunFragment"
-    }
-
-
 }
 

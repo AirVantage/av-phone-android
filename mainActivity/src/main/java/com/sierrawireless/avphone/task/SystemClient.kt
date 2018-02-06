@@ -1,6 +1,5 @@
 package com.sierrawireless.avphone.task
 
-import android.util.Log
 import com.sierrawireless.avphone.tools.Tools
 import net.airvantage.model.AirVantageException
 import net.airvantage.model.Application
@@ -37,8 +36,6 @@ class SystemClient internal constructor(private val client: AirVantageClient) : 
         } else {
             gateway.serialNumber = (serialNumber + "-ANDROID-" + type).toUpperCase()
         }
-        Log.d(TAG, "createSystem: Gateway exit " + exist)
-        Log.d(TAG, "gateway is " + (serialNumber + "-ANDROID-" + type).toUpperCase())
         system.name = "$deviceName de $userName($type)"
 
         system.gateway = gateway
@@ -65,9 +62,4 @@ class SystemClient internal constructor(private val client: AirVantageClient) : 
     override fun deleteSystem(system: net.airvantage.model.AvSystem) {
         client.deleteSystem(system)
     }
-
-    companion object {
-        private const val TAG = "SystemClient"
-    }
-
 }

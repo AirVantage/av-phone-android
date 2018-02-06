@@ -25,7 +25,7 @@ object AvPhoneApplication {
         return listOf(mqtt)
     }
 
-    fun createApplicationData(customData: ArrayList<AvPhoneObjectData>, `object`: String): List<ApplicationData> {
+    fun createApplicationData(customData: ArrayList<AvPhoneObjectData>, obj: String): List<ApplicationData> {
 
         // <data>
         // <encoding type="MQTT">
@@ -67,7 +67,7 @@ object AvPhoneApplication {
                 "string"
             }
 
-            asset.data!!.add(Variable(`object` + "." + AvPhoneData.CUSTOM + pos.toString(), data.name, type))
+            asset.data!!.add(Variable(obj + "." + AvPhoneData.CUSTOM + pos.toString(), data.name, type))
             pos++
         }
 
