@@ -185,5 +185,14 @@
     <string name="menu_edit">Edit</string>
     <string name="delete_object_menu">delete</string>
     <string name="none">none</string>
+    <string name="off">OFF</string>
+    <string name="on">ON</string>
+    <string name="send">Send</string>
+    <string name="phone">Phone</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="name">Name</string>
+    <string name="add">Add</string>
+    <string name="done">Done</string>
 
 </resources>

@@ -143,9 +143,6 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
         // Make links clickable in info view.
 
-        run_info_message.linksClickable = true
-        run_info_message.movementMethod = LinkMovementMethod.getInstance()
-
         // Might had those before initialization
         if (systemUid != null && systemName != null) {
             setLinkToSystem(systemUid, systemName)
@@ -235,27 +232,6 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             return
         }
 
-        val infoMessageView = lView!!.findViewById<TextView>(R.id.run_info_message)
-
-        val infoMessage: String
-        if (systemUid != null) {
-
-            val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(activity)
-            val link = String.format("https://%s/monitor/systems/systemDetails?uid=%s", avPhonePrefs.serverHost,
-                    systemUid)
-
-            infoMessage = getString(R.string.run_info_message_link, link, systemName)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                infoMessageView.text = Html.fromHtml(infoMessage, Html.FROM_HTML_MODE_LEGACY)
-            }else{
-                @Suppress("DEPRECATION")
-                infoMessageView.text = Html.fromHtml(infoMessage)
-            }
-
-        } else {
-            infoMessage = getString(R.string.run_info_message, DeviceInfo.getUniqueId(activity))
-            infoMessageView.text = infoMessage
-        }
     }
 
     override fun onResume() {

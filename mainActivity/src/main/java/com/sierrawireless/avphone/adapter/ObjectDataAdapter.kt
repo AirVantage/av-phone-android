@@ -1,14 +1,13 @@
 package com.sierrawireless.avphone.adapter
 
 import android.app.Activity
+import android.support.v4.content.ContextCompat
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
-import com.sierrawireless.avphone.ConfigureFragment
-import com.sierrawireless.avphone.ObjectsManager
 import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.activity.ObjectConfigureActivity
 import java.util.*
@@ -62,8 +61,10 @@ class ObjectDataAdapter(private val activity: Activity, private val resource: In
 
         if (position == list.size - 1) {
             deleteBtn.visibility = View.GONE
+            name!!.setCompoundDrawablesWithIntrinsicBounds(null,  null, ContextCompat.getDrawable(lConvertView.context, R.drawable.ic_add_data),null)
         }else {
-            val deleteBtn: ImageButton = lConvertView!!.findViewById(R.id.menuDeleteBtn)
+            @Suppress("NAME_SHADOWING")
+            val deleteBtn: ImageButton = lConvertView.findViewById(R.id.menuDeleteBtn)
             val deleteActionBtn: Button = lConvertView.findViewById(R.id.menuDeleteActionBtn)
             deleteActionBtn.tag = position
             deleteBtn.setOnClickListener {
@@ -78,6 +79,6 @@ class ObjectDataAdapter(private val activity: Activity, private val resource: In
 
         name!!.text = list[position]
 
-        return lConvertView!!
+        return lConvertView
     }
 }

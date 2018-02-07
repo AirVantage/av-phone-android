@@ -42,7 +42,6 @@ import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_main.*
 import net.airvantage.model.User
 import net.airvantage.utils.PreferenceUtils
-import org.jetbrains.anko.collections.forEachByIndex
 import org.jetbrains.anko.longToast
 import java.util.*
 
@@ -616,7 +615,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                 .commit()
         var position:Int? = null
         FRAGMENT_LIST!!.forEachIndexed {
-            index, menuEntry ->  if (menuEntry.name!! == FRAGMENT_CONFIGURE) {
+            index, menuEntry ->  if (menuEntry.name == FRAGMENT_CONFIGURE) {
                 position = index
             }
         }
