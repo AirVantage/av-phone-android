@@ -41,7 +41,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.baoyz.swipemenulistview.SwipeMenuListView
+        <ListView
             android:id="@+id/objectConfigure"
             android:layout_width="336dp"
             android:layout_height="407dp"
@@ -49,6 +49,8 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:focusable="true"
+            android:descendantFocusability="blocksDescendants"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

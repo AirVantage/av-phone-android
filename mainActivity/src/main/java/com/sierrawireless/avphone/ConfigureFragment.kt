@@ -1,17 +1,16 @@
 package com.sierrawireless.avphone
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
-import com.baoyz.swipemenulistview.SwipeMenuCreator
-import com.baoyz.swipemenulistview.SwipeMenuItem
 import com.sierrawireless.avphone.activity.AuthorizationActivity
 import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.activity.ObjectConfigureActivity
@@ -20,7 +19,6 @@ import com.sierrawireless.avphone.auth.AuthUtils
 import com.sierrawireless.avphone.task.IAsyncTaskFactory
 import com.sierrawireless.avphone.task.SyncWithAvParams
 import com.sierrawireless.avphone.tools.DeviceInfo
-import com.sierrawireless.avphone.tools.Tools
 import kotlinx.android.synthetic.main.fragment_configure.*
 import net.airvantage.utils.PreferenceUtils
 import java.util.*
@@ -30,7 +28,7 @@ open class ConfigureFragment : AvPhoneFragment() {
 
     private var objectsManager: ObjectsManager? = null
     private var menu: ArrayList<String> = ArrayList()
-    private var delete: Boolean = false
+    internal var delete: Boolean = false
 
     private var lView: View? = null
 
@@ -53,6 +51,7 @@ open class ConfigureFragment : AvPhoneFragment() {
     }
 
     override fun onStart() {
+        instance = this
         super.onStart()
         objectsManager = ObjectsManager.getInstance()
         errorMessageView = configure_error_message
@@ -65,52 +64,23 @@ open class ConfigureFragment : AvPhoneFragment() {
         }
 
 
-
-        val creator = SwipeMenuCreator { menu ->
-            when (menu.viewType) {
-                0 -> {
-                    // create "delete" item
-                    val deleteItem = SwipeMenuItem(
-                            activity.baseContext)
-                    // set item background
-                    deleteItem.background = ColorDrawable(Color.rgb(0xF9,
-                            0x3F, 0x25))
-                    // set item width
-                    deleteItem.width = Tools.dp2px(
-                            activity.baseContext).toInt()
-                    // set a icon
-                    deleteItem.setIcon(android.R.drawable.ic_menu_delete)
-                    // add to menu
-                    menu.addMenuItem(deleteItem)
-                }
-            }
-        }
-
-
-        objectConfigure.setOnMenuItemClickListener { position, _, index ->
-            when (index) {
-                0 -> {
-                    //delete
-                    objectsManager!!.setSavedPosition(position)
-                    delete()
-                    delete = true
-                }
-            }
-            false
-        }
-
-        objectConfigure.setMenuCreator(creator)
-
-        val adapter = ObjectAdapter(activity, android.R.layout.simple_list_item_1, menu)
+        val adapter = ObjectAdapter(activity, R.layout.menu_objects, menu)
 
         objectConfigure.adapter = adapter
 
         objectConfigure.onItemClickListener = AdapterView.OnItemClickListener { _, view, i, _ ->
-            //Open a new intent with the selected Object
-            val intent = Intent(view.context, ObjectConfigureActivity::class.java)
-            intent.putExtra(INDEX, i)
+            val deleteActionBtn: Button = view.findViewById(R.id.menuDeleteActionBtn)
+            if (deleteActionBtn.visibility == View.VISIBLE) {
+                val deleteBtn:ImageButton = view.findViewById(R.id.menuDeleteBtn)
+                deleteBtn.visibility = View.VISIBLE
+                deleteActionBtn.visibility = View.GONE
+            } else {
+                //Open a new intent with the selected Object
+                val intent = Intent(view.context, ObjectConfigureActivity::class.java)
+                intent.putExtra(INDEX, i)
 
-            startActivityForResult(intent, CONFIGURE)
+                startActivityForResult(intent, CONFIGURE)
+            }
         }
 
 
@@ -123,6 +93,11 @@ open class ConfigureFragment : AvPhoneFragment() {
             startActivityForResult(intent, CONFIGURE)
         }
 
+    }
+
+    override fun onStop() {
+        super.onStop()
+        instance = null
     }
 
     private fun checkCredentials(): Boolean {
@@ -175,7 +150,7 @@ open class ConfigureFragment : AvPhoneFragment() {
         }
     }
 
-    private fun delete() {
+    internal fun delete() {
         if (checkCredentials()) {
             val auth = authManager!!.authentication
             if (!auth!!.isExpired) {
@@ -242,6 +217,8 @@ open class ConfigureFragment : AvPhoneFragment() {
         var INDEX = "index"
         var CONFIGURE = 0
         var POS = "position"
+        @SuppressLint("StaticFieldLeak")
+        var instance:ConfigureFragment? = null
     }
 
 }

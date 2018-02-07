@@ -1,12 +1,12 @@
 package com.sierrawireless.avphone.adapter
 
 import android.app.Activity
-import android.graphics.Typeface
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
-import android.widget.TextView
+import android.widget.*
+import com.sierrawireless.avphone.ConfigureFragment
 import com.sierrawireless.avphone.ObjectsManager
+import com.sierrawireless.avphone.R
 import java.util.*
 
 
@@ -27,21 +27,6 @@ class ObjectAdapter(private val activity: Activity, private val resource: Int, v
         return 0
     }
 
-    override fun getViewTypeCount(): Int {
-        // menu type count
-        return 2
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        // current menu type
-        // The current item must not be deleted
-        // to avoid crash if is running....
-        return if (position == objectsManager.current) {
-            1
-        } else {
-            0
-        }
-    }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var lConvertView = convertView
@@ -53,17 +38,33 @@ class ObjectAdapter(private val activity: Activity, private val resource: Int, v
 
             lConvertView = inflater.inflate(resource, null)
 
-            name = lConvertView!!.findViewById(android.R.id.text1)
+            name = lConvertView!!.findViewById(R.id.text)
+        }
+        val deleteBtn:ImageButton = lConvertView!!.findViewById(R.id.menuDeleteBtn)
+        val deleteActionBtn: Button = lConvertView.findViewById(R.id.menuDeleteActionBtn)
+        deleteActionBtn.tag = position
+        deleteBtn.setOnClickListener {
+            deleteBtn.visibility = View.GONE
+            deleteActionBtn.visibility = View.VISIBLE
+            deleteActionBtn.setOnClickListener{
+                val objectsManager = ObjectsManager.getInstance()
+                val position:Int = it.tag as Int
+                //delete
+                objectsManager!!.setSavedPosition(position)
+                ConfigureFragment.instance!!.delete()
+                ConfigureFragment.instance!!.delete = true
+
+            }
         }
 
         if (position == objectsManager.current) {
-            name!!.setTypeface(null, Typeface.BOLD)
+            deleteBtn.visibility = View.GONE
         } else {
-            name!!.setTypeface(null, Typeface.NORMAL)
+            deleteBtn.visibility = View.VISIBLE
         }
         name!!.text = list[position]
 
-        return lConvertView!!
+        return lConvertView
     }
 
 }

@@ -16,6 +16,7 @@ import android.os.IBinder
 import android.preference.PreferenceManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.FragmentActivity
+import android.support.v4.content.ContextCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.util.Log
@@ -41,6 +42,7 @@ import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_main.*
 import net.airvantage.model.User
 import net.airvantage.utils.PreferenceUtils
+import org.jetbrains.anko.collections.forEachByIndex
 import org.jetbrains.anko.longToast
 import java.util.*
 
@@ -76,6 +78,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     private var serviceSendData: Boolean? = false
     internal lateinit var objectsManager: ObjectsManager
     var user: User? = null
+    private var fragmentsMapping = HashMap<String, Fragment>()
 
     override val isLogged: Boolean
         get() = this.authentication != null && !this.authentication!!.isExpired(Date())
@@ -111,14 +114,14 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         val tmp = ArrayList<MenuEntry>()
         if (user != null) {
             tmp.add(MenuEntry("LOGGED AS", MenuEntryType.TITLE))
-            tmp.add(MenuEntry(user!!.name!!, MenuEntryType.USER))
-            tmp.add(MenuEntry(user!!.profile!!.name!!, MenuEntryType.USER))
-            tmp.add(MenuEntry(user!!.company!!.name!!, MenuEntryType.USER))
-            tmp.add(MenuEntry(user!!.server!!, MenuEntryType.USER))
+            tmp.add(MenuEntry(user!!.name!!, MenuEntryType.USER, drawable = ContextCompat.getDrawable(this, R.drawable.ic_user)))
+            tmp.add(MenuEntry(user!!.profile!!.name!!, MenuEntryType.USER, drawable = ContextCompat.getDrawable(this, R.drawable.ic_group)))
+            tmp.add(MenuEntry(user!!.company!!.name!!, MenuEntryType.USER, drawable = ContextCompat.getDrawable(this, R.drawable.ic_departement)))
+            tmp.add(MenuEntry(user!!.server!!, MenuEntryType.USER, drawable = ContextCompat.getDrawable(this, R.drawable.ic_domain)))
         }
-        tmp.add(MenuEntry("SIMULATED OBJECTS", MenuEntryType.TITLE))
-        objectsManager.objects.mapTo(tmp) { MenuEntry(it.name!!, MenuEntryType.COMMAND) }
-        tmp.add(MenuEntry(FRAGMENT_CONFIGURE, MenuEntryType.COMMAND))
+        tmp.add(MenuEntry("SIMULATED OBJECTS", MenuEntryType.TITLE, button = true))
+        objectsManager.objects.mapTo(tmp) { MenuEntry(it.name!!, MenuEntryType.COMMAND, drawable = ContextCompat.getDrawable(this, R.drawable.ic_object)) }
+   //     tmp.add(MenuEntry(FRAGMENT_CONFIGURE, MenuEntryType.COMMAND))
 
         //tmp.add(FRAGMENT_SETTINGS);
         tmp.add(MenuEntry("NEED HELP", MenuEntryType.TITLE))
@@ -602,6 +605,35 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
     }
 
+
+    fun goConfigureFragment() {
+        val fragment = fragmentsMapping[FRAGMENT_CONFIGURE]
+        // Insert the fragment by replacing any existing fragment
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .addToBackStack(null)
+                .commit()
+        var position:Int? = null
+        FRAGMENT_LIST!!.forEachIndexed {
+            index, menuEntry ->  if (menuEntry.name!! == FRAGMENT_CONFIGURE) {
+                position = index
+            }
+        }
+
+        if (position != null) {
+            // Highlight the selected item, update the title, and close the drawer
+            left_drawer.setItemChecked(position!!, true)
+            left_drawer.setItemChecked(position!!, true)
+            title = FRAGMENT_LIST!![position!!].name
+            left_drawer.setSelection(position!!)
+            lastPosition = position!!
+        }
+        drawer_layout.closeDrawer(left_drawer)
+
+
+    }
+
     private fun initFragments(): Map<String, Fragment> {
 
         if (configureFragment == null) {
@@ -626,7 +658,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         }
 
 
-        val fragmentsMapping = HashMap<String, Fragment>()
+       fragmentsMapping = HashMap<String, Fragment>()
         fragmentsMapping[FRAGMENT_CONFIGURE] = configureFragment!!
         if (isLogged) {
             fragmentsMapping[FRAGMENT_LOGOUT] = homeFragment!!

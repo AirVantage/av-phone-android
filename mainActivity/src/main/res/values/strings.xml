@@ -181,5 +181,9 @@
     <string name="add_new_object">Add new system</string>
     <string name="add_new_data">Add new data</string>
     <string name="progress_deleting_system">Deleting system</string>
+    <string name="menuicon">menuicon</string>
+    <string name="menu_edit">Edit</string>
+    <string name="delete_object_menu">delete</string>
+    <string name="none">none</string>
 
 </resources>

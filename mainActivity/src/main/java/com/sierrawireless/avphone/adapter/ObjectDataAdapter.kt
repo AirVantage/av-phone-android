@@ -4,7 +4,13 @@ import android.app.Activity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
+import com.sierrawireless.avphone.ConfigureFragment
+import com.sierrawireless.avphone.ObjectsManager
+import com.sierrawireless.avphone.R
+import com.sierrawireless.avphone.activity.ObjectConfigureActivity
 import java.util.*
 
 
@@ -49,7 +55,25 @@ class ObjectDataAdapter(private val activity: Activity, private val resource: In
 
             lConvertView = inflater.inflate(resource, null)
 
-            name = lConvertView!!.findViewById(android.R.id.text1)
+            name = lConvertView!!.findViewById(R.id.text)
+        }
+
+        val deleteBtn: ImageButton = lConvertView!!.findViewById(R.id.menuDeleteBtn)
+
+        if (position == list.size - 1) {
+            deleteBtn.visibility = View.GONE
+        }else {
+            val deleteBtn: ImageButton = lConvertView!!.findViewById(R.id.menuDeleteBtn)
+            val deleteActionBtn: Button = lConvertView.findViewById(R.id.menuDeleteActionBtn)
+            deleteActionBtn.tag = position
+            deleteBtn.setOnClickListener {
+                deleteBtn.visibility = View.GONE
+                deleteActionBtn.visibility = View.VISIBLE
+                deleteActionBtn.setOnClickListener {
+                    ObjectConfigureActivity.instance!!.obj!!.datas.removeAt(position)
+                    ObjectConfigureActivity.instance!!.menuGeneration()
+                }
+            }
         }
 
         name!!.text = list[position]

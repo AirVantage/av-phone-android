@@ -8,4 +8,4 @@ internal enum class MenuEntryType {
     COMMAND
 }
 
-class MenuEntry internal constructor(var name: String, var type: MenuEntryType, var drawable:Drawable? = null)
+class MenuEntry internal constructor(var name: String, var type: MenuEntryType, var drawable:Drawable? = null, var button:Boolean = false)
