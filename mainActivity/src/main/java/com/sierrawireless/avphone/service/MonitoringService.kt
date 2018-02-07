@@ -218,6 +218,7 @@ class MonitoringService : Service() {
         stopForeground(true)
     }
 
+    @Suppress("DEPRECATION")
     @SuppressLint("MissingPermission")
     private fun setCustomDataForUi():NewData {
         val location = lastKnownLocation
@@ -268,11 +269,25 @@ class MonitoringService : Service() {
             data.longitude = location.longitude
             lastLocation = location.time
         }
+        val connManager: ConnectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+        val mMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
 
-        // bytes sent/received
-        data.bytesReceived = TrafficStats.getMobileRxBytes()
-        data.bytesSent = TrafficStats.getMobileTxBytes()
-
+        when {
+            mWifi.isConnected -> {
+                // bytes sent/received
+                data.bytesReceived = TrafficStats.getTotalRxBytes()
+                data.bytesSent = TrafficStats.getTotalTxBytes()
+            }
+            mMobile.isConnected -> {
+                data.bytesReceived = TrafficStats.getMobileRxBytes()
+                data.bytesSent = TrafficStats.getMobileTxBytes()
+            }
+            else -> {
+                data.bytesReceived = 0
+                data.bytesSent = 0
+            }
+        }
         //execute action on current object datas
         //objectsManager!!.execOnCurrent()
         // Custom data
