@@ -116,16 +116,20 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         infoMessageView.text = ""
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        val auth = AuthUtils.activityResultAsAuthentication(requestCode, resultCode, data)
-        if (auth != null) {
-            syncWithAv(auth)
+        if (data != null) {
+
+
+            val auth = AuthUtils.activityResultAsAuthentication(requestCode, resultCode, data!!)
+            if (auth != null) {
+                syncWithAv(auth)
+            }
+            MainActivity.instance.onAuthentication(auth!!)
+            MainActivity.instance.readAuthenticationFromPreferences()
+            MainActivity.instance.loadMenu()
         }
-        MainActivity.instance.onAuthentication(auth!!)
-        MainActivity.instance.readAuthenticationFromPreferences()
-        MainActivity.instance.loadMenu()
     }
 
 

@@ -1,50 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/request_authorization"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
     <RadioGroup
+        android:id="@+id/radioGroup"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:checkedButton="@+id/auth_btn_eu"
-        android:paddingTop="10dp" >
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <RadioButton
             android:id="@+id/auth_btn_na"
-            android:text="@string/auth_login_na"
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:buttonTint="@color/sierrared" />
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/sierrared"
+            android:text="@string/auth_login_na" />
 
         <RadioButton
             android:id="@+id/auth_btn_eu"
-            android:text="@string/auth_login_eu"
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:buttonTint="@color/sierrared" />
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/sierrared"
+            android:text="@string/auth_login_eu" />
 
         <RadioButton
             android:id="@+id/auth_btn_custom"
-            android:text="@string/auth_login_custom"
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:buttonTint="@color/sierrared" />
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/sierrared"
+            android:text="@string/auth_login_custom" />
 
     </RadioGroup>
 
     <View
+        android:id="@+id/view"
         android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:background="@android:color/darker_gray" />
+        android:layout_height="0dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
     <WebView
         android:id="@+id/authorization_webview"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/view">
 
-</LinearLayout>
+    </WebView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="0"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+</android.support.constraint.ConstraintLayout>

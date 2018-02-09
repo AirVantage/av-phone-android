@@ -47,7 +47,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     // Alarm button
     private var onAlarmClick: View.OnClickListener = View.OnClickListener {
         objectsManager = ObjectsManager.getInstance()
-        var obj = objectsManager.currentObject!!
+        val obj = objectsManager.currentObject!!
         obj.alarm = !obj.alarm
         if (!monitorServiceManager!!.sendAlarmEvent(obj.alarm)) {
             obj.alarm = !obj.alarm
@@ -58,11 +58,11 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
     private fun setAlarmButton() {
-        var obj = objectsManager.currentObject!!
-        if (obj.alarm) {
-            alarm_btn.text = "Cancel"
+        val obj = objectsManager.currentObject!!
+        alarm_btn.text = if (obj.alarm) {
+            getString(R.string.cancel)
         }else{
-            alarm_btn.text = "Raise"
+            getString(R.string.reaise)
         }
     }
 
@@ -122,11 +122,6 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         LocalBroadcastManager.getInstance(activity).registerReceiver(viewUpdater,
                 IntentFilter(LogMessage.LOG_EVENT))
 
-        val isServiceRunning = monitorServiceManager!!.isServiceRunning()
-
-
-        service_switch.isChecked = isServiceRunning
-
         if (!this.monitorServiceManager!!.isServiceStarted(objectName!!)) {
             if (this.monitorServiceManager!!.oneServiceStarted()) {
                 //stop the service
@@ -135,6 +130,8 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             //registerNewDevice();
             this.monitorServiceManager!!.startMonitoringService(objectName!!)
         }
+        val isServiceRunning = monitorServiceManager!!.isServiceRunning()
+        service_switch.isChecked = isServiceRunning
 
         service_switch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {

@@ -3,6 +3,7 @@ package com.sierrawireless.avphone.activity
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -87,6 +88,15 @@ class AuthorizationActivity : Activity() {
         webview.settings.javaScriptEnabled = true
         // attach WebViewClient to intercept the callback url
         webview.webViewClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                showProgressDialog()
+                super.onPageStarted(view, url, favicon)
+            }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                hideProgressDialog()
+                super.onPageFinished(view, url)
+            }
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
 
                 val auth = authUrlParser.parseUrl(request.url.toString(), Date())
@@ -111,6 +121,15 @@ class AuthorizationActivity : Activity() {
         // Example :
         // https://na.airvantage.net/api/oauth/authorize?client_id=54d4faa5343d49fba03f2a2ec1f210b9&response_type=token&redirect_uri=oauth://airvantage
         webview.loadUrl(authUrl)
+        progressBar.visibility = View.GONE
+    }
+
+    private fun showProgressDialog() {
+        progressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressDialog() {
+        progressBar.visibility = View.GONE
     }
 
     private fun sendAuthentication(auth: Authentication?) {

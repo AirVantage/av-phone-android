@@ -51,6 +51,9 @@ class MenuAdapter internal constructor(private val activity: Activity, var list:
             name.text = entry.name
             name.setBackgroundColor(Color.WHITE)
             name.setTextColor(ContextCompat.getColor(lConvertView.context, R.color.navy))
+            if (entry.type == MenuEntryType.USER) {
+                name.setTypeface(null, Typeface.ITALIC)
+            }
         }
         if (entry.drawable != null) {
             name.setCompoundDrawablesWithIntrinsicBounds(entry.drawable, null, null, null)

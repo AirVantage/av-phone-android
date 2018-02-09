@@ -89,6 +89,10 @@ class AvPhoneObjectData(var name: String, var unit: String, var defaults: String
         }
         if (current!! > 0)
             current = current!! - 1
+        else if (current == 0) {
+            current = Integer.parseInt(defaults)
+
+        }
         return current!!.toString()
     }
 

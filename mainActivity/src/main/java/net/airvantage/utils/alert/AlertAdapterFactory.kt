@@ -44,9 +44,9 @@ class AlertAdapterFactory(private val server: String, private val accessToken: S
             }
         }
 
-        if (founds[ALERT_V2_API_PREFIX]!!) {
+        if (founds[ALERT_V2_API_PREFIX] != null && founds[ALERT_V2_API_PREFIX]!!) {
             return urls[ALERT_V2_API_PREFIX]!!
-        } else if (founds[ALERT_V1_API_PREFIX]!!) {
+        } else if (founds[ALERT_V1_API_PREFIX] != null && founds[ALERT_V1_API_PREFIX]!!) {
             return urls[ALERT_V1_API_PREFIX]!!
         }
 

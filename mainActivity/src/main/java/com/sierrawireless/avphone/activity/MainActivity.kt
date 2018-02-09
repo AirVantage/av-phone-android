@@ -86,10 +86,13 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     private var connection: ServiceConnection = object : ServiceConnection {
 
         override fun onServiceConnected(arg0: ComponentName, binder: IBinder) {
+            Log.d(TAG, "***********************on Service Connected received")
             monitoringService = (binder as ServiceBinder).service
 
             if (monitoringServiceListener != null) {
-                monitoringServiceListener!!.onServiceStarted(monitoringService!!)
+                runOnUiThread {
+                    monitoringServiceListener!!.onServiceStarted(monitoringService!!)
+                }
             }
 
         }

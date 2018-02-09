@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sierrawireless.avphone"
-    android:versionCode="28">
+    android:versionCode="30">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -43,7 +43,7 @@
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="9a96a8b13fb7d66d3faa24132dfc4d1891d1604e" />
+            android:value="de8a3057ae740f20f5f7b26850063e7abb9a5cd1" />
 
         <activity android:name=".activity.ObjectDataActivity"
             android:theme="@style/AppTheme"/>

@@ -7,14 +7,14 @@ import net.airvantage.model.alert.v1.AlertRule
 import net.airvantage.utils.IAirVantageClient
 
 import com.sierrawireless.avphone.model.AvPhoneApplication
+import com.sierrawireless.avphone.tools.Tools
 import net.airvantage.model.AvSystem
 
 class AlertRuleClient internal constructor(private val client: IAirVantageClient) : IAlertRuleClient {
 
     @Throws(IOException::class, AirVantageException::class)
     override fun getAlertRule(serialNumber: String, system: AvSystem): AlertRule? {
-        val alertRuleName = system.name + " " + AvPhoneApplication.ALERT_RULE_NAME
-        return client.getAlertRuleByName(alertRuleName, system)
+        return client.getAlertRuleByName(Tools.buildAlertName(), system)
     }
 
     @Throws(IOException::class, AirVantageException::class)

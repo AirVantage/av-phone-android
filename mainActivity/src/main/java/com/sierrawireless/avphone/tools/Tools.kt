@@ -1,6 +1,8 @@
 package com.sierrawireless.avphone.tools
 
 import android.content.Context
+import com.sierrawireless.avphone.ObjectsManager
+import com.sierrawireless.avphone.model.AvPhoneApplication
 import java.util.*
 
 object Tools {
@@ -21,5 +23,11 @@ object Tools {
 
     fun rand(min:Int, max:Int):Long {
         return (min..max).random()
+    }
+
+    fun buildAlertName():String {
+        var objectsManager = ObjectsManager.getInstance()
+        var systemType = objectsManager.savedObjectName
+        return systemType + " " + AvPhoneApplication.ALERT_RULE_NAME + " on " + DeviceInfo.deviceName + "..."
     }
 }

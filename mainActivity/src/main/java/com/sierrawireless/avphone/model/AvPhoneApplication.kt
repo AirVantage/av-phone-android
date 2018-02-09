@@ -1,6 +1,7 @@
 package com.sierrawireless.avphone.model
 
 import com.sierrawireless.avphone.ObjectsManager
+import com.sierrawireless.avphone.tools.Tools
 import net.airvantage.model.*
 import net.airvantage.model.alert.v1.AlertRule
 import net.airvantage.model.alert.v1.Condition
@@ -98,7 +99,7 @@ object AvPhoneApplication {
         val rule = AlertRule()
 
         rule.active = true
-        rule.name = system.name + " " + ALERT_RULE_NAME
+        rule.name = Tools.buildAlertName()
         rule.eventType = "event.system.incoming.communication"
 
         val alarmCondition = Condition()
