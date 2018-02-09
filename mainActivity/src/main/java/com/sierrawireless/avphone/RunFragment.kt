@@ -48,11 +48,13 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     private var onAlarmClick: View.OnClickListener = View.OnClickListener {
         objectsManager = ObjectsManager.getInstance()
         var obj = objectsManager.currentObject!!
-
-        monitorServiceManager!!.sendAlarmEvent(obj.alarm)
         obj.alarm = !obj.alarm
-        objectsManager.saveOnPref()
-        setAlarmButton()
+        if (!monitorServiceManager!!.sendAlarmEvent(obj.alarm)) {
+            obj.alarm = !obj.alarm
+        }else {
+            objectsManager.saveOnPref()
+            setAlarmButton()
+        }
     }
 
     private fun setAlarmButton() {

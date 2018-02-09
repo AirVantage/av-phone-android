@@ -431,11 +431,11 @@ class MonitoringService : Service() {
         }
     }
 
-    fun sendAlarmEvent(on:Boolean) {
+    fun sendAlarmEvent(on:Boolean):Boolean {
 
         if (this.client == null) {
             toast("Alarm client is not available,wait...")
-            return
+            return false
         }
 
         val data = NewData()
@@ -461,7 +461,7 @@ class MonitoringService : Service() {
         sendDataTask.addProgressListener { result ->
             lastLog = result.lastLog
         }
-
+        return true
     }
 
     override fun onBind(arg0: Intent): IBinder? {

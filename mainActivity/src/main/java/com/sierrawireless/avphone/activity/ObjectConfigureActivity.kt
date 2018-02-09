@@ -94,7 +94,6 @@ class ObjectConfigureActivity : Activity() {
     override fun onResume() {
         super.onResume()
         if (position == -1) {
-            add = true
             obj = AvPhoneObject()
             obj!!.name = ""
             titleObject.setText(R.string.add_new_object)
@@ -104,6 +103,7 @@ class ObjectConfigureActivity : Activity() {
             obj = objectsManager.getObjectByIndex(position)
             if (!add) {
                 nameObject.visibility = View.GONE
+                objectNameEdit.visibility = View.GONE
             }
             titleObject.text = obj!!.name
         }

@@ -12,6 +12,7 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
 import android.preference.PreferenceManager
 import android.support.v4.app.ActivityCompat
@@ -455,9 +456,9 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         monitoringService?.start()
     }
 
-    override fun sendAlarmEvent(set:Boolean) {
+    override fun sendAlarmEvent(set:Boolean):Boolean {
         //if (boundToMonitoringService && monitoringService != null) {
-        monitoringService!!.sendAlarmEvent(set)
+        return monitoringService!!.sendAlarmEvent(set)
         // }
     }
 
@@ -598,11 +599,12 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         val position = FRAGMENT_LIST!!.size - 1
         val fragment = getFragment(position)
         // Insert the fragment by replacing any existing fragment
-        fragmentManager
+        Handler().post({
+            fragmentManager
                 .beginTransaction()
                 .replace(R.id.content_frame, fragment)
                 .addToBackStack(null)
-                .commit()
+                .commit() })
 
         // Highlight the selected item, update the title, and close the drawer
         left_drawer.setItemChecked(position, true)

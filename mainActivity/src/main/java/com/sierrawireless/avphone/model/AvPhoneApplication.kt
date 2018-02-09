@@ -109,7 +109,7 @@ object AvPhoneApplication {
 
         val systemCondition = Condition()
         systemCondition.eventProperty = "system.data.value"
-        systemCondition.eventPropertyKey = "System.id"
+        systemCondition.eventPropertyKey = "system.id"
         systemCondition.operator = "EQUALS"
         systemCondition.value = system.uid
 
