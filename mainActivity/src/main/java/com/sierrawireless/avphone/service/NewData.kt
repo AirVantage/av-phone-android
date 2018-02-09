@@ -3,6 +3,7 @@ package com.sierrawireless.avphone.service
 import android.content.Intent
 import android.os.Bundle
 import com.sierrawireless.avphone.ObjectsManager
+import com.sierrawireless.avphone.model.AvPhoneObjectData
 
 class NewData internal constructor() : Intent(NEW_DATA) {
 
@@ -99,8 +100,8 @@ class NewData internal constructor() : Intent(NEW_DATA) {
         val obj = objectsManager.currentObject
         var pos: Int? = 1
         for (data in obj!!.datas) {
-            if (data.isInteger) {
-                this.putExtra(obj.name + "." + CUSTOM + pos!!.toString(), Integer.parseInt(data.execMode()))
+            if (data.mode != AvPhoneObjectData.Mode.None) {
+                this.putExtra(obj.name + "." + CUSTOM + pos!!.toString(), data.current!!)
             } else {
                 this.putExtra(obj.name + "." + CUSTOM + pos!!.toString(), data.defaults)
             }

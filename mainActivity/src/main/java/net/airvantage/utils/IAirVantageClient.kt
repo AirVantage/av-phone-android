@@ -18,10 +18,13 @@ interface IAirVantageClient {
     val currentUser: User
 
     @Throws(IOException::class, AirVantageException::class)
-    fun createAlertRule(alertRule: AlertRule, application: String)
+    fun createAlertRule(alertRule: AlertRule, application: String, system: AvSystem)
 
     @Throws(IOException::class, AirVantageException::class)
-    fun getAlertRuleByName(name: String, application: String): AlertRule?
+    fun getAlertRuleByName(name: String, system: AvSystem): AlertRule?
+
+    @Throws(IOException::class, AirVantageException::class)
+    fun deleteAlertRule(alertRule: AlertRule)
 
     @Throws(IOException::class, AirVantageException::class)
     fun setApplicationData(applicationUid: String, data: List<ApplicationData>)

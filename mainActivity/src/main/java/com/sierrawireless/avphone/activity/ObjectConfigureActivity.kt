@@ -24,6 +24,7 @@ class ObjectConfigureActivity : Activity() {
     internal var objectsManager: ObjectsManager = ObjectsManager.getInstance()
     private var menu: ArrayList<String> = ArrayList()
     private var position: Int = 0
+    private var add = false
     internal var obj: AvPhoneObject? = null
 
     private var context: Context? = null
@@ -40,22 +41,10 @@ class ObjectConfigureActivity : Activity() {
 
 
 
+
         val intent = intent
         position = intent.getIntExtra(ConfigureFragment.INDEX, -1)
-
-        if (position == -1) {
-            obj = AvPhoneObject()
-            titleObject.setText(R.string.add_new_object)
-            objectsManager.objects.add(obj!!)
-            position = objectsManager.objects.size - 1
-        } else {
-            obj = objectsManager.getObjectByIndex(position)
-            nameObject.visibility = View.GONE
-            objectNameEdit.visibility = View.GONE
-            titleObject.text = obj!!.name
-        }
-
-        menuGeneration()
+        add = position == -1
 
         cancel.setOnClickListener {
             //reload object from list
@@ -66,7 +55,7 @@ class ObjectConfigureActivity : Activity() {
         }
 
         save.setOnClickListener {
-            if (objectNameEdit.visibility != View.GONE) {
+            if (objectNameEdit.visibility != View.GONE || add) {
                 obj!!.name = objectNameEdit.text.toString()
             }
             obj!!.datas
@@ -82,6 +71,7 @@ class ObjectConfigureActivity : Activity() {
 
 
         listView.onItemClickListener = AdapterView.OnItemClickListener { _, view, i, _ ->
+            obj!!.name = objectNameEdit.text.toString()
             val lIntent = Intent(view.context, ObjectDataActivity::class.java)
             lIntent.putExtra(OBJECT_POSITION, position)
             lIntent.putExtra(DATA_POSITION, i)
@@ -95,6 +85,7 @@ class ObjectConfigureActivity : Activity() {
 
     }
 
+
     override fun onDestroy() {
         super.onDestroy()
         instance = null
@@ -102,6 +93,20 @@ class ObjectConfigureActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        if (position == -1) {
+            add = true
+            obj = AvPhoneObject()
+            obj!!.name = ""
+            titleObject.setText(R.string.add_new_object)
+            objectsManager.objects.add(obj!!)
+            position = objectsManager.objects.size - 1
+        } else {
+            obj = objectsManager.getObjectByIndex(position)
+            if (!add) {
+                nameObject.visibility = View.GONE
+            }
+            titleObject.text = obj!!.name
+        }
         menuGeneration()
     }
 

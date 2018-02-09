@@ -78,12 +78,12 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
             publishProgress(SyncProgress.CHECKING_ALERT_RULE)
 
-            val alertRule = this.alertRuleClient.getAlertRule(serialNumber, application.uid!!)
+            val alertRule = this.alertRuleClient.getAlertRule(serialNumber, system!!)
             if (alertRule == null) {
 
                 publishProgress(SyncProgress.CREATING_ALERT_RULE)
 
-                this.alertRuleClient.createAlertRule(application.uid!!)
+                this.alertRuleClient.createAlertRule(application.uid!!, system!!)
             }
 
             publishProgress(SyncProgress.UPDATING_APPLICATION)

@@ -90,7 +90,7 @@
     
     <string name="home_image_alt"></string>
     
-    <string name="home_simulate_message"><b>Simulate</b> any object with your phone</string>
+    <string name="home_simulate_message"><b>Simulate</b> any object with your phone.\nClick on menu\nClick on simulated object to go on simulation page</string>
     
     <string name="home_login_message_str"> <![CDATA[<b>Create a simulated object</b> automatically in your <font color="#E53B30">AirVantage</font> account]]></string>
 
@@ -148,7 +148,7 @@
         ]]>
     </string>
     <string name="run_send_data">Send Data</string>
-    <string name="run_activate_alarm">Send Alarm</string>
+    <string name="run_activate_alarm">Raise/Cancel Alarm</string>
     
     
     <!-- Configure fragment -->
@@ -180,6 +180,7 @@
     <string name="welcome">Welcome</string>
     <string name="add_new_object">Add new system</string>
     <string name="add_new_data">Add new data</string>
+    <string name="progress_deleting_alert_rule">Deleting alert rule</string>
     <string name="progress_deleting_system">Deleting system</string>
     <string name="menuicon">menuicon</string>
     <string name="menu_edit">Edit</string>

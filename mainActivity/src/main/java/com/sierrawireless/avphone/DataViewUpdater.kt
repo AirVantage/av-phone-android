@@ -9,6 +9,7 @@ import android.widget.ListView
 import android.widget.TextView
 import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.adapter.RunListViewAdapter
+import com.sierrawireless.avphone.model.AvPhoneObjectData
 import com.sierrawireless.avphone.service.LogMessage
 import com.sierrawireless.avphone.service.NewData
 import com.sierrawireless.avphone.tools.Tools
@@ -165,7 +166,7 @@ class DataViewUpdater(private val view: View, private val activity: MainActivity
         for (ldata in obj!!.datas) {
             temp = HashMap()
             temp[Tools.NAME] = ldata.name
-            if (ldata.isInteger) {
+            if (ldata.mode != AvPhoneObjectData.Mode.None) {
                 temp[Tools.VALUE] = ldata.current.toString()
             } else {
                 temp[Tools.VALUE] = ldata.defaults

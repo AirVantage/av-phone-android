@@ -7,7 +7,7 @@ import net.airvantage.model.alert.v1.Condition
 
 object AvPhoneApplication {
 
-    const val ALERT_RULE_NAME = "AV Phone raised an alert"
+    const val ALERT_RULE_NAME = "raised an alert"
     private var objectsManager: ObjectsManager? = null
 
     fun createApplication(userName: String, phoneName:String): Application {
@@ -61,7 +61,7 @@ object AvPhoneApplication {
 
         var pos = 1
         for (data in customData) {
-            val type: String = if (data.isInteger) {
+            val type: String = if (data.mode != AvPhoneObjectData.Mode.None) {
                 "int"
             } else {
                 "string"
@@ -94,11 +94,11 @@ object AvPhoneApplication {
         return phoneName.replace(" ", ".") + ".av.phone.demo." + objectsManager!!.savecObject.name + userName
     }
 
-    fun createAlertRule(): AlertRule {
+    fun createAlertRule(system: AvSystem): AlertRule {
         val rule = AlertRule()
 
         rule.active = true
-        rule.name = ALERT_RULE_NAME
+        rule.name = system.name + " " + ALERT_RULE_NAME
         rule.eventType = "event.system.incoming.communication"
 
         val alarmCondition = Condition()
@@ -107,8 +107,16 @@ object AvPhoneApplication {
         alarmCondition.operator = "EQUALS"
         alarmCondition.value = "true"
 
+        val systemCondition = Condition()
+        systemCondition.eventProperty = "system.data.value"
+        systemCondition.eventPropertyKey = "System.id"
+        systemCondition.operator = "EQUALS"
+        systemCondition.value = system.uid
+
+
         val tmp = ArrayList<Condition>()
         tmp.add(alarmCondition)
+        tmp.add(systemCondition)
         rule.conditions = tmp
 
         return rule

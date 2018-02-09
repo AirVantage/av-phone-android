@@ -84,23 +84,23 @@
         android:id="@+id/unitText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="7dp"
         android:ems="10"
         android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="@+id/tmmmm"
-        app:layout_constraintStart_toEndOf="@+id/tmmmm"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3"
         tools:ignore="LabelFor" />
 
     <EditText
         android:id="@+id/defaultText"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="41dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="7dp"
         android:ems="10"
         android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="@+id/tmmmm"
-        app:layout_constraintStart_toEndOf="@+id/tmmmm"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tmmmm"
         tools:ignore="LabelFor" />
 
@@ -110,7 +110,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Default Value"
+        android:text="Default Value.\nFor random min,max value"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/unitText" />

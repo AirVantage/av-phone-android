@@ -17,7 +17,7 @@ import java.util.*
 
 typealias DeleteSystemListenerAlias = (DeleteSystemResult) -> Unit
 
-open class DeleteSystemTask internal constructor(private val systemClient: ISystemClient, private val userClient: IUserClient, @field:SuppressLint("StaticFieldLeak")
+open class DeleteSystemTask internal constructor(private val systemClient: ISystemClient, private val userClient: IUserClient, private val alertRuleClient: IAlertRuleClient,@field:SuppressLint("StaticFieldLeak")
 protected val context: Context) : AvPhoneTask<Void, DeleteSystemProgress, DeleteSystemResult>() {
     private val syncListeners = ArrayList<DeleteSystemListenerAlias>()
 
@@ -57,6 +57,15 @@ protected val context: Context) : AvPhoneTask<Void, DeleteSystemProgress, Delete
 
             publishProgress(DeleteSystemProgress.CHECKING_SYSTEM)
             val system = this.systemClient.getSystem(serialNumber, systemType)
+
+            publishProgress(DeleteSystemProgress.CHECKING_ALERTRULE)
+            val alertRule = this.alertRuleClient.getAlertRule(serialNumber, system!!)
+            if (alertRule != null) {
+
+                publishProgress(DeleteSystemProgress.DELETING_ALERTRULE)
+
+                this.alertRuleClient.deleteAlertRule(alertRule)
+            }
             if (system != null) {
                 publishProgress(DeleteSystemProgress.DELETING_SYSTEM)
                 systemClient.deleteSystem(system)

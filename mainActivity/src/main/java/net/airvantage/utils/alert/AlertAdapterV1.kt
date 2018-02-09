@@ -2,6 +2,7 @@ package net.airvantage.utils.alert
 
 import android.net.Uri
 import net.airvantage.model.AirVantageException
+import net.airvantage.model.AvSystem
 import net.airvantage.model.alert.v1.AlertRule
 import net.airvantage.model.alert.v1.AlertRuleList
 import net.airvantage.utils.Utils
@@ -17,7 +18,7 @@ class AlertAdapterV1 internal constructor(server: String, accessToken: String) :
 
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun getAlertRuleByName(name: String, application: String): AlertRule? {
+    override fun getAlertRuleByName(name: String, system:AvSystem): AlertRule? {
 
         val str = Uri.parse(buildEndpoint(API_PATH))
                 .buildUpon()
@@ -34,10 +35,17 @@ class AlertAdapterV1 internal constructor(server: String, accessToken: String) :
     }
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun createAlertRule(alertRule: AlertRule, application: String) {
+    override fun createAlertRule(alertRule: AlertRule, application: String, system:AvSystem) {
         val url = URL(buildEndpoint(API_PATH))
         val `in` = post(url, alertRule)
         gson.fromJson(InputStreamReader(`in`), AlertRule::class.java)
+    }
+
+    override fun deleteAlertRule(alertRule: AlertRule) {
+
+        val url = URL(buildEndpoint(API_PATH + alertRule.uid))
+        delete(url)
+
     }
 
     companion object {

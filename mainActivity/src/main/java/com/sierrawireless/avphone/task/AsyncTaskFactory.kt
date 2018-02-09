@@ -33,10 +33,11 @@ class AsyncTaskFactory(private val context: Context) : IAsyncTaskFactory {
 
         val avClient = AirVantageClient(serverHost, token)
         val systemClient = SystemClient(avClient)
+        val alertRuleClient = AlertRuleClient(avClient)
 
         val userClient = UserClient(avClient)
 
-        return ProgressDeleteSystemTask(systemClient, userClient, context)
+        return ProgressDeleteSystemTask(systemClient, userClient, alertRuleClient, context)
     }
 
 

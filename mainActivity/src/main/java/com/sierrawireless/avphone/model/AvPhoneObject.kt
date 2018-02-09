@@ -4,6 +4,7 @@ import java.util.ArrayList
 
 class AvPhoneObject {
     var name: String? = null
+    var alarm: Boolean = false
     var datas: ArrayList<AvPhoneObjectData> = ArrayList()
 
     fun add(data: AvPhoneObjectData) {
@@ -13,6 +14,8 @@ class AvPhoneObject {
     override fun toString(): String {
         val returned = StringBuilder("{")
         returned.append("\"name\" : \"").append(name).append("\",")
+        returned.append("\"alarm\" : ").append(alarm).append(",")
+
         returned.append("\"datas\":[")
         for (data in datas) {
             returned.append(data.toString()).append(",")

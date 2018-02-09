@@ -187,7 +187,7 @@ class MonitoringService : Service() {
                 setCustomDataForUi()
             }
         }
-        setUpLocationListeners()
+        //setUpLocationListeners()
     }
 
 
@@ -210,12 +210,14 @@ class MonitoringService : Service() {
                 .build()
 
         startForeground(notif, notification)
+        setUpLocationListeners()
     }
 
     fun stopSendData() {
 
         // Cancel the persistent notification.
         stopForeground(true)
+        stopLocationListeners()
     }
 
     @Suppress("DEPRECATION")
@@ -387,7 +389,7 @@ class MonitoringService : Service() {
 
     fun cancel(){
         timer?.cancel()
-        stopLocationListeners()
+      //  stopLocationListeners()
         timer = null
     }
 
@@ -429,7 +431,7 @@ class MonitoringService : Service() {
         }
     }
 
-    fun sendAlarmEvent() {
+    fun sendAlarmEvent(on:Boolean) {
 
         if (this.client == null) {
             toast("Alarm client is not available,wait...")
@@ -437,8 +439,8 @@ class MonitoringService : Service() {
         }
 
         val data = NewData()
-        set = !(set!!)
-        data.isAlarmActivated = set
+        set = on
+        data.isAlarmActivated = on
 
         // save alarm state
         //   if (data.getExtras() != null) {
@@ -451,12 +453,14 @@ class MonitoringService : Service() {
         params.data = data
         params.context = this
         params.alarm = true
-        params.value = set!!
+        params.value = on
 
         sendDataTask.execute(params)
 
 
-        sendDataTask.addProgressListener { result -> lastLog = result.lastLog }
+        sendDataTask.addProgressListener { result ->
+            lastLog = result.lastLog
+        }
 
     }
 

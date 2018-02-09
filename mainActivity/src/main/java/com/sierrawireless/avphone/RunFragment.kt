@@ -3,12 +3,9 @@ package com.sierrawireless.avphone
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
-import android.text.Html
-import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -49,7 +46,22 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
     // Alarm button
     private var onAlarmClick: View.OnClickListener = View.OnClickListener {
-        monitorServiceManager!!.sendAlarmEvent()
+        objectsManager = ObjectsManager.getInstance()
+        var obj = objectsManager.currentObject!!
+
+        monitorServiceManager!!.sendAlarmEvent(obj.alarm)
+        obj.alarm = !obj.alarm
+        objectsManager.saveOnPref()
+        setAlarmButton()
+    }
+
+    private fun setAlarmButton() {
+        var obj = objectsManager.currentObject!!
+        if (obj.alarm) {
+            alarm_btn.text = "Cancel"
+        }else{
+            alarm_btn.text = "Raise"
+        }
     }
 
     override var errorMessageView: TextView
@@ -246,6 +258,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         this.setLinkToSystem(systemUid, systemName)
         startTimer()
         monitorServiceManager?.start()
+        setAlarmButton()
     }
 
     override fun onPause() {
@@ -296,7 +309,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         for (data in obj!!.datas) {
             temp = HashMap()
             temp[Tools.NAME] = data.name
-            if (data.isInteger) {
+            if (data.mode != AvPhoneObjectData.Mode.None) {
                 temp[Tools.VALUE] = data.current!!.toString()
             } else {
                 temp[Tools.VALUE] = data.defaults
@@ -360,6 +373,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             when (data.mode){
                 AvPhoneObjectData.Mode.UP -> if (Tools.rand(0, 2000) > 500) data.execMode()
                 AvPhoneObjectData.Mode.DOWN -> if (Tools.rand(0, 2000) > 1500) data.execMode()
+                AvPhoneObjectData.Mode.RANDOM -> if (Tools.rand(0, 2000) > 500) data.execMode()
                 else -> ""
             }
 

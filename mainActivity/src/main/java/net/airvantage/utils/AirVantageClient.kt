@@ -64,7 +64,7 @@ class AirVantageClient(private val server: String, private val access_token: Str
 
     @Throws(IOException::class, AirVantageException::class)
     private fun sendString(method: String, url: URL, bodyString: String): InputStream {
-
+        Log.d("**********",  url.toString())
 
         var out: OutputStream? = null
         try {
@@ -226,16 +226,23 @@ class AirVantageClient(private val server: String, private val access_token: Str
     }
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun getAlertRuleByName(name: String, application: String): AlertRule? {
+    override fun getAlertRuleByName(name: String, system: AvSystem): AlertRule? {
         checkAlertAdapter()
-        return this.alertAdapter!!.getAlertRuleByName(name, application)
+        return this.alertAdapter!!.getAlertRuleByName(name, system)
     }
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun createAlertRule(alertRule: AlertRule, application: String) {
+    override fun createAlertRule(alertRule: AlertRule, application: String, system: AvSystem) {
         checkAlertAdapter()
-        this.alertAdapter!!.createAlertRule(alertRule, application)
+        this.alertAdapter!!.createAlertRule(alertRule, application, system)
     }
+
+    @Throws(IOException::class, AirVantageException::class)
+    override fun deleteAlertRule(alertRule: AlertRule) {
+        checkAlertAdapter()
+        this.alertAdapter!!.deleteAlertRule(alertRule)
+    }
+
 
     @Throws(IOException::class, AirVantageException::class)
     override fun logout() {

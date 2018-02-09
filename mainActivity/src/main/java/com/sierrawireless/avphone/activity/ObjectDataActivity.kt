@@ -21,7 +21,7 @@ class ObjectDataActivity : Activity(), AdapterView.OnItemSelectedListener {
     internal var add: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val menuList = arrayOf("None", "Increase indefinitely", "Decrease to zero")
+        val menuList = arrayOf("None", "Increase indefinitely", "Decrease to zero", "Random")
 
 
         super.onCreate(savedInstanceState)

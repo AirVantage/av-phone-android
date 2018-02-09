@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.sierrawireless.avphone.tools.DeviceInfo
 import com.sierrawireless.avphone.ObjectsManager
 import com.sierrawireless.avphone.model.AvPhoneData
+import com.sierrawireless.avphone.model.AvPhoneObjectData
 import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import java.io.UnsupportedEncodingException
@@ -115,7 +116,7 @@ internal constructor(clientId: String, password: String, serverHost: String, cal
             val obj = objectsManager.currentObject
             var pos: Int? = 1
             for (ldata in obj!!.datas) {
-                if (ldata.isInteger) {
+                if (ldata.mode != AvPhoneObjectData.Mode.None) {
                     values[obj.name + "." + AvPhoneData.CUSTOM + pos!!.toString()] = listOf(DataValue(timestamp, ldata.current!!))
                 } else {
                     values[obj.name + "." + AvPhoneData.CUSTOM + pos!!.toString()] = listOf(DataValue(timestamp, ldata.defaults))

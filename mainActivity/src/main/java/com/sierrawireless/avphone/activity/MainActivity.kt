@@ -119,13 +119,20 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             tmp.add(MenuEntry(user!!.server!!, MenuEntryType.USER, drawable = ContextCompat.getDrawable(this, R.drawable.ic_domain)))
         }
         tmp.add(MenuEntry("SIMULATED OBJECTS", MenuEntryType.TITLE, button = true))
-        objectsManager.objects.mapTo(tmp) { MenuEntry(it.name!!, MenuEntryType.COMMAND, drawable = ContextCompat.getDrawable(this, R.drawable.ic_object)) }
+        objectsManager.objects.mapTo(tmp) {
+            if (it.name != null) {
+                MenuEntry(it.name!!, MenuEntryType.COMMAND, drawable = ContextCompat.getDrawable(this, R.drawable.ic_object))
+            }else{
+                MenuEntry("KO", MenuEntryType.COMMAND, drawable = ContextCompat.getDrawable(this, R.drawable.ic_object))
+            }
+        }
    //     tmp.add(MenuEntry(FRAGMENT_CONFIGURE, MenuEntryType.COMMAND))
 
         //tmp.add(FRAGMENT_SETTINGS);
         tmp.add(MenuEntry("NEED HELP", MenuEntryType.TITLE))
         tmp.add(MenuEntry(FRAGMENT_FAQ, MenuEntryType.COMMAND))
         tmp.add(MenuEntry("", MenuEntryType.TITLE))
+        tmp.add(MenuEntry(FRAGMENT_SETTINGS, MenuEntryType.COMMAND))
         if (isLogged) {
             tmp.add(MenuEntry(FRAGMENT_LOGOUT, MenuEntryType.COMMAND))
         } else {
@@ -448,9 +455,9 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         monitoringService?.start()
     }
 
-    override fun sendAlarmEvent() {
+    override fun sendAlarmEvent(set:Boolean) {
         //if (boundToMonitoringService && monitoringService != null) {
-        monitoringService!!.sendAlarmEvent()
+        monitoringService!!.sendAlarmEvent(set)
         // }
     }
 
@@ -512,8 +519,10 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     }
 
     private fun restartMonitoringService() {
-        stopMonitoringService()
-        startMonitoringService(objectName!!)
+        if (objectName != null) {
+            stopMonitoringService()
+            startMonitoringService(objectName!!)
+        }
     }
 
     public override fun onDestroy() {
@@ -560,7 +569,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         if (fragment == null) {
             //No item check if the position is valid
             if (entry.name == FRAGMENT_FAQ) {
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://doc.airvantage.net/alms/"))
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://source.sierrawireless.com/airvantage/av/avphone_faq/"))
                 startActivity(browserIntent)
                 left_drawer.setSelection(lastPosition)
                 drawer_layout.closeDrawer(left_drawer)
@@ -652,8 +661,10 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         for (obj in objectsManager.objects) {
             tmp = RunFragment()
             tmp.setTaskFactory(taskFactory!!)
-            tmp.setObjectName(obj.name!!)
-            runFragment!!.add(tmp)
+            if (obj.name != null) {
+                tmp.setObjectName(obj.name!!)
+                runFragment!!.add(tmp)
+            }
         }
 
 

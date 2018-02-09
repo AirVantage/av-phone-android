@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.gson.JsonIOException
 import com.sierrawireless.avphone.model.AvPhoneData
 import net.airvantage.model.AirVantageException
+import net.airvantage.model.AvSystem
 import net.airvantage.model.alert.v2.AlertRuleList
 import net.airvantage.model.alert.v2.alertrule.AlertRule
 import net.airvantage.model.alert.v2.alertrule.AttributeId
@@ -27,7 +28,7 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
         get() = "/api/v2/"
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun getAlertRuleByName(name: String, application: String): net.airvantage.model.alert.v1.AlertRule? {
+    override fun getAlertRuleByName(name: String, system:AvSystem): net.airvantage.model.alert.v1.AlertRule? {
         try {
             val inp = get(alertRuleUrl())
             val rules = gson.fromJson(InputStreamReader(inp), AlertRuleList::class.java)
@@ -43,12 +44,12 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
     }
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun createAlertRule(alertRule: net.airvantage.model.alert.v1.AlertRule, application: String) {
+    override fun createAlertRule(alertRule: net.airvantage.model.alert.v1.AlertRule, application: String, system: AvSystem) {
         try {
             var alertRuleV2: AlertRule? = AlertRule()
             alertRuleV2!!.targetType = "SYSTEM"
             alertRuleV2.name = alertRule.name
-            alertRuleV2.message = "Alarm is ON"
+            alertRuleV2.message = "Alarm for " + system.name + " is ON"
             alertRuleV2.active = true
             alertRuleV2.conditions = ArrayList()
             val metadata = HashMap<String, Any>()
@@ -71,22 +72,37 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
 
     }
 
-    @Throws(IOException::class)
-    private fun alertRuleUrl(): URL {
+    @Throws(IOException::class, AirVantageException::class)
+    override fun deleteAlertRule(alertRule: net.airvantage.model.alert.v1.AlertRule) {
+        delete(alertRuleUrl("/" + alertRule.uid))
+    }
 
-        if (alertRuleUrl != null)
+
+    @Throws(IOException::class)
+    private fun alertRuleUrl(data:String? = null): URL {
+
+        if (alertRuleUrl != null && data != null)
             return alertRuleUrl!!
 
         val apiPath = "alertrules"
-        val urlString = Uri.parse(buildEndpoint(apiPath)).toString()
+
+        val urlString = if (data == null) {
+            Uri.parse(buildEndpoint(apiPath)).toString()
+        }else{
+            Uri.parse(buildEndpoint(apiPath + data!!)).toString()
+        }
+        var tmp: URL?
         try {
-            alertRuleUrl = URL(urlString)
+            tmp = URL(urlString)
         } catch (e: MalformedURLException) {
             Log.e(TAG, "Sure of URL?", e)
             throw e
         }
+        if (data != null) {
+            alertRuleUrl = tmp
+        }
 
-        return alertRuleUrl!!
+        return tmp!!
     }
 
     companion object {
@@ -99,8 +115,11 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
 
             val leftOperand = Operand()
             leftOperand.attributeId = AttributeId()
-            leftOperand.attributeId!!.name = "DATA.phone.alarm"
-
+            if (condition.eventProperty == "communication.data.value") {
+                leftOperand.attributeId!!.name = "DATA." + condition.eventPropertyKey
+            }else{
+                leftOperand.attributeId!!.name = condition.eventPropertyKey
+            }
             val rightOperand = Operand()
             rightOperand.valueStr = condition.value
 
