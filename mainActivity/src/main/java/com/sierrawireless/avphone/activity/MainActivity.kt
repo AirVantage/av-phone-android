@@ -43,6 +43,7 @@ import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_main.*
 import net.airvantage.model.User
 import net.airvantage.utils.PreferenceUtils
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.longToast
 import java.util.*
 
@@ -53,6 +54,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     private val TAG = this::class.java.name
     override var monitoringService: MonitoringService? = null
     private var objectName: String? = null
+    internal var startObjectName: String? = null
 
     private var alarmManager: AlarmManager? = null
     private var taskFactory: IAsyncTaskFactory? = null
@@ -403,13 +405,18 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         }
     }
 
-     override fun isServiceRunning(): Boolean {
+     override fun isServiceRunning(name: String?): Boolean {
         //return serviceSendData;
 
         val manager = this.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
          @Suppress("DEPRECATION")
-         return if (manager.getRunningServices(Integer.MAX_VALUE).any { MonitoringService::class.java.name == it.service.className }) serviceSendData!! else false
+         if (name == null) {
+             return if (manager.getRunningServices(Integer.MAX_VALUE).any { MonitoringService::class.java.name == it.service.className }) serviceSendData!! else false
+         }else{
+             return if (manager.getRunningServices(Integer.MAX_VALUE).any { MonitoringService::class.java.name == it.service.className }) (serviceSendData!! && startObjectName == name) else false
+
+         }
      }
 
     override fun isServiceStarted(name: String): Boolean {
@@ -484,24 +491,31 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         connectToService()
     }
 
-    override fun startSendData() {
-        val avPrefs = PreferenceUtils.getAvPhonePrefs(this)
+    override fun startSendData(name: String):Boolean {
+        if (startObjectName == null || name == startObjectName!!) {
+            val avPrefs = PreferenceUtils.getAvPhonePrefs(this)
+            val intent = Intent(this, MonitoringService::class.java)
+            intent.putExtra(MonitoringService.DEVICE_ID, DeviceInfo.getUniqueId(this))
+            intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost)
+            intent.putExtra(MonitoringService.PASSWORD, avPrefs.password)
+            intent.putExtra(MonitoringService.CONNECT, true)
+            val pendingIntent = PendingIntent.getService(this, 0, intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT)
+            // registering our pending intent with alarm manager
+            alarmManager!!.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 5000,
+                    (Integer.valueOf(avPrefs.period)!! * 60 * 1000).toLong(), pendingIntent)
+            // connectToService();
+            startObjectName = name
+            serviceSendData = true
+        }else{
+            alert("A run already exist for " + startObjectName, "Alert") {
+                positiveButton("OK") {
 
-        val intent = Intent(this, MonitoringService::class.java)
-        intent.putExtra(MonitoringService.DEVICE_ID, DeviceInfo.getUniqueId(this))
-        intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost)
-        intent.putExtra(MonitoringService.PASSWORD, avPrefs.password)
-        intent.putExtra(MonitoringService.CONNECT, true)
-
-        val pendingIntent = PendingIntent.getService(this, 0, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT)
-        // registering our pending intent with alarm manager
-        alarmManager!!.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 5000,
-                (Integer.valueOf(avPrefs.period)!! * 60 * 1000).toLong(), pendingIntent)
-
-        // connectToService();
-        serviceSendData = true
-
+                }
+            }.show()
+            return false
+        }
+        return true
     }
 
     override fun stopSendData() {
@@ -510,6 +524,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                 PendingIntent.FLAG_CANCEL_CURRENT)
         alarmManager!!.cancel(pendingIntent)
         serviceSendData = false
+        startObjectName = null
     }
 
     override fun stopMonitoringService() {
@@ -566,6 +581,38 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     /**
      * Swaps fragments in the main content view
      */
+    private fun logout() {
+        val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this)
+
+        val accessToken = authentication!!.accessToken
+
+        val logoutTask = taskFactory!!.logoutTask(avPhonePrefs.serverHost!!, accessToken!!)
+
+        logoutTask.execute()
+        try {
+            logoutTask.get()
+        } catch (e: Exception) {
+            Log.w(TAG, "Exception while logging out")
+            Crashlytics.logException(e)
+        } finally {
+            forgetAuthentication()
+            loadMenu()
+            val position = FRAGMENT_LIST!!.size - 1
+            val fragment = getFragment(position)
+            if (fragment!!.isVisible) {
+                fragment.onResume()
+                // Highlight the selected item, update the title, and close the drawer
+                left_drawer.setItemChecked(position, true)
+                title = FRAGMENT_LIST!![position].name
+                left_drawer.setSelection(position)
+                drawer_layout.closeDrawer(left_drawer)
+                lastPosition = position
+            }else{
+                goHomeFragment()
+            }
+        }
+    }
+
     private fun selectItem(position: Int) {
 
         val fragment = getFragment(position)
@@ -578,6 +625,18 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                 left_drawer.setSelection(lastPosition)
                 drawer_layout.closeDrawer(left_drawer)
             }
+            return
+        }
+        if (entry.name == FRAGMENT_LOGOUT) {
+
+            alert("Are you sure ?","Logout") {
+                positiveButton("YES") {
+                    logout()
+                }
+                negativeButton("NO") {
+                    drawer_layout.closeDrawer(left_drawer)
+                }
+            }.show()
             return
         }
         if (entry.type == MenuEntryType.COMMAND) {

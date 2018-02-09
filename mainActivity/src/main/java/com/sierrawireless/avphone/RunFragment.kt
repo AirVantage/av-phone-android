@@ -28,6 +28,7 @@ import com.sierrawireless.avphone.tools.DeviceInfo
 import com.sierrawireless.avphone.tools.Tools
 import kotlinx.android.synthetic.main.fragment_run.*
 import net.airvantage.utils.PreferenceUtils
+import org.jetbrains.anko.alert
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -46,14 +47,22 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
     // Alarm button
     private var onAlarmClick: View.OnClickListener = View.OnClickListener {
-        objectsManager = ObjectsManager.getInstance()
-        val obj = objectsManager.currentObject!!
-        obj.alarm = !obj.alarm
-        if (!monitorServiceManager!!.sendAlarmEvent(obj.alarm)) {
+        if (this.monitorServiceManager!!.isServiceStarted(objectName!!)) {
+            objectsManager = ObjectsManager.getInstance()
+            val obj = objectsManager.currentObject!!
             obj.alarm = !obj.alarm
-        }else {
-            objectsManager.saveOnPref()
-            setAlarmButton()
+            if (!monitorServiceManager!!.sendAlarmEvent(obj.alarm)) {
+                obj.alarm = !obj.alarm
+            } else {
+                objectsManager.saveOnPref()
+                setAlarmButton()
+            }
+        }else{
+            alert("A run already exist for " + MainActivity.instance.startObjectName, "Alert") {
+                positiveButton("OK") {
+
+                }
+            }.show()
         }
     }
 
@@ -122,15 +131,19 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         LocalBroadcastManager.getInstance(activity).registerReceiver(viewUpdater,
                 IntentFilter(LogMessage.LOG_EVENT))
 
-        if (!this.monitorServiceManager!!.isServiceStarted(objectName!!)) {
-            if (this.monitorServiceManager!!.oneServiceStarted()) {
-                //stop the service
-                this.monitorServiceManager!!.stopMonitoringService()
+        /* if service is running and it's myself or that is not running */
+        if ((monitorServiceManager!!.isServiceRunning() &&  monitorServiceManager!!.isServiceRunning(objectName!!)) ||
+                !monitorServiceManager!!.isServiceRunning()){
+            if (!this.monitorServiceManager!!.isServiceStarted(objectName!!)) {
+                if (this.monitorServiceManager!!.oneServiceStarted()) {
+                    //stop the service
+                    this.monitorServiceManager!!.stopMonitoringService()
+                }
+                //registerNewDevice();
+                this.monitorServiceManager!!.startMonitoringService(objectName!!)
             }
-            //registerNewDevice();
-            this.monitorServiceManager!!.startMonitoringService(objectName!!)
         }
-        val isServiceRunning = monitorServiceManager!!.isServiceRunning()
+        val isServiceRunning = monitorServiceManager!!.isServiceRunning(objectName!!)
         service_switch.isChecked = isServiceRunning
 
         service_switch.setOnCheckedChangeListener { _, isChecked ->
@@ -248,7 +261,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     override fun onResume() {
         super.onResume()
 
-        val isServiceRunning = monitorServiceManager!!.isServiceRunning()
+        val isServiceRunning = monitorServiceManager!!.isServiceRunning(objectName!!)
         service_switch.isChecked = isServiceRunning
 
         val systemUid = (activity as MainActivity).systemUid
@@ -272,9 +285,13 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             PreferenceUtils.showMissingPrefsDialog(activity)
             service_switch.isChecked = false
         } else {
-            this.monitorServiceManager!!.startSendData()
+           if (this.monitorServiceManager!!.startSendData(objectName!!)) {
+               this.monitorServiceManager!!.monitoringService!!.startSendData()
+           }else{
+               service_switch.isChecked = false
+           }
         }
-        this.monitorServiceManager!!.monitoringService!!.startSendData()
+
     }
 
     private fun stopMonitoringService() {
