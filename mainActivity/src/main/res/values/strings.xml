@@ -196,5 +196,9 @@
     <string name="add">Add</string>
     <string name="done">Done</string>
     <string name="reaise">Raise</string>
+    <string name="name">Name</string>
+    <string name="unit">Unit</string>
+    <string name="default_value_nfor_random_min_max_value">Default Value. For random min,max value</string>
+    <string name="simulation_type">Simulation Type</string>
 
 </resources>
