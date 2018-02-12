@@ -15,7 +15,6 @@ import java.util.*
 class ApplicationClient internal constructor(private val client: IAirVantageClient) : IApplicationClient {
     private var currentUser: User? = null
     private var mPhoneName: String? = null
-    private val TAG = this::class.java.name
 
     private val application: Application?
         @Throws(IOException::class, AirVantageException::class)
@@ -102,5 +101,9 @@ class ApplicationClient internal constructor(private val client: IAirVantageClie
 
         return res
 
+    }
+
+    companion object {
+        private val TAG = ApplicationClient::class.simpleName
     }
 }

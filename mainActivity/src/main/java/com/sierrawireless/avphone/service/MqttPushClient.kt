@@ -15,7 +15,6 @@ import java.util.*
 class MqttPushClient @SuppressLint("DefaultLocale")
 @Throws(MqttException::class)
 internal constructor(clientId: String, password: String, serverHost: String, callback: MqttCallback) {
-    private val TAG = this::class.java.name
     private val client: MqttClient
     private val opt: MqttConnectOptions
     private val gson = Gson()
@@ -130,4 +129,8 @@ internal constructor(clientId: String, password: String, serverHost: String, cal
     //timestamp is used when the massage is sent for each entry. don't remove it...
     @Suppress("UNUSED")
     internal inner class DataValue(var timestamp: Long, var value: Any)
+
+    companion object {
+        private val TAG = MqttPushClient::class.simpleName
+    }
 }

@@ -13,7 +13,8 @@ import java.util.*
 
 object PreferenceUtils {
 
-    private val TAG = PreferenceUtils::class.java.name
+    private val TAG = PreferenceUtils::class.simpleName
+
     private const val DEFAULT_COMM_PERIOD = "2"
     const val PREF_SERVER_KEY = "pref_server_key"
     const val PREF_CLIENT_ID_KEY = "pref_client_id_key"

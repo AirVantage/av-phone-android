@@ -9,7 +9,7 @@ import com.sierrawireless.avphone.tools.MyPreference
 import java.util.*
 
 class ObjectsManager private constructor() {
-    private var mainActivyty: MainActivity? = null
+    private var mainActivity: MainActivity? = null
     var current: Int = 0
     private var savedPosition = -1
 
@@ -31,7 +31,7 @@ class ObjectsManager private constructor() {
     }
 
     internal fun init(activity: MainActivity) {
-        this.mainActivyty = activity
+        this.mainActivity = activity
         val pref = MyPreference(activity.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE))
 
 
@@ -70,7 +70,7 @@ class ObjectsManager private constructor() {
     }
 
     fun saveOnPref() {
-        val pref = MyPreference(mainActivyty!!.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE))
+        val pref = MyPreference(mainActivity!!.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE))
         // Save the list for later
         pref.putListObject(MODELS, objects)
         pref.putInt(ACTIVE, current)
@@ -78,7 +78,7 @@ class ObjectsManager private constructor() {
 
     internal fun reload() {
 
-        val pref = MyPreference(mainActivyty!!.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE))
+        val pref = MyPreference(mainActivity!!.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE))
 
 
         objects = pref.getListObject(MODELS, AvPhoneObject::class.java)

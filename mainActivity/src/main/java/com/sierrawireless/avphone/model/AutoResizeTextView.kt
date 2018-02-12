@@ -222,12 +222,10 @@ class AutoResizeTextView : TextView {
         val key = text.length
         var size = mTextCachedSizes!!.get(key)
         if (size != 0) {
-            Log.d("JBD", "Returned size is " + size)
             return size
         }
         size = binarySearch(start, end, sizeTester, availableSpace)
         mTextCachedSizes!!.put(key, size)
-        Log.d("JBD", "Returned size is " + size)
         return size
     }
 

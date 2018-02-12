@@ -34,8 +34,6 @@ import kotlin.concurrent.fixedRateTimer
 
 class MonitoringService : Service() {
 
-    private val TAG = this::class.java.name
-
     // system services
     private var telephonyManager: TelephonyManager? = null
     private var activityManager: ActivityManager? = null
@@ -481,6 +479,7 @@ class MonitoringService : Service() {
         const val PASSWORD = "password"
         const val CONNECT = "connect"
         const val OBJECT_NAME = "objname"
+        private val TAG = MonitoringService::class.simpleName
     }
 
 }

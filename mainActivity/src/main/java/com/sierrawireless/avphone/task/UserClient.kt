@@ -8,7 +8,6 @@ import net.airvantage.utils.IAirVantageClient
 import java.util.*
 
 class UserClient internal constructor(private val client: IAirVantageClient) : IUserClient {
-    private val TAG = this::class.java.name
     override val user: User?
         get() {
             return try {
@@ -35,6 +34,10 @@ class UserClient internal constructor(private val client: IAirVantageClient) : I
             Log.e(TAG, "Could not get user rights", e)
         }
         return requiredRights
+    }
+
+    companion object {
+        private val TAG = UserClient::class.simpleName
     }
 
 }

@@ -33,7 +33,6 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabelsListener {
-    private val TAG = this::class.java.name
     private var viewUpdater: DataViewUpdater? = null
     private var lView: View? = null
     private var monitorServiceManager: MonitorServiceManager? = null
@@ -396,6 +395,10 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         }
         objectsManager.saveOnPref()
         startTimer()
+    }
+
+    companion object {
+        private val TAG = RunFragment::class.simpleName
     }
 }
 

@@ -9,9 +9,7 @@ import com.sierrawireless.avphone.auth.Authentication
 
 class AuthenticationUrlParser {
 
-    private val TAG = this::class.java.name
-
-    fun parseUrl(url: String, parsingDate: Date): Authentication? {
+     fun parseUrl(url: String, parsingDate: Date): Authentication? {
 
         var auth: Authentication? = null
 
@@ -47,5 +45,8 @@ class AuthenticationUrlParser {
             }
         }
         return auth
+    }
+    companion object {
+        private val TAG = AuthenticationUrlParser::class.simpleName
     }
 }

@@ -26,7 +26,7 @@ class AuthorizationActivity : Activity() {
 
     private val authUrlParser = AuthenticationUrlParser()
     private var currentServer: PreferenceUtils.Server? = null
-    private val TAG = this::class.java.name
+
 
     private inner class OnHostClickListener (private val server: PreferenceUtils.Server) : OnClickListener {
 
@@ -146,5 +146,6 @@ class AuthorizationActivity : Activity() {
         const val AUTHENTICATION_TOKEN = "token"
         const val AUTHENTICATION_EXPIRATION_DATE = "expirationDate"
         const val REQUEST_AUTHORIZATION = 1
+        private val TAG = AuthorizationActivity::class.simpleName
     }
 }

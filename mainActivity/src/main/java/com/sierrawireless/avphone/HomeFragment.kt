@@ -25,7 +25,6 @@ import net.airvantage.model.User
 import net.airvantage.utils.PreferenceUtils
 
 class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
-    private val TAG = this::class.java.name
     private var lView: View? = null
     private var authForSync: Authentication? = null
     private var retrySync: Boolean = false
@@ -261,5 +260,9 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         login_btn.visibility = View.VISIBLE
 
         home_login_message.visibility = View.VISIBLE
+    }
+
+    companion object {
+        private val TAG = HomeFragment::class.simpleName
     }
 }

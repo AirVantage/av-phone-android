@@ -51,7 +51,6 @@ import java.util.*
  * The main activity, handling drawer and Fragments
  */
 class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, OnSharedPreferenceChangeListener, MonitorServiceManager, CustomLabelsManager, SyncWithAvListener {
-    private val TAG = this::class.java.name
     override var monitoringService: MonitoringService? = null
     private var objectName: String? = null
     internal var startObjectName: String? = null
@@ -773,6 +772,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         internal lateinit var instance: MainActivity
 
         private var FRAGMENT_LIST: ArrayList<MenuEntry>? = null
+        private val TAG = MainActivity::class.simpleName
     }
 
 }
