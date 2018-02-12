@@ -48,9 +48,9 @@ class ObjectAdapter(private val activity: Activity, private val resource: Int, v
             deleteActionBtn.visibility = View.VISIBLE
             deleteActionBtn.setOnClickListener{
                 val objectsManager = ObjectsManager.getInstance()
-                val position:Int = it.tag as Int
+                val lPosition = it.tag as Int
                 //delete
-                objectsManager!!.setSavedPosition(position)
+                objectsManager.setSavedPosition(lPosition)
                 ConfigureFragment.instance!!.delete()
                 ConfigureFragment.instance!!.delete = true
 

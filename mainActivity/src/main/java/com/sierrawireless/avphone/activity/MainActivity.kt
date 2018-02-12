@@ -75,7 +75,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     private var homeFragment: HomeFragment? = null
     private var runFragment: ArrayList<RunFragment>? = null
 
-    private var lastPosition = 0
+    internal var lastPosition = 0
 
     private var serviceSendData: Boolean? = false
     internal lateinit var objectsManager: ObjectsManager
@@ -88,7 +88,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     private var connection: ServiceConnection = object : ServiceConnection {
 
         override fun onServiceConnected(arg0: ComponentName, binder: IBinder) {
-            Log.d(TAG, "***********************on Service Connected received")
             monitoringService = (binder as ServiceBinder).service
 
             if (monitoringServiceListener != null) {
@@ -411,10 +410,10 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         val manager = this.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
          @Suppress("DEPRECATION")
-         if (name == null) {
-             return if (manager.getRunningServices(Integer.MAX_VALUE).any { MonitoringService::class.java.name == it.service.className }) serviceSendData!! else false
+         return if (name == null) {
+             if (manager.getRunningServices(Integer.MAX_VALUE).any { MonitoringService::class.java.name == it.service.className }) serviceSendData!! else false
          }else{
-             return if (manager.getRunningServices(Integer.MAX_VALUE).any { MonitoringService::class.java.name == it.service.className }) (serviceSendData!! && startObjectName == name) else false
+             if (manager.getRunningServices(Integer.MAX_VALUE).any { MonitoringService::class.java.name == it.service.className }) (serviceSendData!! && startObjectName == name) else false
 
          }
      }
@@ -466,9 +465,9 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         monitoringService?.start()
     }
 
-    override fun sendAlarmEvent(set:Boolean):Boolean {
+    override fun sendAlarmEvent(on:Boolean):Boolean {
         //if (boundToMonitoringService && monitoringService != null) {
-        return monitoringService!!.sendAlarmEvent(set)
+        return monitoringService!!.sendAlarmEvent(on)
         // }
     }
 
@@ -654,6 +653,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             left_drawer.setSelection(position)
             drawer_layout.closeDrawer(left_drawer)
             lastPosition = position
+            left_drawer.invalidateViews()
         }
     }
 
@@ -661,20 +661,23 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         val position = FRAGMENT_LIST!!.size - 1
         val fragment = getFragment(position)
         // Insert the fragment by replacing any existing fragment
-        Handler().post({
-            fragmentManager
-                .beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .addToBackStack(null)
-                .commit() })
-
-        // Highlight the selected item, update the title, and close the drawer
-        left_drawer.setItemChecked(position, true)
-        title = FRAGMENT_LIST!![position].name
-        left_drawer.setSelection(position)
-        drawer_layout.closeDrawer(left_drawer)
-        lastPosition = position
-
+        try {
+            Handler().post({
+                fragmentManager
+                        .beginTransaction()
+                        .replace(R.id.content_frame, fragment)
+                        .addToBackStack(null)
+                        .commitAllowingStateLoss()
+            })
+            // Highlight the selected item, update the title, and close the drawer
+            left_drawer.setItemChecked(position, true)
+            title = FRAGMENT_LIST!![position].name
+            left_drawer.setSelection(position)
+            drawer_layout.closeDrawer(left_drawer)
+            lastPosition = position
+        }catch(e:IllegalStateException){
+            Log.e(TAG, "GO HOME CATCH************************", e)
+        }
     }
 
 
@@ -732,7 +735,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         }
 
 
-       fragmentsMapping = HashMap<String, Fragment>()
+       fragmentsMapping = HashMap()
         fragmentsMapping[FRAGMENT_CONFIGURE] = configureFragment!!
         if (isLogged) {
             fragmentsMapping[FRAGMENT_LOGOUT] = homeFragment!!

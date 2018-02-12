@@ -122,7 +122,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         if (data != null) {
 
 
-            val auth = AuthUtils.activityResultAsAuthentication(requestCode, resultCode, data!!)
+            val auth = AuthUtils.activityResultAsAuthentication(requestCode, resultCode, data)
             if (auth != null) {
                 syncWithAv(auth)
             }

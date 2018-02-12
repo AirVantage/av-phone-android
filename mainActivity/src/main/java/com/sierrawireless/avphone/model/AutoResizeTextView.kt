@@ -105,14 +105,14 @@ class AutoResizeTextView : TextView {
     override fun setText(text: CharSequence?, type: TextView.BufferType) {
         super.setText(text, type)
         if (text != null) {
-            adjustTextSize(text.toString())
+            adjustTextSize()
         }
     }
 
     override fun setTextSize(size: Float) {
         mMaxTextSize = size
         mTextCachedSizes!!.clear()
-        adjustTextSize(text.toString())
+        adjustTextSize()
     }
 
     override fun setMaxLines(maxlines: Int) {
@@ -158,7 +158,7 @@ class AutoResizeTextView : TextView {
         mMaxTextSize = TypedValue.applyDimension(unit, size,
                 r.displayMetrics)
         mTextCachedSizes!!.clear()
-        adjustTextSize(text.toString())
+        adjustTextSize()
     }
 
     override fun setLineSpacing(add: Float, mult: Float) {
@@ -178,10 +178,10 @@ class AutoResizeTextView : TextView {
     }
 
     private fun reAdjust() {
-        adjustTextSize(text.toString())
+        adjustTextSize()
     }
 
-    private fun adjustTextSize(string: String) {
+    private fun adjustTextSize() {
         if (!mInitialized) {
             return
         }
@@ -210,7 +210,7 @@ class AutoResizeTextView : TextView {
     fun enableSizeCache(enable: Boolean) {
         mEnableSizeCache = enable
         mTextCachedSizes!!.clear()
-        adjustTextSize(text.toString())
+        adjustTextSize()
     }
 
     private fun efficientTextSizeSearch(start: Int, end: Int,

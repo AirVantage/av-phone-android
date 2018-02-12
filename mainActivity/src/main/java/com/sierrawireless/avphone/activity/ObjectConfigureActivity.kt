@@ -4,19 +4,14 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
-import com.baoyz.swipemenulistview.SwipeMenuCreator
-import com.baoyz.swipemenulistview.SwipeMenuItem
 import com.sierrawireless.avphone.ConfigureFragment
 import com.sierrawireless.avphone.ObjectsManager
 import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.adapter.ObjectDataAdapter
 import com.sierrawireless.avphone.model.AvPhoneObject
-import com.sierrawireless.avphone.tools.Tools
 import kotlinx.android.synthetic.main.activity_object_configure.*
 import java.util.*
 

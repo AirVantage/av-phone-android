@@ -26,8 +26,8 @@ object Tools {
     }
 
     fun buildAlertName():String {
-        var objectsManager = ObjectsManager.getInstance()
-        var systemType = objectsManager.savedObjectName
+        val objectsManager = ObjectsManager.getInstance()
+        val systemType = objectsManager.savedObjectName
         return systemType + " " + AvPhoneApplication.ALERT_RULE_NAME + " on " + DeviceInfo.deviceName + "..."
     }
 }

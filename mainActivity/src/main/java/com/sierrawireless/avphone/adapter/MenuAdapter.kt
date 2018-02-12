@@ -9,11 +9,13 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.TextView
+import com.sierrawireless.avphone.ObjectsManager
 import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.activity.MainActivity
 import java.util.*
 
 class MenuAdapter internal constructor(private val activity: Activity, var list: ArrayList<MenuEntry>) : BaseAdapter() {
+    val objectsManager:ObjectsManager? = ObjectsManager.getInstance()
 
     override fun getCount(): Int {
         return list.size
@@ -49,7 +51,11 @@ class MenuAdapter internal constructor(private val activity: Activity, var list:
         } else {
             name = lConvertView!!.findViewById(R.id.text1)
             name.text = entry.name
-            name.setBackgroundColor(Color.WHITE)
+            if (MainActivity.instance.lastPosition != 0 && position != list.size - 1 && position == MainActivity.instance.lastPosition) {
+                name.setBackgroundColor(Color.LTGRAY)
+            }else {
+                name.setBackgroundColor(Color.WHITE)
+            }
             name.setTextColor(ContextCompat.getColor(lConvertView.context, R.color.navy))
             if (entry.type == MenuEntryType.USER) {
                 name.setTypeface(null, Typeface.ITALIC)
@@ -58,7 +64,7 @@ class MenuAdapter internal constructor(private val activity: Activity, var list:
         if (entry.drawable != null) {
             name.setCompoundDrawablesWithIntrinsicBounds(entry.drawable, null, null, null)
         }
-        val menuButton:Button = lConvertView!!.findViewById(R.id.menu_button)
+        val menuButton:Button = lConvertView.findViewById(R.id.menu_button)
 
         menuButton.visibility = if (entry.button) {
                                     View.VISIBLE
