@@ -229,6 +229,10 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     private fun logout() {
         val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(activity)
 
+        if (authManager == null || authManager!!.authentication == null || taskFactory == null) {
+            return
+        }
+
         val accessToken = authManager!!.authentication!!.accessToken
 
         val logoutTask = taskFactory!!.logoutTask(avPhonePrefs.serverHost!!, accessToken!!)

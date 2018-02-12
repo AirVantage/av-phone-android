@@ -338,20 +338,20 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
     override fun onServiceStarted(service: MonitoringService) {
-        toggle_to_start.visibility = View.GONE
-        started_since.visibility = View.VISIBLE
-        service_log.visibility = View.VISIBLE
-        alarm_log.visibility = View.VISIBLE
-        viewUpdater!!.onStart(service.startedSince, service.lastData, service.lastLog,
+        toggle_to_start?.visibility = View.GONE
+        started_since?.visibility = View.VISIBLE
+        service_log?.visibility = View.VISIBLE
+        alarm_log?.visibility = View.VISIBLE
+        viewUpdater?.onStart(service.startedSince, service.lastData, service.lastLog,
                 service.lastRun)
     }
 
     override fun onServiceStopped(service: MonitoringService) {
-        toggle_to_start.visibility = View.VISIBLE
-        started_since.visibility = View.GONE
-        service_log.visibility = View.GONE
-        alarm_log.visibility = View.GONE
-        viewUpdater!!.onStop()
+        toggle_to_start?.visibility = View.VISIBLE
+        started_since?.visibility = View.GONE
+        service_log?.visibility = View.GONE
+        alarm_log?.visibility = View.GONE
+        viewUpdater?.onStop()
     }
 
     override fun onCustomLabelsChanged() {

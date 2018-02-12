@@ -86,8 +86,10 @@
                     android:id="@+id/home_welcome_image"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:adjustViewBounds="false"
                     android:contentDescription="@string/home_image_alt"
                     android:gravity="center"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/home_logo_alpha" />
 
                 <TextView
