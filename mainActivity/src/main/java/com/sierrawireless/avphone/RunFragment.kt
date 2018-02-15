@@ -377,7 +377,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
 
     private fun startTimer() {
-        Log.i(TAG, "custom data timer started for " + objectName)
+       // Log.i(TAG, "custom data timer started for " + objectName)
 
         timer = Timer().schedule(Tools.rand(1000, 5000)) {
             execMode()
@@ -385,7 +385,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
     private fun stopTimer() {
-        Log.i(TAG, "custom data timer stopped for " + objectName)
+       // Log.i(TAG, "custom data timer stopped for " + objectName)
         if (timer != null) {
             timer!!.cancel()
         }

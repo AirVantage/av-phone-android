@@ -307,9 +307,10 @@ class MonitoringService : Service() {
         objectsManager = ObjectsManager.getInstance()
         val obj = objectsManager!!.currentObject
 
+        Log.d(TAG, "alarm received")
 
         try {
-            val mustConnect = intent.getBooleanExtra(CONNECT, true)
+            val mustConnect = intent.getBooleanExtra(CONNECT, false)
 
             /* First we have to create the system if it doesn't exist */
 
@@ -353,7 +354,7 @@ class MonitoringService : Service() {
                 params.alarm = false
 
                 sendDataTask.execute(params)
-
+                MainActivity.instance.setAlarm(null)
 
                 sendDataTask.addProgressListener { result -> lastLog = result.lastLog }
 
@@ -367,7 +368,7 @@ class MonitoringService : Service() {
             LocalBroadcastManager.getInstance(this).sendBroadcast(LogMessage(lastLog!!, false))
         }
 
-
+       // MainActivity.instance.setAlarm()
         return Service.START_NOT_STICKY
     }
 

@@ -14,6 +14,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
+import android.os.SystemClock
 import android.preference.PreferenceManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.FragmentActivity
@@ -492,20 +493,29 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         connectToService()
     }
 
+    internal fun setAlarm(timer:Int?) {
+        val avPrefs = PreferenceUtils.getAvPhonePrefs(this)
+        val intent = Intent(this, MonitoringService::class.java)
+        intent.putExtra(MonitoringService.DEVICE_ID, DeviceInfo.getUniqueId(this))
+        intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost)
+        intent.putExtra(MonitoringService.PASSWORD, avPrefs.password)
+        intent.putExtra(MonitoringService.CONNECT, true)
+        val pendingIntent = PendingIntent.getService(this, 0, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT)
+        // registering our pending intent with alarm manager
+
+        val wait = if (timer == null) {
+            SystemClock.elapsedRealtime() +(Integer.valueOf(avPrefs.period)!! * 60 * 1000).toLong()
+        }else {
+            SystemClock.elapsedRealtime() + 100
+        }
+        alarmManager!!.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP,  wait, pendingIntent)
+
+    }
+
     override fun startSendData(name: String):Boolean {
         if (startObjectName == null || name == startObjectName!!) {
-            val avPrefs = PreferenceUtils.getAvPhonePrefs(this)
-            val intent = Intent(this, MonitoringService::class.java)
-            intent.putExtra(MonitoringService.DEVICE_ID, DeviceInfo.getUniqueId(this))
-            intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost)
-            intent.putExtra(MonitoringService.PASSWORD, avPrefs.password)
-            intent.putExtra(MonitoringService.CONNECT, true)
-            val pendingIntent = PendingIntent.getService(this, 0, intent,
-                    PendingIntent.FLAG_CANCEL_CURRENT)
-            // registering our pending intent with alarm manager
-            alarmManager!!.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, (Integer.valueOf(avPrefs.period)!! * 60 * 1000).toLong(),
-                    (Integer.valueOf(avPrefs.period)!! * 60 * 1000).toLong(), pendingIntent)
-            // connectToService();
+           setAlarm(0)
             startObjectName = name
             serviceSendData = true
         }else{
@@ -589,7 +599,19 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         } finally {
             forgetAuthentication()
             loadMenu(true)
-            goHomeFragment()
+            val position = FRAGMENT_LIST!!.size - 1
+            val fragment = getFragment(position)
+            if (fragment!!.isVisible) {
+                fragment.onResume()
+                // Highlight the selected item, update the title, and close the drawer
+                left_drawer.setItemChecked(position, true)
+                title = FRAGMENT_LIST!![position].name
+                left_drawer.setSelection(position)
+                drawer_layout.closeDrawer(left_drawer)
+                lastPosition = position
+            }else{
+                goLastFragment()
+            }
         }
     }
 
@@ -615,6 +637,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                 }
                 negativeButton("NO") {
                     drawer_layout.closeDrawer(left_drawer)
+
                 }
             }.show()
             return
