@@ -54,6 +54,9 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
             systemType = objectsManager.savedObjectName
 
+
+
+
             // For emulator and iOs compatibility sake, using generated serial.
             val serialNumber = DeviceInfo.generateSerial(user!!.uid!!)
 
@@ -75,6 +78,9 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
                 system = systemClient.createSystem(serialNumber, iccid!!, systemType, mqttPassword!!, application.uid!!, deviceName!!, user.name!!, imei!!)
             }
+            objectsManager.savecObject.systemUid = system.uid
+            objectsManager.saveOnPref()
+
 
             publishProgress(SyncProgress.CHECKING_ALERT_RULE)
 

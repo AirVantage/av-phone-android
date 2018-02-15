@@ -4,6 +4,8 @@ import java.util.ArrayList
 
 class AvPhoneObject {
     var name: String? = null
+    var systemUid: String? = null
+
     var alarm: Boolean = false
     var datas: ArrayList<AvPhoneObjectData> = ArrayList()
 

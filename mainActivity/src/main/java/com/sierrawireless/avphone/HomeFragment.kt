@@ -127,7 +127,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
             }
             MainActivity.instance.onAuthentication(auth!!)
             MainActivity.instance.readAuthenticationFromPreferences()
-            MainActivity.instance.loadMenu()
+            MainActivity.instance.loadMenu(true)
         }
     }
 

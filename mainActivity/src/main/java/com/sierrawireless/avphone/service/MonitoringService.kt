@@ -209,6 +209,7 @@ class MonitoringService : Service() {
 
         startForeground(notif, notification)
         setUpLocationListeners()
+
     }
 
     fun stopSendData() {

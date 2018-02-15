@@ -59,14 +59,16 @@ protected val context: Context) : AvPhoneTask<Void, DeleteSystemProgress, Delete
             val system = this.systemClient.getSystem(serialNumber, systemType)
 
             publishProgress(DeleteSystemProgress.CHECKING_ALERTRULE)
-            val alertRule = this.alertRuleClient.getAlertRule(serialNumber, system!!)
-            if (alertRule != null) {
 
-                publishProgress(DeleteSystemProgress.DELETING_ALERTRULE)
 
-                this.alertRuleClient.deleteAlertRule(alertRule)
-            }
             if (system != null) {
+                val alertRule = this.alertRuleClient.getAlertRule(serialNumber, system!!)
+                if (alertRule != null) {
+
+                    publishProgress(DeleteSystemProgress.DELETING_ALERTRULE)
+
+                    this.alertRuleClient.deleteAlertRule(alertRule)
+                }
                 publishProgress(DeleteSystemProgress.DELETING_SYSTEM)
                 systemClient.deleteSystem(system)
             }

@@ -54,7 +54,12 @@ class MenuAdapter internal constructor(private val activity: Activity, var list:
             if (MainActivity.instance.lastPosition != 0 && position != list.size - 1 && position == MainActivity.instance.lastPosition) {
                 name.setBackgroundColor(Color.LTGRAY)
             }else {
-                name.setBackgroundColor(Color.WHITE)
+                if (entry.type == MenuEntryType.COMMAND) {
+                    name.setBackgroundColor(Color.WHITE)
+                }else{
+                    name.setTypeface(null, Typeface.ITALIC)
+                    name.setBackgroundColor(ContextCompat.getColor(lConvertView.context, R.color.turquoise))
+                }
             }
             name.setTextColor(ContextCompat.getColor(lConvertView.context, R.color.navy))
             if (entry.type == MenuEntryType.USER) {

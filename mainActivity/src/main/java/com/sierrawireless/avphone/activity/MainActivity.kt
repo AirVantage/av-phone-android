@@ -159,7 +159,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             if (!result.isError) {
                 user = result.user
                 user!!.server = avPhonePrefs.serverHost
-                loadMenu()
+                loadMenu(true)
             }
         }
         val params = GetUserParams()
@@ -189,7 +189,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             }
         }
 
-        loadMenu()
+        loadMenu(true)
 
         left_drawer.setOnItemClickListener { _, _, position, _ -> selectItem(position) }
 
@@ -270,7 +270,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     }
 
 
-    fun loadMenu() {
+    fun loadMenu(changeFragment:Boolean) {
         FRAGMENT_LIST = buildFragmentList()
 
 
@@ -291,7 +291,9 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             if (isServiceRunning()) {
                 connectToService()
             }
-
+            initFragments()
+            if (changeFragment)
+                goLastFragment()
         } else {
             lockDrawer()
             if (isServiceRunning()) {
@@ -299,9 +301,10 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                 // We stop the service since the "stop" button is not available anymore.
                 this.stopMonitoringService()
             }
-
+            initFragments()
+            if (changeFragment)
+                goHomeFragment()
         }
-        goHomeFragment()
     }
 
     override fun onResume() {
@@ -564,16 +567,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
         val deviceSerial = DeviceInfo.generateSerial(user.uid!!)
         prefs!!.edit().putString(PREFERENCE_SYSTEM_SERIAL, deviceSerial).apply()
-
-        if (runFragment != null) {
-            val systemUid = this.systemUid
-            val systemName = this.systemName
-            for (tmp in runFragment!!) {
-                tmp.setLinkToSystem(systemUid, systemName)
-            }
-        } else {
-            Log.w(TAG, "RunFragment reference is null when onSynced is called")
-        }
+        
     }
 
     /**
@@ -594,7 +588,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             Crashlytics.logException(e)
         } finally {
             forgetAuthentication()
-            loadMenu()
+            loadMenu(true)
             val position = FRAGMENT_LIST!!.size - 1
             val fragment = getFragment(position)
             if (fragment!!.isVisible) {
@@ -606,7 +600,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                 drawer_layout.closeDrawer(left_drawer)
                 lastPosition = position
             }else{
-                goHomeFragment()
+                goLastFragment()
             }
         }
     }
@@ -656,26 +650,50 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         }
     }
 
-    fun goHomeFragment() {
-        val position = FRAGMENT_LIST!!.size - 1
-        val fragment = getFragment(position)
+    private fun goHomeFragment() {
+        val fragment = if (fragmentsMapping.containsKey(FRAGMENT_LOGIN)) fragmentsMapping[FRAGMENT_LOGIN] else null
+        goFragment(fragment!!, FRAGMENT_LOGIN)
+    }
+
+
+    fun goLastFragment() {
+        var fragmentName = objectsManager.objects[objectsManager.current].name
+        var fragment = if (fragmentsMapping.containsKey(fragmentName)) fragmentsMapping[fragmentName] else null
+        if (fragment == null) {
+            fragmentName = objectsManager.objects[0].name
+            fragment = if (fragmentsMapping.containsKey(fragmentName)) fragmentsMapping[fragmentName] else null
+        }
+
+        goFragment(fragment!!, fragmentName!!)
+    }
+
+    private fun goFragment(fragment:Fragment, fragmentName:String) {
+
+        var position:Int? = 0
+        for ((current, entry) in FRAGMENT_LIST!!.withIndex()) {
+            if (entry.name == fragmentName) {
+                position = current
+            }
+        }
+
         // Insert the fragment by replacing any existing fragment
         try {
             Handler().post({
                 fragmentManager
                         .beginTransaction()
+                        .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
                         .replace(R.id.content_frame, fragment)
                         .addToBackStack(null)
                         .commitAllowingStateLoss()
             })
             // Highlight the selected item, update the title, and close the drawer
-            left_drawer.setItemChecked(position, true)
+            left_drawer.setItemChecked(position!!, true)
             title = FRAGMENT_LIST!![position].name
             left_drawer.setSelection(position)
             drawer_layout.closeDrawer(left_drawer)
             lastPosition = position
         }catch(e:IllegalStateException){
-            Log.e(TAG, "GO HOME CATCH************************", e)
+            Log.e(TAG, "GO last fragment CATCH************************", e)
         }
     }
 

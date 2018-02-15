@@ -50,13 +50,7 @@ open class ConfigureFragment : AvPhoneFragment() {
         return lView
     }
 
-    override fun onStart() {
-        instance = this
-        super.onStart()
-        objectsManager = ObjectsManager.getInstance()
-        errorMessageView = configure_error_message
-
-
+    private fun reloadMenu(){
         menu = ArrayList()
 
         for (obj in objectsManager!!.objects) {
@@ -65,8 +59,16 @@ open class ConfigureFragment : AvPhoneFragment() {
 
 
         val adapter = ObjectAdapter(activity, R.layout.menu_objects, menu)
-
         objectConfigure.adapter = adapter
+    }
+    override fun onStart() {
+        instance = this
+        super.onStart()
+        objectsManager = ObjectsManager.getInstance()
+        errorMessageView = configure_error_message
+
+
+       reloadMenu()
 
         objectConfigure.onItemClickListener = AdapterView.OnItemClickListener { _, view, i, _ ->
             val deleteActionBtn: Button = view.findViewById(R.id.menuDeleteActionBtn)
@@ -75,23 +77,25 @@ open class ConfigureFragment : AvPhoneFragment() {
                 deleteBtn.visibility = View.VISIBLE
                 deleteActionBtn.visibility = View.GONE
             } else {
-                //Open a new intent with the selected Object
-                val intent = Intent(view.context, ObjectConfigureActivity::class.java)
-                intent.putExtra(INDEX, i)
-
-                startActivityForResult(intent, CONFIGURE)
+                startObjectConfigure(i)
             }
         }
 
-
-        doneConfigureBtn.setOnClickListener { (activity as MainActivity).goHomeFragment() }
+        doneConfigureBtn.setOnClickListener { (activity as MainActivity).goLastFragment() }
 
         addConfigureBtn.setOnClickListener { view ->
-            val intent = Intent(view.context, ObjectConfigureActivity::class.java)
-            intent.putExtra(INDEX, -1)
-
-            startActivityForResult(intent, CONFIGURE)
+            startObjectConfigure(-1)
         }
+
+    }
+
+    private fun startObjectConfigure(position: Int) {
+
+        //Open a new intent with the selected Object
+        val intent = Intent(view.context, ObjectConfigureActivity::class.java)
+        intent.putExtra(INDEX, position)
+
+        startActivityForResult(intent, CONFIGURE)
 
     }
 
@@ -144,7 +148,10 @@ open class ConfigureFragment : AvPhoneFragment() {
                     }
                 }
             }
-            MainActivity.instance.loadMenu()
+            MainActivity.instance.loadMenu(false)
+            reloadMenu()
+            objectConfigure.invalidate()
+
 
 
         }
@@ -176,7 +183,12 @@ open class ConfigureFragment : AvPhoneFragment() {
             }
 
             deleteTask.showResult(result, display, activity)
-            MainActivity.instance.loadMenu()})
+            MainActivity.instance.loadMenu(false)
+            reloadMenu()
+            objectConfigure.invalidate()
+
+        })
+
 
     }
 
@@ -204,7 +216,7 @@ open class ConfigureFragment : AvPhoneFragment() {
             }
 
             syncTask.showResult(result, display, activity)
-            MainActivity.instance.loadMenu()
+            MainActivity.instance.loadMenu(false)
 
             if (!result.isError) {
                 syncListener!!.invoke(result)

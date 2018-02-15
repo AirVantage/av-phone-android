@@ -3,6 +3,7 @@ package com.sierrawireless.avphone
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
@@ -31,6 +32,8 @@ import net.airvantage.utils.PreferenceUtils
 import org.jetbrains.anko.alert
 import java.util.*
 import kotlin.concurrent.schedule
+
+
 
 open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabelsListener {
     private var viewUpdater: DataViewUpdater? = null
@@ -249,12 +252,20 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             // View is unavailable, bear it in mind for later
             this.systemUid = systemUid
             this.systemName = systemName
+        }
+        val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(MainActivity.instance)
+        objectsManager = ObjectsManager.getInstance()
+        val obj = objectsManager.currentObject!!
+        val link = String.format("https://%s/monitor/systems/systemDetails?uid=%s", avPhonePrefs.serverHost, obj.systemUid)
 
-
-
-            return
+        airvantage.setOnClickListener {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+            startActivity(browserIntent)
         }
 
+        // set button to open Airvantage
+
+        return
     }
 
     override fun onResume() {
