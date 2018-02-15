@@ -42,17 +42,17 @@ class ObjectsManager private constructor() {
             // Create the default model here
             val model = AvPhoneObject()
             model.name = "Printer"
-            var data = AvPhoneObjectData("A6 Page Count", "page(s)", "0", AvPhoneObjectData.Mode.UP, null)
+            var data = AvPhoneObjectData("A6 Page Count", "page(s)", "0", AvPhoneObjectData.Mode.UP, "1", null)
             model.add(data)
-            data = AvPhoneObjectData("A4 Page Count", "page(s)", "0", AvPhoneObjectData.Mode.UP, null)
+            data = AvPhoneObjectData("A4 Page Count", "page(s)", "0", AvPhoneObjectData.Mode.UP, "2", null)
             model.add(data)
-            data = AvPhoneObjectData("Black Cartridge S/N", "", "NTOQN-7HUL9-NEPFL-13IOA", AvPhoneObjectData.Mode.None, null)
+            data = AvPhoneObjectData("Black Cartridge S/N", "", "NTOQN-7HUL9-NEPFL-13IOA", AvPhoneObjectData.Mode.None, "3", null)
             model.add(data)
-            data = AvPhoneObjectData("Black lnk Level", "%", "100", AvPhoneObjectData.Mode.DOWN, null)
+            data = AvPhoneObjectData("Black lnk Level", "%", "100", AvPhoneObjectData.Mode.DOWN, "4",null)
             model.add(data)
-            data = AvPhoneObjectData("Color Cartridge S/N", "", "629U7-XLT5H-6SCGJ-@CENZ", AvPhoneObjectData.Mode.None, null)
+            data = AvPhoneObjectData("Color Cartridge S/N", "", "629U7-XLT5H-6SCGJ-@CENZ", AvPhoneObjectData.Mode.None, "5",null)
             model.add(data)
-            data = AvPhoneObjectData("Color lnk Level", "%", "100", AvPhoneObjectData.Mode.DOWN, null)
+            data = AvPhoneObjectData("Color lnk Level", "%", "100", AvPhoneObjectData.Mode.DOWN, "6",null)
             model.add(data)
             objects.add(model)
             current = 0

@@ -4,7 +4,7 @@ import android.text.TextUtils
 import com.sierrawireless.avphone.tools.Tools
 
 
-class AvPhoneObjectData(var name: String, var unit: String, var defaults: String, mode: Mode, var label: String?) {
+class AvPhoneObjectData(var name: String, var unit: String, var defaults: String, mode: Mode, private val label:String?, var path: String?) {
     var mode: Mode = Mode.None
     var current: Int? = null
     private var min: Int? = null
@@ -52,10 +52,10 @@ class AvPhoneObjectData(var name: String, var unit: String, var defaults: String
         returned = "$returned\"unit\": \"$unit\","
         returned = "$returned\"defaults\": \"$defaults\","
         returned = returned + "\"mode\": \"" + modeToString(mode) + "\""
-        returned = if (label == null) {
+        returned = if (path == null) {
             returned + "}"
         }else {
-            ",$returned\"label\": \"$label\"}"
+            ",$returned\"path\": \"$path\"}"
         }
         return returned
     }

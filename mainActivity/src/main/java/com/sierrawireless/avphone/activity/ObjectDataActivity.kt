@@ -57,8 +57,8 @@ class ObjectDataActivity : Activity(), AdapterView.OnItemSelectedListener {
             unitText.setText(data!!.unit)
             defaultText.setText(data!!.defaults)
             spinner.setSelection(data!!.modePosition(), false)
-            if (data!!.label != null) {
-                path.setText(data!!.label)
+            if (data!!.path != null) {
+                path.setText(data!!.path)
             }else{
                 path.setText("default")
             }
@@ -76,13 +76,13 @@ class ObjectDataActivity : Activity(), AdapterView.OnItemSelectedListener {
                             nameText.text.toString(),
                             unitText.text.toString(),
                             defaultText.text.toString(),
-                            mode, null)
+                            mode, "1", null)
                 }else {
                     AvPhoneObjectData(
                             nameText.text.toString(),
                             unitText.text.toString(),
                             defaultText.text.toString(),
-                            mode,
+                            mode, "1",
                             path.text.toString())
                 }
                 obj!!.datas.add(data!!)
@@ -91,9 +91,9 @@ class ObjectDataActivity : Activity(), AdapterView.OnItemSelectedListener {
                 data!!.defaults = defaultText.text.toString()
                 data!!.mode = mode
                 if (!path.text.isEmpty() && path.text.toString() != "default") {
-                    data!!.label = path.text.toString()
+                    data!!.path = path.text.toString()
                 }else{
-                    data!!.label = null
+                    data!!.path = null
                 }
             }
             finish()

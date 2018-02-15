@@ -116,7 +116,7 @@ internal constructor(clientId: String, password: String, serverHost: String, cal
             var pos: Int? = 1
             var key: String?
             for (ldata in obj!!.datas) {
-                key = ldata.label ?: obj.name + "." + AvPhoneData.CUSTOM + pos!!.toString()
+                key = ldata.path ?: obj.name + "." + AvPhoneData.CUSTOM + pos!!.toString()
                 if (ldata.mode != AvPhoneObjectData.Mode.None) {
                     values[key] = listOf(DataValue(timestamp, ldata.current!!))
                 } else {

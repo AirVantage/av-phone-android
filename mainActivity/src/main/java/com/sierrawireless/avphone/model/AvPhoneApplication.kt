@@ -68,10 +68,10 @@ object AvPhoneApplication {
                 "string"
             }
 
-            if (data.label == null) {
+            if (data.path == null) {
                 asset.data!!.add(Variable(obj + "." + AvPhoneData.CUSTOM + pos.toString(), data.name, type))
             }else{
-                asset.data!!.add(Variable(data.label!!, data.name, type))
+                asset.data!!.add(Variable(data.path!!, data.name, type))
             }
             pos++
         }

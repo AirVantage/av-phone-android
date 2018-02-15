@@ -503,7 +503,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             val pendingIntent = PendingIntent.getService(this, 0, intent,
                     PendingIntent.FLAG_CANCEL_CURRENT)
             // registering our pending intent with alarm manager
-            alarmManager!!.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 5000,
+            alarmManager!!.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, (Integer.valueOf(avPrefs.period)!! * 60 * 1000).toLong(),
                     (Integer.valueOf(avPrefs.period)!! * 60 * 1000).toLong(), pendingIntent)
             // connectToService();
             startObjectName = name
