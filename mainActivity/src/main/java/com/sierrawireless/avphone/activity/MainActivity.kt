@@ -589,19 +589,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         } finally {
             forgetAuthentication()
             loadMenu(true)
-            val position = FRAGMENT_LIST!!.size - 1
-            val fragment = getFragment(position)
-            if (fragment!!.isVisible) {
-                fragment.onResume()
-                // Highlight the selected item, update the title, and close the drawer
-                left_drawer.setItemChecked(position, true)
-                title = FRAGMENT_LIST!![position].name
-                left_drawer.setSelection(position)
-                drawer_layout.closeDrawer(left_drawer)
-                lastPosition = position
-            }else{
-                goLastFragment()
-            }
+            goHomeFragment()
         }
     }
 

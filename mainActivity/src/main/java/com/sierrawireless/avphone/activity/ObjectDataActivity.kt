@@ -57,7 +57,11 @@ class ObjectDataActivity : Activity(), AdapterView.OnItemSelectedListener {
             unitText.setText(data!!.unit)
             defaultText.setText(data!!.defaults)
             spinner.setSelection(data!!.modePosition(), false)
-
+            if (data!!.label != null) {
+                path.setText(data!!.label)
+            }else{
+                path.setText("default")
+            }
         } else {
             titleMenu.setText(R.string.add_new_data)
         }
@@ -67,18 +71,30 @@ class ObjectDataActivity : Activity(), AdapterView.OnItemSelectedListener {
         saveData.setOnClickListener {
             val mode = AvPhoneObjectData.modeFromPosition(spinner.selectedItemPosition)
             if (add) {
-                data = AvPhoneObjectData(
-                        nameText.text.toString(),
-                        unitText.text.toString(),
-                        defaultText.text.toString(),
-                        mode,
-                        objectPosition.toString()
-                )
+                data = if (!path.text.isEmpty() && path.text.toString() == "default") {
+                    AvPhoneObjectData(
+                            nameText.text.toString(),
+                            unitText.text.toString(),
+                            defaultText.text.toString(),
+                            mode, null)
+                }else {
+                    AvPhoneObjectData(
+                            nameText.text.toString(),
+                            unitText.text.toString(),
+                            defaultText.text.toString(),
+                            mode,
+                            path.text.toString())
+                }
                 obj!!.datas.add(data!!)
             } else {
                 data!!.unit = unitText.text.toString()
                 data!!.defaults = defaultText.text.toString()
                 data!!.mode = mode
+                if (!path.text.isEmpty() && path.text.toString() != "default") {
+                    data!!.label = path.text.toString()
+                }else{
+                    data!!.label = null
+                }
             }
             finish()
         }

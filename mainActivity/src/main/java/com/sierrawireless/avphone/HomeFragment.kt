@@ -23,6 +23,7 @@ import com.sierrawireless.avphone.tools.DeviceInfo
 import kotlinx.android.synthetic.main.fragment_home.*
 import net.airvantage.model.User
 import net.airvantage.utils.PreferenceUtils
+import org.jetbrains.anko.runOnUiThread
 
 class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     private var lView: View? = null
@@ -30,10 +31,10 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     private var retrySync: Boolean = false
     private var taskFactory: IAsyncTaskFactory? = null
     private var user: User? = null
-    private val infoMessageView: TextView
+    private val infoMessageView: TextView?
         get() = home_info_message
 
-    override var errorMessageView: TextView
+    override var errorMessageView: TextView?
         get() = home_error_message
         set(textView) {
         }
@@ -101,8 +102,8 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
             else -> getString(R.string.logged_on_custom, phonePrefs.serverHost)
         }
 
-        infoMessageView.text = message
-        infoMessageView.visibility = View.VISIBLE
+        infoMessageView?.text = message
+        infoMessageView?.visibility = View.VISIBLE
         if (user != null) {
             home_login.text = String.format("%s %s", getString(R.string.welcome), user!!.name)
             home_login.visibility = View.VISIBLE
@@ -110,9 +111,9 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     }
 
     private fun hideCurrentServer() {
-        infoMessageView.visibility = View.GONE
+        infoMessageView?.visibility = View.GONE
         home_login.visibility = View.GONE
-        infoMessageView.text = ""
+        infoMessageView?.text = ""
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -133,8 +134,9 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
 
 
     private fun syncGetUser(auth: Authentication) {
-        hideErrorMessage()
-
+        runOnUiThread {
+            hideErrorMessage()
+        }
         val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(activity)
 
         // Without task factory, try later
@@ -209,15 +211,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     }
 
     private fun showLoggedInState() {
-        val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(activity)
-        if (user == null) {
-            syncGetUser(authManager!!.authentication!!)
-        } else {
-            user!!.server = avPhonePrefs.serverHost
-            MainActivity.instance.user = user!!
-        }
-        showCurrentServer()
-        showLogoutButton()
+
     }
 
     private fun showLoggedOutState() {

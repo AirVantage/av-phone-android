@@ -24,7 +24,7 @@ import net.airvantage.utils.PreferenceUtils
 import java.util.*
 
 open class ConfigureFragment : AvPhoneFragment() {
-    override lateinit var errorMessageView: TextView
+    override var errorMessageView: TextView? = null
 
     private var objectsManager: ObjectsManager? = null
     private var menu: ArrayList<String> = ArrayList()

@@ -114,13 +114,15 @@ internal constructor(clientId: String, password: String, serverHost: String, cal
         } else {
             val obj = objectsManager.currentObject
             var pos: Int? = 1
+            var key: String?
             for (ldata in obj!!.datas) {
+                key = ldata.label ?: obj.name + "." + AvPhoneData.CUSTOM + pos!!.toString()
                 if (ldata.mode != AvPhoneObjectData.Mode.None) {
-                    values[obj.name + "." + AvPhoneData.CUSTOM + pos!!.toString()] = listOf(DataValue(timestamp, ldata.current!!))
+                    values[key] = listOf(DataValue(timestamp, ldata.current!!))
                 } else {
-                    values[obj.name + "." + AvPhoneData.CUSTOM + pos!!.toString()] = listOf(DataValue(timestamp, ldata.defaults))
+                    values[key] = listOf(DataValue(timestamp, ldata.defaults))
                 }
-                pos++
+                pos = pos!! + 1
             }
         }
         return gson.toJson(listOf<Map<String, List<DataValue>>>(values))

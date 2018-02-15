@@ -18,7 +18,7 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
 
     var syncListener: SyncWithAvListener? = null
 
-    abstract var errorMessageView: TextView
+    abstract var errorMessageView: TextView?
 
 
     override fun onAttach(context: Context) {
@@ -46,18 +46,18 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
 
     private fun showErrorMessage(message: String) {
         val errorMessageView = errorMessageView
-        errorMessageView.text = message
-        errorMessageView.visibility = View.VISIBLE
+        errorMessageView?.text = message
+        errorMessageView?.visibility = View.VISIBLE
     }
 
     override fun showErrorMessage(spanned: Spanned) {
         val errorMessageView = errorMessageView
-        errorMessageView.text = spanned
-        errorMessageView.visibility = View.VISIBLE
+        errorMessageView?.text = spanned
+        errorMessageView?.visibility = View.VISIBLE
     }
 
     fun hideErrorMessage() {
-        errorMessageView.visibility = View.GONE
+        errorMessageView?.visibility = View.GONE
     }
 
     private fun lToast(id: Int) {

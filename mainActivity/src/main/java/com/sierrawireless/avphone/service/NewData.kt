@@ -100,12 +100,17 @@ class NewData internal constructor() : Intent(NEW_DATA) {
         val obj = objectsManager.currentObject
         var pos: Int? = 1
         for (data in obj!!.datas) {
-            if (data.mode != AvPhoneObjectData.Mode.None) {
-                this.putExtra(obj.name + "." + CUSTOM + pos!!.toString(), data.current!!)
-            } else {
-                this.putExtra(obj.name + "." + CUSTOM + pos!!.toString(), data.defaults)
+            val key:String? = if (data.label == null) {
+                obj.name + "." + CUSTOM + pos!!.toString()
+            }else{
+                data.label
             }
-            pos++
+            if (data.mode != AvPhoneObjectData.Mode.None) {
+                this.putExtra(key, data.current!!)
+            } else {
+                this.putExtra(key, data.defaults)
+            }
+            pos = pos!! + 1
         }
     }
 

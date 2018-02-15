@@ -66,7 +66,8 @@ class ObjectConfigureActivity : Activity() {
 
 
         listView.onItemClickListener = AdapterView.OnItemClickListener { _, view, i, _ ->
-            obj!!.name = objectNameEdit.text.toString()
+            if (add)
+                obj!!.name = objectNameEdit.text.toString()
             val lIntent = Intent(view.context, ObjectDataActivity::class.java)
             lIntent.putExtra(OBJECT_POSITION, position)
             lIntent.putExtra(DATA_POSITION, i)
