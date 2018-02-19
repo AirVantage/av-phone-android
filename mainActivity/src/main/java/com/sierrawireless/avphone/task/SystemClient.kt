@@ -15,10 +15,10 @@ import kotlin.collections.set
 class SystemClient internal constructor(private val client: AirVantageClient) : ISystemClient {
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun getSystem(serialNumber: String, type: String): net.airvantage.model.AvSystem? {
-        val systems = client.getSystemsBySerialNumber(Tools.buildSerialNumber(serialNumber, type))
+    override fun getSystem(serialNumber: String, type: String, deviceName: String): net.airvantage.model.AvSystem? {
+        val systems = client.getSystemsBySerialNumber(Tools.buildSerialNumber(serialNumber, type, deviceName))
 
-        return Utils.firstWhere(systems, AvSystem.hasSerialNumber(Tools.buildSerialNumber(serialNumber, type)))
+        return Utils.firstWhere(systems, AvSystem.hasSerialNumber(Tools.buildSerialNumber(serialNumber, type, deviceName)))
     }
 
     @Throws(IOException::class, AirVantageException::class)
@@ -26,15 +26,15 @@ class SystemClient internal constructor(private val client: AirVantageClient) : 
                               applicationUid: String, deviceName: String, userName: String, imei: String): net.airvantage.model.AvSystem {
         val system = net.airvantage.model.AvSystem()
 
-        val exist = client.getGateway((serialNumber + "-ANDROID-" + type).toUpperCase())
+        val exist = client.getGateway((serialNumber + "-ANDROID-" + type + "-" + deviceName.replace(" ", "_")).toUpperCase())
         val gateway = net.airvantage.model.AvSystem.Gateway()
 
         if (!(exist!!)) {
-            gateway.serialNumber = (serialNumber + "-ANDROID-" + type).toUpperCase()
+            gateway.serialNumber = (serialNumber + "-ANDROID-" + type + "-" +  deviceName.replace(" ", "_")).toUpperCase()
             // gateway.imei = imei + type;
             gateway.type = type
         } else {
-            gateway.serialNumber = (serialNumber + "-ANDROID-" + type).toUpperCase()
+            gateway.serialNumber = (serialNumber + "-ANDROID-" + type + "-" + deviceName.replace(" ", "_")).toUpperCase()
         }
         system.name = "$deviceName de $userName($type)"
 

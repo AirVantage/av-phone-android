@@ -71,7 +71,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
             publishProgress(SyncProgress.CHECKING_SYSTEM)
 
-            var system: net.airvantage.model.AvSystem? = this.systemClient.getSystem(serialNumber, systemType!!)
+            var system: net.airvantage.model.AvSystem? = this.systemClient.getSystem(serialNumber, systemType!!, deviceName!!)
             if (system == null) {
 
                 publishProgress(SyncProgress.CREATING_SYSTEM)
@@ -139,8 +139,11 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
     fun showResult(result: SyncWithAvResult, displayer: IMessageDisplayer, context: Activity) {
 
         if (result.isError) {
-            val error = result.error
-            displayTaskError(error!!, displayer, context, userClient, deviceName!!)
+            var error = result.error
+            if (error == null) {
+                error = AvError("Internal Error")
+            }
+            displayTaskError(error, displayer, context, userClient, deviceName!!)
         } else {
             displayer.showSuccess(R.string.sync_success)
         }

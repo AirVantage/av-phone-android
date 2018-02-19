@@ -22,6 +22,7 @@ import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.task.SendDataParams
 import com.sierrawireless.avphone.task.SendDataTask
+import com.sierrawireless.avphone.tools.DeviceInfo
 import com.sierrawireless.avphone.tools.Tools
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallback
@@ -319,7 +320,7 @@ class MonitoringService : Service() {
                 //
                 // Ensure intent is valid
                 //
-                val deviceId = Tools.buildSerialNumber(intent.getStringExtra(DEVICE_ID), obj!!.name!!)
+                val deviceId = Tools.buildSerialNumber(intent.getStringExtra(DEVICE_ID), obj!!.name!!, DeviceInfo.deviceName!!)
                 val password = intent.getStringExtra(PASSWORD)
                 val serverHost = intent.getStringExtra(SERVER_HOST)
 

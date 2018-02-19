@@ -692,7 +692,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             Handler().post({
                 fragmentManager
                         .beginTransaction()
-                        .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
                         .replace(R.id.content_frame, fragment)
                         .addToBackStack(null)
                         .commitAllowingStateLoss()

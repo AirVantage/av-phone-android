@@ -13,8 +13,8 @@ object Tools {
     const val NAME = "name"
     const val VALUE = "value"
 
-    fun buildSerialNumber(serial: String, type: String): String {
-        return (serial + "-ANDROID-" + type).toUpperCase()
+    fun buildSerialNumber(serial: String, type: String, deviceName:String): String {
+        return (serial + "-ANDROID-" + type + "-" + deviceName.replace(" ", "_")).toUpperCase()
     }
 
     fun dp2px(context: Context): Float {

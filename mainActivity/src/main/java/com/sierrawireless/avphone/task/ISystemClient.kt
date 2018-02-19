@@ -8,7 +8,7 @@ import net.airvantage.model.AvSystem
 interface ISystemClient {
 
     @Throws(IOException::class, AirVantageException::class)
-    fun getSystem(serialNumber: String, type: String): AvSystem?
+    fun getSystem(serialNumber: String, type: String, deviceName: String): AvSystem?
 
     @Throws(IOException::class, AirVantageException::class)
     fun deleteSystem(system: AvSystem)
