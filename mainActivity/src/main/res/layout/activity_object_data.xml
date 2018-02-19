@@ -57,7 +57,7 @@
 
     <EditText
         android:id="@+id/nameText"
-        android:layout_width="wrap_content"
+        android:layout_width="311dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
@@ -82,7 +82,7 @@
 
     <EditText
         android:id="@+id/unitText"
-        android:layout_width="wrap_content"
+        android:layout_width="310dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="7dp"
@@ -106,7 +106,7 @@
 
     <EditText
         android:id="@+id/path"
-        android:layout_width="wrap_content"
+        android:layout_width="366dp"
         android:layout_height="41dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"

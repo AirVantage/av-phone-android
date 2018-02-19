@@ -510,7 +510,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             SystemClock.elapsedRealtime() + 100
         }
         alarmManager!!.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP,  wait, pendingIntent)
-        alarmManager!!.setR
     }
 
     override fun startSendData(name: String):Boolean {
@@ -519,7 +518,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             startObjectName = name
             serviceSendData = true
         }else{
-            alert("A run already exist for " + startObjectName, "Alert") {
+            alert("A run already exist for $startObjectName.", "Alert") {
                 positiveButton("OK") {
 
                 }

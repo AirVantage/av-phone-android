@@ -13,6 +13,7 @@ import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.adapter.ObjectDataAdapter
 import com.sierrawireless.avphone.model.AvPhoneObject
 import kotlinx.android.synthetic.main.activity_object_configure.*
+import org.jetbrains.anko.alert
 import java.util.*
 
 class ObjectConfigureActivity : Activity() {
@@ -42,44 +43,67 @@ class ObjectConfigureActivity : Activity() {
         add = position == -1
 
         cancel.setOnClickListener {
-            //reload object from list
-            objectsManager.reload()
-            val i = Intent()
-            setResult(Activity.RESULT_CANCELED, i)
-            finish()
+            cancel()
         }
 
         save.setOnClickListener {
             if (objectNameEdit.visibility != View.GONE || add) {
                 obj!!.name = objectNameEdit.text.toString()
             }
-            obj!!.datas
-                    .filter { it.isInteger }
-                    .forEach { it.current = it.defaults.toInt() }
+            if (obj!!.name!!.isEmpty()) {
+                // open an alert to force to define the nane before to add value
+                alert(getString(R.string.objectSaveConfigure), getString(R.string.alert)) {
+                    positiveButton("OK") {
+                    }
+                }.show()
+            }else {
+                obj!!.datas
+                        .filter { it.isInteger }
+                        .forEach { it.current = it.defaults.toInt() }
 
-            objectsManager.save()
-            val i = Intent()
-            i.putExtra(ConfigureFragment.POS, position)
-            setResult(Activity.RESULT_OK, i)
-            finish()
+                objectsManager.save()
+                val i = Intent()
+                i.putExtra(ConfigureFragment.POS, position)
+                setResult(Activity.RESULT_OK, i)
+                finish()
+            }
         }
 
 
         listView.onItemClickListener = AdapterView.OnItemClickListener { _, view, i, _ ->
             if (add)
                 obj!!.name = objectNameEdit.text.toString()
-            val lIntent = Intent(view.context, ObjectDataActivity::class.java)
-            lIntent.putExtra(OBJECT_POSITION, position)
-            lIntent.putExtra(DATA_POSITION, i)
-            if (i == menu.size - 1) {
-                lIntent.putExtra(ADD, true)
+            if (obj!!.name!!.isEmpty()) {
+                // open an alert to force to define the nane before to add value
+                alert(getString(R.string.nameBeforeAddObjectConfigure), getString(R.string.alert)) {
+                    positiveButton("OK") {
+                    }
+                }.show()
             } else {
-                lIntent.putExtra(ADD, false)
+                val lIntent = Intent(view.context, ObjectDataActivity::class.java)
+                lIntent.putExtra(OBJECT_POSITION, position)
+                lIntent.putExtra(OBJECT_NAME, obj!!.name)
+                lIntent.putExtra(DATA_POSITION, i)
+                if (i == menu.size - 1) {
+                    lIntent.putExtra(ADD, true)
+                } else {
+                    lIntent.putExtra(ADD, false)
+                }
+                startActivity(lIntent)
             }
-            startActivity(lIntent)
         }
 
     }
+
+    private fun cancel() {
+        //reload object from list
+        objectsManager.reload()
+        val i = Intent()
+        setResult(Activity.RESULT_CANCELED, i)
+        finish()
+    }
+
+    override fun onBackPressed() = cancel()
 
 
     override fun onDestroy() {
@@ -121,6 +145,7 @@ class ObjectConfigureActivity : Activity() {
     companion object {
         var OBJECT_POSITION = "object_pos"
         var DATA_POSITION = "data_position"
+        var OBJECT_NAME = "name"
         var ADD = "add"
         @SuppressLint("StaticFieldLeak")
         var instance:ObjectConfigureActivity? = null

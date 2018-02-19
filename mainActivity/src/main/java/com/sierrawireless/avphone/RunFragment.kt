@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +31,6 @@ import net.airvantage.utils.PreferenceUtils
 import org.jetbrains.anko.alert
 import java.util.*
 import kotlin.concurrent.schedule
-
 
 
 open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabelsListener {
@@ -246,7 +244,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         }
     }
 
-    fun setLinkToSystem(systemUid: String?, systemName: String?) {
+    private fun setLinkToSystem(systemUid: String?, systemName: String?) {
 
         if (lView == null || activity == null) {
             // View is unavailable, bear it in mind for later
@@ -408,8 +406,5 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         startTimer()
     }
 
-    companion object {
-        private val TAG = RunFragment::class.simpleName
-    }
 }
 

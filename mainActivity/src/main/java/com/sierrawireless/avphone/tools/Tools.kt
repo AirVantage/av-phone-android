@@ -2,8 +2,12 @@ package com.sierrawireless.avphone.tools
 
 import android.content.Context
 import com.sierrawireless.avphone.ObjectsManager
+import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.model.AvPhoneApplication
+import com.sierrawireless.avphone.model.AvPhoneData
+
 import java.util.*
+import org.jetbrains.anko.alert
 
 object Tools {
     const val NAME = "name"
@@ -30,4 +34,7 @@ object Tools {
         val systemType = objectsManager.savedObjectName
         return systemType + " " + AvPhoneApplication.ALERT_RULE_NAME + " on " + DeviceInfo.deviceName + "..."
     }
+
+    fun buildDefaultPath(name:String, pos:Int):String = name + "." + AvPhoneData.CUSTOM + pos.toString()
+
 }
