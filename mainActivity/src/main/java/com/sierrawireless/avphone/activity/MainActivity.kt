@@ -510,7 +510,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             SystemClock.elapsedRealtime() + 100
         }
         alarmManager!!.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP,  wait, pendingIntent)
-
+        alarmManager!!.setR
     }
 
     override fun startSendData(name: String):Boolean {
@@ -643,21 +643,22 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             return
         }
         if (entry.type == MenuEntryType.COMMAND) {
-
-            // Insert the fragment by replacing any existing fragment
-            fragmentManager
-                    .beginTransaction()
-                    .replace(R.id.content_frame, fragment)
-                    .addToBackStack(null)
-                    .commit()
-
-            // Highlight the selected item, update the title, and close the drawer
-            left_drawer.setItemChecked(position, true)
-            title = entry.name
-            left_drawer.setSelection(position)
+            // We have not selected this fragment now do it
+            if (lastPosition != position) {
+                // Insert the fragment by replacing any existing fragment
+                fragmentManager
+                        .beginTransaction()
+                        .replace(R.id.content_frame, fragment)
+                        .addToBackStack(null)
+                        .commit()
+                // Highlight the selected item, update the title, and close the drawer
+                left_drawer.setItemChecked(position, true)
+                title = entry.name
+                left_drawer.setSelection(position)
+                lastPosition = position
+                left_drawer.invalidateViews()
+            }
             drawer_layout.closeDrawer(left_drawer)
-            lastPosition = position
-            left_drawer.invalidateViews()
         }
     }
 
