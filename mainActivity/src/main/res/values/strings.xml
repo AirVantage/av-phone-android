@@ -87,8 +87,8 @@
     <string name="logout">Logout</string>
     
     <string name="home_title"><h1><b>Welcome to AV Phone</b></h1></string>
-    
-    <string name="home_image_alt"></string>
+
+    <string name="home_image_alt" />
     
     <string name="home_simulate_message"><b>Simulate</b> any object with your phone.\nClick on menu\nClick on simulated object to go on simulation page</string>
     
@@ -205,5 +205,6 @@
     <string name="nameOnbjectDataEmpty">An object data name must be specified before to save it.</string>
     <string name="InvalidRandomDefaultComma">Mode is RANDOM, but the default entry is not valid (min,max)</string>
     <string name="InvalidDefaultUpDown">Mode is UP or DOWN, but the default entry is not a number.</string>
+    <string name="MinMaxRandomDataObject">Mode is RANDOM, but the default entry is not valid (min,max)\n.Min and max must be numbers.</string>
 
 </resources>

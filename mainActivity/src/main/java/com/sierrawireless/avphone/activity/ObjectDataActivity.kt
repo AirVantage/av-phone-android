@@ -135,7 +135,7 @@ class ObjectDataActivity : Activity(), AdapterView.OnItemSelectedListener {
             if ((!(!defaults[0].isEmpty() && TextUtils.isDigitsOnly(defaults[0]))) or
                     (!(!defaults[1].isEmpty() && TextUtils.isDigitsOnly(defaults[1])))) {
                 alert(
-                        "Mode is RANDOM, but the default entry is not valid (min,max).\nMin and max must be numbers.",
+                        getString(R.string.MinMaxRandomDataObject),
                         getString(R.string.alert)
                 ) {
                     positiveButton("OK") {
