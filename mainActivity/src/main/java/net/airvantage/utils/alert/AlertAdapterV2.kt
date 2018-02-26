@@ -89,7 +89,7 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
         val urlString = if (data == null) {
             Uri.parse(buildEndpoint(apiPath)).toString()
         }else{
-            Uri.parse(buildEndpoint(apiPath + data!!)).toString()
+            Uri.parse(buildEndpoint(apiPath + data)).toString()
         }
         var tmp: URL?
         try {
@@ -102,7 +102,7 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
             alertRuleUrl = tmp
         }
 
-        return tmp!!
+        return tmp
     }
 
     companion object {

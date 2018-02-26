@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -268,10 +269,8 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
     override fun onResume() {
         super.onResume()
-
         val isServiceRunning = monitorServiceManager!!.isServiceRunning(objectName!!)
         service_switch.isChecked = isServiceRunning
-
         val systemUid = (activity as MainActivity).systemUid
         val systemName = (activity as MainActivity).systemName
 
@@ -279,6 +278,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         startTimer()
         monitorServiceManager?.start()
         setAlarmButton()
+        setPhoneDataLabels()
     }
 
     override fun onPause() {
@@ -311,14 +311,22 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
 
     private fun setPhoneDataLabels() {
+        Log.d(TAG, "setPhoneDataLabels called for " + objectName)
         val adapter = RunListViewAdapter(activity,  arrayListOf(
-                hashMapOf("RSSI" to ""),
-                hashMapOf("Operator" to ""),
-                hashMapOf("Bytes Sent" to "0 Mo"),
-                hashMapOf("Bytes received" to "0 Mo"),
-                hashMapOf("Network Type" to ""),
-                hashMapOf("Latitude" to ""),
-                hashMapOf("Longitude" to "")))
+                hashMapOf(Tools.NAME to "RSSI",
+                          Tools.VALUE to "0 dBm"),
+                hashMapOf(Tools.NAME to "Operator",
+                          Tools.VALUE to "Unknown"),
+                hashMapOf(Tools.NAME to "Bytes Sent",
+                        Tools.VALUE to "0 Mo"),
+                hashMapOf(Tools.NAME to "Bytes received",
+                        Tools.VALUE to "0 Mo"),
+                hashMapOf(Tools.NAME to "Network Type",
+                        Tools.VALUE to "Unknown"),
+                hashMapOf(Tools.NAME to "Latitude",
+                        Tools.VALUE to "Unknown"),
+                hashMapOf(Tools.NAME to "Longitude",
+                        Tools.VALUE to "Unknown")))
         phoneListView.adapter = adapter
         phoneListView.invalidateViews()
 
@@ -346,11 +354,12 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
     override fun onServiceStarted(service: MonitoringService) {
+        Log.d(TAG, "OnServiceStarted for " + objectName)
         toggle_to_start?.visibility = View.GONE
         started_since?.visibility = View.VISIBLE
         service_log?.visibility = View.VISIBLE
         alarm_log?.visibility = View.VISIBLE
-        viewUpdater?.onStart(service.startedSince, service.lastData, service.lastLog,
+        viewUpdater?.onStart(service.startedSince, service.lastData, service.lastLog, service.lastAlarmLog,
                 service.lastRun)
     }
 
@@ -406,5 +415,8 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         startTimer()
     }
 
+    companion object {
+        private val TAG = RunFragment::class.simpleName
+    }
 }
 

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.View
 import android.widget.ListView
 import android.widget.TextView
@@ -19,7 +20,7 @@ import java.util.*
 /**
  * A component in charge of listening for service events (new data, logs) and updating the view accordingly.
  */
-class DataViewUpdater(private val view: View, private val activity: MainActivity) : BroadcastReceiver() {
+class DataViewUpdater(val view: View, private val activity: MainActivity) : BroadcastReceiver() {
 
     private val hourFormat = SimpleDateFormat("HH:mm:ss", Locale.FRENCH)
     private var objectsManager: ObjectsManager? = null
@@ -37,10 +38,12 @@ class DataViewUpdater(private val view: View, private val activity: MainActivity
         }
     }
 
-    fun onStart(startedSince: Long?, lastData: NewData, logMsg: String?, lastRun: Long?) {
+    fun onStart(startedSince: Long?, lastData: NewData, logMsg: String?, alarmLogMsg: String?, lastRun: Long?) {
         this.setStartedSince(startedSince)
+        Log.d(TAG, "lastData " + lastData)
         this.setNewData(lastData)
         this.setLogMessage(logMsg, lastRun, false)
+        this.setLogMessage(alarmLogMsg, lastRun, true)
 
         // activate alarm button
         //view.findViewById(R.id.alarm_switch).setEnabled(true);
@@ -80,7 +83,7 @@ class DataViewUpdater(private val view: View, private val activity: MainActivity
         }
     }
 
-    private fun setNewData(data: NewData) {
+    fun setNewData(data: NewData) {
 
         val phoneListView = view.findViewById<ListView>(R.id.phoneListView)
         val listPhone = ArrayList<HashMap<String, String>>()
@@ -151,6 +154,7 @@ class DataViewUpdater(private val view: View, private val activity: MainActivity
         }
         listPhone.add(temp)
         val adapter = RunListViewAdapter(activity, listPhone)
+        Log.d(TAG, "set Phone data " + listPhone)
         phoneListView.adapter = adapter
         phoneListView.invalidateViews()
 
@@ -180,6 +184,10 @@ class DataViewUpdater(private val view: View, private val activity: MainActivity
 
     private fun findView(id: Int): TextView {
         return view.findViewById<View>(id) as TextView
+    }
+
+    companion object {
+        private val TAG = DataViewUpdater::class.simpleName
     }
 
 }

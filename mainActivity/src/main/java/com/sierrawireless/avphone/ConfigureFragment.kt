@@ -83,7 +83,7 @@ open class ConfigureFragment : AvPhoneFragment() {
 
         doneConfigureBtn.setOnClickListener { (activity as MainActivity).goLastFragment() }
 
-        addConfigureBtn.setOnClickListener { view ->
+        addConfigureBtn.setOnClickListener { _ ->
             startObjectConfigure(-1)
         }
 

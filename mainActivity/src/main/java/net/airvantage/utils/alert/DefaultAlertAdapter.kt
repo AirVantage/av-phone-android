@@ -102,7 +102,7 @@ open class DefaultAlertAdapter internal constructor(protected val server: String
             // Write the request.
             connection.requestMethod = method
 
-            val message = method + " on " + url.toString() + "\n" + bodyString
+            //val message = method + " on " + url.toString() + "\n" + bodyString
             out = connection.outputStream
             out!!.write(bodyString.toByteArray())
             return readResponse(connection)

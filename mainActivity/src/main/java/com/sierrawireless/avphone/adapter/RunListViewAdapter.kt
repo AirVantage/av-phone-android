@@ -29,7 +29,6 @@ class RunListViewAdapter(private val activity: Activity, var list: ArrayList<Has
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var lConvertView = convertView
 
-
         val inflater = activity.layoutInflater
 
         if (convertView == null) {

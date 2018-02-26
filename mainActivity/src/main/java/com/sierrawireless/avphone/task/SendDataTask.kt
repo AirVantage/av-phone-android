@@ -45,8 +45,13 @@ class SendDataTask : AsyncTask<SendDataParams, Void, SendDataResult>() {
             else
                 "Alarm off sent to server"
 
+
             LocalBroadcastManager.getInstance(context).sendBroadcast(LogMessage(lastLog, alarm))
-            return SendDataResult(lastLog)
+            return if (!alarm) {
+                SendDataResult(lastLog, null)
+            }else{
+                SendDataResult(null, lastLog)
+            }
         }catch (e: MqttException) {
             lastLog = "MQTT ERROR: " + when (e.reasonCode.toShort()){
                 MqttException.REASON_CODE_BROKER_UNAVAILABLE -> "The broker was not available to handle the request"
@@ -78,16 +83,21 @@ class SendDataTask : AsyncTask<SendDataParams, Void, SendDataResult>() {
             }
             Log.w("SendDataTasK", "Mqtt error " + lastLog )
             LocalBroadcastManager.getInstance(context).sendBroadcast(LogMessage(lastLog, alarm))
-            return SendDataResult(lastLog, true)
-
+            return if (!alarm) {
+                SendDataResult(lastLog, null,true)
+            }else{
+                SendDataResult(null, lastLog, true)
+            }
         } catch (e: Exception) {
             Crashlytics.logException(e)
             lastLog = "ERROR: " + e.message
             LocalBroadcastManager.getInstance(context).sendBroadcast(LogMessage(lastLog, alarm))
-            return SendDataResult(lastLog, true)
+            return if (!alarm) {
+                SendDataResult(lastLog, null,true)
+            }else{
+                SendDataResult(null, lastLog, true)
+            }
         }
-
-
     }
 
     override fun onPostExecute(result: SendDataResult) {

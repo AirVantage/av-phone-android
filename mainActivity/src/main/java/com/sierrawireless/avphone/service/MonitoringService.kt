@@ -49,6 +49,9 @@ class MonitoringService : Service() {
         private set
     var lastLog: String? = null
         private set
+    var lastAlarmLog: String? = null
+        private set
+
     val lastData = NewData()
     /* the date of the last location reading */
     private var lastLocation: Long = 0
@@ -295,7 +298,6 @@ class MonitoringService : Service() {
         // Custom data
         data.setCustom()
 
-
         // dispatch new data event to update the activity UI
         LocalBroadcastManager.getInstance(this).sendBroadcast(data)
         return data
@@ -460,7 +462,7 @@ class MonitoringService : Service() {
 
 
         sendDataTask.addProgressListener { result ->
-            lastLog = result.lastLog
+            lastAlarmLog = result.alarmLog
         }
         return true
     }
