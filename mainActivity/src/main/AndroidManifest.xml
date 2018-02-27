@@ -43,7 +43,7 @@
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="de8a3057ae740f20f5f7b26850063e7abb9a5cd1" />
+            android:value="9a96a8b13fb7d66d3faa24132dfc4d1891d1604e" />
 
         <activity android:name=".activity.ObjectDataActivity"
             android:theme="@style/AppTheme"/>
