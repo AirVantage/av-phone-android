@@ -15,5 +15,6 @@ interface ISystemClient {
 
     @Throws(IOException::class, AirVantageException::class)
     fun createSystem(serialNumber: String, iccid: String, type: String, mqttPassword: String, applicationUid: String, deviceName: String, userName: String, imei: String): AvSystem
+    fun updateSystem(system:AvSystem, serialNumber: String, iccid: String, type: String, mqttPassword: String, applicationUid: String, deviceName: String, userName: String, imei: String )
 
 }

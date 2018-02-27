@@ -796,6 +796,8 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         private const val FRAGMENT_SETTINGS = "Settings"
         private const val FRAGMENT_FAQ = "FAQ"
 
+
+
         @SuppressLint("StaticFieldLeak")
         internal lateinit var instance: MainActivity
 

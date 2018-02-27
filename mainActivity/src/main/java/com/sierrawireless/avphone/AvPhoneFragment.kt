@@ -40,6 +40,11 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
         this.lToast(id)
     }
 
+    override fun showSuccess(name: String, vararg params: Any) {
+        this.hideErrorMessage()
+        this.lToast(name)
+    }
+
     private fun showErrorMessage(id: Int, vararg params: Any) {
         showErrorMessage(activity.getString(id, *params))
     }
@@ -62,6 +67,10 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
 
     private fun lToast(id: Int) {
         toast(activity.getString(id))
+    }
+
+    private fun lToast(name: String) {
+        toast(name)
     }
 
     protected fun requestAuthentication() {

@@ -73,6 +73,35 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
     }
 
     @Throws(IOException::class, AirVantageException::class)
+    override fun updateAlertRule(alertRule: net.airvantage.model.alert.v1.AlertRule, application: String, system: AvSystem) {
+        try {
+            var alertRuleV2: AlertRule? = AlertRule()
+            alertRuleV2!!.targetType = "SYSTEM"
+            alertRuleV2.name = alertRule.name
+            alertRuleV2.message = "Alarm for " + system.name + " is ON"
+            alertRuleV2.active = true
+            alertRuleV2.conditions = ArrayList()
+            val metadata = HashMap<String, Any>()
+            metadata["templateId"] = "alertrule.template.custom"
+
+            val condi = HashMap<String, String>()
+            condi["application"] = application
+            metadata["condition_0"] = condi
+            alertRuleV2.metadata = metadata
+            for (condition in alertRule.conditions!!) {
+                alertRuleV2.conditions!!.add(convert(condition))
+            }
+            val inp = put(alertRuleUrl("/" + alertRule.uid), alertRuleV2)
+            alertRuleV2 = gson.fromJson(InputStreamReader(inp), AlertRule::class.java)
+            convert(alertRuleV2)
+
+        } catch (e: JsonIOException) {
+            Log.e(TAG, "Unable to create Alert Rule", e)
+        }
+
+    }
+
+    @Throws(IOException::class, AirVantageException::class)
     override fun deleteAlertRule(alertRule: net.airvantage.model.alert.v1.AlertRule) {
         delete(alertRuleUrl("/" + alertRule.uid))
     }

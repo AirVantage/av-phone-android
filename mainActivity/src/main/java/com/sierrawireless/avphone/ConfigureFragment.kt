@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,7 @@ import com.sierrawireless.avphone.adapter.ObjectAdapter
 import com.sierrawireless.avphone.auth.AuthUtils
 import com.sierrawireless.avphone.task.IAsyncTaskFactory
 import com.sierrawireless.avphone.task.SyncWithAvParams
+import com.sierrawireless.avphone.task.UpdateParams
 import com.sierrawireless.avphone.tools.DeviceInfo
 import kotlinx.android.synthetic.main.fragment_configure.*
 import net.airvantage.utils.PreferenceUtils
@@ -28,9 +30,17 @@ open class ConfigureFragment : AvPhoneFragment() {
 
     private var objectsManager: ObjectsManager? = null
     private var menu: ArrayList<String> = ArrayList()
-    internal var delete: Boolean = false
+    enum class Mode {
+        DELETE,
+        SYNC,
+        UPDATE
+
+    }
+    internal var delete: Mode = Mode.SYNC
 
     private var lView: View? = null
+
+    var current = 0
 
 
     private var taskFactory: IAsyncTaskFactory? = null
@@ -87,6 +97,9 @@ open class ConfigureFragment : AvPhoneFragment() {
             startObjectConfigure(-1)
         }
 
+        resync.setOnClickListener { _ ->
+            resyncAll()
+        }
     }
 
     private fun startObjectConfigure(position: Int) {
@@ -96,7 +109,6 @@ open class ConfigureFragment : AvPhoneFragment() {
         intent.putExtra(INDEX, position)
 
         startActivityForResult(intent, CONFIGURE)
-
     }
 
     override fun onStop() {
@@ -117,22 +129,41 @@ open class ConfigureFragment : AvPhoneFragment() {
 
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private fun resyncAll() {
+        current = 0
+        // first check credential
+        if (checkCredentials()) {
+            val auth = authManager!!.authentication
+            if (!auth!!.isExpired) {
+                updateAllSystem(auth.accessToken!!)
+            } else {
+                this.delete = Mode.UPDATE
+                requestAuthentication()
+            }
+        }
+    }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (data == null) {
+            Log.e(TAG, "data is null ??? why ????")
+            return
+        }
         if (requestCode == AuthorizationActivity.REQUEST_AUTHORIZATION) {
+
             val auth = AuthUtils.activityResultAsAuthentication(requestCode, resultCode, data)
             if (auth != null) {
                 authManager!!.onAuthentication(auth)
-                if (delete) {
-                    deleteSysten(auth.accessToken!!)
-                } else {
-                    syncWithAv(auth.accessToken!!)
+
+                when (delete) {
+                    Mode.DELETE -> deleteSysten(auth.accessToken!!)
+                    Mode.SYNC -> syncWithAv(auth.accessToken!!)
+                    Mode.UPDATE -> updateAllSystem(auth.accessToken!!)
                 }
             }
         } else if (requestCode == CONFIGURE) {
             if (resultCode == Activity.RESULT_OK) {
-                this.delete = false
+                this.delete = Mode.SYNC
                 val position = data.getIntExtra(POS, -1)
                 //set current and start synchronization
 
@@ -143,7 +174,7 @@ open class ConfigureFragment : AvPhoneFragment() {
                     if (!auth!!.isExpired) {
                         syncWithAv(auth.accessToken!!)
                     } else {
-                        this.delete = false
+                        this.delete = Mode.SYNC
                         requestAuthentication()
                     }
                 }
@@ -151,8 +182,6 @@ open class ConfigureFragment : AvPhoneFragment() {
             MainActivity.instance.loadMenu(false)
             reloadMenu()
             objectConfigure.invalidate()
-
-
 
         }
     }
@@ -163,10 +192,45 @@ open class ConfigureFragment : AvPhoneFragment() {
             if (!auth!!.isExpired) {
                 deleteSysten(auth.accessToken!!)
             } else {
-                this.delete = true
+                this.delete = Mode.DELETE
                 requestAuthentication()
             }
         }
+    }
+
+    private fun updateAllSystem(token: String) {
+
+        if (current >= objectsManager!!.objects.size) return
+
+        objectsManager!!.setSavedPosition(current)
+
+        val prefs = PreferenceUtils.getAvPhonePrefs(activity)
+
+        val display = this
+
+        val updateTask = taskFactory!!.updateTask(prefs.serverHost!!, token)
+
+        val updateParams = UpdateParams()
+        updateParams.deviceId = DeviceInfo.getUniqueId(activity)
+        updateParams.imei = DeviceInfo.getIMEI(activity)
+        updateParams.deviceName = DeviceInfo.deviceName
+        updateParams.iccid = DeviceInfo.getICCID(activity)
+        updateParams.mqttPassword = prefs.password
+        updateParams.customData = PreferenceUtils.getCustomDataLabels(activity)
+
+        updateTask.execute(updateParams)
+
+        updateTask.addProgressListener { result ->
+
+            updateTask.showResult(result, objectsManager!!.savedObjectName!!, display, activity)
+            // Update next system
+            current++
+            updateAllSystem(token)
+
+
+        }
+
+
     }
 
     private fun deleteSysten(token: String) {
@@ -178,7 +242,7 @@ open class ConfigureFragment : AvPhoneFragment() {
         deleteTask.execute()
 
         deleteTask.addProgressListener({ result ->
-            if (delete) {
+            if (delete == Mode.DELETE) {
                 objectsManager!!.removeSavedObject()
             }
 
@@ -211,7 +275,7 @@ open class ConfigureFragment : AvPhoneFragment() {
         syncTask.execute(syncParams)
 
         syncTask.addProgressListener { result ->
-            if (delete) {
+            if (delete == Mode.DELETE) {
                 objectsManager!!.removeSavedObject()
             }
 
@@ -230,7 +294,8 @@ open class ConfigureFragment : AvPhoneFragment() {
         var CONFIGURE = 0
         var POS = "position"
         @SuppressLint("StaticFieldLeak")
-        var instance:ConfigureFragment? = null
+        var instance: ConfigureFragment? = null
+        private val TAG = ConfigureFragment::class.simpleName
     }
 
 }

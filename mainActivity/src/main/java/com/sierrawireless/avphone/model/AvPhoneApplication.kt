@@ -127,4 +127,29 @@ object AvPhoneApplication {
         return rule
     }
 
+    fun updateAlertRule(system: AvSystem, alertRule: AlertRule) {
+
+        alertRule.active = true
+        alertRule.name = Tools.buildAlertName()
+        alertRule.eventType = "event.system.incoming.communication"
+
+        val alarmCondition = Condition()
+        alarmCondition.eventProperty = "communication.data.value"
+        alarmCondition.eventPropertyKey = AvPhoneData.ALARM
+        alarmCondition.operator = "EQUALS"
+        alarmCondition.value = "true"
+
+        val systemCondition = Condition()
+        systemCondition.eventProperty = "system.data.value"
+        systemCondition.eventPropertyKey = "system.id"
+        systemCondition.operator = "EQUALS"
+        systemCondition.value = system.uid
+
+
+        val tmp = ArrayList<Condition>()
+        tmp.add(alarmCondition)
+        tmp.add(systemCondition)
+        alertRule.conditions = tmp
+    }
+
 }

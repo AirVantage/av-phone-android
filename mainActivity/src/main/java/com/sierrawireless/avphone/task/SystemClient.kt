@@ -36,7 +36,7 @@ class SystemClient internal constructor(private val client: AirVantageClient) : 
         } else {
             gateway.serialNumber = (serialNumber + "-ANDROID-" + type + "-" + deviceName.replace(" ", "_")).toUpperCase()
         }
-        system.name = "$deviceName de $userName($type)"
+        system.name = "$deviceName de $userName ($type)"
 
         system.gateway = gateway
 
@@ -56,6 +56,43 @@ class SystemClient internal constructor(private val client: AirVantageClient) : 
         system.type = type
 
         return client.createSystem(system)
+    }
+
+    @Throws(IOException::class, AirVantageException::class)
+    override fun updateSystem(system: AvSystem, serialNumber: String, iccid: String, type: String, mqttPassword: String,
+                              applicationUid: String, deviceName: String, userName: String, imei: String) {
+
+
+        val exist = client.getGateway((serialNumber + "-ANDROID-" + type + "-" + deviceName.replace(" ", "_")).toUpperCase())
+        val gateway = net.airvantage.model.AvSystem.Gateway()
+
+        if (!(exist!!)) {
+            gateway.serialNumber = (serialNumber + "-ANDROID-" + type + "-" +  deviceName.replace(" ", "_")).toUpperCase()
+            // gateway.imei = imei + type;
+            gateway.type = type
+        } else {
+            gateway.serialNumber = (serialNumber + "-ANDROID-" + type + "-" + deviceName.replace(" ", "_")).toUpperCase()
+        }
+        system.name = "$deviceName de $userName ($type)"
+
+        system.gateway = gateway
+
+        system.state = "READY"
+
+        val application = Application()
+        application.uid = applicationUid
+        val tmp = ArrayList<Application>()
+        tmp.add(application)
+        system.applications = tmp
+
+        val mqtt = MqttCommunication()
+        mqtt.password = mqttPassword
+
+        system.communication = HashMap()
+        system.communication!!["mqtt"] = mqtt
+        system.type = type
+
+        client.updateSystem(system)
     }
 
     @Throws(IOException::class, AirVantageException::class)

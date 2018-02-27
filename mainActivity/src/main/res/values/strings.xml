@@ -117,6 +117,7 @@
     <string name="progress_creating_application">Creating application</string>
     <string name="progress_checking_system">Checking system</string>
     <string name="progress_creating_system">Creating system</string>
+    <string name="progress_updating_system">Updating system</string>
     <string name="progress_checking_alert_rule">Checking alert rule</string>
     <string name="progress_creating_alert_rule">Creating alert rule</string>
     <string name="progress_updating_alert_rule">Updating alert rule</string>
@@ -206,5 +207,6 @@
     <string name="InvalidRandomDefaultComma">Mode is RANDOM, but the default entry is not valid (min,max)</string>
     <string name="InvalidDefaultUpDown">Mode is UP or DOWN, but the default entry is not a number.</string>
     <string name="MinMaxRandomDataObject">Mode is RANDOM, but the default entry is not valid (min,max)\n.Min and max must be numbers.</string>
+    <string name="resync_all">Resync All</string>
 
 </resources>

@@ -11,5 +11,7 @@ interface IMessageDisplayer {
 
     fun showSuccess(id: Int, vararg params: Any)
 
+    fun showSuccess(name:String, vararg params: Any)
+
     fun showErrorMessage(spanned: Spanned)
 }

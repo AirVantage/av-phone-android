@@ -52,7 +52,7 @@ class ObjectAdapter(private val activity: Activity, private val resource: Int, v
                 //delete
                 objectsManager.setSavedPosition(lPosition)
                 ConfigureFragment.instance!!.delete()
-                ConfigureFragment.instance!!.delete = true
+                ConfigureFragment.instance!!.delete = ConfigureFragment.Mode.DELETE
 
             }
         }

@@ -41,6 +41,14 @@ class AlertAdapterV1 internal constructor(server: String, accessToken: String) :
         gson.fromJson(InputStreamReader(`in`), AlertRule::class.java)
     }
 
+
+
+    @Throws(IOException::class, AirVantageException::class)
+    override fun updateAlertRule(alertRule: AlertRule, application: String, system:AvSystem) {
+        val url = URL(buildEndpoint(API_PATH + "/" + alertRule.uid))
+        val `in` = put(url, alertRule)
+        gson.fromJson(InputStreamReader(`in`), AlertRule::class.java)
+    }
     override fun deleteAlertRule(alertRule: AlertRule) {
 
         val url = URL(buildEndpoint(API_PATH + alertRule.uid))

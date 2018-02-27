@@ -15,6 +15,10 @@ interface IAlertRuleClient {
     fun createAlertRule(Application: String, system: AvSystem)
 
     @Throws(IOException::class, AirVantageException::class)
+    fun updateAlertRule(Application: String, system: AvSystem, alertRule: AlertRule)
+
+
+    @Throws(IOException::class, AirVantageException::class)
     fun deleteAlertRule(alert:AlertRule)
 
 }

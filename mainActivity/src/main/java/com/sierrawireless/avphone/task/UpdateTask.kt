@@ -5,42 +5,41 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 import com.crashlytics.android.Crashlytics
-import com.sierrawireless.avphone.tools.DeviceInfo
-import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.ObjectsManager
 import com.sierrawireless.avphone.R
+import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.message.IMessageDisplayer
+import com.sierrawireless.avphone.tools.DeviceInfo
 import net.airvantage.model.AirVantageException
 import net.airvantage.model.Application
 import net.airvantage.model.AvError
 import net.airvantage.model.AvSystem
 import java.io.IOException
-import java.util.*
+import java.util.ArrayList
 
+typealias UpdateListener = (UpdateResult) -> Unit
 
-typealias SyncWithAvListener = (SyncWithAvResult) -> Unit
-
-open class SyncWithAvTask internal constructor(private val applicationClient: IApplicationClient, private val systemClient: ISystemClient,
+open class UpdateTask internal constructor(private val applicationClient: IApplicationClient, private val systemClient: ISystemClient,
                                                private val alertRuleClient: IAlertRuleClient, private val userClient: IUserClient, @field:SuppressLint("StaticFieldLeak")
-                                               protected val context: Context) : AvPhoneTask<SyncWithAvParams, SyncProgress, SyncWithAvResult>() {
+                                               protected val context: Context) : AvPhoneTask<UpdateParams, UpdateProgress, UpdateResult>() {
 
-    private val syncListeners = ArrayList<SyncWithAvListener>()
+    private val syncListeners = ArrayList<UpdateListener>()
     var deviceName:String? = null
 
-    fun addProgressListener(listener: SyncWithAvListener) {
+    fun addProgressListener(listener: UpdateListener) {
         this.syncListeners.add(listener)
     }
 
     @SuppressLint("DefaultLocale")
-    override fun doInBackground(vararg params: SyncWithAvParams): SyncWithAvResult {
+    override fun doInBackground(vararg params: UpdateParams): UpdateResult {
 
         try {
 
-            publishProgress(SyncProgress.CHECKING_RIGHTS)
+            publishProgress(UpdateProgress.CHECKING_RIGHTS)
 
             val missingRights = userClient.checkRights()
             if (!missingRights.isEmpty()) {
-                return SyncWithAvResult(AvError(AvError.MISSING_RIGHTS, missingRights))
+                return UpdateResult(AvError(AvError.MISSING_RIGHTS, missingRights))
             }
 
             val systemType: String?
@@ -62,61 +61,62 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
                 context.systemSerial = serialNumber
             }
 
-            publishProgress(SyncProgress.CHECKING_APPLICATION)
+            publishProgress(UpdateProgress.CHECKING_APPLICATION)
 
             val application = this.applicationClient.ensureApplicationExists(deviceName!!)
 
-            publishProgress(SyncProgress.CHECKING_SYSTEM)
+            publishProgress(UpdateProgress.CHECKING_SYSTEM)
 
             var system: net.airvantage.model.AvSystem? = this.systemClient.getSystem(serialNumber, systemType!!, deviceName!!)
-            if (system == null) {
+            publishProgress(UpdateProgress.UPDATING_SYSTEM)
 
-                publishProgress(SyncProgress.CREATING_SYSTEM)
-
+            if (system != null) {
+                systemClient.updateSystem(system, serialNumber, iccid!!, systemType, mqttPassword!!, application.uid!!, deviceName!!, user.name!!, imei!!)
+            }else{
                 system = systemClient.createSystem(serialNumber, iccid!!, systemType, mqttPassword!!, application.uid!!, deviceName!!, user.name!!, imei!!)
             }
+
             objectsManager.savecObject.systemUid = system.uid
             objectsManager.saveOnPref()
 
-
-            publishProgress(SyncProgress.CHECKING_ALERT_RULE)
+            publishProgress(UpdateProgress.CHECKING_ALERT_RULE)
 
             val alertRule = this.alertRuleClient.getAlertRule(serialNumber, system)
-            if (alertRule == null) {
+            publishProgress(UpdateProgress.UPDATING_ALERT_RULE)
 
-                publishProgress(SyncProgress.CREATING_ALERT_RULE)
-
+            if (alertRule != null) {
+                this.alertRuleClient.updateAlertRule(application.uid!!, system, alertRule)
+            }else{
                 this.alertRuleClient.createAlertRule(application.uid!!, system)
             }
 
-            publishProgress(SyncProgress.UPDATING_APPLICATION)
+            publishProgress(UpdateProgress.UPDATING_APPLICATION)
 
             this.applicationClient.setApplicationData(application.uid!!, objectsManager.savecObject.datas, objectsManager.savecObject.name!!)
 
             if (!hasApplication(system, application)) {
 
-                publishProgress(SyncProgress.ADDING_APPLICATION)
+                publishProgress(UpdateProgress.ADDING_APPLICATION)
 
                 this.applicationClient.addApplication(system, application)
             }
 
-            publishProgress(SyncProgress.DONE)
+            publishProgress(UpdateProgress.DONE)
 
-            return SyncWithAvResult(system, user)
+            return UpdateResult(system, user)
 
         } catch (e: AirVantageException) {
-            publishProgress(SyncProgress.DONE)
-            return SyncWithAvResult(e.error!!)
+            publishProgress(UpdateProgress.DONE)
+            return UpdateResult(e.error!!)
         } catch (e: IOException) {
             Crashlytics.logException(e)
             Log.e(MainActivity::class.java.name, "Error when trying to synchronize with server", e)
-            publishProgress(SyncProgress.DONE)
-            return SyncWithAvResult(AvError("unkown.error"))
+            publishProgress(UpdateProgress.DONE)
+            return UpdateResult(AvError("unkown.error"))
         }
-
     }
 
-    override fun onPostExecute(result: SyncWithAvResult) {
+    override fun onPostExecute(result: UpdateResult) {
         super.onPostExecute(result)
         for (listener in syncListeners) {
             listener.invoke(result)
@@ -133,7 +133,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
         return found
     }
 
-    fun showResult(result: SyncWithAvResult, displayer: IMessageDisplayer, context: Activity) {
+    fun showResult(result: UpdateResult, name: String,  displayer: IMessageDisplayer, context: Activity) {
 
         if (result.isError) {
             var error = result.error
@@ -142,7 +142,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
             }
             displayTaskError(error, displayer, context, userClient, deviceName!!)
         } else {
-            displayer.showSuccess(R.string.sync_success)
+            displayer.showSuccess(name + " updated with AirVantage")
         }
     }
 

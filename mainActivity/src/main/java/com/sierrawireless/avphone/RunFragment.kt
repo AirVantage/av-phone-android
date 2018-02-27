@@ -120,6 +120,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
     override fun onStart() {
         super.onStart()
+        if (objectName == null) return
         objectsManager = ObjectsManager.getInstance()
         objectsManager.changeCurrent(objectName!!)
 

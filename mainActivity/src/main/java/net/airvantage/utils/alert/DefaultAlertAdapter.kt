@@ -31,6 +31,13 @@ open class DefaultAlertAdapter internal constructor(protected val server: String
         throw AirVantageException(AvError(AvError.FORBIDDEN))
     }
 
+
+    @Throws(IOException::class, AirVantageException::class)
+    open fun updateAlertRule(alertRule: AlertRule, application: String, system: AvSystem) {
+        throw AirVantageException(AvError(AvError.FORBIDDEN))
+    }
+
+
     @Throws(IOException::class, AirVantageException::class)
     open fun deleteAlertRule(alertRule: AlertRule) {
         throw AirVantageException(AvError(AvError.FORBIDDEN))
@@ -118,6 +125,12 @@ open class DefaultAlertAdapter internal constructor(protected val server: String
     internal fun post(url: URL, body: Any): InputStream {
         val bodyString = gson.toJson(body)
         return sendString("POST", url, bodyString)
+    }
+
+    @Throws(IOException::class, AirVantageException::class)
+    internal fun put(url: URL, body: Any): InputStream {
+        val bodyString = gson.toJson(body)
+        return sendString("PUT", url, bodyString)
     }
 
     @Throws(IOException::class, AirVantageException::class)

@@ -9,4 +9,6 @@ interface IAsyncTaskFactory {
     fun deleteSystemTak(serverHost: String, token: String): DeleteSystemTask
 
     fun logoutTask(serverHost: String, token: String): AsyncTask<String, Int, AvError>
+
+    fun updateTask(serverHost: String, token: String): UpdateTask
 }
