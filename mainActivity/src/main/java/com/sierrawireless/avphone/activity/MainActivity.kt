@@ -81,6 +81,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     internal lateinit var objectsManager: ObjectsManager
     var user: User? = null
     private var fragmentsMapping = HashMap<String, Fragment>()
+    internal var fragmentsList: ArrayList<MenuEntry>? = null
 
     override val isLogged: Boolean
         get() = this.authentication != null && !this.authentication!!.isExpired(Date())
@@ -272,7 +273,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
 
     fun loadMenu(changeFragment:Boolean) {
-        FRAGMENT_LIST = buildFragmentList()
+        fragmentsList = buildFragmentList()
 
 
         val adapter = MenuAdapter(this, buildFragmentList())
@@ -598,13 +599,13 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         } finally {
             forgetAuthentication()
             loadMenu(true)
-            val position = FRAGMENT_LIST!!.size - 1
+            val position = fragmentsList!!.size - 1
             val fragment = getFragment(position)
             if (fragment!!.isVisible) {
                 fragment.onResume()
                 // Highlight the selected item, update the title, and close the drawer
                 left_drawer.setItemChecked(position, true)
-                title = FRAGMENT_LIST!![position].name
+                title = fragmentsList!![position].name
                 left_drawer.setSelection(position)
                 drawer_layout.closeDrawer(left_drawer)
                 lastPosition = position
@@ -617,7 +618,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     private fun selectItem(position: Int) {
 
         val fragment = getFragment(position)
-        val entry = FRAGMENT_LIST!![position]
+        val entry = fragmentsList!![position]
         if (fragment == null) {
             //No item check if the position is valid
             if (entry.name == FRAGMENT_FAQ) {
@@ -681,7 +682,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     private fun goFragment(fragment:Fragment, fragmentName:String) {
 
         var position:Int? = 0
-        for ((current, entry) in FRAGMENT_LIST!!.withIndex()) {
+        for ((current, entry) in fragmentsList!!.withIndex()) {
             if (entry.name == fragmentName) {
                 position = current
             }
@@ -698,7 +699,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             })
             // Highlight the selected item, update the title, and close the drawer
             left_drawer.setItemChecked(position!!, true)
-            title = FRAGMENT_LIST!![position].name
+            title = fragmentsList!![position].name
             left_drawer.setSelection(position)
             drawer_layout.closeDrawer(left_drawer)
             lastPosition = position
@@ -717,7 +718,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                 .addToBackStack(null)
                 .commit()
         var position:Int? = null
-        FRAGMENT_LIST!!.forEachIndexed {
+        fragmentsList!!.forEachIndexed {
             index, menuEntry ->  if (menuEntry.name == FRAGMENT_CONFIGURE) {
                 position = index
             }
@@ -727,7 +728,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             // Highlight the selected item, update the title, and close the drawer
             left_drawer.setItemChecked(position!!, true)
             left_drawer.setItemChecked(position!!, true)
-            title = FRAGMENT_LIST!![position!!].name
+            title = fragmentsList!![position!!].name
             left_drawer.setSelection(position!!)
             lastPosition = position!!
         }
@@ -778,7 +779,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     }
 
     private fun getFragment(fragmentPosition: Int): Fragment? {
-        val fragmentName = FRAGMENT_LIST!![fragmentPosition].name
+        val fragmentName = fragmentsList!![fragmentPosition].name
         val fragmentMap = initFragments()
         return if (fragmentMap.containsKey(fragmentName)) fragmentMap[fragmentName] else null
     }
@@ -801,7 +802,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         @SuppressLint("StaticFieldLeak")
         internal lateinit var instance: MainActivity
 
-        private var FRAGMENT_LIST: ArrayList<MenuEntry>? = null
         private val TAG = MainActivity::class.simpleName
     }
 

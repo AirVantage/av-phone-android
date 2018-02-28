@@ -93,6 +93,8 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
+        Log.d(TAG, "OnAttach Called")
+
         if (context is MonitorServiceManager) {
             this.setMonitorServiceManager(context as MonitorServiceManager)
         }
@@ -100,6 +102,11 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         if (context is CustomLabelsManager) {
             this.setCustomLabelsManager(context as CustomLabelsManager)
         }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.d(TAG, "On detach called")
     }
 
     private fun setMonitorServiceManager(manager: MonitorServiceManager) {
@@ -120,10 +127,13 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
     override fun onStart() {
         super.onStart()
-        if (objectName == null) return
         objectsManager = ObjectsManager.getInstance()
-        objectsManager.changeCurrent(objectName!!)
-
+        if (objectName != null) {
+            objectsManager.changeCurrent(objectName!!)
+        }else{
+            Log.d(TAG, "retrieve canceled objectName")
+            objectName = MainActivity.instance.fragmentsList!![MainActivity.instance.lastPosition].name
+        }
         viewUpdater = DataViewUpdater(lView!!, activity as MainActivity)
 
 
@@ -205,6 +215,38 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         setPhoneDataLabels()
     }
 
+    override fun onResume() {
+        Log.d(TAG, "On Resume Called")
+        super.onResume()
+        if (monitorServiceManager == null){
+            // We have to restart monitorServiceManager
+            Log.d(TAG, "MonitoringServiceManager is null")
+            return
+        }
+        if (objectName == null) {
+            Log.d(TAG, "objectName is null retreive it from objectManager")
+            objectName = objectsManager.currentObject!!.name
+        }
+        val isServiceRunning = monitorServiceManager!!.isServiceRunning(objectName!!)
+        service_switch.isChecked = isServiceRunning
+        val systemUid = (activity as MainActivity).systemUid
+        val systemName = (activity as MainActivity).systemName
+
+        this.setLinkToSystem(systemUid, systemName)
+        startTimer()
+        monitorServiceManager?.start()
+        setAlarmButton()
+        setPhoneDataLabels()
+    }
+
+    override fun onPause() {
+        Log.d(TAG, "on Pause Called")
+        super.onPause()
+        stopTimer()
+        this.monitorServiceManager?.cancel()
+    }
+
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -266,26 +308,6 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         // set button to open Airvantage
 
         return
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val isServiceRunning = monitorServiceManager!!.isServiceRunning(objectName!!)
-        service_switch.isChecked = isServiceRunning
-        val systemUid = (activity as MainActivity).systemUid
-        val systemName = (activity as MainActivity).systemName
-
-        this.setLinkToSystem(systemUid, systemName)
-        startTimer()
-        monitorServiceManager?.start()
-        setAlarmButton()
-        setPhoneDataLabels()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        stopTimer()
-        this.monitorServiceManager?.cancel()
     }
 
     private fun startMonitoringService() {
