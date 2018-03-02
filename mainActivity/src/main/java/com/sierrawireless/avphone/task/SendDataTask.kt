@@ -35,7 +35,7 @@ class SendDataTask : AsyncTask<SendDataParams, Void, SendDataResult>() {
 
             if (!alarm)
             // dispatch new data event to update the activity UI
-                LocalBroadcastManager.getInstance(context).sendBroadcast(data!!)
+                LocalBroadcastManager.getInstance(context!!).sendBroadcast(data!!)
 
             client.push(data!!)
             lastLog = if (!alarm)
@@ -46,7 +46,7 @@ class SendDataTask : AsyncTask<SendDataParams, Void, SendDataResult>() {
                 "Alarm off sent to server"
 
 
-            LocalBroadcastManager.getInstance(context).sendBroadcast(LogMessage(lastLog, alarm))
+            LocalBroadcastManager.getInstance(context!!).sendBroadcast(LogMessage(lastLog, alarm))
             return if (!alarm) {
                 SendDataResult(lastLog, null)
             }else{
@@ -82,7 +82,7 @@ class SendDataTask : AsyncTask<SendDataParams, Void, SendDataResult>() {
                 else -> "Unkown reason code "+ e.reasonCode
             }
             Log.w("SendDataTasK", "Mqtt error " + lastLog )
-            LocalBroadcastManager.getInstance(context).sendBroadcast(LogMessage(lastLog, alarm))
+            LocalBroadcastManager.getInstance(context!!).sendBroadcast(LogMessage(lastLog, alarm))
             return if (!alarm) {
                 SendDataResult(lastLog, null,true)
             }else{
@@ -91,7 +91,7 @@ class SendDataTask : AsyncTask<SendDataParams, Void, SendDataResult>() {
         } catch (e: Exception) {
             Crashlytics.logException(e)
             lastLog = "ERROR: " + e.message
-            LocalBroadcastManager.getInstance(context).sendBroadcast(LogMessage(lastLog, alarm))
+            LocalBroadcastManager.getInstance(context!!).sendBroadcast(LogMessage(lastLog, alarm))
             return if (!alarm) {
                 SendDataResult(lastLog, null,true)
             }else{

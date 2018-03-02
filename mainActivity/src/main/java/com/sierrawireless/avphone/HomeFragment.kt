@@ -75,21 +75,15 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         login_btn.setOnClickListener { requestAuthentication() }
         logout_btn.setOnClickListener { logout() }
 
-        if (authManager!!.isLogged) {
-            showLoggedInState()
-        } else {
-            showLoggedOutState()
-        }
+        showLoggedOutState()
+
     }
 
     override fun onResume() {
         super.onResume()
 
-        if (authManager!!.isLogged) {
-            showLoggedInState()
-        } else {
-            showLoggedOutState()
-        }
+        showLoggedOutState()
+
     }
 
     private fun showCurrentServer() {
@@ -131,43 +125,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
             MainActivity.instance.loadMenu(true)
         }
     }
-
-
-    private fun syncGetUser(auth: Authentication) {
-        runOnUiThread {
-            hideErrorMessage()
-        }
-        val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(activity)
-
-        // Without task factory, try later
-        if (taskFactory == null) {
-            authForSync = auth
-            retrySync = true
-            return
-        }
-
-        val displayer = this
-        val getUserTask = taskFactory!!.getUserTak(avPhonePrefs.serverHost!!, auth.accessToken!!)
-
-        getUserTask.addProgressListener { result ->
-            if (result.isError) {
-                authManager!!.forgetAuthentication()
-                showLoggedOutState()
-                getUserTask.showResult(result, displayer, activity)
-            } else {
-                authManager!!.onAuthentication(auth)
-                showLoggedInState()
-                user = result.user
-                user!!.server = avPhonePrefs.serverHost
-                MainActivity.instance.user = user!!
-
-            }
-        }
-        val params = GetUserParams()
-
-        getUserTask.execute(params)
-    }
-
+    
     private fun syncWithAv(auth: Authentication?) {
         hideErrorMessage()
 

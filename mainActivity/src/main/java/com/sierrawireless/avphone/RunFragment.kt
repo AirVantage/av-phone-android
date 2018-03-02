@@ -138,9 +138,9 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
 
         // register service listener
-        LocalBroadcastManager.getInstance(activity).registerReceiver(viewUpdater,
+        LocalBroadcastManager.getInstance(activity).registerReceiver(viewUpdater!!,
                 IntentFilter(NewData.NEW_DATA))
-        LocalBroadcastManager.getInstance(activity).registerReceiver(viewUpdater,
+        LocalBroadcastManager.getInstance(activity).registerReceiver(viewUpdater!!,
                 IntentFilter(LogMessage.LOG_EVENT))
 
         /* if service is running and it's myself or that is not running */
@@ -424,6 +424,9 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     private fun execMode() {
         val obj =  objectsManager.getObjectByName(objectName!!)!!
 
+        // The return code is not used
+        // As for the default we don't change the value
+        // We don't need anything is for this the ""
         for (data in obj.datas) {
             @Suppress("UNUSED_EXPRESSION")
             when (data.mode){

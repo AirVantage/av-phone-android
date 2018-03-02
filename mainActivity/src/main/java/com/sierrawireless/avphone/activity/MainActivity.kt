@@ -18,6 +18,7 @@ import android.os.SystemClock
 import android.preference.PreferenceManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.FragmentActivity
+import android.support.v4.app.FragmentManager
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
@@ -580,6 +581,25 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         
     }
 
+    private fun clearStack() {
+        //Here we are clearing back stack fragment entries
+        fragmentManager.popBackStack("HOME", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+//        val backStackEntry = fragmentManager.backStackEntryCount
+//        if (backStackEntry > 0) {
+//            for (i in 0 until backStackEntry) {
+//                fragmentManager.popBackStackImmediate()
+//            }
+//        }
+
+    }
+
+
+    override fun onBackPressed() {
+        if (isLogged) {
+            super.onBackPressed()
+        }
+    }
+
     /**
      * Swaps fragments in the main content view
      */
@@ -598,20 +618,13 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             Crashlytics.logException(e)
         } finally {
             forgetAuthentication()
+
+            clearStack()
+            //fragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
+            // In this case we have no menu
             loadMenu(true)
-            val position = fragmentsList!!.size - 1
-            val fragment = getFragment(position)
-            if (fragment!!.isVisible) {
-                fragment.onResume()
-                // Highlight the selected item, update the title, and close the drawer
-                left_drawer.setItemChecked(position, true)
-                title = fragmentsList!![position].name
-                left_drawer.setSelection(position)
-                drawer_layout.closeDrawer(left_drawer)
-                lastPosition = position
-            }else{
-                goLastFragment()
-            }
+
         }
     }
 
@@ -690,6 +703,20 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
         // Insert the fragment by replacing any existing fragment
         try {
+
+            val backStackEntry = fragmentManager.backStackEntryCount
+
+            if (backStackEntry == 0) {
+                val homeFragment = fragmentsMapping[FRAGMENT_LOGIN]
+                Handler().post({
+                    fragmentManager
+                            .beginTransaction()
+                            .add(R.id.content_frame, homeFragment)
+                            .addToBackStack("HOME")
+                            .commitAllowingStateLoss()
+                })
+            }
+
             Handler().post({
                 fragmentManager
                         .beginTransaction()

@@ -79,4 +79,6 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
         this.startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION)
     }
 
+
+
 }
