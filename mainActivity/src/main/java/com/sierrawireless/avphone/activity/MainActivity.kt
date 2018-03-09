@@ -708,13 +708,15 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
             if (backStackEntry == 0) {
                 val homeFragment = fragmentsMapping[FRAGMENT_LOGIN]
-                Handler().post({
-                    fragmentManager
-                            .beginTransaction()
-                            .add(R.id.content_frame, homeFragment)
-                            .addToBackStack("HOME")
-                            .commitAllowingStateLoss()
-                })
+                if (homeFragment != null) {
+                    Handler().post({
+                        fragmentManager
+                                .beginTransaction()
+                                .add(R.id.content_frame, homeFragment)
+                                .addToBackStack("HOME")
+                                .commitAllowingStateLoss()
+                    })
+                }
             }
 
             Handler().post({

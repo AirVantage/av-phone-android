@@ -37,4 +37,6 @@ object Tools {
 
     fun buildDefaultPath(name:String, pos:Int):String = name + "." + AvPhoneData.CUSTOM + pos.toString()
 
+    fun buildSystemName(deviceName: String, userName: String, type: String) = "$type for $deviceName ($userName)"
+
 }

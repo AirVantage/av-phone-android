@@ -15,7 +15,6 @@ import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.auth.AuthUtils
 import com.sierrawireless.avphone.auth.Authentication
 import com.sierrawireless.avphone.message.IMessageDisplayer
-import com.sierrawireless.avphone.task.GetUserParams
 import com.sierrawireless.avphone.task.IAsyncTaskFactory
 import com.sierrawireless.avphone.task.SyncWithAvListener
 import com.sierrawireless.avphone.task.SyncWithAvParams
@@ -23,7 +22,6 @@ import com.sierrawireless.avphone.tools.DeviceInfo
 import kotlinx.android.synthetic.main.fragment_home.*
 import net.airvantage.model.User
 import net.airvantage.utils.PreferenceUtils
-import org.jetbrains.anko.runOnUiThread
 
 class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     private var lView: View? = null
@@ -76,32 +74,12 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         logout_btn.setOnClickListener { logout() }
 
         showLoggedOutState()
-
     }
 
     override fun onResume() {
         super.onResume()
 
         showLoggedOutState()
-
-    }
-
-    private fun showCurrentServer() {
-        val phonePrefs = PreferenceUtils.getAvPhonePrefs(activity)
-
-        val message: String
-        message = when {
-            phonePrefs.usesNA() -> getString(R.string.logged_on_na)
-            phonePrefs.usesEU() -> getString(R.string.logged_on_eu)
-            else -> getString(R.string.logged_on_custom, phonePrefs.serverHost)
-        }
-
-        infoMessageView?.text = message
-        infoMessageView?.visibility = View.VISIBLE
-        if (user != null) {
-            home_login.text = String.format("%s %s", getString(R.string.welcome), user!!.name)
-            home_login.visibility = View.VISIBLE
-        }
     }
 
     private fun hideCurrentServer() {
@@ -199,12 +177,6 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
 
             showLoggedOutState()
         }
-    }
-
-    private fun showLogoutButton() {
-        logout_btn.visibility = View.VISIBLE
-        login_btn.visibility = View.GONE
-        home_login_message.visibility = View.GONE
     }
 
     private fun hideLogoutButton() {

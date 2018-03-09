@@ -26,17 +26,17 @@ class SystemClient internal constructor(private val client: AirVantageClient) : 
                               applicationUid: String, deviceName: String, userName: String, imei: String): net.airvantage.model.AvSystem {
         val system = net.airvantage.model.AvSystem()
 
-        val exist = client.getGateway((serialNumber + "-ANDROID-" + type + "-" + deviceName.replace(" ", "_")).toUpperCase())
+        val uid = client.getGateway((serialNumber + "-ANDROID-" + type + "-" + deviceName.replace(" ", "_")).toUpperCase())
         val gateway = net.airvantage.model.AvSystem.Gateway()
 
-        if (!(exist!!)) {
+        if (uid == null) {
             gateway.serialNumber = (serialNumber + "-ANDROID-" + type + "-" +  deviceName.replace(" ", "_")).toUpperCase()
             // gateway.imei = imei + type;
             gateway.type = type
         } else {
-            gateway.serialNumber = (serialNumber + "-ANDROID-" + type + "-" + deviceName.replace(" ", "_")).toUpperCase()
+            gateway.uid = uid
         }
-        system.name = "$deviceName de $userName ($type)"
+        system.name = Tools.buildSystemName(deviceName, userName, type)
 
         system.gateway = gateway
 
@@ -63,17 +63,17 @@ class SystemClient internal constructor(private val client: AirVantageClient) : 
                               applicationUid: String, deviceName: String, userName: String, imei: String) {
 
 
-        val exist = client.getGateway((serialNumber + "-ANDROID-" + type + "-" + deviceName.replace(" ", "_")).toUpperCase())
+        val uid = client.getGateway((serialNumber + "-ANDROID-" + type + "-" + deviceName.replace(" ", "_")).toUpperCase())
         val gateway = net.airvantage.model.AvSystem.Gateway()
 
-        if (!(exist!!)) {
+        if (uid == null) {
             gateway.serialNumber = (serialNumber + "-ANDROID-" + type + "-" +  deviceName.replace(" ", "_")).toUpperCase()
             // gateway.imei = imei + type;
             gateway.type = type
         } else {
-            gateway.serialNumber = (serialNumber + "-ANDROID-" + type + "-" + deviceName.replace(" ", "_")).toUpperCase()
+            gateway.uid = uid
         }
-        system.name = "$deviceName de $userName ($type)"
+        system.name = Tools.buildSystemName(deviceName, userName, type)
 
         system.gateway = gateway
 

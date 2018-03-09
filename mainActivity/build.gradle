@@ -29,7 +29,7 @@ android {
         applicationId 'com.sierrawireless.avphone'
         minSdkVersion 22
         targetSdkVersion 27
-        versionName '2.0.0alpha12'
+        versionName '2.0.0alpha14'
     }
 
     buildTypes {

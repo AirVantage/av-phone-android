@@ -140,7 +140,7 @@ class AirVantageClient(private val server: String, private val access_token: Str
     }
 
     @Throws(IOException::class, AirVantageException::class)
-    fun getGateway(serialNumber: String): Boolean? {
+    fun getGateway(serialNumber: String): String? {
         val urlString = buildEndpoint("/gateways")
         val url = URL(urlString)
         val inputStream = this[url]
@@ -161,14 +161,14 @@ class AirVantageClient(private val server: String, private val access_token: Str
                 val entry = jsonValues.getJSONObject(i)
                 val name = entry.getString("serialNumber")
                 if (name == serialNumber) {
-                    return true
+                    return entry.getString("uid")
                 }
             }
         } catch (e: JSONException) {
-            return false
+            return null
         }
 
-        return false
+        return null
     }
 
     @Throws(IOException::class, AirVantageException::class)
