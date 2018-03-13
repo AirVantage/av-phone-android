@@ -498,6 +498,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     internal fun setAlarm(timer:Int?) {
         val avPrefs = PreferenceUtils.getAvPhonePrefs(this)
         val intent = Intent(this, MonitoringService::class.java)
+        Log.d(TAG, "Set intent")
         intent.putExtra(MonitoringService.DEVICE_ID, DeviceInfo.getUniqueId(this))
         intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost)
         intent.putExtra(MonitoringService.PASSWORD, avPrefs.password)
@@ -516,7 +517,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
     override fun startSendData(name: String):Boolean {
         if (startObjectName == null || name == startObjectName!!) {
-           setAlarm(0)
+            setAlarm(0)
             startObjectName = name
             serviceSendData = true
         }else{
@@ -792,7 +793,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         }
 
 
-       fragmentsMapping = HashMap()
+        fragmentsMapping = HashMap()
         fragmentsMapping[FRAGMENT_CONFIGURE] = configureFragment!!
         if (isLogged) {
             fragmentsMapping[FRAGMENT_LOGOUT] = homeFragment!!

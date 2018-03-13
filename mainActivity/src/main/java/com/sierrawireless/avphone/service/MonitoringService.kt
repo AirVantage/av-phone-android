@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
@@ -11,7 +12,10 @@ import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.TrafficStats
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
+import android.support.annotation.RequiresApi
+import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.telephony.*
 import android.util.Log
@@ -114,6 +118,19 @@ class MonitoringService : Service() {
             var params: Map<String, String>? = null
         }
 
+        @RequiresApi(Build.VERSION_CODES.O)
+        private fun createNotificationChannel(): String{
+            val channelId = "messageArrived"
+            val channelName = "messageArrived"
+            val chan = NotificationChannel(channelId,
+                    channelName, NotificationManager.IMPORTANCE_NONE)
+            chan.lightColor = Color.BLUE
+            chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+            val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            service.createNotificationChannel(chan)
+            return channelId
+        }
+
         @Throws(Exception::class)
         override fun messageArrived(topic: String, msg: MqttMessage) {
             Log.i(TAG, "MQTT msg received: " + String(msg.payload))
@@ -121,9 +138,15 @@ class MonitoringService : Service() {
             // parse json payload
             val messages = Gson().fromJson(String(msg.payload, Charset.forName("UTF-8")), Array<Message>::class.java)
 
-            // display a new notification
-            @Suppress("DEPRECATION")
-            val notification = Notification.Builder(this@MonitoringService.applicationContext) //
+            val channelId =
+                    if (    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        createNotificationChannel()
+                    } else {
+                        // If earlier version channel ID is not used
+                        // https://developer.android.com/reference/android/support/v4/app/NotificationCompat.Builder.html#NotificationCompat.Builder(android.content.Context)
+                        ""
+                    }
+            val notification = NotificationCompat.Builder(this@MonitoringService.applicationContext, channelId) //
                     .setContentTitle(getText(R.string.notif_new_message)) //
                     .setContentText(messages[0].command!!.params!!["message"]) //
                     .setSmallIcon(R.drawable.ic_notif) //
@@ -193,6 +216,18 @@ class MonitoringService : Service() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel(): String{
+        val channelId = "startSend"
+        val channelName = getText(R.string.notif_title)
+        val chan = NotificationChannel(channelId,
+                channelName, NotificationManager.IMPORTANCE_NONE)
+        chan.lightColor = Color.BLUE
+        chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+        val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        service.createNotificationChannel(chan)
+        return channelId
+    }
 
     fun startSendData() {
         val notif = R.string.notif_title
@@ -202,8 +237,18 @@ class MonitoringService : Service() {
         stackBuilder.addParentStack(MainActivity::class.java)
         stackBuilder.addNextIntent(resultIntent)
         val resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
-        @Suppress("DEPRECATION")
-        val notification = Notification.Builder(this.applicationContext) //
+
+        val channelId =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    createNotificationChannel()
+                } else {
+                    // If earlier version channel ID is not used
+                    // https://developer.android.com/reference/android/support/v4/app/NotificationCompat.Builder.html#NotificationCompat.Builder(android.content.Context)
+                    ""
+                }
+
+
+        val notification = NotificationCompat.Builder(this.applicationContext, channelId)//
                 .setContentTitle(getText(R.string.notif_title)) //
                 .setContentText(getText(R.string.notif_desc)) //
                 .setSmallIcon(R.drawable.ic_notif) //
@@ -322,6 +367,10 @@ class MonitoringService : Service() {
                 //
                 // Ensure intent is valid
                 //
+                val deviceID = intent.getStringExtra(DEVICE_ID)
+                if (deviceID == null) {
+
+                }
                 val deviceId = Tools.buildSerialNumber(intent.getStringExtra(DEVICE_ID), obj!!.name!!, DeviceInfo.deviceName!!)
                 val password = intent.getStringExtra(PASSWORD)
                 val serverHost = intent.getStringExtra(SERVER_HOST)
@@ -485,6 +534,7 @@ class MonitoringService : Service() {
         const val CONNECT = "connect"
         const val OBJECT_NAME = "objname"
         private val TAG = MonitoringService::class.simpleName
+        const val CHANNEL_ID = "Channel one"
     }
 
 }

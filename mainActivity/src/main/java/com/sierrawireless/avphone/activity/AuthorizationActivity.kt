@@ -1,6 +1,7 @@
 package com.sierrawireless.avphone.activity
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
@@ -58,6 +59,7 @@ class AuthorizationActivity : Activity() {
     }
 
 
+    @Suppress("DEPRECATION")
     @SuppressLint("SetJavaScriptEnabled")
     private fun openAuthorizationPage() {
 
@@ -95,10 +97,14 @@ class AuthorizationActivity : Activity() {
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 hideProgressDialog()
+                Log.d(TAG, "Loaded " + url.toString() )
+
                 super.onPageFinished(view, url)
             }
-            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
 
+            @TargetApi(24)
+            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+                Log.d(TAG, "UrlLoading")
                 val auth = authUrlParser.parseUrl(request.url.toString(), Date())
 
                 if (auth != null) {
@@ -107,6 +113,19 @@ class AuthorizationActivity : Activity() {
                     sendAuthentication(auth)
                 }
                 return super.shouldOverrideUrlLoading(view, request)
+            }
+
+            @Suppress("OverridingDeprecatedMember")
+            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                Log.d(TAG, "UrlLoading")
+                val auth = authUrlParser.parseUrl(url, Date())
+
+                if (auth != null) {
+                    Log.i(TAG, "Access token: " + auth.accessToken!!)
+                    Log.i(TAG, "Expiration date : " + auth.expirationDate!!)
+                    sendAuthentication(auth)
+                }
+                return super.shouldOverrideUrlLoading(view, url)
             }
         }
         val authUrl = AirVantageClient.buildImplicitFlowURL(serverHost!!, clientId!!)

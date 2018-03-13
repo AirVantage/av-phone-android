@@ -1,5 +1,7 @@
 package com.sierrawireless.avphone
 
+import android.annotation.TargetApi
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -34,6 +36,7 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 
+@Suppress("DEPRECATION")
 open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabelsListener {
     private var viewUpdater: DataViewUpdater? = null
     private var lView: View? = null
@@ -90,6 +93,22 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         this.objectName = name
     }
 
+    @Suppress("OverridingDeprecatedMember")
+    override fun onAttach(activity:Activity) {
+        super.onAttach(activity)
+
+        Log.d(TAG, "OnAttach Called")
+
+        if (activity is MonitorServiceManager) {
+            this.setMonitorServiceManager(activity as MonitorServiceManager)
+        }
+
+        if (activity is CustomLabelsManager) {
+            this.setCustomLabelsManager(activity as CustomLabelsManager)
+        }
+    }
+
+    @TargetApi(23)
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
@@ -110,6 +129,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
     private fun setMonitorServiceManager(manager: MonitorServiceManager) {
+        Log.d(TAG, "Set monitoring service")
         this.monitorServiceManager = manager
         this.monitorServiceManager!!.setMonitoringServiceListener(this)
     }
@@ -144,8 +164,9 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
                 IntentFilter(LogMessage.LOG_EVENT))
 
         /* if service is running and it's myself or that is not running */
-        if ((monitorServiceManager!!.isServiceRunning() &&  monitorServiceManager!!.isServiceRunning(objectName!!)) ||
-                !monitorServiceManager!!.isServiceRunning()){
+        if (monitorServiceManager != null &&
+                ((monitorServiceManager!!.isServiceRunning() &&  monitorServiceManager!!.isServiceRunning(objectName!!)) ||
+                !monitorServiceManager!!.isServiceRunning())){
             if (!this.monitorServiceManager!!.isServiceStarted(objectName!!)) {
                 if (this.monitorServiceManager!!.oneServiceStarted()) {
                     //stop the service
@@ -155,7 +176,11 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
                 this.monitorServiceManager!!.startMonitoringService(objectName!!)
             }
         }
-        val isServiceRunning = monitorServiceManager!!.isServiceRunning(objectName!!)
+        val isServiceRunning = if (monitorServiceManager != null) {
+            monitorServiceManager!!.isServiceRunning(objectName!!)
+        }else{
+            false
+        }
         service_switch.isChecked = isServiceRunning
 
         service_switch.setOnCheckedChangeListener { _, isChecked ->
