@@ -77,8 +77,13 @@ object DeviceInfo {
     fun getICCID(context: Context): String {
         val sm = SubscriptionManager.from(context)
         val sis = sm.activeSubscriptionInfoList
-        val si = sis[0]
-        return si.iccId
+        return if (sis != null) {
+            val si = sis[0]
+            si.iccId
+        }else{
+            ""
+        }
+
 
     }
 }

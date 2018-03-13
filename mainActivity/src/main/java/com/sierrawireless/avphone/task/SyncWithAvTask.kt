@@ -14,6 +14,7 @@ import net.airvantage.model.AirVantageException
 import net.airvantage.model.Application
 import net.airvantage.model.AvError
 import net.airvantage.model.AvSystem
+import org.jetbrains.anko.longToast
 import java.io.IOException
 import java.util.*
 
@@ -38,10 +39,6 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
             publishProgress(SyncProgress.CHECKING_RIGHTS)
 
-            val missingRights = userClient.checkRights()
-            if (!missingRights.isEmpty()) {
-                return SyncWithAvResult(AvError(AvError.MISSING_RIGHTS, missingRights))
-            }
 
             val systemType: String?
             val syncParams = params[0]
@@ -51,6 +48,12 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
             deviceName = syncParams.deviceName
             val mqttPassword = syncParams.mqttPassword
             val objectsManager = ObjectsManager.getInstance()
+
+            val missingRights = userClient.checkRights()
+            if (!missingRights.isEmpty()) {
+                return SyncWithAvResult(AvError(AvError.MISSING_RIGHTS, missingRights))
+            }
+
 
             systemType = objectsManager.savedObjectName
 
@@ -140,6 +143,10 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
             if (error == null) {
                 error = AvError("Internal Error")
             }
+            if (error!!.errorParameters.size == 1 && error!!.errorParameters[0] == "No Connection") {
+                context.longToast("Resync error\nYou don't have any data connection")
+            }
+
             displayTaskError(error, displayer, context, userClient, deviceName!!)
         } else {
             displayer.showSuccess(R.string.sync_success)

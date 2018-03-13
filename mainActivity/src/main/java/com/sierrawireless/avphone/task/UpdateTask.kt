@@ -14,6 +14,7 @@ import net.airvantage.model.AirVantageException
 import net.airvantage.model.Application
 import net.airvantage.model.AvError
 import net.airvantage.model.AvSystem
+import org.jetbrains.anko.longToast
 import java.io.IOException
 import java.util.ArrayList
 
@@ -37,10 +38,7 @@ open class UpdateTask internal constructor(private val applicationClient: IAppli
 
             publishProgress(UpdateProgress.CHECKING_RIGHTS)
 
-            val missingRights = userClient.checkRights()
-            if (!missingRights.isEmpty()) {
-                return UpdateResult(AvError(AvError.MISSING_RIGHTS, missingRights))
-            }
+
 
             val systemType: String?
             val syncParams = params[0]
@@ -53,6 +51,12 @@ open class UpdateTask internal constructor(private val applicationClient: IAppli
 
             systemType = objectsManager.savedObjectName
 
+            val missingRights = userClient.checkRights()
+            if (!missingRights.isEmpty()) {
+                return UpdateResult(AvError(AvError.MISSING_RIGHTS, missingRights))
+            }
+
+
             // For emulator and iOs compatibility sake, using generated serial.
             val serialNumber = DeviceInfo.generateSerial(user!!.uid!!)
 
@@ -60,6 +64,7 @@ open class UpdateTask internal constructor(private val applicationClient: IAppli
             if (context is MainActivity) {
                 context.systemSerial = serialNumber
             }
+
 
             publishProgress(UpdateProgress.CHECKING_APPLICATION)
 
@@ -106,6 +111,7 @@ open class UpdateTask internal constructor(private val applicationClient: IAppli
             return UpdateResult(system, user)
 
         } catch (e: AirVantageException) {
+            Log.d("TODO", "Airvantage exception e.error " + e.error)
             publishProgress(UpdateProgress.DONE)
             return UpdateResult(e.error!!)
         } catch (e: IOException) {
@@ -140,6 +146,11 @@ open class UpdateTask internal constructor(private val applicationClient: IAppli
             if (error == null) {
                 error = AvError("Internal Error")
             }
+
+            if (error!!.errorParameters.size == 1 && error!!.errorParameters[0] == "No Connection") {
+                context.longToast("Resync Error\nYou don't have any data connection")
+            }
+
             displayTaskError(error, displayer, context, userClient, deviceName!!)
         } else {
             displayer.showSuccess(name + " updated with AirVantage")

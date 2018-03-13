@@ -77,6 +77,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     private var runFragment: ArrayList<RunFragment>? = null
 
     internal var lastPosition = 0
+    internal var stopped = false
 
     private var serviceSendData: Boolean? = false
     internal lateinit var objectsManager: ObjectsManager
@@ -154,6 +155,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
     //Get user
     private fun syncGetUser(auth: Authentication?) {
+
         val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this)
 
         val getUserTask = taskFactory!!.getUserTak(avPhonePrefs.serverHost!!, auth!!.accessToken!!)
@@ -163,6 +165,19 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                 user = result.user
                 user!!.server = avPhonePrefs.serverHost
                 loadMenu(true)
+            }else{
+                if (! stopped ) {
+                    if (result.error!!.errorParameters.size == 1 && result.error!!.errorParameters[0] == "No Connection") {
+                        stopped = true
+                        alert("You don't have any data connection. The application will be stopped", "Alert") {
+                            positiveButton("YES") {
+                                finish()
+                            }
+                        }.show()
+                    }else{
+                        logout()
+                    }
+                }
             }
         }
         val params = GetUserParams()
@@ -606,6 +621,11 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
      */
     private fun logout() {
         val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this)
+
+        // Already logout if authentication is null
+        if (authentication == null) {
+            return
+        }
 
         val accessToken = authentication!!.accessToken
 

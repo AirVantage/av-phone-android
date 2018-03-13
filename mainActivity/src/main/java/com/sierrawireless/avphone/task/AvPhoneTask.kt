@@ -58,15 +58,20 @@ abstract class AvPhoneTask<Params, Progress, Result> : AsyncTask<Params, Progres
     private fun missingRightsMessage(error: AvError, context: android.app.Activity): String {
         val missingRights = error.errorParameters
         val message = StringBuilder()
-        message.append(context.getText(R.string.auth_not_enough_rights))
-        message.append("<br/>")
-        message.append(context.getText(R.string.auth_missing_rights))
-        message.append("<br/>")
-
-        for (missingRight in missingRights) {
-            message.append("&#8226; ")
-            message.append(UserRights.asString(missingRight, context))
+        if (missingRights.size == 1 && missingRights[0] == "No Connection" ) {
+            message.append("We have no data connection")
+        } else {
+            message.append(context.getText(R.string.auth_not_enough_rights))
             message.append("<br/>")
+            message.append(context.getText(R.string.auth_missing_rights))
+            message.append("<br/>")
+
+
+            for (missingRight in missingRights) {
+                message.append("&#8226; ")
+                message.append(UserRights.asString(missingRight, context))
+                message.append("<br/>")
+            }
         }
         return message.toString()
     }
