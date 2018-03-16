@@ -10,7 +10,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:showDividers="middle"
-    tools:context=".MainActivity" >
+    tools:context=".activity.MainActivity" >
 
     <LinearLayout
         android:id="@+id/action_layout"
@@ -31,13 +31,14 @@
         <!-- 
         android:layout_height="80dp"
          -->
-        
+
         <TextView
             android:id="@+id/home_info_message"
             style="@style/InfoMessage"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
+            android:textAlignment="center"
             android:visibility="gone" />
 
         <TextView
@@ -46,6 +47,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
+            android:textAlignment="center"
             android:visibility="gone" />
 
         <!-- 
@@ -59,6 +61,16 @@
             android:textSize="25sp"
             android:textStyle="bold" />
  -->
+
+        <TextView
+            android:id="@+id/home_login"
+            style="@style/ErrorMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:background="@color/navy"
+            android:textAlignment="center"
+            android:visibility="gone" />
 
         <ScrollView
             android:layout_width="fill_parent"
@@ -74,14 +86,16 @@
                     android:id="@+id/home_welcome_image"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:adjustViewBounds="false"
                     android:contentDescription="@string/home_image_alt"
                     android:gravity="center"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/home_logo_alpha" />
 
                 <TextView
                     android:id="@+id/home_simulate_message"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="53dp"
                     android:layout_marginBottom="10dp"
                     android:gravity="center"
                     android:text="@string/home_simulate_message" />
@@ -92,7 +106,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:gravity="center"
-                    android:text="@string/home_login_message" />
+                    android:text="@string/home_login_message_str" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"

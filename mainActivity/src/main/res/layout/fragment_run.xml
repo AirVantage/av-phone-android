@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -9,22 +10,27 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
     android:showDividers="middle"
-    tools:context=".MainActivity" >
+    tools:context=".activity.MainActivity" >
 
     <LinearLayout
         android:id="@+id/action_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/run_info_message"
-            style="@style/InfoMessage"
-            android:layout_width="fill_parent"
+        <Button
+            android:id="@+id/airvantage"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
-            android:textColor="@android:color/white" />
+            android:text="AirVantage" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="83dp"
+            android:contentDescription="@string/none"
+            android:src="@drawable/home_logo_alpha" />
 
         <TextView
             android:id="@+id/run_error_message"
@@ -32,20 +38,20 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
-            android:visibility="gone"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="115dp"
             android:baselineAligned="false"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     style="@style/ItemLabel"
@@ -56,19 +62,27 @@
 
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/service_switch"
-                    android:theme="@style/Switch"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="47dp"
                     android:layout_gravity="center"
-                    android:textOff="OFF"
-                    android:textOn="ON" />
+                    android:textOff="@string/off"
+                    android:textOn="@string/on"
+                    android:theme="@style/Switch" />
+
+                <TextView
+                    android:id="@+id/service_log"
+                    android:layout_width="match_parent"
+                    android:layout_height="68dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     style="@style/ItemLabel"
@@ -77,16 +91,24 @@
                     android:gravity="center"
                     android:text="@string/run_activate_alarm" />
 
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/alarm_switch"
-                    android:theme="@style/Switch"
+                <Button
+                    android:id="@+id/alarm_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:checked="false"
-                    android:enabled="false"
-                    android:textOff="OFF"
-                    android:textOn="ON" />
+                    android:background="@color/grey_4"
+                    android:baselineAligned="false"
+                    android:text="@string/send"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:id="@+id/alarm_log"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:gravity="center"
+                    android:textAlignment="viewEnd"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
 
@@ -98,493 +120,63 @@
             android:gravity="center"
             android:text="@string/toggle_to_start"
             android:textSize="12sp" />
-        
+
         <TextView
             android:id="@+id/started_since"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:gravity="center"
-            android:visibility="gone"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/service_log"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:visibility="gone"
-            android:textSize="12sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" android:baselineAligned="false">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <Button
+                    android:id="@+id/phone"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="85dp"
+                    android:layout_weight="1"
+                    android:background="@color/grey_4"
+                    android:text="@string/phone"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/obj"
+                    app:layout_constraintEnd_toStartOf="@+id/obj"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <Button
+                    android:id="@+id/obj"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="91dp"
+                    android:layout_weight="1"
+                    android:background="@color/grey_4"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/phone"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+
+        </LinearLayout>
     </LinearLayout>
 
-    <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+    <ListView
+        android:id="@+id/phoneListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" />
 
-        <TableLayout
-            android:id="@+id/table_data"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium" >
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    android:id="@+id/run_custom1_label"
-                    style="@style/ItemLabel"
-
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp" />
-
-                <TextView
-                    android:id="@+id/run_custom1_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    android:id="@+id/run_custom2_label"
-                    style="@style/ItemLabel"
-                   android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp" />
-
-                <TextView
-                    android:id="@+id/run_custom2_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    android:id="@+id/run_custom3_label"
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp" />
-
-                <TextView
-                    android:id="@+id/run_custom3_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    android:id="@+id/run_custom4_label"
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp" />
-
-                <TextView
-                    android:id="@+id/run_custom4_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    android:id="@+id/run_custom5_label"
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp" />
-
-                <TextView
-                    android:id="@+id/run_custom5_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    android:id="@+id/run_custom6_label"
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp" />
-
-                <TextView
-                    android:id="@+id/run_custom6_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp"
-                    android:text="@string/operator" />
-
-                <TextView
-                    android:id="@+id/operator_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp"
-                    android:text="@string/signal_strength" />
-
-                <TextView
-                    android:id="@+id/signal_strength_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp"
-                    android:text="@string/imei" />
-
-                <TextView
-                    android:id="@+id/imei_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp"
-                    android:text="@string/network_type" />
-
-                <TextView
-                    android:id="@+id/network_type_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-            
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp"
-                    android:text="@string/bytes_sent" />
-
-                <TextView
-                    android:id="@+id/bytes_sent_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp"
-                    android:text="@string/bytes_received" />
-
-                <TextView
-                    android:id="@+id/bytes_received_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp"
-                    android:text="@string/active_wifi" />
-
-                <TextView
-                    android:id="@+id/active_wifi_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp"
-                    android:text="@string/latitude" />
-
-                <TextView
-                    android:id="@+id/latitude_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp"
-                    android:text="@string/longitude" />
-
-                <TextView
-                    android:id="@+id/longitude_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp"
-                    android:text="@string/battery" />
-
-                <TextView
-                    android:id="@+id/battery_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp"
-                    android:text="@string/running_apps" />
-
-                <TextView
-                    android:id="@+id/running_apps_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp"
-                    android:text="@string/memory_usage" />
-
-                <TextView
-                    android:id="@+id/memory_usage_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="2" >
-
-                <TextView
-                    style="@style/ItemLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingRight="5dp"
-                    android:text="@string/android_version" />
-
-                <TextView
-                    android:id="@+id/android_version_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingLeft="5dp"
-                    android:text="@string/no_value" />
-            </TableRow>
-        </TableLayout>
-
-    </ScrollView>
+    <ListView
+        android:id="@+id/objectLstView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
 </LinearLayout>
