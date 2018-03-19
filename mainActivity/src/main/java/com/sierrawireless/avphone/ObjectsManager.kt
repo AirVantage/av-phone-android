@@ -86,7 +86,6 @@ class ObjectsManager private constructor() {
 
     }
 
-
      fun changeCurrent(name: String) {
         for ((index, obj) in objects.withIndex()) {
             if (obj.name == name) {
