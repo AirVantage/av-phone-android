@@ -55,7 +55,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             objectsManager = ObjectsManager.getInstance()
             val obj = objectsManager.currentObject!!
             obj.alarm = !obj.alarm
-            if (!monitorServiceManager!!.sendAlarmEvent(obj.alarm)) {
+            if (!monitorServiceManager!!.sendAlarmEvent(obj.alarm, obj.alarmName)) {
                 obj.alarm = !obj.alarm
             } else {
                 objectsManager.saveOnPref()

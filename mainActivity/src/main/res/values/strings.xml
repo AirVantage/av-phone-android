@@ -208,5 +208,6 @@
     <string name="InvalidDefaultUpDown">Mode is UP or DOWN, but the default entry is not a number.</string>
     <string name="MinMaxRandomDataObject">Mode is RANDOM, but the default entry is not valid (min,max)\n.Min and max must be numbers.</string>
     <string name="resync_all">Resync All</string>
+    <string name="alarm">Alarm</string>
 
 </resources>

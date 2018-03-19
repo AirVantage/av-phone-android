@@ -77,7 +77,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     private var runFragment: ArrayList<RunFragment>? = null
 
     internal var lastPosition = 0
-    internal var stopped = false
+    private var stopped = false
 
     private var serviceSendData: Boolean? = false
     internal lateinit var objectsManager: ObjectsManager
@@ -485,9 +485,9 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         monitoringService?.start()
     }
 
-    override fun sendAlarmEvent(on:Boolean):Boolean {
+    override fun sendAlarmEvent(on:Boolean, name:String):Boolean {
         //if (boundToMonitoringService && monitoringService != null) {
-        return monitoringService!!.sendAlarmEvent(on)
+        return monitoringService!!.sendAlarmEvent(on, name)
         // }
     }
 

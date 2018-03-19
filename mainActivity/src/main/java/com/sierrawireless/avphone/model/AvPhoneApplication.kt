@@ -26,7 +26,7 @@ object AvPhoneApplication {
         return listOf(mqtt)
     }
 
-    fun createApplicationData(customData: ArrayList<AvPhoneObjectData>, obj: String): List<ApplicationData> {
+    fun createApplicationData(obj: AvPhoneObject): List<ApplicationData> {
 
         // <data>
         // <encoding type="MQTT">
@@ -58,10 +58,10 @@ object AvPhoneApplication {
         val asset = Data("phone", "Phone", "node")
         asset.data = ArrayList()
 
-        asset.data!!.add(Variable(AvPhoneData.ALARM, "Active alarm", "boolean"))
+        asset.data!!.add(Variable(obj.alarmName, "Active alarm", "boolean"))
 
         var pos = 1
-        for (data in customData) {
+        for (data in obj.datas) {
             val type: String = if (data.mode != AvPhoneObjectData.Mode.None) {
                 "int"
             } else {
@@ -69,7 +69,7 @@ object AvPhoneApplication {
             }
 
             if (data.path == null) {
-                asset.data!!.add(Variable(obj + "." + AvPhoneData.CUSTOM + pos.toString(), data.name, type))
+                asset.data!!.add(Variable(obj.name!! + "." + AvPhoneData.CUSTOM + pos.toString(), data.name, type))
             }else{
                 asset.data!!.add(Variable(data.path!!, data.name, type))
             }
@@ -99,7 +99,7 @@ object AvPhoneApplication {
         return phoneName.replace(" ", ".") + ".av.phone.demo." + objectsManager!!.savecObject.name + userName
     }
 
-    fun createAlertRule(system: AvSystem): AlertRule {
+    fun createAlertRule(system: AvSystem, name: String): AlertRule {
         val rule = AlertRule()
 
         rule.active = true
@@ -108,7 +108,7 @@ object AvPhoneApplication {
 
         val alarmCondition = Condition()
         alarmCondition.eventProperty = "communication.data.value"
-        alarmCondition.eventPropertyKey = AvPhoneData.ALARM
+        alarmCondition.eventPropertyKey = name
         alarmCondition.operator = "EQUALS"
         alarmCondition.value = "true"
 
@@ -127,7 +127,7 @@ object AvPhoneApplication {
         return rule
     }
 
-    fun updateAlertRule(system: AvSystem, alertRule: AlertRule) {
+    fun updateAlertRule(system: AvSystem, alertRule: AlertRule, name: String) {
 
         alertRule.active = true
         alertRule.name = Tools.buildAlertName()
@@ -135,7 +135,7 @@ object AvPhoneApplication {
 
         val alarmCondition = Condition()
         alarmCondition.eventProperty = "communication.data.value"
-        alarmCondition.eventPropertyKey = AvPhoneData.ALARM
+        alarmCondition.eventPropertyKey = name
         alarmCondition.operator = "EQUALS"
         alarmCondition.value = "true"
 

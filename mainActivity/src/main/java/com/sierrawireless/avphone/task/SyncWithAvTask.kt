@@ -89,12 +89,16 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
                 publishProgress(SyncProgress.CREATING_ALERT_RULE)
 
-                this.alertRuleClient.createAlertRule(application.uid!!, system)
+                this.alertRuleClient.createAlertRule(application.uid!!, system, objectsManager.savecObject.alarmName)
+            }else{
+                if (alertRule.conditions == null || ! alertRule.conditions!![0].eventPropertyKey.equals(objectsManager.savecObject.alarmName)) {
+                    this.alertRuleClient.updateAlertRule(application.uid!!, system, alertRule, objectsManager.savecObject.alarmName)
+                }
             }
 
             publishProgress(SyncProgress.UPDATING_APPLICATION)
 
-            this.applicationClient.setApplicationData(application.uid!!, objectsManager.savecObject.datas, objectsManager.savecObject.name!!)
+            this.applicationClient.setApplicationData(application.uid!!, objectsManager.savecObject)
 
             if (!hasApplication(system, application)) {
 
@@ -143,7 +147,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
             if (error == null) {
                 error = AvError("Internal Error")
             }
-            if (error!!.errorParameters.size == 1 && error!!.errorParameters[0] == "No Connection") {
+            if (error.errorParameters.size == 1 && error.errorParameters[0] == "No Connection") {
                 context.longToast("Resync error\nYou don't have any data connection")
             }
 

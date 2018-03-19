@@ -110,7 +110,7 @@ internal constructor(clientId: String, password: String, serverHost: String, cal
         }
 
         if (data.isAlarmActivated != null) {
-            values[AvPhoneData.ALARM] = listOf(DataValue(timestamp, data.isAlarmActivated!!))
+            values[data.alarmName!!] = listOf(DataValue(timestamp, data.isAlarmActivated!!))
         } else {
             val obj = objectsManager.currentObject
             var pos: Int? = 1

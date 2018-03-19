@@ -60,6 +60,7 @@ class ObjectConfigureActivity : Activity() {
                 obj!!.datas
                         .filter { it.isInteger }
                         .forEach { it.current = it.defaults.toInt() }
+                obj!!.alarmName = objectAlarmEdit.text.toString()
 
                 objectsManager.save()
                 val i = Intent()
@@ -126,6 +127,10 @@ class ObjectConfigureActivity : Activity() {
                 objectNameEdit.visibility = View.GONE
             }
             titleObject.text = obj!!.name
+
+            objectAlarmEdit.setText( obj!!.alarmName)
+
+
         }
         menuGeneration()
     }

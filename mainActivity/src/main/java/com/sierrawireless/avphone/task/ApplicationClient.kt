@@ -2,7 +2,7 @@ package com.sierrawireless.avphone.task
 
 import android.util.Log
 import com.sierrawireless.avphone.model.AvPhoneApplication
-import com.sierrawireless.avphone.model.AvPhoneObjectData
+import com.sierrawireless.avphone.model.AvPhoneObject
 import net.airvantage.model.AirVantageException
 import net.airvantage.model.Application
 import net.airvantage.model.AvSystem
@@ -52,8 +52,8 @@ class ApplicationClient internal constructor(private val client: IAirVantageClie
     }
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun setApplicationData(applicationUid: String, customData: ArrayList<AvPhoneObjectData>, obj: String) {
-        val data = AvPhoneApplication.createApplicationData(customData, obj)
+    override fun setApplicationData(applicationUid: String, obj: AvPhoneObject) {
+        val data = AvPhoneApplication.createApplicationData(obj)
         client.setApplicationData(applicationUid, data)
     }
 

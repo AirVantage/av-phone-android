@@ -1,13 +1,10 @@
 package com.sierrawireless.avphone.task
 
-import java.io.IOException
-import java.util.ArrayList
-
+import com.sierrawireless.avphone.model.AvPhoneObject
 import net.airvantage.model.AirVantageException
 import net.airvantage.model.Application
 import net.airvantage.model.AvSystem
-
-import com.sierrawireless.avphone.model.AvPhoneObjectData
+import java.io.IOException
 
 interface IApplicationClient {
 
@@ -15,7 +12,7 @@ interface IApplicationClient {
     fun ensureApplicationExists(phoneName:String): Application
 
     @Throws(IOException::class, AirVantageException::class)
-    fun setApplicationData(applicationUid: String, customData: ArrayList<AvPhoneObjectData>, obj: String)
+    fun setApplicationData(applicationUid: String, obj: AvPhoneObject)
 
     @Throws(IOException::class, AirVantageException::class)
     fun createApplication(phoneName: String): Application

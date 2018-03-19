@@ -12,7 +12,7 @@ interface MonitorServiceManager {
     fun startMonitoringService(name: String)
     fun startSendData(name: String):Boolean
     fun stopSendData()
-    fun sendAlarmEvent(on: Boolean):Boolean
+    fun sendAlarmEvent(on: Boolean, name:String):Boolean
     fun setMonitoringServiceListener(listener: MonitorServiceListener)
     fun isServiceRunning(name: String? = null): Boolean
     fun cancel()

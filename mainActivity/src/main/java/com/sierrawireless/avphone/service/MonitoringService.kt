@@ -483,7 +483,7 @@ class MonitoringService : Service() {
         }
     }
 
-    fun sendAlarmEvent(on:Boolean):Boolean {
+    fun sendAlarmEvent(on:Boolean, name:String):Boolean {
 
         if (this.client == null) {
             toast("Alarm client is not available,wait...")
@@ -493,6 +493,7 @@ class MonitoringService : Service() {
         val data = NewData()
         set = on
         data.isAlarmActivated = on
+        data.alarmName = name
 
         // save alarm state
         //   if (data.getExtras() != null) {

@@ -80,6 +80,15 @@ class NewData internal constructor() : Intent(NEW_DATA) {
         }
     }
 
+    var alarmName: String?
+        get() = if (this.extras == null) null else (this.extras!!.get(ALARM_NAME_KEY) as String?)
+        internal set(sent) {
+            if (sent != null) {
+                this.putExtra(ALARM_NAME_KEY, sent)
+            }
+        }
+
+
     internal var isAlarmActivated: Boolean?
     get() = if (this.extras == null) null else (this.extras!!.get(ALARM_KEY) as Boolean?)
     set(value) {
@@ -130,6 +139,8 @@ class NewData internal constructor() : Intent(NEW_DATA) {
         private const val BYTES_RECEIVED_KEY = NEW_DATA_PREFIX + "bytesreceived"
 
         private const val ALARM_KEY = NEW_DATA_PREFIX + "alarm"
+
+        private const val ALARM_NAME_KEY = NEW_DATA_PREFIX + "alarmName"
 
         private const val CUSTOM = NEW_DATA_PREFIX + "custom."
     }

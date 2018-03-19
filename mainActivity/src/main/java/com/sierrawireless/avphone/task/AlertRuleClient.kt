@@ -18,15 +18,15 @@ class AlertRuleClient internal constructor(private val client: IAirVantageClient
     }
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun createAlertRule(Application: String, system: AvSystem) {
-        val alertRule = AvPhoneApplication.createAlertRule(system)
+    override fun createAlertRule(Application: String, system: AvSystem, name:String) {
+        val alertRule = AvPhoneApplication.createAlertRule(system, name)
         client.createAlertRule(alertRule, Application, system)
     }
 
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun updateAlertRule(Application: String, system: AvSystem, alertRule: AlertRule) {
-        AvPhoneApplication.updateAlertRule(system, alertRule)
+    override fun updateAlertRule(Application: String, system: AvSystem, alertRule: AlertRule, name:String) {
+        AvPhoneApplication.updateAlertRule(system, alertRule, name)
         client.updateAlertRule(alertRule, Application, system)
     }
 

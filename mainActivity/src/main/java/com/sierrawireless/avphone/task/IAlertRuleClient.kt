@@ -12,10 +12,10 @@ interface IAlertRuleClient {
     fun getAlertRule(serialNumber: String, system: AvSystem): AlertRule?
 
     @Throws(IOException::class, AirVantageException::class)
-    fun createAlertRule(Application: String, system: AvSystem)
+    fun createAlertRule(Application: String, system: AvSystem, name:String)
 
     @Throws(IOException::class, AirVantageException::class)
-    fun updateAlertRule(Application: String, system: AvSystem, alertRule: AlertRule)
+    fun updateAlertRule(Application: String, system: AvSystem, alertRule: AlertRule, name:String)
 
 
     @Throws(IOException::class, AirVantageException::class)

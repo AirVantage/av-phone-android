@@ -6,7 +6,6 @@ import android.content.Context
 import android.util.Log
 import com.crashlytics.android.Crashlytics
 import com.sierrawireless.avphone.ObjectsManager
-import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.message.IMessageDisplayer
 import com.sierrawireless.avphone.tools.DeviceInfo
@@ -16,7 +15,7 @@ import net.airvantage.model.AvError
 import net.airvantage.model.AvSystem
 import org.jetbrains.anko.longToast
 import java.io.IOException
-import java.util.ArrayList
+import java.util.*
 
 typealias UpdateListener = (UpdateResult) -> Unit
 
@@ -90,14 +89,14 @@ open class UpdateTask internal constructor(private val applicationClient: IAppli
             publishProgress(UpdateProgress.UPDATING_ALERT_RULE)
 
             if (alertRule != null) {
-                this.alertRuleClient.updateAlertRule(application.uid!!, system, alertRule)
+                this.alertRuleClient.updateAlertRule(application.uid!!, system, alertRule, objectsManager.savecObject.alarmName)
             }else{
-                this.alertRuleClient.createAlertRule(application.uid!!, system)
+                this.alertRuleClient.createAlertRule(application.uid!!, system, objectsManager.savecObject.alarmName)
             }
 
             publishProgress(UpdateProgress.UPDATING_APPLICATION)
 
-            this.applicationClient.setApplicationData(application.uid!!, objectsManager.savecObject.datas, objectsManager.savecObject.name!!)
+            this.applicationClient.setApplicationData(application.uid!!, objectsManager.savecObject)
 
             if (!hasApplication(system, application)) {
 
@@ -147,7 +146,7 @@ open class UpdateTask internal constructor(private val applicationClient: IAppli
                 error = AvError("Internal Error")
             }
 
-            if (error!!.errorParameters.size == 1 && error!!.errorParameters[0] == "No Connection") {
+            if (error.errorParameters.size == 1 && error.errorParameters[0] == "No Connection") {
                 context.longToast("Resync Error\nYou don't have any data connection")
             }
 

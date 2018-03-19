@@ -3,7 +3,6 @@ package net.airvantage.utils.alert
 import android.net.Uri
 import android.util.Log
 import com.google.gson.JsonIOException
-import com.sierrawireless.avphone.model.AvPhoneData
 import net.airvantage.model.AirVantageException
 import net.airvantage.model.AvSystem
 import net.airvantage.model.alert.v2.AlertRuleList
@@ -120,7 +119,7 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
         }else{
             Uri.parse(buildEndpoint(apiPath + data)).toString()
         }
-        var tmp: URL?
+        val tmp: URL?
         try {
             tmp = URL(urlString)
         } catch (e: MalformedURLException) {
@@ -178,8 +177,8 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
 
         private fun convert(condition: Condition): net.airvantage.model.alert.v1.Condition {
             val conditionV1: net.airvantage.model.alert.v1.Condition = net.airvantage.model.alert.v1.Condition()
-            conditionV1.eventProperty = "phone.alarm"
-            conditionV1.eventPropertyKey = AvPhoneData.ALARM
+            conditionV1.eventProperty = "communication.data.value"
+           // conditionV1.eventPropertyKey = "phone.alarm"
             conditionV1.operator = condition.operator
 
             // Finding values
@@ -189,6 +188,10 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
                 if (operand.attributeId == null) {
                     if (operand.valueStr != null) values.add(operand.valueStr!!)
                     if (operand.valueNum != null) values.add(operand.valueNum!!)
+                }else{
+                    if (operand.attributeId!!.name!!.startsWith("DATA.") ) {
+                        conditionV1.eventPropertyKey = operand.attributeId!!.name!!.replace("DATA.", "")
+                    }
                 }
             }//values.add(Utils.first(operand.valuesStr));
 
