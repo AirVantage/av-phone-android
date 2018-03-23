@@ -70,6 +70,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
     private var customLabelsListener: CustomLabelsListener? = null
 
+
     private var drawerToggle: ActionBarDrawerToggle? = null
 
     private var configureFragment: ConfigureFragment? = null
@@ -307,7 +308,9 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
             unlockDrawer()
             if (isServiceRunning()) {
-                connectToService()
+                if (objectName != null) {
+                    connectToService(objectName!!)
+                }
             }
             initFragments()
             if (changeFragment)
@@ -463,8 +466,14 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
     }
 
-    private fun connectToService() {
+    private fun connectToService(name: String) {
         val intent = Intent(this, MonitoringService::class.java)
+        val avPrefs = PreferenceUtils.getAvPhonePrefs(this)
+        intent.putExtra(MonitoringService.DEVICE_ID, DeviceInfo.getUniqueId(this))
+        intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost)
+        intent.putExtra(MonitoringService.PASSWORD, avPrefs.password)
+        intent.putExtra(MonitoringService.CONNECT, false)
+        intent.putExtra(MonitoringService.OBJECT_NAME, name)
         boundToMonitoringService = this.bindService(intent, connection, Context.BIND_AUTO_CREATE)
     }
 
@@ -507,7 +516,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         // registering our pending intent with alarm manager
         alarmManager!!.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, pendingIntent)
 
-        connectToService()
+        connectToService(name)
     }
 
     internal fun setAlarm(timer:Int?) {

@@ -1,5 +1,6 @@
 package com.sierrawireless.avphone.model
 
+import android.text.Html
 import com.sierrawireless.avphone.ObjectsManager
 import com.sierrawireless.avphone.tools.Tools
 import net.airvantage.model.*
@@ -91,12 +92,12 @@ object AvPhoneApplication {
     private fun appName(userName: String, phoneName: String): String {
         objectsManager = ObjectsManager.getInstance()
 
-        return phoneName.replace(" ", "_") + "_av_phone_" + objectsManager!!.savecObject.name + "_" + userName
+        return Html.escapeHtml(phoneName.replace(" ", "_") + "_av_phone_" + objectsManager!!.savecObject.name + "_" + userName)
     }
 
     fun appType(userName: String, phoneName: String): String {
         objectsManager = ObjectsManager.getInstance()
-        return phoneName.replace(" ", ".") + ".av.phone.demo." + objectsManager!!.savecObject.name + userName
+        return Html.escapeHtml(phoneName.replace(" ", ".") + ".av.phone.demo." + objectsManager!!.savecObject.name + userName)
     }
 
     fun createAlertRule(system: AvSystem, name: String): AlertRule {
