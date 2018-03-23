@@ -258,7 +258,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         val systemName = (activity as MainActivity).systemName
 
         this.setLinkToSystem(systemUid, systemName)
-        startTimer()
+       // startTimer()
         monitorServiceManager?.start()
         setAlarmButton()
         setPhoneDataLabels()
@@ -267,7 +267,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     override fun onPause() {
         Log.d(TAG, "on Pause Called")
         super.onPause()
-        stopTimer()
+       // stopTimer()
         this.monitorServiceManager?.cancel()
     }
 

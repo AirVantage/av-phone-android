@@ -187,6 +187,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "OnCreate called")
         instance = this
         // Initialization og Object Manager
         objectsManager = ObjectsManager.getInstance()
@@ -329,6 +330,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     }
 
     override fun onResume() {
+        Log.d(TAG, "OnResume Called")
         super.onResume()
         left_drawer.requestFocusFromTouch()
         left_drawer.setItemChecked(lastPosition, true)

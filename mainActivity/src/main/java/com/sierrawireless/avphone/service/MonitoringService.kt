@@ -24,6 +24,7 @@ import com.google.gson.Gson
 import com.sierrawireless.avphone.ObjectsManager
 import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.activity.MainActivity
+import com.sierrawireless.avphone.model.AvPhoneObjectData
 import com.sierrawireless.avphone.task.SendDataParams
 import com.sierrawireless.avphone.task.SendDataTask
 import com.sierrawireless.avphone.tools.DeviceInfo
@@ -36,6 +37,7 @@ import org.jetbrains.anko.toast
 import java.nio.charset.Charset
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
+import kotlin.concurrent.schedule
 
 class MonitoringService : Service() {
 
@@ -72,6 +74,7 @@ class MonitoringService : Service() {
 
     private var timer:Timer? = null
 
+    private var timerObject:TimerTask? = null
 
     private val lastKnownLocation: Location?
         @SuppressLint("MissingPermission")
@@ -213,6 +216,8 @@ class MonitoringService : Service() {
             }
         }
         //setUpLocationListeners()
+
+        startTimer()
     }
 
 
@@ -232,11 +237,8 @@ class MonitoringService : Service() {
     fun startSendData() {
         val notif = R.string.notif_title
         // Create an intent to start the activity when clicking the notification
-        val resultIntent = Intent(this, MainActivity::class.java)
-        val stackBuilder = TaskStackBuilder.create(this)
-        stackBuilder.addParentStack(MainActivity::class.java)
-        stackBuilder.addNextIntent(resultIntent)
-        val resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+        val resultIntent = MainActivity.instance.intent
+        val resultPendingIntent = PendingIntent.getActivity(MainActivity.instance, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val channelId =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -355,6 +357,7 @@ class MonitoringService : Service() {
         objectsManager = ObjectsManager.getInstance()
         val obj = objectsManager!!.currentObject
 
+
         Log.d(TAG, "alarm received")
 
         try {
@@ -413,6 +416,7 @@ class MonitoringService : Service() {
                // setUpLocationListeners()
             }
 
+
         } catch (e: Exception) {
             Crashlytics.logException(e)
             Log.e(TAG, "error", e)
@@ -432,6 +436,8 @@ class MonitoringService : Service() {
             Log.e(TAG, "error", e)
         }
 
+        stopTimer()
+
         // Cancel the persistent notification.
         stopForeground(true)
 
@@ -443,6 +449,45 @@ class MonitoringService : Service() {
         timer?.cancel()
       //  stopLocationListeners()
         timer = null
+        stopTimer()
+    }
+
+    private fun startTimer() {
+        // Log.i(TAG, "custom data timer started for " + objectName)
+
+        timerObject = Timer().schedule(Tools.rand(1000, 5000)) {
+            execMode()
+        }
+    }
+
+    private fun stopTimer() {
+        // Log.i(TAG, "custom data timer stopped for " + objectName)
+        if (timerObject != null) {
+            timerObject!!.cancel()
+            timerObject = null
+        }
+    }
+
+    private fun execMode() {
+        objectsManager = ObjectsManager.getInstance()
+
+        val obj =  objectsManager!!.currentObject!!
+
+        // The return code is not used
+        // As for the default we don't change the value
+        // We don't need anything is for this the ""
+        for (data in obj.datas) {
+            @Suppress("UNUSED_EXPRESSION")
+            when (data.mode){
+                AvPhoneObjectData.Mode.UP -> if (Tools.rand(0, 2000) > 500) data.execMode()
+                AvPhoneObjectData.Mode.DOWN -> if (Tools.rand(0, 2000) > 1500) data.execMode()
+                AvPhoneObjectData.Mode.RANDOM -> if (Tools.rand(0, 2000) > 500) data.execMode()
+                else -> ""
+            }
+
+        }
+        objectsManager!!.saveOnPref()
+        startTimer()
     }
 
     @SuppressLint("MissingPermission")
@@ -535,7 +580,7 @@ class MonitoringService : Service() {
         const val CONNECT = "connect"
         const val OBJECT_NAME = "objname"
         private val TAG = MonitoringService::class.simpleName
-        const val CHANNEL_ID = "Channel one"
+        //const val CHANNEL_ID = "Channel one"
     }
 
 }
