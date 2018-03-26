@@ -245,7 +245,12 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                     if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
 
                         Log.w(TAG, "onRequestPermissionsResult: READ_PHONE_STATE answer ko")
-                        longToast("Permission not granted please grant permission")
+
+                        alert("Permission not granted. The application will exit now", "Alert") {
+                            positiveButton("OK") {
+                                finish()
+                            }
+                        }.show()
                     } else {
                         Log.d(TAG, " for READ PHONE STATE ok")
                         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -264,7 +269,11 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                     if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
 
                         Log.w(TAG, "onRequestPermissionsResult: ACCESS_COARSE_LOCATION answer ko")
-                        longToast("Permission not granted please grant permission")
+                        alert("Permission not granted. The application will exit now", "Alert") {
+                            positiveButton("OK") {
+                                finish()
+                            }
+                        }.show()
                     } else {
                         Log.d(TAG, " for COARSE LOCATION ok")
                         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
@@ -279,7 +288,11 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                     if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
 
                         Log.w(TAG, "onRequestPermissionsResult: answer ACCESS_FINE_LOCATION ko")
-                        longToast("Permission not granted please grant permission")
+                        alert("Permission not granted. The application will exit now", "Alert") {
+                            positiveButton("OK") {
+                                finish()
+                            }
+                        }.show()
                     }else{
                         Log.d(TAG, "for FINE LOCATION STATE ok")
                     }
@@ -330,7 +343,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     }
 
     override fun onResume() {
-        Log.d(TAG, "OnResume Called")
+
         super.onResume()
         left_drawer.requestFocusFromTouch()
         left_drawer.setItemChecked(lastPosition, true)

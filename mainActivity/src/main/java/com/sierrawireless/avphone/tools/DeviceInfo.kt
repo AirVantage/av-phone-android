@@ -7,6 +7,7 @@ import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import android.text.TextUtils
 import com.sierrawireless.avphone.activity.MainActivity
+import org.jetbrains.anko.toast
 
 object DeviceInfo {
 
@@ -67,22 +68,39 @@ object DeviceInfo {
     fun getIMEI(context: Context): String? {
 
         val telManager: TelephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-        return if (telManager.phoneType == TelephonyManager.PHONE_TYPE_GSM) {
-            @Suppress("DEPRECATION")
-            telManager.deviceId
-        } else null
+        var rc:String? = null
+        try {
+            rc = if (telManager.phoneType == TelephonyManager.PHONE_TYPE_GSM) {
+                @Suppress("DEPRECATION")
+                telManager.deviceId
+            } else null
+        }catch(e:SecurityException) {
+            MainActivity.instance.runOnUiThread {
+                MainActivity.instance.toast("Read Phone Permission not given")
+            }
+        }
 
+        return rc
     }
 
     fun getICCID(context: Context): String {
         val sm = SubscriptionManager.from(context)
         val sis = sm.activeSubscriptionInfoList
-        return if (sis != null) {
-            val si = sis[0]
-            si.iccId
-        }else{
-            ""
+        var rc = ""
+        try {
+            rc = if (sis != null) {
+                val si = sis[0]
+                si.iccId
+            } else {
+                ""
+            }
+        }catch(e:SecurityException) {
+            MainActivity.instance.runOnUiThread {
+                MainActivity.instance.toast("Read Phone Permission not given")
+            }
         }
+
+        return rc
 
 
     }
