@@ -10,6 +10,7 @@ import android.text.Html
 import android.view.View
 import android.widget.TextView
 import com.sierrawireless.avphone.R
+import com.sierrawireless.avphone.activity.MainActivity
 
 class ProgressSyncWithAvTask internal constructor(applicationClient: IApplicationClient, systemClient: ISystemClient,
                                                   alertRuleClient: IAlertRuleClient, userClient: IUserClient, context: Context) : SyncWithAvTask(applicationClient, systemClient, alertRuleClient, userClient, context) {
@@ -64,8 +65,16 @@ class ProgressSyncWithAvTask internal constructor(applicationClient: IApplicatio
     }
 
     override fun onPostExecute(result: SyncWithAvResult) {
-        if (dialog!!.isShowing) {
-            dialog!!.dismiss()
+        if (!MainActivity.instance.isFinishing && !MainActivity.instance.isDestroyed) {
+            try {
+                if (dialog != null && dialog!!.isShowing) {
+                    dialog!!.dismiss()
+                }
+            } catch (e: IllegalArgumentException) {
+            } catch (e: Exception) {
+            } finally {
+                dialog = null
+            }
         }
         super.onPostExecute(result)
     }

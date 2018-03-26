@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.TextView
 import com.sierrawireless.avphone.R
+import com.sierrawireless.avphone.activity.MainActivity
 
 class ProgressGetUserTask internal constructor(userClient: IUserClient, context: Context) : GetUserTask(userClient, context) {
 
@@ -50,8 +51,16 @@ class ProgressGetUserTask internal constructor(userClient: IUserClient, context:
 
 
     override fun onPostExecute(result: GetUserResult) {
-        if (dialog!!.isShowing) {
-            dialog!!.dismiss()
+        if (!MainActivity.instance.isFinishing && !MainActivity.instance.isDestroyed) {
+            try {
+                if (dialog != null && dialog!!.isShowing) {
+                    dialog!!.dismiss()
+                }
+            } catch (e: IllegalArgumentException) {
+            } catch (e: Exception) {
+            } finally {
+                dialog = null
+            }
         }
         super.onPostExecute(result)
     }

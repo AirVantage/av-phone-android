@@ -10,6 +10,7 @@ import android.text.Html
 import android.view.View
 import android.widget.TextView
 import com.sierrawireless.avphone.R
+import com.sierrawireless.avphone.activity.MainActivity
 
 class ProgressDeleteSystemTask internal constructor(systemClient: ISystemClient, userClient: IUserClient, private val alertRuleClient: IAlertRuleClient, context: Context) : DeleteSystemTask(systemClient, userClient, alertRuleClient, context) {
 
@@ -66,8 +67,16 @@ class ProgressDeleteSystemTask internal constructor(systemClient: ISystemClient,
     }
 
     override fun onPostExecute(result: DeleteSystemResult) {
-        if (dialog!!.isShowing) {
-            dialog!!.dismiss()
+        if (!MainActivity.instance.isFinishing && !MainActivity.instance.isDestroyed) {
+            try {
+                if (dialog != null && dialog!!.isShowing) {
+                    dialog!!.dismiss()
+                }
+            } catch (e: IllegalArgumentException) {
+            } catch (e: Exception) {
+            } finally {
+                dialog = null
+            }
         }
         super.onPostExecute(result)
     }
