@@ -165,6 +165,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             if (!result.isError) {
                 user = result.user
                 user!!.server = avPhonePrefs.serverHost
+                systemSerial = DeviceInfo.generateSerial(user!!.uid!!)
                 loadMenu(true)
             }else{
                 if (! stopped ) {
