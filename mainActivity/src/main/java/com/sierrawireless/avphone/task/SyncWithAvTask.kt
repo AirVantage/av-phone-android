@@ -42,11 +42,11 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
             val systemType: String?
             val syncParams = params[0]
-            val user = userClient.user
-            val imei = syncParams.imei
-            val iccid = syncParams.iccid
-            deviceName = syncParams.deviceName
-            val mqttPassword = syncParams.mqttPassword
+            val user = userClient.user!!
+            val imei = syncParams.imei!!
+            val iccid = syncParams.iccid!!
+            deviceName = syncParams.deviceName!!
+            val mqttPassword = syncParams.mqttPassword!!
             val objectsManager = ObjectsManager.getInstance()
 
             val missingRights = userClient.checkRights()
@@ -58,7 +58,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
             systemType = objectsManager.savedObjectName
 
             // For emulator and iOs compatibility sake, using generated serial.
-            val serialNumber = DeviceInfo.generateSerial(user!!.uid!!)
+            val serialNumber = DeviceInfo.generateSerial(user.uid!!)
 
             // Save Device serial in context
             if (context is MainActivity) {
@@ -75,8 +75,15 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
             if (system == null) {
 
                 publishProgress(SyncProgress.CREATING_SYSTEM)
+                val uid = application.uid!!
+                var name = if (user.name == null){
+                    "Nobody"
+                }else{
+                    user.name!!
+                }
 
-                system = systemClient.createSystem(serialNumber, iccid!!, systemType, mqttPassword!!, application.uid!!, deviceName!!, user.name!!, imei!!)
+
+                system = systemClient.createSystem(serialNumber, iccid, systemType, mqttPassword, uid, deviceName!!, name, imei)
             }
             objectsManager.savecObject.systemUid = system.uid
             objectsManager.saveOnPref()

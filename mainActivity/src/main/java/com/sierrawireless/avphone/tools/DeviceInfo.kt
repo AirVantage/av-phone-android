@@ -65,15 +65,19 @@ object DeviceInfo {
 
 
     @SuppressLint("HardwareIds", "MissingPermission")
-    fun getIMEI(context: Context): String? {
+    fun getIMEI(context: Context): String {
 
         val telManager: TelephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-        var rc:String? = null
+        var rc = "DEAD"
         try {
             rc = if (telManager.phoneType == TelephonyManager.PHONE_TYPE_GSM) {
                 @Suppress("DEPRECATION")
-                telManager.deviceId
-            } else null
+                if (telManager.deviceId == null) {
+                    "DEAD"
+                }else {
+                    telManager.deviceId
+                }
+            } else "DEAD"
         }catch(e:SecurityException) {
             MainActivity.instance.runOnUiThread {
                 MainActivity.instance.toast("Read Phone Permission not given")
@@ -86,13 +90,17 @@ object DeviceInfo {
     fun getICCID(context: Context): String {
         val sm = SubscriptionManager.from(context)
         val sis = sm.activeSubscriptionInfoList
-        var rc = ""
+        var rc = "DEAD"
         try {
             rc = if (sis != null) {
                 val si = sis[0]
-                si.iccId
+                if (si.iccId == null) {
+                    "DEAD"
+                }else{
+                    si.iccId
+                }
             } else {
-                ""
+                "DEAD"
             }
         }catch(e:SecurityException) {
             MainActivity.instance.runOnUiThread {

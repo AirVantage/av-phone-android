@@ -46,7 +46,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import net.airvantage.model.User
 import net.airvantage.utils.PreferenceUtils
 import org.jetbrains.anko.alert
-import org.jetbrains.anko.longToast
 import java.util.*
 
 /**
@@ -60,9 +59,6 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     private var alarmManager: AlarmManager? = null
     private var taskFactory: IAsyncTaskFactory? = null
     override var authentication: Authentication? = null
-        set(value) {
-            field = value
-        }
     private var prefs: SharedPreferences? = null
 
     internal var boundToMonitoringService = false

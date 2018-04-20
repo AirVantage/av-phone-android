@@ -384,9 +384,9 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         val listObject = ArrayList<HashMap<String, String>>()
 
         objectsManager = ObjectsManager.getInstance()
-        val obj = objectsManager.getObjectByName(objectName!!)
+        val obj = objectsManager.getObjectByName(objectName!!) ?: return
         var temp: HashMap<String, String>
-        for (data in obj!!.datas) {
+        for (data in obj.datas) {
             temp = HashMap()
             temp[Tools.NAME] = data.name
             if (data.mode != AvPhoneObjectData.Mode.None) {

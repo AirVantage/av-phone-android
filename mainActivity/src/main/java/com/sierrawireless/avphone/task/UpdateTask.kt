@@ -48,7 +48,7 @@ open class UpdateTask internal constructor(private val applicationClient: IAppli
             val mqttPassword = syncParams.mqttPassword
             val objectsManager = ObjectsManager.getInstance()
 
-            systemType = objectsManager.savedObjectName
+            systemType = objectsManager.savedObjectName!!
 
             val missingRights = userClient.checkRights()
             if (!missingRights.isEmpty()) {
@@ -73,11 +73,15 @@ open class UpdateTask internal constructor(private val applicationClient: IAppli
 
             var system: net.airvantage.model.AvSystem? = this.systemClient.getSystem(serialNumber, systemType!!, deviceName!!)
             publishProgress(UpdateProgress.UPDATING_SYSTEM)
-
-            if (system != null) {
-                systemClient.updateSystem(system, serialNumber, iccid!!, systemType, mqttPassword!!, application.uid!!, deviceName!!, user.name!!, imei!!)
+            var name = if (user.name == null){
+                "Nobody"
             }else{
-                system = systemClient.createSystem(serialNumber, iccid!!, systemType, mqttPassword!!, application.uid!!, deviceName!!, user.name!!, imei!!)
+                user.name!!
+            }
+            if (system != null) {
+                systemClient.updateSystem(system, serialNumber, iccid!!, systemType, mqttPassword!!, application.uid!!, deviceName!!, name, imei!!)
+            }else{
+                system = systemClient.createSystem(serialNumber, iccid!!, systemType, mqttPassword!!, application.uid!!, deviceName!!, name, imei!!)
             }
 
             objectsManager.savecObject.systemUid = system.uid
