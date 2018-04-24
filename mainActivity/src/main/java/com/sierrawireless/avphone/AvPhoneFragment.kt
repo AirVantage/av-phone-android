@@ -1,9 +1,12 @@
 package com.sierrawireless.avphone
 
+import android.annotation.TargetApi
+import android.app.Activity
 import android.app.Fragment
 import android.content.Context
 import android.content.Intent
 import android.text.Spanned
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.sierrawireless.avphone.activity.AuthorizationActivity
@@ -21,6 +24,18 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
     abstract var errorMessageView: TextView?
 
 
+
+    @Suppress("OverridingDeprecatedMember")
+    override fun onAttach(activity: Activity) {
+        super.onAttach(activity)
+
+        if (activity is AuthenticationManager) {
+            authManager = activity
+        }
+
+    }
+
+    @TargetApi(23)
     override fun onAttach(context: Context) {
         super.onAttach(context)
 

@@ -1,5 +1,7 @@
 package com.sierrawireless.avphone
 
+import android.annotation.TargetApi
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -15,6 +17,7 @@ import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.auth.AuthUtils
 import com.sierrawireless.avphone.auth.Authentication
 import com.sierrawireless.avphone.message.IMessageDisplayer
+import com.sierrawireless.avphone.service.MonitorServiceManager
 import com.sierrawireless.avphone.task.IAsyncTaskFactory
 import com.sierrawireless.avphone.task.SyncWithAvListener
 import com.sierrawireless.avphone.task.SyncWithAvParams
@@ -45,12 +48,23 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         }
     }
 
+    @Suppress("OverridingDeprecatedMember")
+    override fun onAttach(activity: Activity) {
+        super.onAttach(activity)
+
+
+        syncListener = activity as SyncWithAvListener
+
+    }
+
+    @TargetApi(23)
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
         @Suppress("UNCHECKED_CAST")
         syncListener = context as SyncWithAvListener
     }
+
 
     @SuppressWarnings("deprecation")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -110,7 +124,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(activity)
 
         // Without task factory, try later
-        if (taskFactory == null) {
+        if (taskFactory == null || authManager == null) {
             authForSync = auth
             retrySync = true
             return
