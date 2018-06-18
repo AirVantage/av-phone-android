@@ -165,8 +165,10 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     }
 
     private fun showLoggedOutState() {
-        hideLogoutButton()
-        hideCurrentServer()
+        MainActivity.instance.runOnUiThread {
+            hideLogoutButton()
+            hideCurrentServer()
+        }
     }
 
     private fun logout() {
@@ -194,7 +196,9 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     }
 
     private fun hideLogoutButton() {
-        logout_btn.visibility = View.GONE
+        if (logout_btn != null) {
+            logout_btn.visibility = View.GONE
+        }
         login_btn.visibility = View.VISIBLE
 
         home_login_message.visibility = View.VISIBLE
