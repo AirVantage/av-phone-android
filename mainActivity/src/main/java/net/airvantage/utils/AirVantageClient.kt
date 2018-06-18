@@ -13,6 +13,7 @@ import org.json.JSONObject
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.URLEncoder
 import java.util.*
 
 class AirVantageClient(private val server: String, private val access_token: String) : IAirVantageClient, IAlertAdapterFactoryListener {
@@ -28,7 +29,7 @@ class AirVantageClient(private val server: String, private val access_token: Str
     }
 
     private fun buildPath(api: String): String {
-        return server + API_PREFIX + api + "?access_token=" + access_token
+        return URLEncoder.encode("$server$API_PREFIX$api?access_token=$access_token")
     }
 
     private fun buildEndpoint(api: String): String {

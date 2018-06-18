@@ -199,9 +199,13 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         if (logout_btn != null) {
             logout_btn.visibility = View.GONE
         }
-        login_btn.visibility = View.VISIBLE
+        if (login_btn != null) {
+            login_btn.visibility = View.VISIBLE
+        }
 
-        home_login_message.visibility = View.VISIBLE
+        if (home_login_message != null) {
+            home_login_message.visibility = View.VISIBLE
+        }
     }
 
     companion object {
