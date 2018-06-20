@@ -22,11 +22,11 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
-      <excludeFolder url="file://$MODULE_DIR$/build" />
       <excludeFolder url="file://$MODULE_DIR$/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="Gradle: D__Users_jdamiano_Work_av_phone_android_comcrashlyticssdkandroid_crashlytics_libs_com_crashlytics_sdk_android_crashlytics_classes_jar" level="project" />
+    <orderEntry type="library" exported="" name="_Volumes_SSD2_Work_av_phone_android_comcrashlyticssdkandroid_crashlytics_libs_com_crashlytics_sdk_android_crashlytics_classes_jar" level="project" />
   </component>
 </module>

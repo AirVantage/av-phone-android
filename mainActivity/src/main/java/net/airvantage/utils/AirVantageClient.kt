@@ -29,7 +29,7 @@ class AirVantageClient(private val server: String, private val access_token: Str
     }
 
     private fun buildPath(api: String): String {
-        return URLEncoder.encode("$server$API_PREFIX$api?access_token=$access_token")
+        return "$server$API_PREFIX$api?access_token=$access_token"
     }
 
     private fun buildEndpoint(api: String): String {
@@ -52,6 +52,12 @@ class AirVantageClient(private val server: String, private val access_token: Str
                 throw AirVantageException(error)
             }
             connection.responseCode == HttpURLConnection.HTTP_FORBIDDEN -> {
+                val method = connection.requestMethod
+                val url = connection.url.toString()
+                val error = AvError(AvError.FORBIDDEN, Arrays.asList(method, url))
+                throw AirVantageException(error)
+            }
+            connection.responseCode == HttpURLConnection.HTTP_UNAUTHORIZED -> {
                 val method = connection.requestMethod
                 val url = connection.url.toString()
                 val error = AvError(AvError.FORBIDDEN, Arrays.asList(method, url))
