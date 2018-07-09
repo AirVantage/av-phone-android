@@ -42,7 +42,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
             val systemType: String?
             val syncParams = params[0]
-            val user = userClient.user!!
+            val user = userClient.user
             val imei = syncParams.imei!!
             val iccid = syncParams.iccid!!
             deviceName = syncParams.deviceName!!
@@ -58,7 +58,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
             systemType = objectsManager.savedObjectName
 
             // For emulator and iOs compatibility sake, using generated serial.
-            val serialNumber = DeviceInfo.generateSerial(user.uid!!)
+            val serialNumber = DeviceInfo.generateSerial(user?.uid!!)
 
             // Save Device serial in context
             if (context is MainActivity) {

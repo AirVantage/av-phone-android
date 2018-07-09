@@ -98,7 +98,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
 
     private fun hideCurrentServer() {
         infoMessageView?.visibility = View.GONE
-        home_login.visibility = View.GONE
+        home_login?.visibility = View.GONE
         infoMessageView?.text = ""
     }
 
@@ -135,8 +135,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
 
         syncAvTask.addProgressListener { result ->
             if (result.isError) {
-                authManager!!.forgetAuthentication()
-                showLoggedOutState()
+                MainActivity.instance.logout()
                 syncAvTask.showResult(result, displayer, activity)
             } else {
                 authManager!!.onAuthentication(auth)

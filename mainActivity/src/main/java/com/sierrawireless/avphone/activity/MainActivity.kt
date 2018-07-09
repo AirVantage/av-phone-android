@@ -640,7 +640,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     /**
      * Swaps fragments in the main content view
      */
-    private fun logout() {
+    fun logout() {
         val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(this)
 
         // Already logout if authentication is null

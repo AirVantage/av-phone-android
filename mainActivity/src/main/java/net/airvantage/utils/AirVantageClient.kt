@@ -13,7 +13,6 @@ import org.json.JSONObject
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
-import java.net.URLEncoder
 import java.util.*
 
 class AirVantageClient(private val server: String, private val access_token: String) : IAirVantageClient, IAlertAdapterFactoryListener {
@@ -126,7 +125,9 @@ class AirVantageClient(private val server: String, private val access_token: Str
         return readResponse(connection)
     }
 
+
     override val currentUser: User
+        @Throws(IOException::class, AirVantageException::class)
         get()  {
             val url = URL(buildEndpoint("/users/current"))
             val inputStream = get(url)

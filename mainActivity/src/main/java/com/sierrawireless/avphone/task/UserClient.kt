@@ -7,11 +7,13 @@ import com.sierrawireless.avphone.activity.MainActivity
 import net.airvantage.model.AirVantageException
 import net.airvantage.model.User
 import net.airvantage.utils.IAirVantageClient
+import java.io.IOException
 import java.net.UnknownHostException
 import java.util.*
 
 class UserClient internal constructor(private val client: IAirVantageClient) : IUserClient {
     override val user: User?
+        @Throws(IOException::class, AirVantageException::class)
         get() {
             return try {
                 this.client.currentUser
