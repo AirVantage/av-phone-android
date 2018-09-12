@@ -8,6 +8,7 @@ import com.sierrawireless.avphone.model.AvPhoneObject
 
 import java.util.ArrayList
 import java.util.Arrays
+import java.util.concurrent.CopyOnWriteArrayList
 
 class MyPreference(private val preferences: SharedPreferences) {
 
@@ -29,11 +30,11 @@ class MyPreference(private val preferences: SharedPreferences) {
         return ArrayList(Arrays.asList(*TextUtils.split(preferences.getString(key, ""), "‚‗‚")))
     }
 
-    fun getListObject(key: String, mClass: Class<AvPhoneObject>): ArrayList<AvPhoneObject> {
+    fun getListObject(key: String, mClass: Class<AvPhoneObject>): CopyOnWriteArrayList<AvPhoneObject> {
         val gson = Gson()
 
         val objStrings = getListString(key)
-        return objStrings.mapTo(ArrayList()) { gson.fromJson(it, mClass) }
+        return objStrings.mapTo(CopyOnWriteArrayList()) { gson.fromJson(it, mClass) }
 
     }
 
@@ -72,16 +73,16 @@ class MyPreference(private val preferences: SharedPreferences) {
      * @param key SharedPreferences key
      * @param stringList ArrayList of String to be added
      */
-    private fun putListString(key: String, stringList: ArrayList<String>) {
+    private fun putListString(key: String, stringList: CopyOnWriteArrayList<String>) {
         checkForNullKey(key)
         val myStringList = stringList.toTypedArray()
         preferences.edit().putString(key, TextUtils.join("‚‗‚", myStringList)).apply()
     }
 
-    fun putListObject(key: String, objArray: ArrayList<AvPhoneObject>) {
+    fun putListObject(key: String, objArray: CopyOnWriteArrayList<AvPhoneObject>) {
         checkForNullKey(key)
         val gson = Gson()
-        val objStrings = objArray.mapTo(ArrayList<String>()) { gson.toJson(it) }
+        val objStrings = objArray.mapTo(CopyOnWriteArrayList<String>()) { gson.toJson(it) }
         putListString(key, objStrings)
     }
 }

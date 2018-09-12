@@ -6,14 +6,14 @@ import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.model.AvPhoneObject
 import com.sierrawireless.avphone.model.AvPhoneObjectData
 import com.sierrawireless.avphone.tools.MyPreference
-import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 
 class ObjectsManager private constructor() {
     private var mainActivity: MainActivity? = null
     var current: Int = 0
     private var savedPosition = -1
 
-    internal var objects: ArrayList<AvPhoneObject>
+    internal var objects: CopyOnWriteArrayList<AvPhoneObject>
 
     val savecObject: AvPhoneObject
         get() = objects[savedPosition]
@@ -27,7 +27,7 @@ class ObjectsManager private constructor() {
         } else objects[current]
 
     init {
-        objects = ArrayList()
+        objects = CopyOnWriteArrayList()
     }
 
     internal fun init(activity: MainActivity) {

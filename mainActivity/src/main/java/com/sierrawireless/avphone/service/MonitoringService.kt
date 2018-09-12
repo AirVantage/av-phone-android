@@ -326,12 +326,12 @@ class MonitoringService : Service() {
         val mMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
 
         when {
-            mWifi.isConnected -> {
+            mWifi != null && mWifi.isConnected -> {
                 // bytes sent/received
                 data.bytesReceived = TrafficStats.getTotalRxBytes()
                 data.bytesSent = TrafficStats.getTotalTxBytes()
             }
-            mMobile.isConnected -> {
+            mMobile != null && mMobile.isConnected -> {
                 data.bytesReceived = TrafficStats.getMobileRxBytes()
                 data.bytesSent = TrafficStats.getMobileTxBytes()
             }
