@@ -620,7 +620,9 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
     private fun clearStack() {
         //Here we are clearing back stack fragment entries
-        fragmentManager.popBackStack("HOME", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        MainActivity.instance.runOnUiThread {
+            fragmentManager.popBackStack("HOME", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        }
 //        val backStackEntry = fragmentManager.backStackEntryCount
 //        if (backStackEntry > 0) {
 //            for (i in 0 until backStackEntry) {

@@ -24,7 +24,13 @@ class ObjectsManager private constructor() {
     val currentObject: AvPhoneObject?
         get() = if (objects.isEmpty()) {
             null
-        } else objects[current]
+        } else {
+            if (current > objects.size) {
+                null
+            }else {
+                objects[current]
+            }
+        }
 
     init {
         objects = CopyOnWriteArrayList()
