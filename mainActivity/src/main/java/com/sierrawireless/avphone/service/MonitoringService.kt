@@ -298,7 +298,18 @@ class MonitoringService : Service() {
 
         if (telephonyManager!!.phoneType == TelephonyManager.PHONE_TYPE_GSM) {
             @Suppress("DEPRECATION")
-            data.imei = telephonyManager!!.deviceId
+            try {
+                data.imei = telephonyManager!!.deviceId
+            }
+            catch(e:SecurityException) {
+                MainActivity.instance.runOnUiThread {
+
+                    MainActivity.instance.toast("Read Phone Permission not given")
+
+
+                    MainActivity.instance.securityAlert("READ_PHONE_STATE")
+                }
+            }
         }
 
         data.operator = telephonyManager!!.networkOperatorName
