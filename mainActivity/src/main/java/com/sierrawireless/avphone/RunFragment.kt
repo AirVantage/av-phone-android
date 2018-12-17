@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.crashlytics.android.Crashlytics
 import com.sierrawireless.avphone.activity.AuthorizationActivity
 import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.adapter.RunListViewAdapter
@@ -97,7 +98,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     override fun onAttach(activity:Activity) {
         super.onAttach(activity)
 
-        Log.d(TAG, "OnAttach Called")
+        Crashlytics.log(Log.INFO, TAG, "OnAttach Called")
 
         if (activity is MonitorServiceManager) {
             this.setMonitorServiceManager(activity as MonitorServiceManager)
@@ -112,7 +113,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        Log.d(TAG, "OnAttach Called")
+        Crashlytics.log(Log.INFO, TAG, "OnAttach Called")
 
         if (context is MonitorServiceManager) {
             this.setMonitorServiceManager(context as MonitorServiceManager)
@@ -125,11 +126,11 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
     override fun onDetach() {
         super.onDetach()
-        Log.d(TAG, "On detach called")
+        Crashlytics.log(Log.INFO, TAG, "On detach called")
     }
 
     private fun setMonitorServiceManager(manager: MonitorServiceManager) {
-        Log.d(TAG, "Set monitoring service")
+        Crashlytics.log(Log.INFO, TAG, "Set monitoring service")
         this.monitorServiceManager = manager
         this.monitorServiceManager!!.setMonitoringServiceListener(this)
     }
@@ -151,7 +152,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         if (objectName != null) {
             objectsManager.changeCurrent(objectName!!)
         }else{
-            Log.d(TAG, "retrieve canceled objectName")
+            Crashlytics.log(Log.INFO, TAG, "retrieve canceled objectName")
             objectName = MainActivity.instance.fragmentsList!![MainActivity.instance.lastPosition].name
         }
         viewUpdater = DataViewUpdater(lView!!, activity as MainActivity)
@@ -241,15 +242,15 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
     override fun onResume() {
-        Log.d(TAG, "On Resume Called")
+        Crashlytics.log(Log.INFO, TAG, "On Resume Called")
         super.onResume()
         if (monitorServiceManager == null){
             // We have to restart monitorServiceManager
-            Log.d(TAG, "MonitoringServiceManager is null")
+            Crashlytics.log(Log.INFO, TAG, "MonitoringServiceManager is null")
             return
         }
         if (objectName == null) {
-            Log.d(TAG, "objectName is null retreive it from objectManager")
+            Crashlytics.log(Log.INFO, TAG, "objectName is null retreive it from objectManager")
             objectName = objectsManager.currentObject!!.name
         }
         val isServiceRunning = monitorServiceManager!!.isServiceRunning(objectName!!)
@@ -265,7 +266,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
     override fun onPause() {
-        Log.d(TAG, "on Pause Called")
+        Crashlytics.log(Log.INFO, TAG, "on Pause Called")
         super.onPause()
        // stopTimer()
         this.monitorServiceManager?.cancel()
@@ -359,7 +360,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
 
     private fun setPhoneDataLabels() {
-        Log.d(TAG, "setPhoneDataLabels called for " + objectName)
+        Crashlytics.log(Log.INFO, TAG, "setPhoneDataLabels called for " + objectName)
         val adapter = RunListViewAdapter(activity,  arrayListOf(
                 hashMapOf(Tools.NAME to "RSSI",
                           Tools.VALUE to "0 dBm"),
@@ -402,7 +403,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
     override fun onServiceStarted(service: MonitoringService) {
-        Log.d(TAG, "OnServiceStarted for " + objectName)
+        Crashlytics.log(Log.INFO, TAG, "OnServiceStarted for " + objectName)
         toggle_to_start?.visibility = View.GONE
         started_since?.visibility = View.VISIBLE
         service_log?.visibility = View.VISIBLE

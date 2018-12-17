@@ -89,9 +89,10 @@ object DeviceInfo {
 
     fun getICCID(context: Context): String {
         val sm = SubscriptionManager.from(context)
-        val sis = sm.activeSubscriptionInfoList
+
         var rc = "DEAD"
         try {
+            val sis = sm.activeSubscriptionInfoList
             rc = if (sis != null) {
                 val si = sis[0]
                 if (si.iccId == null) {
@@ -104,7 +105,11 @@ object DeviceInfo {
             }
         }catch(e:SecurityException) {
             MainActivity.instance.runOnUiThread {
+
                 MainActivity.instance.toast("Read Phone Permission not given")
+
+
+                MainActivity.instance.securityAlert("READ_PHONE_STATE")
             }
         }
 

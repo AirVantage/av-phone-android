@@ -185,7 +185,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         try {
             logoutTask.get()
         } catch (e: Exception) {
-            Log.w(TAG, "Exception while logging out")
+            Crashlytics.log(Log.WARN, TAG, "Exception while logging out")
             Crashlytics.logException(e)
         } finally {
             authManager!!.forgetAuthentication()

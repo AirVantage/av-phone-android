@@ -160,6 +160,10 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         getUserTask.addProgressListener { result ->
             if (!result.isError) {
                 user = result.user
+                if (user != null) {
+                    Crashlytics.setUserName(user!!.name)
+                    Crashlytics.setUserEmail(user!!.email)
+                }
                 user!!.server = avPhonePrefs.serverHost
                 systemSerial = DeviceInfo.generateSerial(user!!.uid!!)
                 loadMenu(true)
@@ -184,7 +188,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "OnCreate called")
+        Log.d( TAG, "OnCreate called")
         instance = this
         // Initialization og Object Manager
         objectsManager = ObjectsManager.getInstance()
@@ -220,16 +224,24 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
         when {
             ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED -> {
-                Log.d(TAG, "Ask for READ PHONE STATE")
+                Crashlytics.log(Log.INFO, TAG, "Ask for READ PHONE STATE")
                 ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.READ_PHONE_STATE), 1)
             }
             ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED -> {
-                Log.d(TAG, "Ask for COARSE LOCATION STATE")
+                Crashlytics.log(Log.INFO, TAG, "Ask for COARSE LOCATION STATE")
                 ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 2)
             }
             ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED -> {
-                Log.d(TAG, "Ask for FINE LOCATION STATE")
+                Crashlytics.log(Log.INFO, TAG, "Ask for FINE LOCATION STATE")
                 ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 3)
+            }
+        }
+    }
+
+    fun securityAlert(msg: String) {
+        alert("$msg permission not granted. The application will exit now", "Alert") {
+            positiveButton("OK") {
+                finish()
             }
         }
     }
@@ -241,7 +253,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
                     if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
 
-                        Log.w(TAG, "onRequestPermissionsResult: READ_PHONE_STATE answer ko")
+                        Crashlytics.log(Log.WARN, TAG, "onRequestPermissionsResult: READ_PHONE_STATE answer ko")
 
                         alert("Permission not granted. The application will exit now", "Alert") {
                             positiveButton("OK") {
@@ -339,9 +351,27 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         }
     }
 
-    override fun onResume() {
 
-        super.onResume()
+    override fun onResume() {
+        //Log.d("DEBUG", "On Resume********************************************");
+
+        try {
+            if (isServiceRunning()) {
+                if (objectName != null) {
+                    connectToService(objectName!!)
+                }
+            }
+            super.onResume()
+        } catch (e:Exception) {
+            if (user !=  null) {
+
+                Crashlytics.log("Cannot resume " + user!!.name)
+            }else{
+                Crashlytics.log("Cannot resume user is null")
+            }
+            Crashlytics.logException(e);
+        }
+
         left_drawer.requestFocusFromTouch()
         left_drawer.setItemChecked(lastPosition, true)
         left_drawer.setSelection(lastPosition)
@@ -534,7 +564,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     internal fun setAlarm(timer:Int?) {
         val avPrefs = PreferenceUtils.getAvPhonePrefs(this)
         val intent = Intent(this, MonitoringService::class.java)
-        Log.d(TAG, "Set intent")
+        Crashlytics.log(Log.INFO, TAG, "Set intent")
         intent.putExtra(MonitoringService.DEVICE_ID, DeviceInfo.getUniqueId(this))
         intent.putExtra(MonitoringService.SERVER_HOST, avPrefs.serverHost)
         intent.putExtra(MonitoringService.PASSWORD, avPrefs.password)
@@ -777,7 +807,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             drawer_layout.closeDrawer(left_drawer)
             lastPosition = position
         }catch(e:IllegalStateException){
-            Log.e(TAG, "GO last fragment CATCH************************", e)
+            Crashlytics.log( Log.ERROR, TAG, "GO last fragment CATCH************************$e")
         }
     }
 

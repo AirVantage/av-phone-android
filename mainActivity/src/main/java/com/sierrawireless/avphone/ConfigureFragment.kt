@@ -12,6 +12,7 @@ import android.widget.AdapterView
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import com.crashlytics.android.Crashlytics
 import com.sierrawireless.avphone.activity.AuthorizationActivity
 import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.activity.ObjectConfigureActivity
@@ -146,7 +147,7 @@ open class ConfigureFragment : AvPhoneFragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (data == null) {
-            Log.e(TAG, "data is null ??? why ????")
+            Crashlytics.log(Log.ERROR, TAG, "data is null ??? why ????")
             return
         }
         if (requestCode == AuthorizationActivity.REQUEST_AUTHORIZATION) {

@@ -418,8 +418,9 @@ class MonitoringService : Service() {
 
 
         } catch (e: Exception) {
+
+
             Crashlytics.logException(e)
-            Log.e(TAG, "error", e)
             lastLog = "ERROR: " + e.message
             LocalBroadcastManager.getInstance(this).sendBroadcast(LogMessage(lastLog!!, false))
         }
@@ -433,7 +434,6 @@ class MonitoringService : Service() {
             this.client?.disconnect()
         } catch (e: MqttException) {
             Crashlytics.logException(e)
-            Log.e(TAG, "error", e)
         }
 
         stopTimer()
