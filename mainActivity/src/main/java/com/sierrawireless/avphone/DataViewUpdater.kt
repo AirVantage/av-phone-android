@@ -40,7 +40,7 @@ class DataViewUpdater(val view: View, private val activity: MainActivity) : Broa
 
     fun onStart(startedSince: Long?, lastData: NewData, logMsg: String?, alarmLogMsg: String?, lastRun: Long?) {
         this.setStartedSince(startedSince)
-        Log.d(TAG, "lastData " + lastData)
+        Log.d(TAG, "lastData $lastData")
         this.setNewData(lastData)
         this.setLogMessage(logMsg, lastRun, false)
         this.setLogMessage(alarmLogMsg, lastRun, true)
@@ -83,7 +83,7 @@ class DataViewUpdater(val view: View, private val activity: MainActivity) : Broa
         }
     }
 
-    fun setNewData(data: NewData) {
+    private fun setNewData(data: NewData) {
 
         val phoneListView = view.findViewById<ListView>(R.id.phoneListView)
         val listPhone = ArrayList<HashMap<String, String>>()
@@ -154,7 +154,7 @@ class DataViewUpdater(val view: View, private val activity: MainActivity) : Broa
         }
         listPhone.add(temp)
         val adapter = RunListViewAdapter(activity, listPhone)
-        Log.d(TAG, "set Phone data " + listPhone)
+        Log.d(TAG, "set Phone data $listPhone")
         phoneListView.adapter = adapter
         phoneListView.invalidateViews()
 

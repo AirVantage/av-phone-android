@@ -13,6 +13,7 @@ object DeviceInfo {
 
     /** Returns the consumer friendly device name  */
      val deviceName: String?
+        @SuppressLint("DefaultLocale")
         get() {
             val manufacturer = Build.MANUFACTURER
             val model = Build.MODEL

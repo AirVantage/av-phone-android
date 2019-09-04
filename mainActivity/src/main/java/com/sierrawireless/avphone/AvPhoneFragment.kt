@@ -24,7 +24,7 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
 
 
 
-    @Suppress("OverridingDeprecatedMember")
+    @Suppress("OverridingDeprecatedMember", "DEPRECATION")
     override fun onAttach(activity: Activity) {
         super.onAttach(activity)
 

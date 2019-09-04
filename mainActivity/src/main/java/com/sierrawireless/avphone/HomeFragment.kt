@@ -17,7 +17,6 @@ import com.sierrawireless.avphone.activity.MainActivity
 import com.sierrawireless.avphone.auth.AuthUtils
 import com.sierrawireless.avphone.auth.Authentication
 import com.sierrawireless.avphone.message.IMessageDisplayer
-import com.sierrawireless.avphone.service.MonitorServiceManager
 import com.sierrawireless.avphone.task.IAsyncTaskFactory
 import com.sierrawireless.avphone.task.SyncWithAvListener
 import com.sierrawireless.avphone.task.SyncWithAvParams
@@ -26,6 +25,7 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import net.airvantage.model.User
 import net.airvantage.utils.PreferenceUtils
 
+@Suppress("UNUSED_PARAMETER")
 class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     private var lView: View? = null
     private var authForSync: Authentication? = null
@@ -48,7 +48,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         }
     }
 
-    @Suppress("OverridingDeprecatedMember")
+    @Suppress("OverridingDeprecatedMember", "DEPRECATION", "UNCHECKED_CAST")
     override fun onAttach(activity: Activity) {
         super.onAttach(activity)
 

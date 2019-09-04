@@ -35,7 +35,7 @@ protected val context: Context) : AvPhoneTask<Void, DeleteSystemProgress, Delete
             publishProgress(DeleteSystemProgress.CHECKING_RIGHTS)
 
             val missingRights = userClient.checkRights()
-            if (!missingRights.isEmpty()) {
+            if (missingRights.isNotEmpty()) {
                 return DeleteSystemResult(AvError(AvError.MISSING_RIGHTS, missingRights))
             }
 

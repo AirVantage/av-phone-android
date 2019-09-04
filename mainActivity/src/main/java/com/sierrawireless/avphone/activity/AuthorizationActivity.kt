@@ -129,7 +129,7 @@ class AuthorizationActivity : Activity() {
             }
         }
         val authUrl = AirVantageClient.buildImplicitFlowURL(serverHost!!, clientId!!)
-        Log.i(TAG, "Auth URL: " + authUrl)
+        Log.i(TAG, "Auth URL: $authUrl")
 
         // The 'authorize' page from AirVantage will store a cookie ;
         // if this cookie is passed between calls, the 'authorize' page
@@ -157,7 +157,7 @@ class AuthorizationActivity : Activity() {
         resultIntent.putExtra(AUTHENTICATION_TOKEN, auth!!.accessToken)
         resultIntent.putExtra(AUTHENTICATION_EXPIRATION_DATE, auth.expirationDate!!.time)
 
-        setResult(Activity.RESULT_OK, resultIntent)
+        setResult(RESULT_OK, resultIntent)
         finish()
     }
 

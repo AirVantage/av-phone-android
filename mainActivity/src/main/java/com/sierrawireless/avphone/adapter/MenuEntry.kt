@@ -2,7 +2,7 @@ package com.sierrawireless.avphone.adapter
 
 import android.graphics.drawable.Drawable
 
-internal enum class MenuEntryType {
+enum class MenuEntryType {
     TITLE,
     USER,
     COMMAND

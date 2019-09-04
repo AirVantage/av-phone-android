@@ -9,7 +9,6 @@ import android.text.Layout.Alignment
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.util.AttributeSet
-import android.util.Log
 import android.util.SparseIntArray
 import android.util.TypedValue
 import android.widget.TextView
@@ -102,7 +101,7 @@ class AutoResizeTextView : TextView {
         mInitialized = true
     }
 
-    override fun setText(text: CharSequence?, type: TextView.BufferType) {
+    override fun setText(text: CharSequence?, type: BufferType) {
         super.setText(text, type)
         if (text != null) {
             adjustTextSize()
@@ -167,15 +166,15 @@ class AutoResizeTextView : TextView {
         mSpacingAdd = add
     }
 
-    /**
-     * Set the lower text size limit and invalidate the view
-     *
-     * @param minTextSize
-     */
-    fun setMinTextSize(minTextSize: Float) {
-        mMinTextSize = minTextSize
-        reAdjust()
-    }
+//    /**
+//     * Set the lower text size limit and invalidate the view
+//     *
+//     * @param minTextSize
+//     */
+//    fun setMinTextSize(minTextSize: Float) {
+//        mMinTextSize = minTextSize
+//        reAdjust()
+//    }
 
     private fun reAdjust() {
         adjustTextSize()
@@ -198,20 +197,20 @@ class AutoResizeTextView : TextView {
                         mSizeTester, mAvailableSpaceRect!!).toFloat())
     }
 
-    /**
-     * Enables or disables size caching, enabling it will improve performance
-     * where you are animating a value inside TextView. This stores the font
-     * size against getText().length() Be careful though while enabling it as 0
-     * takes more space than 1 on some fonts and so on.
-     *
-     * @param enable
-     * enable font size caching
-     */
-    fun enableSizeCache(enable: Boolean) {
-        mEnableSizeCache = enable
-        mTextCachedSizes!!.clear()
-        adjustTextSize()
-    }
+//    /**
+//     * Enables or disables size caching, enabling it will improve performance
+//     * where you are animating a value inside TextView. This stores the font
+//     * size against getText().length() Be careful though while enabling it as 0
+//     * takes more space than 1 on some fonts and so on.
+//     *
+//     * @param enable
+//     * enable font size caching
+//     */
+//    fun enableSizeCache(enable: Boolean) {
+//        mEnableSizeCache = enable
+//        mTextCachedSizes!!.clear()
+//        adjustTextSize()
+//    }
 
     private fun efficientTextSizeSearch(start: Int, end: Int,
                                         sizeTester: SizeTester, availableSpace: RectF): Int {

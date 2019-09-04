@@ -51,7 +51,7 @@ open class UpdateTask internal constructor(private val applicationClient: IAppli
             systemType = objectsManager.savedObjectName!!
 
             val missingRights = userClient.checkRights()
-            if (!missingRights.isEmpty()) {
+            if (missingRights.isNotEmpty()) {
                 return UpdateResult(AvError(AvError.MISSING_RIGHTS, missingRights))
             }
 
@@ -71,9 +71,13 @@ open class UpdateTask internal constructor(private val applicationClient: IAppli
 
             publishProgress(UpdateProgress.CHECKING_SYSTEM)
 
-            var system: net.airvantage.model.AvSystem? = this.systemClient.getSystem(serialNumber, systemType!!, deviceName!!)
+            var system: AvSystem? = this.systemClient.getSystem(
+                    serialNumber,
+                    systemType,
+                    deviceName!!
+            )
             publishProgress(UpdateProgress.UPDATING_SYSTEM)
-            var name = if (user.name == null){
+            val name = if (user.name == null){
                 "Nobody"
             }else{
                 user.name!!
@@ -135,9 +139,8 @@ open class UpdateTask internal constructor(private val applicationClient: IAppli
     private fun hasApplication(system: AvSystem, application: Application): Boolean {
         var found = false
         if (system.applications != null) {
-            system.applications!!
-                    .filter { it.uid == application.uid }
-                    .forEach { found = true }
+            repeat(system.applications!!
+                    .filter { it.uid == application.uid }.size) { found = true }
         }
         return found
     }
@@ -156,7 +159,7 @@ open class UpdateTask internal constructor(private val applicationClient: IAppli
 
             displayTaskError(error, displayer, context, userClient, deviceName!!)
         } else {
-            displayer.showSuccess(name + " updated with AirVantage")
+            displayer.showSuccess("$name updated with AirVantage")
         }
     }
 

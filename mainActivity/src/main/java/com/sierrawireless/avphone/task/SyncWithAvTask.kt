@@ -50,7 +50,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
             val objectsManager = ObjectsManager.getInstance()
 
             val missingRights = userClient.checkRights()
-            if (!missingRights.isEmpty()) {
+            if (missingRights.isNotEmpty()) {
                 return SyncWithAvResult(AvError(AvError.MISSING_RIGHTS, missingRights))
             }
 
@@ -71,12 +71,12 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
             publishProgress(SyncProgress.CHECKING_SYSTEM)
 
-            var system: net.airvantage.model.AvSystem? = this.systemClient.getSystem(serialNumber, systemType!!, deviceName!!)
+            var system: AvSystem? = this.systemClient.getSystem(serialNumber, systemType!!, deviceName!!)
             if (system == null) {
 
                 publishProgress(SyncProgress.CREATING_SYSTEM)
                 val uid = application.uid!!
-                var name = if (user.name == null){
+                val name = if (user.name == null){
                     "Nobody"
                 }else{
                     user.name!!
@@ -140,9 +140,8 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
     private fun hasApplication(system: AvSystem, application: Application): Boolean {
         var found = false
         if (system.applications != null) {
-            system.applications!!
-                    .filter { it.uid == application.uid }
-                    .forEach { found = true }
+            repeat(system.applications!!
+                    .filter { it.uid == application.uid }.size) { found = true }
         }
         return found
     }

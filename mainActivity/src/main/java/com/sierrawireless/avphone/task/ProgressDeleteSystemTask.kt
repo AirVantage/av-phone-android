@@ -12,7 +12,7 @@ import android.widget.TextView
 import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.activity.MainActivity
 
-class ProgressDeleteSystemTask internal constructor(systemClient: ISystemClient, userClient: IUserClient, private val alertRuleClient: IAlertRuleClient, context: Context) : DeleteSystemTask(systemClient, userClient, alertRuleClient, context) {
+class ProgressDeleteSystemTask internal constructor(systemClient: ISystemClient, userClient: IUserClient, alertRuleClient: IAlertRuleClient, context: Context) : DeleteSystemTask(systemClient, userClient, alertRuleClient, context) {
 
 
     private var dialog: ProgressDialog? = null

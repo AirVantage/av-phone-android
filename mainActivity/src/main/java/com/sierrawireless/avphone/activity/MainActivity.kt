@@ -369,7 +369,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             }else{
                 Crashlytics.log("Cannot resume user is null")
             }
-            Crashlytics.logException(e);
+            Crashlytics.logException(e)
         }
 
         left_drawer.requestFocusFromTouch()
@@ -574,7 +574,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         // registering our pending intent with alarm manager
 
         val wait = if (timer == null) {
-            SystemClock.elapsedRealtime() +(Integer.valueOf(avPrefs.period)!! * 60 * 1000).toLong()
+            SystemClock.elapsedRealtime() +(Integer.valueOf(avPrefs.period) * 60 * 1000).toLong()
         }else {
             SystemClock.elapsedRealtime() + 100
         }
@@ -650,7 +650,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
     private fun clearStack() {
         //Here we are clearing back stack fragment entries
-        MainActivity.instance.runOnUiThread {
+        instance.runOnUiThread {
             fragmentManager.popBackStack("HOME", FragmentManager.POP_BACK_STACK_INCLUSIVE)
         }
 //        val backStackEntry = fragmentManager.backStackEntryCount
@@ -783,23 +783,23 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             if (backStackEntry == 0) {
                 val homeFragment = fragmentsMapping[FRAGMENT_LOGIN]
                 if (homeFragment != null) {
-                    Handler().post({
+                    Handler().post {
                         fragmentManager
                                 .beginTransaction()
                                 .add(R.id.content_frame, homeFragment)
                                 .addToBackStack("HOME")
                                 .commitAllowingStateLoss()
-                    })
+                    }
                 }
             }
 
-            Handler().post({
+            Handler().post {
                 fragmentManager
                         .beginTransaction()
                         .replace(R.id.content_frame, fragment)
                         .addToBackStack(null)
                         .commitAllowingStateLoss()
-            })
+            }
             // Highlight the selected item, update the title, and close the drawer
             left_drawer.setItemChecked(position!!, true)
             title = fragmentsList!![position].name

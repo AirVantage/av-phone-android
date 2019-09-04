@@ -1,5 +1,6 @@
 package com.sierrawireless.avphone.task
 
+import android.annotation.SuppressLint
 import com.sierrawireless.avphone.tools.Tools
 import net.airvantage.model.AirVantageException
 import net.airvantage.model.Application
@@ -15,19 +16,20 @@ import kotlin.collections.set
 class SystemClient internal constructor(private val client: AirVantageClient) : ISystemClient {
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun getSystem(serialNumber: String, type: String, deviceName: String): net.airvantage.model.AvSystem? {
+    override fun getSystem(serialNumber: String, type: String, deviceName: String): AvSystem? {
         val systems = client.getSystemsBySerialNumber(Tools.buildSerialNumber(serialNumber, type, deviceName))
 
         return Utils.firstWhere(systems, AvSystem.hasSerialNumber(Tools.buildSerialNumber(serialNumber, type, deviceName)))
     }
 
+    @SuppressLint("DefaultLocale")
     @Throws(IOException::class, AirVantageException::class)
     override fun createSystem(serialNumber: String, iccid: String, type: String, mqttPassword: String,
-                              applicationUid: String, deviceName: String, userName: String, imei: String): net.airvantage.model.AvSystem {
-        val system = net.airvantage.model.AvSystem()
+                              applicationUid: String, deviceName: String, userName: String, imei: String): AvSystem {
+        val system = AvSystem()
 
         val uid = client.getGateway((serialNumber + "-ANDROID-" + type + "-" + deviceName.replace(" ", "_")).toUpperCase())
-        val gateway = net.airvantage.model.AvSystem.Gateway()
+        val gateway = AvSystem.Gateway()
 
         if (uid == null) {
             gateway.serialNumber = (serialNumber + "-ANDROID-" + type + "-" +  deviceName.replace(" ", "_")).toUpperCase()
@@ -58,13 +60,14 @@ class SystemClient internal constructor(private val client: AirVantageClient) : 
         return client.createSystem(system)
     }
 
+    @SuppressLint("DefaultLocale")
     @Throws(IOException::class, AirVantageException::class)
     override fun updateSystem(system: AvSystem, serialNumber: String, iccid: String, type: String, mqttPassword: String,
                               applicationUid: String, deviceName: String, userName: String, imei: String) {
 
 
         val uid = client.getGateway((serialNumber + "-ANDROID-" + type + "-" + deviceName.replace(" ", "_")).toUpperCase())
-        val gateway = net.airvantage.model.AvSystem.Gateway()
+        val gateway = AvSystem.Gateway()
 
         if (uid == null) {
             gateway.serialNumber = (serialNumber + "-ANDROID-" + type + "-" +  deviceName.replace(" ", "_")).toUpperCase()
@@ -96,7 +99,7 @@ class SystemClient internal constructor(private val client: AirVantageClient) : 
     }
 
     @Throws(IOException::class, AirVantageException::class)
-    override fun deleteSystem(system: net.airvantage.model.AvSystem) {
+    override fun deleteSystem(system: AvSystem) {
         client.deleteSystem(system)
     }
 }
