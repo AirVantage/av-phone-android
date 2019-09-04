@@ -39,8 +39,10 @@ class UserClient internal constructor(private val client: IAirVantageClient) : I
             requiredRights =  ArrayList(Arrays.asList("No Connection"))
         }
         catch (e: Exception) {
-            Crashlytics.log("Couldn't get user rights")
+            Crashlytics.log("Couldn't get user rights for user " + user.toString())
             Crashlytics.logException(e)
+            requiredRights.clear()
+            requiredRights =  ArrayList(Arrays.asList("No Connection"))
         }
         return requiredRights
     }

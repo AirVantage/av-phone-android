@@ -112,12 +112,12 @@ class MonitoringService : Service() {
 
     private val mqttCallback = object : MqttCallback {
 
-        internal inner class Message {
+        inner class Message {
             var timestamp: Long = 0
             var command: Command? = null
         }
 
-        internal inner class Command {
+        inner class Command {
             var params: Map<String, String>? = null
         }
 
@@ -181,18 +181,43 @@ class MonitoringService : Service() {
         connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
         phoneStateListener = object : PhoneStateListener() {
+            @SuppressLint("MissingPermission")
             override fun onSignalStrengthsChanged(signalStrength: SignalStrength?) {
                 super.onSignalStrengthsChanged(signalStrength)
                 if (signalStrength == null)
                     return
-                if (telephonyManager!!.networkType == TelephonyManager.NETWORK_TYPE_LTE) {
-                    val parts = signalStrength.toString().split(" ")
-                    dbm = parts[8].toInt() - 240
-                }else{
-                    if (signalStrength.gsmSignalStrength != 99) {
-                        dbm = -113 + 2 * signalStrength.gsmSignalStrength
-                    }
+
+                val cellInfoList = telephonyManager!!.getAllCellInfo();
+
+                if (cellInfoList.get(0) is CellInfoGsm) {
+                    val cellInfoGsm = cellInfoList.get(0) as CellInfoGsm;
+                    val cellSignalStrengthGsm = cellInfoGsm.getCellSignalStrength();
+                    dbm = cellSignalStrengthGsm.getDbm();
+
+                } else if (cellInfoList.get(0) is CellInfoLte) {
+                    val cellInfoLte = cellInfoList.get(0) as CellInfoLte;
+                    val cellSignalStrengthLte = cellInfoLte.getCellSignalStrength();
+                    dbm = cellSignalStrengthLte.getDbm();
+                } else if (cellInfoList.get(0) is CellInfoWcdma) {
+                    val cellInfoWcdma = cellInfoList.get(0) as CellInfoWcdma;
+                    val cellSignalStrengthWcdma = cellInfoWcdma.getCellSignalStrength();
+                    dbm = cellSignalStrengthWcdma.getDbm();
+                }  else if (cellInfoList.get(0) is CellInfoCdma) {
+                    val cellInfoCdma = cellInfoList.get(0) as CellInfoCdma;
+                    val cellSignalStrengthCdma = cellInfoCdma.getCellSignalStrength();
+                    dbm = cellSignalStrengthCdma.getDbm();
                 }
+
+
+//                if (telephonyManager!!.networkType == TelephonyManager.NETWORK_TYPE_LTE) {
+//                    val str = signalStrength.toString()
+//                    val parts = signalStrength.toString().split(" ")
+//                    dbm = parts[8].toInt() - 240
+//                }else{
+//                    if (signalStrength.gsmSignalStrength != 99) {
+//                        dbm = -113 + 2 * signalStrength.gsmSignalStrength
+//                    }
+//                }
 
             }
 

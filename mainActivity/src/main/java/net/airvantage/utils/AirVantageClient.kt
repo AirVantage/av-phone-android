@@ -268,8 +268,10 @@ class AirVantageClient(private val server: String, private val access_token: Str
     override val userRights: UserRights
         get() {
             val url = URL(buildEndpoint("/users/rights"))
+
             val inputStream = get(url)
             return gson.fromJson(InputStreamReader(inputStream!!), UserRights::class.java)
+
         }
 
     companion object {
