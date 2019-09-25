@@ -6,12 +6,14 @@ import android.app.Fragment
 import android.content.Context
 import android.content.Intent
 import android.text.Spanned
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.sierrawireless.avphone.activity.AuthorizationActivity
 import com.sierrawireless.avphone.auth.AuthenticationManager
 import com.sierrawireless.avphone.message.IMessageDisplayer
 import com.sierrawireless.avphone.task.SyncWithAvListener
+import net.airvantage.utils.PreferenceUtils
 import org.jetbrains.anko.toast
 
 abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
@@ -42,6 +44,12 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
             authManager = context
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("AVPhoneFragment", "**********************************RESUME********************")
+        checkCredential()
     }
 
 
@@ -91,6 +99,30 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
 
         val intent = Intent(this.activity, AuthorizationActivity::class.java)
         this.startActivityForResult(intent, AuthorizationActivity.REQUEST_AUTHORIZATION)
+    }
+
+    fun checkCredentials(): Boolean {
+
+        val prefs = PreferenceUtils.getAvPhonePrefs(activity)
+
+        if (!prefs.checkCredentials()) {
+            PreferenceUtils.showMissingPrefsDialog(activity)
+            return false
+        }
+
+        return true
+
+    }
+
+    private fun checkCredential() {
+        // first check credential
+        if (checkCredentials()) {
+            val auth = authManager!!.authentication
+
+            if (auth != null && auth!!.isExpired) {
+                requestAuthentication()
+            }
+        }
     }
 
 

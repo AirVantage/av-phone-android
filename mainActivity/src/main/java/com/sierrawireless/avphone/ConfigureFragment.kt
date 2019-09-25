@@ -118,19 +118,6 @@ open class ConfigureFragment : AvPhoneFragment() {
         instance = null
     }
 
-    private fun checkCredentials(): Boolean {
-
-        val prefs = PreferenceUtils.getAvPhonePrefs(activity)
-
-        if (!prefs.checkCredentials()) {
-            PreferenceUtils.showMissingPrefsDialog(activity)
-            return false
-        }
-
-        return true
-
-    }
-
     private fun resyncAll() {
         current = 0
         // first check credential

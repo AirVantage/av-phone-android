@@ -54,7 +54,7 @@ class MyPreference(private val preferences: SharedPreferences) {
      */
     fun putInt(key: String, value: Int) {
         checkForNullKey(key)
-        preferences.edit().putInt(key, value).apply()
+        preferences.edit().putInt(key, value).commit()
     }
 
     /**
@@ -75,7 +75,7 @@ class MyPreference(private val preferences: SharedPreferences) {
     private fun putListString(key: String, stringList: CopyOnWriteArrayList<String>) {
         checkForNullKey(key)
         val myStringList = stringList.toTypedArray()
-        preferences.edit().putString(key, TextUtils.join("‚‗‚", myStringList)).apply()
+        preferences.edit().putString(key, TextUtils.join("‚‗‚", myStringList)).commit()
     }
 
     fun putListObject(key: String, objArray: CopyOnWriteArrayList<AvPhoneObject>) {

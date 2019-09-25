@@ -4,6 +4,7 @@ import android.os.AsyncTask
 import android.util.Log
 
 import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.OkUrlFactory
 
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -33,7 +34,7 @@ class AlertAdapterFactory(private val server: String, private val accessToken: S
 
                 val urlString = "https://" + server + key + accessToken
                 val url = URL(urlString)
-                val connection = client.open(url)
+                val connection = OkUrlFactory(client).open(url)
                 connection.requestMethod = "GET"
                 founds[key] = connection.responseCode == HttpURLConnection.HTTP_OK
 
