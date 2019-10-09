@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "692416948981",
+    "firebase_url": "https://avphone-da11f.firebaseio.com",
+    "project_id": "avphone-da11f",
+    "storage_bucket": "avphone-da11f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:692416948981:android:ca1213b7d7134103e5b3bc",
+        "android_client_info": {
+          "package_name": "com.sierrawireless.avphone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "692416948981-nsg8k96pm9mcj578j7jjfu27ba2t8f2i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7YyRNyrHZGynsOBO1ibJP8NVEPULf4fk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "692416948981-nsg8k96pm9mcj578j7jjfu27ba2t8f2i.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "692416948981-7970sm8tcbrd8ottp6v2f2kuradg63ht.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "sierrawireless.AVPhone",
+                "app_store_id": "936651956"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
