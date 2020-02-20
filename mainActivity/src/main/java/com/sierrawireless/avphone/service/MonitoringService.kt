@@ -194,16 +194,16 @@ class MonitoringService : Service() {
                     val cellSignalStrengthGsm = cellInfoGsm.getCellSignalStrength();
                     dbm = cellSignalStrengthGsm.getDbm();
 
-                } else if (cellInfoList.get(0) is CellInfoLte) {
-                    val cellInfoLte = cellInfoList.get(0) as CellInfoLte;
+                } else if (cellInfoList[0] is CellInfoLte) {
+                    val cellInfoLte = cellInfoList[0] as CellInfoLte;
                     val cellSignalStrengthLte = cellInfoLte.getCellSignalStrength();
                     dbm = cellSignalStrengthLte.getDbm();
-                } else if (cellInfoList.get(0) is CellInfoWcdma) {
-                    val cellInfoWcdma = cellInfoList.get(0) as CellInfoWcdma;
+                } else if (cellInfoList[0] is CellInfoWcdma) {
+                    val cellInfoWcdma = cellInfoList[0] as CellInfoWcdma;
                     val cellSignalStrengthWcdma = cellInfoWcdma.getCellSignalStrength();
                     dbm = cellSignalStrengthWcdma.getDbm();
-                }  else if (cellInfoList.get(0) is CellInfoCdma) {
-                    val cellInfoCdma = cellInfoList.get(0) as CellInfoCdma;
+                }  else if (cellInfoList[0] is CellInfoCdma) {
+                    val cellInfoCdma = cellInfoList[0] as CellInfoCdma;
                     val cellSignalStrengthCdma = cellInfoCdma.getCellSignalStrength();
                     dbm = cellSignalStrengthCdma.getDbm();
                 }
@@ -419,7 +419,7 @@ class MonitoringService : Service() {
                 if (intentValuesList.contains(null)) {
                     // Stop service when unable to start MQTT client
                     stopSelfResult(startId)
-                    return Service.START_STICKY
+                    return START_STICKY
                 }
 
                 // Now, create client
@@ -463,7 +463,7 @@ class MonitoringService : Service() {
         }
 
        // MainActivity.instance.setAlarm()
-        return Service.START_NOT_STICKY
+        return START_NOT_STICKY
     }
 
     override fun onDestroy() {

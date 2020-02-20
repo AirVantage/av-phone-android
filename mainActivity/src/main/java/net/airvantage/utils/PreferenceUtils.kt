@@ -85,7 +85,7 @@ object PreferenceUtils {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val prefKey = context.getString(prefKeyId)
         val defaultValueKey = context.getString(defaultValueKeyId)
-        return prefs.getString(prefKey, defaultValueKey)
+        return prefs.getString(prefKey, defaultValueKey)!!
     }
 
     private fun setPreference(context: Context, prefKey: String, value: String?) {

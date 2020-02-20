@@ -18,7 +18,7 @@ class MyPreference(private val preferences: SharedPreferences) {
      * @return String value at 'key' or "" (empty String) if key not found
      */
     fun getString(key: String): String {
-        return preferences.getString(key, "")
+        return preferences.getString(key, "")!!
     }
 
     /**

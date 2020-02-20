@@ -574,7 +574,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         // registering our pending intent with alarm manager
 
         val wait = if (timer == null) {
-            SystemClock.elapsedRealtime() +(Integer.valueOf(avPrefs.period)!! * 60 * 1000).toLong()
+            SystemClock.elapsedRealtime() +(Integer.valueOf(avPrefs.period!!)!! * 60 * 1000).toLong()
         }else {
             SystemClock.elapsedRealtime() + 100
         }

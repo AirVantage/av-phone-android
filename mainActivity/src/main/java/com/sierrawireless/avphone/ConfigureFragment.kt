@@ -106,7 +106,7 @@ open class ConfigureFragment : AvPhoneFragment() {
     private fun startObjectConfigure(position: Int) {
 
         //Open a new intent with the selected Object
-        val intent = Intent(view.context, ObjectConfigureActivity::class.java)
+        val intent = Intent(view?.context, ObjectConfigureActivity::class.java)
         intent.putExtra(INDEX, position)
 
         startActivityForResult(intent, CONFIGURE)
