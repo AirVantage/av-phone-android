@@ -14,9 +14,9 @@ import android.net.TrafficStats
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.support.annotation.RequiresApi
-import android.support.v4.app.NotificationCompat
-import android.support.v4.content.LocalBroadcastManager
+import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import android.telephony.*
 import android.util.Log
 import com.crashlytics.android.Crashlytics
