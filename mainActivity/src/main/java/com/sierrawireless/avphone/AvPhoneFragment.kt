@@ -2,7 +2,7 @@ package com.sierrawireless.avphone
 
 import android.annotation.TargetApi
 import android.app.Activity
-import android.app.Fragment
+import androidx.fragment.app.Fragment
 import android.content.Context
 import android.content.Intent
 import android.text.Spanned
@@ -60,7 +60,7 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
     }
 
     private fun showErrorMessage(id: Int, vararg params: Any) {
-        showErrorMessage(activity.getString(id, *params))
+        showErrorMessage(activity?.getString(id, *params)!!)
     }
 
     private fun showErrorMessage(message: String) {
@@ -80,11 +80,12 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
     }
 
     private fun lToast(id: Int) {
-        toast(activity.getString(id))
+        context?.toast(activity?.getString(id)!!)
     }
 
     private fun lToast(name: String) {
-        toast(name)
+        context?.toast(name)
+
     }
 
     protected fun requestAuthentication() {

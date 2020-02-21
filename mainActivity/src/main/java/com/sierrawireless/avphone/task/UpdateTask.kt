@@ -71,9 +71,9 @@ open class UpdateTask internal constructor(private val applicationClient: IAppli
 
             publishProgress(UpdateProgress.CHECKING_SYSTEM)
 
-            var system: net.airvantage.model.AvSystem? = this.systemClient.getSystem(serialNumber, systemType!!, deviceName!!)
+            var system: net.airvantage.model.AvSystem? = this.systemClient.getSystem(serialNumber, systemType, deviceName!!)
             publishProgress(UpdateProgress.UPDATING_SYSTEM)
-            var name = if (user.name == null){
+            val name = if (user.name == null){
                 "Nobody"
             }else{
                 user.name!!

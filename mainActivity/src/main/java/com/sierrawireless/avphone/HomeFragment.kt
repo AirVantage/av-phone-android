@@ -121,7 +121,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     private fun syncWithAv(auth: Authentication?) {
         hideErrorMessage()
 
-        val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(activity)
+        val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(activity as Context)
 
         // Without task factory, try later
         if (taskFactory == null || authManager == null) {
@@ -136,7 +136,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         syncAvTask.addProgressListener { result ->
             if (result.isError) {
                 MainActivity.instance.logout()
-                syncAvTask.showResult(result, displayer, activity)
+                syncAvTask.showResult(result, displayer, activity as Activity)
             } else {
                 authManager!!.onAuthentication(auth)
                 showLoggedInState()
@@ -147,12 +147,12 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
 
         val params = SyncWithAvParams()
 
-        params.deviceId = DeviceInfo.getUniqueId(activity)
-        params.imei = DeviceInfo.getIMEI(activity)
+        params.deviceId = DeviceInfo.getUniqueId(activity as Context)
+        params.imei = DeviceInfo.getIMEI(activity as Context)
         params.deviceName = DeviceInfo.deviceName
-        params.iccid = DeviceInfo.getICCID(activity)
+        params.iccid = DeviceInfo.getICCID(activity as Context)
         params.mqttPassword = avPhonePrefs.password
-        params.customData = PreferenceUtils.getCustomDataLabels(activity)
+        params.customData = PreferenceUtils.getCustomDataLabels(activity as Activity)
         //     params.current = ((MainActivity)getActivity()).current;
         params.activity = activity as MainActivity
 
@@ -171,7 +171,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
     }
 
     private fun logout() {
-        val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(activity)
+        val avPhonePrefs = PreferenceUtils.getAvPhonePrefs(activity as Activity)
 
         if (authManager == null || authManager!!.authentication == null || taskFactory == null) {
             return

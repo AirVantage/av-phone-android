@@ -4,7 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.AlarmManager
-import android.app.Fragment
+import androidx.fragment.app.Fragment
 import android.app.PendingIntent
 import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
@@ -574,7 +574,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         // registering our pending intent with alarm manager
 
         val wait = if (timer == null) {
-            SystemClock.elapsedRealtime() +(Integer.valueOf(avPrefs.period!!)!! * 60 * 1000).toLong()
+            SystemClock.elapsedRealtime() +(Integer.valueOf(avPrefs.period!!) * 60 * 1000).toLong()
         }else {
             SystemClock.elapsedRealtime() + 100
         }
@@ -651,7 +651,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     private fun clearStack() {
         //Here we are clearing back stack fragment entries
         MainActivity.instance.runOnUiThread {
-            fragmentManager.popBackStack("HOME", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            supportFragmentManager.popBackStack("HOME", FragmentManager.POP_BACK_STACK_INCLUSIVE)
         }
 //        val backStackEntry = fragmentManager.backStackEntryCount
 //        if (backStackEntry > 0) {
@@ -733,7 +733,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             // We have not selected this fragment now do it
             if (lastPosition != position) {
                 // Insert the fragment by replacing any existing fragment
-                fragmentManager
+                supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.content_frame, fragment)
                         .addToBackStack(null)
@@ -778,13 +778,13 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         // Insert the fragment by replacing any existing fragment
         try {
 
-            val backStackEntry = fragmentManager.backStackEntryCount
+            val backStackEntry = supportFragmentManager.backStackEntryCount
 
             if (backStackEntry == 0) {
                 val homeFragment = fragmentsMapping[FRAGMENT_LOGIN]
                 if (homeFragment != null) {
                     Handler().post({
-                        fragmentManager
+                        supportFragmentManager
                                 .beginTransaction()
                                 .add(R.id.content_frame, homeFragment)
                                 .addToBackStack("HOME")
@@ -794,7 +794,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             }
 
             Handler().post({
-                fragmentManager
+                supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.content_frame, fragment)
                         .addToBackStack(null)
@@ -815,9 +815,9 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     fun goConfigureFragment() {
         val fragment = fragmentsMapping[FRAGMENT_CONFIGURE]
         // Insert the fragment by replacing any existing fragment
-        fragmentManager
+        supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.content_frame, fragment)
+                .replace(R.id.content_frame, fragment!!)
                 .addToBackStack(null)
                 .commit()
         var position:Int? = null
@@ -873,7 +873,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         } else {
             fragmentsMapping[FRAGMENT_LOGIN] = homeFragment!!
         }
-        fragmentsMapping[FRAGMENT_SETTINGS] = SettingsActivity.SettingsFragment()
+        fragmentsMapping[FRAGMENT_SETTINGS] = SettingsActivity.MySettingsFragment()
         for ((pos, obj) in objectsManager.objects.withIndex()) {
             fragmentsMapping[obj.name!!] = runFragment!![pos]
         }

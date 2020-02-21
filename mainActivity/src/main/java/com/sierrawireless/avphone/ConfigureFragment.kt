@@ -2,6 +2,7 @@ package com.sierrawireless.avphone
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -69,7 +70,7 @@ open class ConfigureFragment : AvPhoneFragment() {
         }
 
 
-        val adapter = ObjectAdapter(activity, R.layout.menu_objects, menu)
+        val adapter = ObjectAdapter(activity as Activity, R.layout.menu_objects, menu)
         objectConfigure.adapter = adapter
     }
     override fun onStart() {
@@ -119,10 +120,10 @@ open class ConfigureFragment : AvPhoneFragment() {
 
     private fun checkCredentials(): Boolean {
 
-        val prefs = PreferenceUtils.getAvPhonePrefs(activity)
+        val prefs = PreferenceUtils.getAvPhonePrefs(activity as Context)
 
         if (!prefs.checkCredentials()) {
-            PreferenceUtils.showMissingPrefsDialog(activity)
+            PreferenceUtils.showMissingPrefsDialog(activity as Activity)
             return false
         }
 
@@ -205,25 +206,25 @@ open class ConfigureFragment : AvPhoneFragment() {
 
         objectsManager!!.setSavedPosition(current)
 
-        val prefs = PreferenceUtils.getAvPhonePrefs(activity)
+        val prefs = PreferenceUtils.getAvPhonePrefs(activity as Context)
 
         val display = this
 
         val updateTask = taskFactory!!.updateTask(prefs.serverHost!!, token)
 
         val updateParams = UpdateParams()
-        updateParams.deviceId = DeviceInfo.getUniqueId(activity)
-        updateParams.imei = DeviceInfo.getIMEI(activity)
+        updateParams.deviceId = DeviceInfo.getUniqueId(activity as Context)
+        updateParams.imei = DeviceInfo.getIMEI(activity as Context)
         updateParams.deviceName = DeviceInfo.deviceName
-        updateParams.iccid = DeviceInfo.getICCID(activity)
+        updateParams.iccid = DeviceInfo.getICCID(activity as Context)
         updateParams.mqttPassword = prefs.password
-        updateParams.customData = PreferenceUtils.getCustomDataLabels(activity)
+        updateParams.customData = PreferenceUtils.getCustomDataLabels(activity as Context)
 
         updateTask.execute(updateParams)
 
         updateTask.addProgressListener { result ->
 
-            updateTask.showResult(result, objectsManager!!.savedObjectName!!, display, activity)
+            updateTask.showResult(result, objectsManager!!.savedObjectName!!, display, activity as Activity)
             // Update next system
             current++
             updateAllSystem(token)
@@ -235,7 +236,7 @@ open class ConfigureFragment : AvPhoneFragment() {
     }
 
     private fun deleteSysten(token: String) {
-        val prefs = PreferenceUtils.getAvPhonePrefs(activity)
+        val prefs = PreferenceUtils.getAvPhonePrefs(activity as Context)
 
         val display = this
 
@@ -247,7 +248,7 @@ open class ConfigureFragment : AvPhoneFragment() {
                 objectsManager!!.removeSavedObject()
             }
 
-            deleteTask.showResult(result, display, activity)
+            deleteTask.showResult(result, display, activity as Activity)
             MainActivity.instance.loadMenu(false)
             reloadMenu()
             objectConfigure.invalidate()
@@ -259,19 +260,19 @@ open class ConfigureFragment : AvPhoneFragment() {
 
     private fun syncWithAv(token: String) {
 
-        val prefs = PreferenceUtils.getAvPhonePrefs(activity)
+        val prefs = PreferenceUtils.getAvPhonePrefs(activity as Context)
 
         val display = this
 
         val syncTask = taskFactory!!.syncAvTask(prefs.serverHost!!, token)
 
         val syncParams = SyncWithAvParams()
-        syncParams.deviceId = DeviceInfo.getUniqueId(activity)
-        syncParams.imei = DeviceInfo.getIMEI(activity)
+        syncParams.deviceId = DeviceInfo.getUniqueId(activity as Context)
+        syncParams.imei = DeviceInfo.getIMEI(activity as Context)
         syncParams.deviceName = DeviceInfo.deviceName
-        syncParams.iccid = DeviceInfo.getICCID(activity)
+        syncParams.iccid = DeviceInfo.getICCID(activity as Context)
         syncParams.mqttPassword = prefs.password
-        syncParams.customData = PreferenceUtils.getCustomDataLabels(activity)
+        syncParams.customData = PreferenceUtils.getCustomDataLabels(activity as Context)
 
         syncTask.execute(syncParams)
 
@@ -280,7 +281,7 @@ open class ConfigureFragment : AvPhoneFragment() {
                 objectsManager!!.removeSavedObject()
             }
 
-            syncTask.showResult(result, display, activity)
+            syncTask.showResult(result, display, activity as Activity)
             MainActivity.instance.loadMenu(false)
 
             if (!result.isError) {

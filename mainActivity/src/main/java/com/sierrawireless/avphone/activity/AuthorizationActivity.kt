@@ -157,7 +157,7 @@ class AuthorizationActivity : Activity() {
         resultIntent.putExtra(AUTHENTICATION_TOKEN, auth!!.accessToken)
         resultIntent.putExtra(AUTHENTICATION_EXPIRATION_DATE, auth.expirationDate!!.time)
 
-        setResult(Activity.RESULT_OK, resultIntent)
+        setResult(RESULT_OK, resultIntent)
         finish()
     }
 

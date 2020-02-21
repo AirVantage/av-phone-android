@@ -63,7 +63,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
                 setAlarmButton()
             }
         }else{
-            alert("A run already exist for " + MainActivity.instance.startObjectName, "Alert") {
+            (activity as Activity).alert("A run already exist for " + MainActivity.instance.startObjectName, "Alert") {
                 positiveButton("OK") {
 
                 }
@@ -159,9 +159,9 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
 
         // register service listener
-        LocalBroadcastManager.getInstance(activity).registerReceiver(viewUpdater!!,
+        LocalBroadcastManager.getInstance(activity as Activity).registerReceiver(viewUpdater!!,
                 IntentFilter(NewData.NEW_DATA))
-        LocalBroadcastManager.getInstance(activity).registerReceiver(viewUpdater!!,
+        LocalBroadcastManager.getInstance(activity as Activity).registerReceiver(viewUpdater!!,
                 IntentFilter(LogMessage.LOG_EVENT))
 
         /* if service is running and it's myself or that is not running */
@@ -273,11 +273,11 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == AuthorizationActivity.REQUEST_AUTHORIZATION) {
-            val auth = AuthUtils.activityResultAsAuthentication(requestCode, resultCode, data)
+            val auth = AuthUtils.activityResultAsAuthentication(requestCode, resultCode, data!!)
             if (auth != null) {
                 authManager!!.onAuthentication(auth)
                 syncWithAv(auth.accessToken)
@@ -287,7 +287,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
     private fun syncWithAv(token: String?) {
 
-        val prefs = PreferenceUtils.getAvPhonePrefs(activity)
+        val prefs = PreferenceUtils.getAvPhonePrefs(activity as Activity)
         val display = this
 
         val syncAvTask = taskFactory!!.syncAvTask(prefs.serverHost!!, token!!)
@@ -295,18 +295,18 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
         val params = SyncWithAvParams()
 
-        params.deviceId = DeviceInfo.getUniqueId(activity)
-        params.imei = DeviceInfo.getIMEI(activity)
+        params.deviceId = DeviceInfo.getUniqueId(activity as Activity)
+        params.imei = DeviceInfo.getIMEI(activity as Activity)
         params.deviceName = DeviceInfo.deviceName
-        params.iccid = DeviceInfo.getICCID(activity)
+        params.iccid = DeviceInfo.getICCID(activity as Activity)
         params.mqttPassword = prefs.password
-        params.customData = PreferenceUtils.getCustomDataLabels(activity)
+        params.customData = PreferenceUtils.getCustomDataLabels(activity as Activity)
         //     params.current = ((MainActivity)getActivity()).current;
         params.activity = activity as MainActivity
 
         syncAvTask.execute(params)
         syncAvTask.addProgressListener { result ->
-            syncAvTask.showResult(result, display, activity)
+            syncAvTask.showResult(result, display, activity as Activity)
 
             if (!result.isError) {
                 syncListener!!.invoke(result)
@@ -337,9 +337,9 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
     private fun startMonitoringService() {
-        val avPrefs = PreferenceUtils.getAvPhonePrefs(activity)
+        val avPrefs = PreferenceUtils.getAvPhonePrefs(activity as Activity)
         if (!avPrefs.checkCredentials()) {
-            PreferenceUtils.showMissingPrefsDialog(activity)
+            PreferenceUtils.showMissingPrefsDialog(activity as Activity)
             service_switch.isChecked = false
         } else {
            if (this.monitorServiceManager!!.startSendData(objectName!!)) {
@@ -361,7 +361,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
     private fun setPhoneDataLabels() {
         Crashlytics.log(Log.INFO, TAG, "setPhoneDataLabels called for " + objectName)
-        val adapter = RunListViewAdapter(activity,  arrayListOf(
+        val adapter = RunListViewAdapter(activity as Activity,  arrayListOf(
                 hashMapOf(Tools.NAME to "RSSI",
                           Tools.VALUE to "0 dBm"),
                 hashMapOf(Tools.NAME to "Operator",
@@ -397,7 +397,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             }
             listObject.add(temp)
         }
-        val adapter = RunListViewAdapter(activity, listObject)
+        val adapter = RunListViewAdapter(activity as Activity, listObject)
         objectLstView?.adapter = adapter
         objectLstView?.invalidateViews()
     }
