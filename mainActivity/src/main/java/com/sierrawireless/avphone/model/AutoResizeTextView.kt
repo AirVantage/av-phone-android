@@ -9,12 +9,12 @@ import android.text.Layout.Alignment
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.util.AttributeSet
-import android.util.Log
 import android.util.SparseIntArray
 import android.util.TypedValue
-import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 
-class AutoResizeTextView : TextView {
+
+class AutoResizeTextView : AppCompatTextView {
     private val mTextRect = RectF()
     private var mAvailableSpaceRect: RectF? = null
     private var mTextCachedSizes: SparseIntArray? = null
@@ -37,9 +37,11 @@ class AutoResizeTextView : TextView {
                 mTextRect.bottom = mPaint!!.fontSpacing
                 mTextRect.right = mPaint!!.measureText(text)
             } else {
-                val layout = StaticLayout(text, mPaint,
-                        mWidthLimit, Alignment.ALIGN_NORMAL, mSpacingMult,
-                        mSpacingAdd, true)
+                val sb = StaticLayout.Builder.obtain(text, 0, text.length, mPaint!!, mWidthLimit)
+                        .setAlignment(Alignment.ALIGN_NORMAL)
+                        .setLineSpacing(mSpacingAdd, mSpacingMult)
+                        .setIncludePad(true)
+                val layout = sb.build()
                 // return early if we have more lines
                 if (maxLines != NO_LINE_LIMIT && layout.lineCount > maxLines) {
                     return 1
@@ -102,7 +104,7 @@ class AutoResizeTextView : TextView {
         mInitialized = true
     }
 
-    override fun setText(text: CharSequence?, type: TextView.BufferType) {
+    override fun setText(text: CharSequence?, type: BufferType) {
         super.setText(text, type)
         if (text != null) {
             adjustTextSize()

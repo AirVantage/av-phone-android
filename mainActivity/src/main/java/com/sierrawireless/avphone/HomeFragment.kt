@@ -37,7 +37,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
 
     override var errorMessageView: TextView?
         get() = home_error_message
-        set(textView) {
+        set(_) {
         }
 
     fun setTaskFactory(taskFactory: IAsyncTaskFactory) {
@@ -48,14 +48,6 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         }
     }
 
-    @Suppress("OverridingDeprecatedMember")
-    override fun onAttach(activity: Activity) {
-        super.onAttach(activity)
-
-
-        syncListener = activity as SyncWithAvListener
-
-    }
 
     @TargetApi(23)
     override fun onAttach(context: Context) {

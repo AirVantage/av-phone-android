@@ -82,7 +82,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
     override var errorMessageView: TextView?
         get() = run_error_message
-        set(textView) {
+        set(_) {
 
         }
 

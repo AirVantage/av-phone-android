@@ -23,17 +23,6 @@ abstract class AvPhoneFragment : Fragment(), IMessageDisplayer {
     abstract var errorMessageView: TextView?
 
 
-
-    @Suppress("OverridingDeprecatedMember")
-    override fun onAttach(activity: Activity) {
-        super.onAttach(activity)
-
-        if (activity is AuthenticationManager) {
-            authManager = activity
-        }
-
-    }
-
     @TargetApi(23)
     override fun onAttach(context: Context) {
         super.onAttach(context)
