@@ -190,7 +190,7 @@ class MonitoringService : Service() {
 
                 val cellInfoList = telephonyManager!!.allCellInfo
 
-                if (cellInfoList.size > 0) {
+                if (cellInfoList != null && cellInfoList.size > 0) {
                     when {
                         cellInfoList[0] is CellInfoGsm -> {
                             val cellInfoGsm = cellInfoList[0] as CellInfoGsm
