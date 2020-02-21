@@ -53,9 +53,9 @@ internal constructor(clientId: String, password: String, serverHost: String, cal
     @Throws(MqttException::class)
     fun push(data: NewData) {
         if (client.isConnected) {
-            Log.i(TAG, "Pushing data to the server : " + data)
+            Log.i(TAG, "Pushing data to the server : $data")
             val message = this.convertToJson(data)
-            Log.i(TAG, "push: message " + message)
+            Log.i(TAG, "push: message $message")
 
             var msg: MqttMessage? = null
             try {

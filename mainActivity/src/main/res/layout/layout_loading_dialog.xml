@@ -13,6 +13,7 @@
         android:textAppearance="?android:textAppearanceLarge"
         android:layout_gravity="center_vertical"
         android:id="@+id/alert_title"
+        android:textSize="18sp"
         android:layout_toEndOf="@+id/loader"
         android:layout_height="wrap_content" />
 

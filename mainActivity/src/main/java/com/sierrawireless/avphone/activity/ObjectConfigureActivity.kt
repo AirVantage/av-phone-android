@@ -65,7 +65,7 @@ class ObjectConfigureActivity : Activity() {
                 objectsManager.save()
                 val i = Intent()
                 i.putExtra(ConfigureFragment.POS, position)
-                setResult(Activity.RESULT_OK, i)
+                setResult(RESULT_OK, i)
                 finish()
             }
         }
@@ -100,7 +100,7 @@ class ObjectConfigureActivity : Activity() {
         //reload object from list
         objectsManager.reload()
         val i = Intent()
-        setResult(Activity.RESULT_CANCELED, i)
+        setResult(RESULT_CANCELED, i)
         finish()
     }
 

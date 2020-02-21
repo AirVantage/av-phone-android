@@ -4,6 +4,7 @@ import android.util.Log
 
 import com.google.gson.Gson
 import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.OkUrlFactory
 
 import net.airvantage.model.AirVantageException
 import net.airvantage.model.AvError
@@ -103,7 +104,7 @@ open class DefaultAlertAdapter internal constructor(protected val server: String
         try {
 
             // Create request for remote resource.
-            val connection = client.open(url)
+            val connection = OkUrlFactory(client).open(url)
             connection.addRequestProperty("Cache-Control", "no-cache")
             connection.addRequestProperty("Content-Type", "application/json")
             // Write the request.
@@ -135,7 +136,7 @@ open class DefaultAlertAdapter internal constructor(protected val server: String
 
     @Throws(IOException::class, AirVantageException::class)
     internal fun delete(url: URL) {
-            val connection = client.open(url)
+            val connection = OkUrlFactory(client).open(url)
 
             connection.addRequestProperty("Cache-Control", "no-cache")
             connection.requestMethod = "DELETE"
@@ -145,7 +146,7 @@ open class DefaultAlertAdapter internal constructor(protected val server: String
     @Throws(IOException::class, AirVantageException::class)
     protected operator fun get(url: URL): InputStream {
         // Create request for remote resource.
-        val connection = client.open(url)
+        val connection = OkUrlFactory(client).open(url)
         connection.addRequestProperty("Cache-Control", "no-cache")
 
         return readResponse(connection)

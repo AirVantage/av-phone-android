@@ -14,8 +14,8 @@ object AvPhoneApplication {
 
     fun createApplication(userName: String, phoneName:String): Application {
         val application = Application()
-        application.name = AvPhoneApplication.appName(userName, phoneName)
-        application.type = AvPhoneApplication.appType(userName, phoneName)
+        application.name = appName(userName, phoneName)
+        application.type = appType(userName, phoneName)
         application.revision = "0.0.0"
         return application
     }

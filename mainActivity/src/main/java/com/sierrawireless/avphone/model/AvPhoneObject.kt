@@ -31,10 +31,10 @@ class AvPhoneObject {
         return returned.toString()
     }
 
-    fun exec() {
-        for (data in datas) {
-            data.execMode()
-        }
-    }
+//    fun exec() {
+//        for (data in datas) {
+//            data.execMode()
+//        }
+//    }
 
 }

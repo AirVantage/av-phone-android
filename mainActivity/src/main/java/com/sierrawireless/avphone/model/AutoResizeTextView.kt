@@ -1,3 +1,4 @@
+
 package com.sierrawireless.avphone.model
 
 import android.annotation.TargetApi

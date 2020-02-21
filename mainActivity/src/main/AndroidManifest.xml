@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sierrawireless.avphone"
-    android:versionCode="65">
+    android:versionCode="68">
 
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -41,10 +41,6 @@
         <activity android:name=".activity.TestFragmentActivity" />
 
         <service android:name=".service.MonitoringService" />
-
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="9a96a8b13fb7d66d3faa24132dfc4d1891d1604e" />
 
         <activity android:name=".activity.ObjectDataActivity"
             android:theme="@style/AppTheme"/>

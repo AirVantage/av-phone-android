@@ -11,7 +11,7 @@ class AvPhoneObjectData(var name: String, var unit: String, var defaults: String
     private var max: Int? = null
 
     val isInteger: Boolean
-        get() = !defaults.isEmpty() && TextUtils.isDigitsOnly(defaults)
+        get() = defaults.isNotEmpty() && TextUtils.isDigitsOnly(defaults)
 
     enum class Mode {
         None,
@@ -28,8 +28,8 @@ class AvPhoneObjectData(var name: String, var unit: String, var defaults: String
             if (mode == Mode.RANDOM) {
                 val value = defaults.split(",")
                 if (value.size == 2) {
-                    if (!value[0].isEmpty() && TextUtils.isDigitsOnly(value[0]) &&
-                            !value[1].isEmpty() && TextUtils.isDigitsOnly(value[1])) {
+                    if (value[0].isNotEmpty() && TextUtils.isDigitsOnly(value[0]) &&
+                            value[1].isNotEmpty() && TextUtils.isDigitsOnly(value[1])) {
                         min = Integer.parseInt(value[0])
                         max = Integer.parseInt(value[1])
                         this.mode = mode
@@ -53,7 +53,7 @@ class AvPhoneObjectData(var name: String, var unit: String, var defaults: String
         returned = "$returned\"defaults\": \"$defaults\","
         returned = returned + "\"mode\": \"" + modeToString(mode) + "\""
         returned = if (path == null) {
-            returned + "}"
+            "$returned}"
         }else {
             ",$returned\"path\": \"$path\"}"
         }
@@ -71,10 +71,10 @@ class AvPhoneObjectData(var name: String, var unit: String, var defaults: String
 
     private fun modeToString(mode: Mode): String {
         return when (mode) {
-            AvPhoneObjectData.Mode.UP -> "Increase indefinitely"
-            AvPhoneObjectData.Mode.DOWN -> "Decrease to zero"
-            AvPhoneObjectData.Mode.None -> "None"
-            AvPhoneObjectData.Mode.RANDOM -> "Random"
+            Mode.UP -> "Increase indefinitely"
+            Mode.DOWN -> "Decrease to zero"
+            Mode.None -> "None"
+            Mode.RANDOM -> "Random"
         }
     }
 
@@ -106,10 +106,10 @@ class AvPhoneObjectData(var name: String, var unit: String, var defaults: String
 
     fun modePosition(): Int {
         return when (mode) {
-            AvPhoneObjectData.Mode.None -> 0
-            AvPhoneObjectData.Mode.UP -> 1
-            AvPhoneObjectData.Mode.DOWN -> 2
-            AvPhoneObjectData.Mode.RANDOM -> 3
+            Mode.None -> 0
+            Mode.UP -> 1
+            Mode.DOWN -> 2
+            Mode.RANDOM -> 3
         }
     }
 

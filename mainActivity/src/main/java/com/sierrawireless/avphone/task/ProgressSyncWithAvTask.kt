@@ -4,6 +4,7 @@ package com.sierrawireless.avphone.task
 
 import android.content.Context
 import android.os.Build
+
 import android.text.Html
 import android.view.View
 import android.widget.ProgressBar

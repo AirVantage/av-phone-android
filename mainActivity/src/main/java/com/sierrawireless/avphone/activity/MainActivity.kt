@@ -16,17 +16,19 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.SystemClock
 import android.preference.PreferenceManager
+
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.ActionBarDrawerToggle
+
 import android.util.Log
 import android.view.MenuItem
 import android.widget.ListView
+
 import com.crashlytics.android.Crashlytics
-import com.crashlytics.android.ndk.CrashlyticsNdk
 import com.sierrawireless.avphone.*
 import com.sierrawireless.avphone.adapter.MenuAdapter
 import com.sierrawireless.avphone.adapter.MenuEntry
@@ -41,13 +43,12 @@ import com.sierrawireless.avphone.service.MonitoringService
 import com.sierrawireless.avphone.service.MonitoringService.ServiceBinder
 import com.sierrawireless.avphone.task.*
 import com.sierrawireless.avphone.tools.DeviceInfo
-import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_main.*
 import net.airvantage.model.User
 import net.airvantage.utils.PreferenceUtils
 import org.jetbrains.anko.alert
 import java.util.*
-
+import com.google.firebase.FirebaseApp
 /**
  * The main activity, handling drawer and Fragments
  */
@@ -109,7 +110,12 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     var systemSerial: String?
         get() = prefs!!.getString(PREFERENCE_SYSTEM_SERIAL, null)
         @SuppressLint("DefaultLocale")
-        set(serial) = prefs!!.edit().putString(PREFERENCE_SYSTEM_SERIAL, serial!!.toUpperCase()).apply()
+        set(serial) = if (!prefs!!.edit().putString(PREFERENCE_SYSTEM_SERIAL, serial!!.toUpperCase()).commit()) {
+            Log.d("MainActivity", "Set system Serial Error")
+            Unit
+        } else {
+        }
+
 
     val systemName: String?
         get() = prefs!!.getString(PREFERENCE_SYSTEM_NAME, null)
@@ -194,7 +200,9 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         objectsManager = ObjectsManager.getInstance()
         objectsManager.init(this)
         super.onCreate(savedInstanceState)
-        Fabric.with(this, Crashlytics(), CrashlyticsNdk())
+       // Fabric.with(this, Crashlytics(), CrashlyticsNdk())
+
+        FirebaseApp.initializeApp(this)
 
         setContentView(R.layout.activity_main)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
@@ -369,7 +377,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             }else{
                 Crashlytics.log("Cannot resume user is null")
             }
-            Crashlytics.logException(e);
+            Crashlytics.logException(e)
         }
 
         left_drawer.requestFocusFromTouch()
@@ -575,6 +583,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
 
         val wait = if (timer == null) {
             SystemClock.elapsedRealtime() +(Integer.valueOf(avPrefs.period!!) * 60 * 1000).toLong()
+
         }else {
             SystemClock.elapsedRealtime() + 100
         }
@@ -636,22 +645,24 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     override fun invoke(result: SyncWithAvResult) {
 
         val system = result.system ?: return
-        prefs!!.edit().putString("systemUid", system.uid).apply()
-        prefs!!.edit().putString(PREFERENCE_SYSTEM_NAME, system.name).apply()
+        prefs!!.edit().putString("systemUid", system.uid).commit()
+        prefs!!.edit().putString(PREFERENCE_SYSTEM_NAME, system.name).commit()
 
         val user = result.user
-        prefs!!.edit().putString(PREFERENCE_USER_UID, user!!.uid).apply()
-        prefs!!.edit().putString(PREFERENCE_USER_NAME, user.name).apply()
+        prefs!!.edit().putString(PREFERENCE_USER_UID, user!!.uid).commit()
+        prefs!!.edit().putString(PREFERENCE_USER_NAME, user.name).commit()
 
         val deviceSerial = DeviceInfo.generateSerial(user.uid!!)
-        prefs!!.edit().putString(PREFERENCE_SYSTEM_SERIAL, deviceSerial).apply()
-        
+        prefs!!.edit().putString(PREFERENCE_SYSTEM_SERIAL, deviceSerial).commit()
+
     }
 
     private fun clearStack() {
         //Here we are clearing back stack fragment entries
+
         MainActivity.instance.runOnUiThread {
             supportFragmentManager.popBackStack("HOME", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
         }
 //        val backStackEntry = fragmentManager.backStackEntryCount
 //        if (backStackEntry > 0) {
@@ -793,8 +804,10 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                 }
             }
 
+
             Handler().post({
                 supportFragmentManager
+
                         .beginTransaction()
                         .replace(R.id.content_frame, fragment)
                         .addToBackStack(null)

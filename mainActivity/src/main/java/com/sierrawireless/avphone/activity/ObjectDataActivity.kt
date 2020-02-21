@@ -79,7 +79,7 @@ class ObjectDataActivity : Activity(), AdapterView.OnItemSelectedListener {
             val mode = AvPhoneObjectData.modeFromPosition(spinner.selectedItemPosition)
             if (add) {
                 if (!validateEntry()) return@setOnClickListener
-                data = if (!path.text.isEmpty() && path.text.toString() == "default") {
+                data = if (path.text.isNotEmpty() && path.text.toString() == "default") {
                     AvPhoneObjectData(
                             nameText.text.toString(),
                             unitText.text.toString(),
@@ -99,7 +99,7 @@ class ObjectDataActivity : Activity(), AdapterView.OnItemSelectedListener {
                 data!!.unit = unitText.text.toString()
                 data!!.defaults = defaultText.text.toString()
                 data!!.mode = mode
-                if (!path.text.isEmpty() && path.text.toString() != "default") {
+                if (path.text.isNotEmpty() && path.text.toString() != "default") {
                     data!!.path = path.text.toString()
                 }else{
                     data!!.path = null
@@ -132,8 +132,8 @@ class ObjectDataActivity : Activity(), AdapterView.OnItemSelectedListener {
                 }.show()
                 return false
             }
-            if ((!(!defaults[0].isEmpty() && TextUtils.isDigitsOnly(defaults[0]))) or
-                    (!(!defaults[1].isEmpty() && TextUtils.isDigitsOnly(defaults[1])))) {
+            if ((!(defaults[0].isNotEmpty() && TextUtils.isDigitsOnly(defaults[0]))) or
+                    (!(defaults[1].isNotEmpty() && TextUtils.isDigitsOnly(defaults[1])))) {
                 alert(
                         getString(R.string.MinMaxRandomDataObject),
                         getString(R.string.alert)
@@ -146,7 +146,7 @@ class ObjectDataActivity : Activity(), AdapterView.OnItemSelectedListener {
         }
         if (mode == AvPhoneObjectData.Mode.DOWN || mode == AvPhoneObjectData.Mode.UP) {
             // check the default value must be a number
-            if (!(!defaultText.text.toString().isEmpty() && TextUtils.isDigitsOnly(defaultText.text.toString()))) {
+            if (!(defaultText.text.toString().isNotEmpty() && TextUtils.isDigitsOnly(defaultText.text.toString()))) {
                 alert(getString(R.string.InvalidDefaultUpDown), getString(R.string.alert)) {
                     positiveButton("OK") {
                     }

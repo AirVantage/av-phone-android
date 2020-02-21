@@ -2,12 +2,9 @@ package com.sierrawireless.avphone.tools
 
 import android.content.SharedPreferences
 import android.text.TextUtils
-
 import com.google.gson.Gson
 import com.sierrawireless.avphone.model.AvPhoneObject
-
-import java.util.ArrayList
-import java.util.Arrays
+import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
 class MyPreference(private val preferences: SharedPreferences) {
@@ -18,6 +15,7 @@ class MyPreference(private val preferences: SharedPreferences) {
      * @return String value at 'key' or "" (empty String) if key not found
      */
     fun getString(key: String): String {
+
         return preferences.getString(key, "")!!
     }
 
@@ -27,7 +25,7 @@ class MyPreference(private val preferences: SharedPreferences) {
      * @return ArrayList of String
      */
     private fun getListString(key: String): ArrayList<String> {
-        return ArrayList(Arrays.asList(*TextUtils.split(preferences.getString(key, ""), "‚‗‚")))
+        return ArrayList(listOf(*TextUtils.split(preferences.getString(key, ""), "‚‗‚")))
     }
 
     fun getListObject(key: String, mClass: Class<AvPhoneObject>): CopyOnWriteArrayList<AvPhoneObject> {
@@ -55,7 +53,7 @@ class MyPreference(private val preferences: SharedPreferences) {
      */
     fun putInt(key: String, value: Int) {
         checkForNullKey(key)
-        preferences.edit().putInt(key, value).apply()
+        preferences.edit().putInt(key, value).commit()
     }
 
     /**
@@ -76,7 +74,7 @@ class MyPreference(private val preferences: SharedPreferences) {
     private fun putListString(key: String, stringList: CopyOnWriteArrayList<String>) {
         checkForNullKey(key)
         val myStringList = stringList.toTypedArray()
-        preferences.edit().putString(key, TextUtils.join("‚‗‚", myStringList)).apply()
+        preferences.edit().putString(key, TextUtils.join("‚‗‚", myStringList)).commit()
     }
 
     fun putListObject(key: String, objArray: CopyOnWriteArrayList<AvPhoneObject>) {

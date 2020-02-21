@@ -3,6 +3,7 @@ package net.airvantage.utils
 import android.util.Log
 import com.google.gson.Gson
 import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.OkUrlFactory
 import net.airvantage.model.*
 import net.airvantage.model.alert.v1.AlertRule
 import net.airvantage.utils.alert.AlertAdapterFactory
@@ -76,7 +77,7 @@ class AirVantageClient(private val server: String, private val access_token: Str
         try {
 
             // Create request for remote resource.
-            val connection = client.open(url)
+            val connection = OkUrlFactory(client).open(url)
             connection.addRequestProperty("Cache-Control", "no-cache")
             connection.addRequestProperty("Content-Type", "application/json")
 
@@ -108,7 +109,7 @@ class AirVantageClient(private val server: String, private val access_token: Str
     private fun delete(url: URL) {
 
 
-        val connection = client.open(url)
+        val connection = OkUrlFactory(client).open(url)
 
         connection.addRequestProperty("Cache-Control", "no-cache")
         connection.requestMethod = "DELETE"
@@ -119,7 +120,7 @@ class AirVantageClient(private val server: String, private val access_token: Str
     private
     operator fun get(url: URL): InputStream? {
         // Create request for remote resource.
-        val connection = client.open(url)
+        val connection = OkUrlFactory(client).open(url)
         connection.addRequestProperty("Cache-Control", "no-cache")
 
         return readResponse(connection)

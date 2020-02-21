@@ -27,6 +27,7 @@ import kotlinx.android.synthetic.main.fragment_configure.*
 import net.airvantage.utils.PreferenceUtils
 import java.util.*
 
+@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 open class ConfigureFragment : AvPhoneFragment() {
     override var errorMessageView: TextView? = null
 
@@ -95,11 +96,11 @@ open class ConfigureFragment : AvPhoneFragment() {
 
         doneConfigureBtn.setOnClickListener { (activity as MainActivity).goLastFragment() }
 
-        addConfigureBtn.setOnClickListener { _ ->
+        addConfigureBtn.setOnClickListener {
             startObjectConfigure(-1)
         }
 
-        resync.setOnClickListener { _ ->
+        resync.setOnClickListener {
             resyncAll()
         }
     }
@@ -116,19 +117,6 @@ open class ConfigureFragment : AvPhoneFragment() {
     override fun onStop() {
         super.onStop()
         instance = null
-    }
-
-    private fun checkCredentials(): Boolean {
-
-        val prefs = PreferenceUtils.getAvPhonePrefs(activity as Context)
-
-        if (!prefs.checkCredentials()) {
-            PreferenceUtils.showMissingPrefsDialog(activity as Activity)
-            return false
-        }
-
-        return true
-
     }
 
     private fun resyncAll() {
@@ -243,7 +231,7 @@ open class ConfigureFragment : AvPhoneFragment() {
         val deleteTask = taskFactory!!.deleteSystemTak(prefs.serverHost!!, token)
         deleteTask.execute()
 
-        deleteTask.addProgressListener({ result ->
+        deleteTask.addProgressListener { result ->
             if (delete == Mode.DELETE) {
                 objectsManager!!.removeSavedObject()
             }
@@ -253,7 +241,7 @@ open class ConfigureFragment : AvPhoneFragment() {
             reloadMenu()
             objectConfigure.invalidate()
 
-        })
+        }
 
 
     }

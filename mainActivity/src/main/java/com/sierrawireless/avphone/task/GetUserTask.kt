@@ -50,14 +50,14 @@ protected val context: Context) : AvPhoneTask<GetUserParams, Void, GetUserResult
         }
     }
 
-    fun showResult(result: GetUserResult, displayer: IMessageDisplayer, context: Activity) {
-
-        if (result.isError) {
-            val error = result.error
-            displayTaskError(error!!, displayer, context, userClient, "")
-
-        } else {
-            displayer.showSuccess(R.string.sync_success)
-        }
-    }
+//    fun showResult(result: GetUserResult, displayer: IMessageDisplayer, context: Activity) {
+//
+//        if (result.isError) {
+//            val error = result.error
+//            displayTaskError(error!!, displayer, context, userClient, "")
+//
+//        } else {
+//            displayer.showSuccess(R.string.sync_success)
+//        }
+//    }
 }

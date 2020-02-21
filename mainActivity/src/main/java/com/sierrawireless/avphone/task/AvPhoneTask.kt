@@ -55,7 +55,7 @@ abstract class AvPhoneTask<Params, Progress, Result> : AsyncTask<Params, Progres
 
     }
 
-    private fun missingRightsMessage(error: AvError, context: android.app.Activity): String {
+    private fun missingRightsMessage(error: AvError, context: Activity): String {
         val missingRights = error.errorParameters
         val message = StringBuilder()
         if (missingRights.size == 1 && missingRights[0] == "No Connection" ) {

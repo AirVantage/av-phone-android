@@ -187,38 +187,34 @@ class MonitoringService : Service() {
                 if (signalStrength == null)
                     return
 
-                val cellInfoList = telephonyManager!!.getAllCellInfo();
 
-                if (cellInfoList.get(0) is CellInfoGsm) {
-                    val cellInfoGsm = cellInfoList.get(0) as CellInfoGsm;
-                    val cellSignalStrengthGsm = cellInfoGsm.getCellSignalStrength();
-                    dbm = cellSignalStrengthGsm.getDbm();
+                val cellInfoList = telephonyManager!!.allCellInfo
 
-                } else if (cellInfoList[0] is CellInfoLte) {
-                    val cellInfoLte = cellInfoList[0] as CellInfoLte;
-                    val cellSignalStrengthLte = cellInfoLte.getCellSignalStrength();
-                    dbm = cellSignalStrengthLte.getDbm();
-                } else if (cellInfoList[0] is CellInfoWcdma) {
-                    val cellInfoWcdma = cellInfoList[0] as CellInfoWcdma;
-                    val cellSignalStrengthWcdma = cellInfoWcdma.getCellSignalStrength();
-                    dbm = cellSignalStrengthWcdma.getDbm();
-                }  else if (cellInfoList[0] is CellInfoCdma) {
-                    val cellInfoCdma = cellInfoList[0] as CellInfoCdma;
-                    val cellSignalStrengthCdma = cellInfoCdma.getCellSignalStrength();
-                    dbm = cellSignalStrengthCdma.getDbm();
+                if (cellInfoList.size > 0) {
+                    when {
+                        cellInfoList[0] is CellInfoGsm -> {
+                            val cellInfoGsm = cellInfoList[0] as CellInfoGsm
+                            val cellSignalStrengthGsm = cellInfoGsm.cellSignalStrength
+                            dbm = cellSignalStrengthGsm.dbm
+                        }
+                        cellInfoList[0] is CellInfoLte -> {
+                            val cellInfoLte = cellInfoList[0] as CellInfoLte
+                            val cellSignalStrengthLte = cellInfoLte.cellSignalStrength
+                            dbm = cellSignalStrengthLte.dbm
+                        }
+                        cellInfoList[0] is CellInfoWcdma -> {
+                            val cellInfoWcdma = cellInfoList[0] as CellInfoWcdma
+                            val cellSignalStrengthWcdma = cellInfoWcdma.cellSignalStrength
+                            dbm = cellSignalStrengthWcdma.dbm
+                        }
+                        cellInfoList[0] is CellInfoCdma -> {
+                            val cellInfoCdma = cellInfoList[0] as CellInfoCdma
+                            val cellSignalStrengthCdma = cellInfoCdma.cellSignalStrength
+                            dbm = cellSignalStrengthCdma.dbm
+                        }
+
+                    }
                 }
-
-
-//                if (telephonyManager!!.networkType == TelephonyManager.NETWORK_TYPE_LTE) {
-//                    val str = signalStrength.toString()
-//                    val parts = signalStrength.toString().split(" ")
-//                    dbm = parts[8].toInt() - 240
-//                }else{
-//                    if (signalStrength.gsmSignalStrength != 99) {
-//                        dbm = -113 + 2 * signalStrength.gsmSignalStrength
-//                    }
-//                }
-
             }
 
         }
@@ -308,7 +304,7 @@ class MonitoringService : Service() {
         }else {
 
             val cellInfos = telephonyManager!!.allCellInfo
-            if (cellInfos != null && !cellInfos.isEmpty()) {
+            if (cellInfos != null && cellInfos.isNotEmpty()) {
                 val cellInfo = cellInfos[0]
                 if (cellInfo is CellInfoGsm) {
                     data.rssi = cellInfo.cellSignalStrength.dbm
@@ -415,7 +411,7 @@ class MonitoringService : Service() {
                 val password = intent.getStringExtra(PASSWORD)
                 val serverHost = intent.getStringExtra(SERVER_HOST)
 
-                val intentValuesList = Arrays.asList(deviceId, password, serverHost)
+                val intentValuesList = listOf(deviceId, password, serverHost)
                 if (intentValuesList.contains(null)) {
                     // Stop service when unable to start MQTT client
                     stopSelfResult(startId)

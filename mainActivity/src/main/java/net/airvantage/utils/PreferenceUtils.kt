@@ -90,7 +90,7 @@ object PreferenceUtils {
 
     private fun setPreference(context: Context, prefKey: String, value: String?) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        prefs.edit().putString(prefKey, value).apply()
+        prefs.edit().putString(prefKey, value).commit()
     }
 
     fun showMissingPrefsDialog(activity: Activity) {
@@ -139,13 +139,13 @@ object PreferenceUtils {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
         prefs.edit().putString(PREF_ACCESS_TOKEN, auth.accessToken)
-                .putLong(PREF_TOKEN_EXPIRES_AT, auth.expirationDate!!.time).apply()
+                .putLong(PREF_TOKEN_EXPIRES_AT, auth.expirationDate!!.time).commit()
     }
 
     fun resetAuthentication(context: Context) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
-        prefs.edit().remove(PREF_ACCESS_TOKEN).remove(PREF_TOKEN_EXPIRES_AT).apply()
+        prefs.edit().remove(PREF_ACCESS_TOKEN).remove(PREF_TOKEN_EXPIRES_AT).commit()
 
     }
 

@@ -37,7 +37,7 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 
-@Suppress("DEPRECATION")
+@Suppress("DEPRECATION", "UNUSED_PARAMETER")
 open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabelsListener {
     private var viewUpdater: DataViewUpdater? = null
     private var lView: View? = null
@@ -244,6 +244,8 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     override fun onResume() {
         Crashlytics.log(Log.INFO, TAG, "On Resume Called")
         super.onResume()
+
+
         if (monitorServiceManager == null){
             // We have to restart monitorServiceManager
             Crashlytics.log(Log.INFO, TAG, "MonitoringServiceManager is null")
@@ -360,8 +362,10 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
 
     private fun setPhoneDataLabels() {
-        Crashlytics.log(Log.INFO, TAG, "setPhoneDataLabels called for " + objectName)
+
+        Crashlytics.log(Log.INFO, TAG, "setPhoneDataLabels called for $objectName")
         val adapter = RunListViewAdapter(activity as Activity,  arrayListOf(
+
                 hashMapOf(Tools.NAME to "RSSI",
                           Tools.VALUE to "0 dBm"),
                 hashMapOf(Tools.NAME to "Operator",
@@ -403,7 +407,7 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
     override fun onServiceStarted(service: MonitoringService) {
-        Crashlytics.log(Log.INFO, TAG, "OnServiceStarted for " + objectName)
+        Crashlytics.log(Log.INFO, TAG, "OnServiceStarted for $objectName")
         toggle_to_start?.visibility = View.GONE
         started_since?.visibility = View.VISIBLE
         service_log?.visibility = View.VISIBLE
@@ -440,12 +444,12 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         }
     }
 
-    private fun stopTimer() {
-       // Log.i(TAG, "custom data timer stopped for " + objectName)
-        if (timer != null) {
-            timer!!.cancel()
-        }
-    }
+//    private fun stopTimer() {
+//       // Log.i(TAG, "custom data timer stopped for " + objectName)
+//        if (timer != null) {
+//            timer!!.cancel()
+//        }
+//    }
 
     private fun execMode() {
         val obj =  objectsManager.getObjectByName(objectName!!)!!
