@@ -2,29 +2,28 @@
 
 <!-- Generated with http://android-holo-colors.com -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-  <!--
-    Base application theme, dependent on API level. This theme is replaced
-    by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
-  -->
-  <style name="_AppTheme" parent="android:Theme.Material.Light">
 
-    <!--<item name="android:editTextStyle">@style/EditTextAppTheme</item>-->
+    <style name="AppTheme" parent="@style/_AppTheme"/>
 
-    <!--<item name="android:buttonStyle">@style/ButtonAppTheme</item>-->
 
-    <!--<item name="android:imageButtonStyle">@style/ImageButtonAppTheme</item>-->
+    <style name="_AppTheme" parent="@style/Base.Theme.AppCompat.Light">
 
-    <!--<item name="android:progressBarStyleHorizontal">@style/ProgressBarAppTheme</item>-->
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowActionBar">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowContentOverlay">@null</item>
 
-    <!--<item name="android:buttonStyleToggle">@style/ToggleAppTheme</item>-->
+        <item name="android:editTextBackground">@drawable/apptheme_edit_text_holo_light</item>
 
-  </style>
+        <item name="android:buttonStyle">@style/ButtonAppTheme</item>
 
-  <!-- Application theme. -->
-  <style name="AppTheme" parent="@style/_AppTheme">
-        <!--<item name="android:textSize">16sp</item>-->
-        <!--<item name="android:textViewStyle">@style/CustomTextView</item>-->
-        <item name="android:textColor">@color/grey_1</item>
-  </style>
+        <item name="android:imageButtonStyle">@style/ImageButtonAppTheme</item>
+
+        <item name="android:progressBarStyleHorizontal">@style/ProgressBarAppTheme</item>
+
+        <item name="android:buttonStyleToggle">@style/ToggleAppTheme</item>
+
+
+    </style>
 
 </resources>

@@ -1,12 +1,15 @@
 package com.sierrawireless.avphone.activity
 
+import android.app.DialogFragment.STYLE_NO_TITLE
 import net.airvantage.utils.PreferenceUtils
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
-import androidx.preference.ListPreference
+import android.preference.EditTextPreference
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.PreferenceFragmentCompat
+import androidx.fragment.app.DialogFragment
+import androidx.preference.*
 import com.sierrawireless.avphone.R
 
 class SettingsActivity : AppCompatActivity() {
@@ -17,14 +20,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     class MySettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.preferences)
-
-            onSharedPreferenceChanged(preferenceScreen.sharedPreferences, null)
-        }
 
         override fun onResume() {
             super.onResume()
@@ -33,9 +28,36 @@ class SettingsActivity : AppCompatActivity() {
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.preferences)
+            retainInstance = true;
+            setPreferencesFromResource(R.xml.preferences, rootKey)
 
-            onSharedPreferenceChanged(preferenceScreen.sharedPreferences, null)
+
+
+            onSharedPreferenceChanged(preferenceScreen.sharedPreferences, rootKey)
+        }
+
+        override fun onDisplayPreferenceDialog(preference: Preference?) {
+            if (preference is androidx.preference.EditTextPreference) {
+                Log.d("JB", "*********************************")
+                val editText = EditTextPreferenceDialogFragmentCompat.newInstance(preference!!.key)
+                editText.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+                editText.setTargetFragment(this, 0);
+                editText.show(fragmentManager!!,
+                        "android.support.v7.preference.PreferenceFragment.DIALOG");
+
+
+
+            } else if (preference is ListPreference) {
+                Log.d("JB", "*********************************")
+                val list = ListPreferenceDialogFragmentCompat.newInstance(preference!!.key)
+                list.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+                list.setTargetFragment(this, 0);
+                list.show(fragmentManager!!,
+                        "android.support.v7.preference.PreferenceFragment.DIALOG");
+            }else{
+
+                super.onDisplayPreferenceDialog(preference)
+            }
         }
 
         override fun onPause() {
