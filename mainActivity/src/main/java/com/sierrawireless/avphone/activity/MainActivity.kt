@@ -107,6 +107,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     val systemUid: String?
         get() = prefs!!.getString("systemUid", null)
 
+    @Suppress("ControlFlowWithEmptyBody")
     var systemSerial: String?
         get() = prefs!!.getString(PREFERENCE_SYSTEM_SERIAL, null)
         @SuppressLint("DefaultLocale")
@@ -114,6 +115,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
             Log.d("MainActivity", "Set system Serial Error")
             Unit
         } else {
+
         }
 
 
@@ -645,22 +647,23 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     override fun invoke(result: SyncWithAvResult) {
 
         val system = result.system ?: return
-        prefs!!.edit().putString("systemUid", system.uid).commit()
-        prefs!!.edit().putString(PREFERENCE_SYSTEM_NAME, system.name).commit()
+        prefs!!.edit().putString("systemUid", system.uid).apply()
+        prefs!!.edit().putString(PREFERENCE_SYSTEM_NAME, system.name).apply()
 
         val user = result.user
-        prefs!!.edit().putString(PREFERENCE_USER_UID, user!!.uid).commit()
-        prefs!!.edit().putString(PREFERENCE_USER_NAME, user.name).commit()
+        prefs!!.edit().putString(PREFERENCE_USER_UID, user!!.uid).apply()
+        prefs!!.edit().putString(PREFERENCE_USER_NAME, user.name).apply()
 
         val deviceSerial = DeviceInfo.generateSerial(user.uid!!)
-        prefs!!.edit().putString(PREFERENCE_SYSTEM_SERIAL, deviceSerial).commit()
+        prefs!!.edit().putString(PREFERENCE_SYSTEM_SERIAL, deviceSerial).apply()
 
     }
 
     private fun clearStack() {
         //Here we are clearing back stack fragment entries
 
-        MainActivity.instance.runOnUiThread {
+
+        instance.runOnUiThread {
             supportFragmentManager.popBackStack("HOME", FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
         }

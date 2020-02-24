@@ -26,7 +26,7 @@ class SettingsActivity : AppCompatActivity() {
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             // Load the preferences from an XML resource
-            retainInstance = true;
+            retainInstance = true
             setPreferencesFromResource(com.sierrawireless.avphone.R.xml.preferences, rootKey)
 
             val passwordPReference: EditTextPreference? = this.findPreference("pref_password_key")
@@ -42,9 +42,9 @@ class SettingsActivity : AppCompatActivity() {
         override fun onDisplayPreferenceDialog(preference: Preference?) {
             when (preference) {
                 is EditTextPreference -> {
-                    val editText = EditTextPreferenceDialogFragmentCompat.newInstance(preference!!.key)
+                    val editText = EditTextPreferenceDialogFragmentCompat.newInstance(preference.key)
                     editText.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
-                    editText.setTargetFragment(this, 0);
+                    editText.setTargetFragment(this, 0)
                     editText.isCancelable = true
                     editText.show(fragmentManager!!, null)
 
@@ -53,11 +53,11 @@ class SettingsActivity : AppCompatActivity() {
 
                 }
                 is ListPreference -> {
-                    val list = ListPreferenceDialogFragmentCompat.newInstance(preference!!.key)
+                    val list = ListPreferenceDialogFragmentCompat.newInstance(preference.key)
                     list.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
-                    list.setTargetFragment(this, 0);
+                    list.setTargetFragment(this, 0)
                     list.isCancelable = true
-                    list.show(fragmentManager!!, null);
+                    list.show(fragmentManager!!, null)
                 }
                 else -> {
 
