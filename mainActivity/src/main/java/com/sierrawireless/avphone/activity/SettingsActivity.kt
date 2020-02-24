@@ -1,16 +1,14 @@
 package com.sierrawireless.avphone.activity
 
-import android.app.DialogFragment.STYLE_NO_TITLE
-import net.airvantage.utils.PreferenceUtils
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
-import android.preference.EditTextPreference
-import android.util.Log
+import android.text.InputType
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.preference.*
-import com.sierrawireless.avphone.R
+import net.airvantage.utils.PreferenceUtils
+
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -29,35 +27,42 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             // Load the preferences from an XML resource
             retainInstance = true;
-            setPreferencesFromResource(R.xml.preferences, rootKey)
+            setPreferencesFromResource(com.sierrawireless.avphone.R.xml.preferences, rootKey)
+
+            val passwordPReference: EditTextPreference? = this.findPreference("pref_password_key")
 
 
+            passwordPReference?.setOnBindEditTextListener { editText ->
+                editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            }
 
             onSharedPreferenceChanged(preferenceScreen.sharedPreferences, rootKey)
         }
 
         override fun onDisplayPreferenceDialog(preference: Preference?) {
-            if (preference is androidx.preference.EditTextPreference) {
-                Log.d("JB", "*********************************")
-                val editText = EditTextPreferenceDialogFragmentCompat.newInstance(preference!!.key)
-                editText.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
-                editText.setTargetFragment(this, 0);
-                editText.isCancelable = true
-                editText.show(fragmentManager!!, null)
+            when (preference) {
+                is EditTextPreference -> {
+                    val editText = EditTextPreferenceDialogFragmentCompat.newInstance(preference!!.key)
+                    editText.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+                    editText.setTargetFragment(this, 0);
+                    editText.isCancelable = true
+                    editText.show(fragmentManager!!, null)
 
 
 
 
-            } else if (preference is ListPreference) {
-                Log.d("JB", "*********************************")
-                val list = ListPreferenceDialogFragmentCompat.newInstance(preference!!.key)
-                list.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
-                list.setTargetFragment(this, 0);
-                list.isCancelable = true
-                list.show(fragmentManager!!, null);
-            }else{
+                }
+                is ListPreference -> {
+                    val list = ListPreferenceDialogFragmentCompat.newInstance(preference!!.key)
+                    list.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+                    list.setTargetFragment(this, 0);
+                    list.isCancelable = true
+                    list.show(fragmentManager!!, null);
+                }
+                else -> {
 
-                super.onDisplayPreferenceDialog(preference)
+                    super.onDisplayPreferenceDialog(preference)
+                }
             }
         }
 
