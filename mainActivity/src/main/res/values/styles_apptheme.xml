@@ -32,10 +32,7 @@
   </style>
 
 
-    <style name="ButtonAppTheme" parent="android:Widget.Holo.Light.Button">
-        <item name="android:background">@drawable/apptheme_btn_default_holo_light</item>
-        <item name="android:textColor">#FFFFFF</item>
-    </style>
+
 
     <style name="ImageButtonAppTheme" parent="android:Widget.Holo.Light.ImageButton">
         <item name="android:background">@drawable/apptheme_btn_default_holo_light</item>

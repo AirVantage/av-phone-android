@@ -29,6 +29,8 @@
             android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
             android:text="@string/add"
+            android:textColor="#FFFFFF"
+            android:background="@color/sierrared"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,6 +41,8 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="@string/done"
+            android:textColor="#FFFFFF"
+            android:background="@color/sierrared"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -66,6 +70,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:text="@string/resync_all"
+            android:textColor="#FFFFFF"
+            android:background="@color/sierrared"
             app:layout_constraintEnd_toStartOf="@+id/addConfigureBtn"
             app:layout_constraintStart_toEndOf="@+id/doneConfigureBtn"
             app:layout_constraintTop_toTopOf="parent" />

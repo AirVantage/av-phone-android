@@ -25,6 +25,8 @@
             android:layout_weight="1"
             android:gravity="center_vertical|center_horizontal|center"
             android:text="@string/menu_edit"
+            android:textColor="#FFFFFF"
+            android:background="@color/sierrared"
             android:textAlignment="center"
             android:textSize="18sp"
             android:visibility="visible"

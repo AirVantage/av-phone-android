@@ -42,8 +42,9 @@ class SettingsActivity : AppCompatActivity() {
                 val editText = EditTextPreferenceDialogFragmentCompat.newInstance(preference!!.key)
                 editText.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
                 editText.setTargetFragment(this, 0);
-                editText.show(fragmentManager!!,
-                        "android.support.v7.preference.PreferenceFragment.DIALOG");
+                editText.isCancelable = true
+                editText.show(fragmentManager!!, null)
+
 
 
 
@@ -52,8 +53,8 @@ class SettingsActivity : AppCompatActivity() {
                 val list = ListPreferenceDialogFragmentCompat.newInstance(preference!!.key)
                 list.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
                 list.setTargetFragment(this, 0);
-                list.show(fragmentManager!!,
-                        "android.support.v7.preference.PreferenceFragment.DIALOG");
+                list.isCancelable = true
+                list.show(fragmentManager!!, null);
             }else{
 
                 super.onDisplayPreferenceDialog(preference)
