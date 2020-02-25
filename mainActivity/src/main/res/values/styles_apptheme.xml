@@ -38,6 +38,18 @@
         <item name="android:background">@drawable/apptheme_btn_default_holo_light</item>
     </style>
 
+    <style name="ActionBarAppTheme" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:titleTextStyle">@style/ActionBarAppTheme.TitleTextStyle</item>
+        <item name="android:background">#000000</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
+
+    </style>
+
+    <style name="ActionBarAppTheme.TitleTextStyle" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
     <style name="ProgressBarAppTheme" parent="android:Widget.Holo.Light.ProgressBar.Horizontal">
         <item name="android:progressDrawable">@drawable/apptheme_progress_horizontal_holo_light</item>
         <item name="android:indeterminateDrawable">@drawable/apptheme_progress_indeterminate_horizontal_holo_light</item>
@@ -46,5 +58,11 @@
 
     <style name="ToggleAppTheme" parent="android:Widget.Holo.Light.Button.Toggle">
         <item name="android:background">@drawable/apptheme_btn_toggle_holo_light</item>
+    </style>
+
+    <!-- Style for the navigation drawer icon -->
+    <style name="DrawerArrowAppTheme" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">#FFFFFF</item>
     </style>
 </resources>
