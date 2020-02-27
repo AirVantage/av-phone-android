@@ -34,7 +34,7 @@ class ObjectDataActivity : Activity(), AdapterView.OnItemSelectedListener {
         objectPosition = intent.getIntExtra(ObjectConfigureActivity.OBJECT_POSITION, -1)
         dataPosition = intent.getIntExtra(ObjectConfigureActivity.DATA_POSITION, -1)
         add = intent.getBooleanExtra(ObjectConfigureActivity.ADD, true)
-        objname = intent.getStringExtra(ObjectConfigureActivity.OBJECT_NAME)
+        objname = intent.getStringExtra(ObjectConfigureActivity.OBJECT_NAME)!!
 
         if (objectPosition == -1 || dataPosition == -1) {
             return

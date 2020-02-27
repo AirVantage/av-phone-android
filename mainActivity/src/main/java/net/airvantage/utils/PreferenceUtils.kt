@@ -3,7 +3,7 @@ package net.airvantage.utils
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.util.Log
 import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.auth.Authentication

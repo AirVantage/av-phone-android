@@ -5,7 +5,7 @@ import android.content.Intent
 class LogMessage(message: String, alarm: Boolean) : Intent(LOG_EVENT) {
 
     val message: String
-        get() = this.getStringExtra(LOG)
+        get() = this.getStringExtra(LOG)!!
     val alarm: Boolean
         get() = this.getBooleanExtra(ALARM, false)
 

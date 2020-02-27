@@ -67,10 +67,13 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
             publishProgress(SyncProgress.CHECKING_APPLICATION)
 
+
+            Log.d("SYNC", "Check Application")
+
             val application = this.applicationClient.ensureApplicationExists(deviceName!!)
 
             publishProgress(SyncProgress.CHECKING_SYSTEM)
-
+            Log.d("SYNC", "Check System")
             var system: AvSystem? = this.systemClient.getSystem(serialNumber, systemType!!, deviceName!!)
             if (system == null) {
 
@@ -90,21 +93,22 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
 
 
             publishProgress(SyncProgress.CHECKING_ALERT_RULE)
-
+            Log.d("SYNC", "Alert rule")
             val alertRule = this.alertRuleClient.getAlertRule(serialNumber, system)
             if (alertRule == null) {
-
+                Log.d("SYNC", "create alert rule")
                 publishProgress(SyncProgress.CREATING_ALERT_RULE)
 
                 this.alertRuleClient.createAlertRule(application.uid!!, system, objectsManager.savecObject.alarmName)
             }else{
                 if (alertRule.conditions == null || ! alertRule.conditions!![0].eventPropertyKey.equals(objectsManager.savecObject.alarmName)) {
+                    Log.d("SYNC", "update alert rule")
                     this.alertRuleClient.updateAlertRule(application.uid!!, system, alertRule, objectsManager.savecObject.alarmName)
                 }
             }
 
             publishProgress(SyncProgress.UPDATING_APPLICATION)
-
+            Log.d("SYNC", "add Application")
             this.applicationClient.setApplicationData(application.uid!!, objectsManager.savecObject)
 
             if (!hasApplication(system, application)) {
@@ -115,7 +119,7 @@ open class SyncWithAvTask internal constructor(private val applicationClient: IA
             }
 
             publishProgress(SyncProgress.DONE)
-
+            Log.d("SYNC", "done")
             return SyncWithAvResult(system, user)
 
         } catch (e: AirVantageException) {

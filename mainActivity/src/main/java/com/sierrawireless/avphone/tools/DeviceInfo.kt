@@ -6,7 +6,6 @@ import android.os.Build
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import android.text.TextUtils
-import androidx.core.content.ContextCompat.getSystemService
 import com.sierrawireless.avphone.activity.MainActivity
 import org.jetbrains.anko.toast
 

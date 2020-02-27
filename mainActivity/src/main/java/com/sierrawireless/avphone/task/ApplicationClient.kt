@@ -41,6 +41,7 @@ class ApplicationClient internal constructor(private val client: IAirVantageClie
     @Throws(IOException::class, AirVantageException::class)
     override fun ensureApplicationExists(phoneName: String): Application {
         mPhoneName = phoneName
+
         var application = application
 
         if (application == null) {

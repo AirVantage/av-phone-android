@@ -16,12 +16,10 @@ class AlertAdapterFactory(private val server: String, private val accessToken: S
     private val client: OkHttpClient = OkHttpClient()
     private val TAG = this.javaClass.name
 
-    init {
-        this.execute()
-    }
 
     override fun doInBackground(vararg params: Void): DefaultAlertAdapter {
 
+        Log.d("ALERT", "CHECK ALERT ADAPTER")
         // Mapping of _Alert APIs_ -> Functions handling them set V2 in first preferred
         val urls = HashMap<String, DefaultAlertAdapter>()
         urls[ALERT_V2_API_PREFIX] = AlertAdapterV2(server, accessToken)
@@ -53,7 +51,9 @@ class AlertAdapterFactory(private val server: String, private val accessToken: S
 
         // Neither is available?
         // This adapter provides error messages at each call
+        Log.d("ALERT", "CHECK ALERT ADAPTER DONE")
         return DefaultAlertAdapter(server, accessToken)
+
     }
 
     override fun onPostExecute(adapter: DefaultAlertAdapter) {

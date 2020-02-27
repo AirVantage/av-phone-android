@@ -79,6 +79,7 @@ class HomeFragment : AvPhoneFragment(), IMessageDisplayer {
         login_btn.setOnClickListener { requestAuthentication() }
         logout_btn.setOnClickListener { logout() }
 
+        Log.d(TAG, "onStart Logged Out state")
         showLoggedOutState()
     }
 

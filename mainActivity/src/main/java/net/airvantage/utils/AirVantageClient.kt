@@ -21,7 +21,8 @@ class AirVantageClient(private val server: String, private val access_token: Str
     private val gson: Gson = Gson()
     private val client: OkHttpClient = OkHttpClient()
     init {
-        AlertAdapterFactory(server, access_token, this)
+        alertAdapter = AlertAdapterFactory(server, access_token, this).execute().get()
+
     }
 
     override fun alertAdapterAvailable(adapter: DefaultAlertAdapter) {
@@ -71,7 +72,7 @@ class AirVantageClient(private val server: String, private val access_token: Str
 
     @Throws(IOException::class, AirVantageException::class)
     private fun sendString(method: String, url: URL, bodyString: String): InputStream {
-        Log.d("**********",  url.toString())
+        Log.d("URL",  url.toString())
 
         var out: OutputStream? = null
         try {
@@ -203,6 +204,7 @@ class AirVantageClient(private val server: String, private val access_token: Str
     @Throws(IOException::class, AirVantageException::class)
     override fun getApplications(appType: String): List<net.airvantage.model.Application>? {
         val url = URL(buildEndpoint("/applications") + "&type=" + appType + "&fields=uid,name,revision,type,category")
+
         val inputStream = this[url]
         inputStream.use { inStream ->
             return gson.fromJson(InputStreamReader(inStream!!), ApplicationsList::class.java).items
@@ -212,6 +214,7 @@ class AirVantageClient(private val server: String, private val access_token: Str
     @Throws(IOException::class, AirVantageException::class)
     override fun createApplication(application: net.airvantage.model.Application): net.airvantage.model.Application {
         val url = URL(buildEndpoint("/applications"))
+
         val inputStream = post(url, application)
         return gson.fromJson(InputStreamReader(inputStream), net.airvantage.model.Application::class.java)
     }

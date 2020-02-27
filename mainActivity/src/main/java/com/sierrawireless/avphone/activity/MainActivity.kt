@@ -15,7 +15,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.SystemClock
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
@@ -185,6 +185,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
                             }
                         }.show()
                     }else{
+                        Log.d(TAG, "Error Sync Av User " + result.error!!.error)
                         logout()
                     }
                 }
@@ -207,6 +208,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         FirebaseApp.initializeApp(this)
 
         setContentView(R.layout.activity_main)
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         prefs!!.registerOnSharedPreferenceChangeListener(this)
 
@@ -433,6 +435,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     }
 
     internal fun readAuthenticationFromPreferences() {
+        Log.d(TAG, "read Authentication")
         this.authentication = PreferenceUtils.readAuthentication(this)
     }
 
@@ -445,6 +448,7 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
     }
 
     private fun saveAuthenticationInPreferences(auth: Authentication) {
+        Log.d(TAG, "Save authetication in PreferenceUtils")
         PreferenceUtils.saveAuthentication(this, auth)
     }
 

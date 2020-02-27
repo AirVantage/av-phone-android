@@ -407,7 +407,7 @@ class MonitoringService : Service() {
                     deviceID = MainActivity.instance.systemSerial
 
                 }
-                val deviceId = Tools.buildSerialNumber(deviceID, obj!!.name!!, DeviceInfo.deviceName!!)
+                val deviceId = Tools.buildSerialNumber(deviceID!!, obj!!.name!!, DeviceInfo.deviceName!!)
                 val password = intent.getStringExtra(PASSWORD)
                 val serverHost = intent.getStringExtra(SERVER_HOST)
 
@@ -419,7 +419,7 @@ class MonitoringService : Service() {
                 }
 
                 // Now, create client
-                client = MqttPushClient(deviceId, password, serverHost, mqttCallback)
+                client = MqttPushClient(deviceId, password!!, serverHost!!, mqttCallback)
             }
 
 
@@ -536,7 +536,7 @@ class MonitoringService : Service() {
                 }
             }
 
-            locManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, (60 * 1000).toLong(), 5f, networkLocationListener)
+            locManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, (60 * 1000).toLong(), 5f, networkLocationListener!!)
         }
         val gpsLocationProvider = locManager.getProvider(LocationManager.GPS_PROVIDER)
         if (gpsLocationProvider != null) {
@@ -546,7 +546,7 @@ class MonitoringService : Service() {
                     gpsLocation = location
                 }
             }
-            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, (60 * 1000).toLong(), 5f, gpsLocationListener)
+            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, (60 * 1000).toLong(), 5f, gpsLocationListener!!)
         }
     }
 
@@ -554,10 +554,10 @@ class MonitoringService : Service() {
         val locManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         if (networkLocationListener != null) {
-            locManager.removeUpdates(networkLocationListener)
+            locManager.removeUpdates(networkLocationListener!!)
         }
         if (gpsLocationListener != null) {
-            locManager.removeUpdates(gpsLocationListener)
+            locManager.removeUpdates(gpsLocationListener!!)
         }
     }
 
