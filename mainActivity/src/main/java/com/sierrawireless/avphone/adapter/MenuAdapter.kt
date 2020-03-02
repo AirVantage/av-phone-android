@@ -3,16 +3,18 @@ package com.sierrawireless.avphone.adapter
 import android.app.Activity
 import android.graphics.Color
 import android.graphics.Typeface
-import androidx.core.content.ContextCompat
+import android.graphics.drawable.GradientDrawable
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.sierrawireless.avphone.ObjectsManager
 import com.sierrawireless.avphone.R
 import com.sierrawireless.avphone.activity.MainActivity
 import java.util.*
+
 
 class MenuAdapter internal constructor(private val activity: Activity, var list: ArrayList<MenuEntry>) : BaseAdapter() {
     val objectsManager:ObjectsManager? = ObjectsManager.getInstance()
@@ -44,7 +46,8 @@ class MenuAdapter internal constructor(private val activity: Activity, var list:
             name = lConvertView!!.findViewById(R.id.text1)
             name.text = entry.name
             name.setTypeface(name.typeface, Typeface.BOLD)
-            name.setBackgroundColor(ContextCompat.getColor(lConvertView.context, R.color.navy))
+
+
             name.setTextColor(Color.WHITE)
           //  name.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(lConvertView.context, android.R.drawable.ic_lock_silent_mode), null, null, null)
 
@@ -56,13 +59,11 @@ class MenuAdapter internal constructor(private val activity: Activity, var list:
             }else {
                 if (entry.type == MenuEntryType.COMMAND) {
                     name.setBackgroundColor(Color.WHITE)
-                }else{
-                    name.setTypeface(null, Typeface.ITALIC)
-                    name.setBackgroundColor(ContextCompat.getColor(lConvertView.context, R.color.turquoise))
                 }
             }
             name.setTextColor(ContextCompat.getColor(lConvertView.context, R.color.navy))
             if (entry.type == MenuEntryType.USER) {
+                name.setTextColor(Color.LTGRAY)
                 name.setTypeface(null, Typeface.ITALIC)
             }
         }

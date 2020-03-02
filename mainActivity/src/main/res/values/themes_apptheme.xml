@@ -6,7 +6,7 @@
     <style name="AppTheme" parent="@style/_AppTheme"/>
 
 
-    <style name="_AppTheme" parent="@style/Base.Theme.AppCompat.Light">
+    <style name="_AppTheme" parent="@style/Theme.AppCompat.DayNight">
 
         <item name="android:windowNoTitle">false</item>
         <item name="android:windowActionBar">true</item>
