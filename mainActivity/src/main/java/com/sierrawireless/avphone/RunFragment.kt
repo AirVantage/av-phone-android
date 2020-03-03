@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import com.crashlytics.android.Crashlytics
 import com.sierrawireless.avphone.activity.AuthorizationActivity
@@ -26,6 +27,7 @@ import com.sierrawireless.avphone.service.LogMessage
 import com.sierrawireless.avphone.service.MonitorServiceManager
 import com.sierrawireless.avphone.service.MonitoringService
 import com.sierrawireless.avphone.service.NewData
+import com.sierrawireless.avphone.task.AlarmStateParams
 import com.sierrawireless.avphone.task.IAsyncTaskFactory
 import com.sierrawireless.avphone.task.SyncWithAvParams
 import com.sierrawireless.avphone.tools.DeviceInfo
@@ -71,13 +73,17 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         }
     }
 
-    private fun setAlarmButton() {
+    private fun setAlarmButton(button:Button?) {
         val obj = objectsManager.currentObject!!
-        alarm_btn.text = if (obj.alarm) {
+        button?.text = if (obj.alarm) {
             getString(R.string.cancel)
         }else{
             getString(R.string.reaise)
         }
+    }
+
+    private fun setAlarmButton() {
+        setAlarmButton(alarm_btn)
     }
 
     override var errorMessageView: TextView?
@@ -239,6 +245,8 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
         setCustomDataLabels()
         setPhoneDataLabels()
+
+
     }
 
     override fun onResume() {
@@ -263,6 +271,11 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         this.setLinkToSystem(systemUid, systemName)
        // startTimer()
         monitorServiceManager?.start()
+        val auth =  authManager!!.authentication
+
+        if (auth != null) {
+            alarmState(auth.accessToken)
+        }
         setAlarmButton()
         setPhoneDataLabels()
     }
@@ -275,6 +288,8 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
     }
 
 
+
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -282,10 +297,55 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             val auth = AuthUtils.activityResultAsAuthentication(requestCode, resultCode, data!!)
             if (auth != null) {
                 authManager!!.onAuthentication(auth)
+
                 syncWithAv(auth.accessToken)
             }
         }
     }
+
+    private fun alarmState(token: String?) {
+        val prefs = PreferenceUtils.getAvPhonePrefs(activity as Activity)
+
+        val alarmStateTask = taskFactory!!.alarmStateTask(prefs.serverHost!!, token!!)
+
+
+        val params = AlarmStateParams()
+
+
+        params.deviceName = DeviceInfo.deviceName
+
+        params.mqttPassword = prefs.password
+        //     params.current = ((MainActivity)getActivity()).current;
+        params.activity = activity as MainActivity
+
+        alarmStateTask.execute(params)
+
+
+        alarmStateTask.addProgressListener { result ->
+          //  alarmStateTask.showResult(result, display, activity as Activity)
+
+            if (!result.isError) {
+                if (result.alarmOn!!) {
+
+                    val obj = objectsManager.currentObject!!
+                    obj.alarm = true
+
+                    MainActivity.instance.runOnUiThread {
+
+                        val log = lView?.findViewById<TextView>(R.id.alarm_log)
+                        log?.text = "Alarm on previously sent to server "
+                        log?.visibility = View.VISIBLE
+
+                        val button = lView?.findViewById<Button>(R.id.alarm_btn)
+                        setAlarmButton(button)
+                    }
+
+
+                }
+            }
+        }
+    }
+
 
     private fun syncWithAv(token: String?) {
 

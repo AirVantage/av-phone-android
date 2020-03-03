@@ -5,6 +5,7 @@ import android.os.AsyncTask
 
 interface IAsyncTaskFactory {
     fun syncAvTask(serverHost: String, token: String): SyncWithAvTask
+    fun alarmStateTask(serverHost: String, token: String): AlarmStateTask
     fun getUserTak(serverHost: String, token: String): GetUserTask
     fun deleteSystemTak(serverHost: String, token: String): DeleteSystemTask
 

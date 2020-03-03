@@ -1,5 +1,0 @@
-apply plugin: 'java'
-
-dependencies {
-    implementation files('libs/com-crashlytics-sdk-android_crashlytics-classes.jar')
-}

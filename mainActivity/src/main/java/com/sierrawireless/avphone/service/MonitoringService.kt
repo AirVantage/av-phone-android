@@ -14,6 +14,7 @@ import android.net.TrafficStats
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -320,11 +321,21 @@ class MonitoringService : Service() {
         if (telephonyManager!!.phoneType == TelephonyManager.PHONE_TYPE_GSM) {
             @Suppress("DEPRECATION")
             try {
-                data.imei = telephonyManager!!.deviceId
+                data.imei = when {
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+                        Settings.Secure.getString(applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
+                    }
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+                        telephonyManager!!.imei
+                    }
+                    else -> {
+                        telephonyManager!!.deviceId
+                    }
+                }
+               // data.imei = telephonyManager!!.deviceId
             }
             catch(e:SecurityException) {
                 MainActivity.instance.runOnUiThread {
-
                     MainActivity.instance.toast("Read Phone Permission not given")
 
 

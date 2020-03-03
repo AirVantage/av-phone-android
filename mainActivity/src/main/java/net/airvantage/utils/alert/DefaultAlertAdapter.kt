@@ -25,10 +25,18 @@ open class DefaultAlertAdapter internal constructor(protected val server: String
     private val TAG = this.javaClass.name
 
     open val prefix: String
-        get() = "Override me"
+        get() = "override me"
+
+    open val prefixV3: String
+        get() = "override me"
 
     @Throws(IOException::class, AirVantageException::class)
     open fun createAlertRule(alertRule: AlertRule, application: String, system: AvSystem) {
+        throw AirVantageException(AvError(AvError.FORBIDDEN))
+    }
+
+    @Throws(IOException::class, AirVantageException::class)
+    open fun getAlertState(uid: String):Boolean {
         throw AirVantageException(AvError(AvError.FORBIDDEN))
     }
 
@@ -60,6 +68,14 @@ open class DefaultAlertAdapter internal constructor(protected val server: String
 
     internal fun buildEndpoint(api: String): String {
         return "https://" + buildPath(api)
+    }
+
+    private fun buildV3Path(api: String): String {
+        return server + prefixV3 + api + "?access_token=" + access_token
+    }
+
+    internal fun buildV3Endpoint(api: String): String {
+        return "https://" + buildV3Path(api)
     }
 
     @Throws(IOException::class, AirVantageException::class)

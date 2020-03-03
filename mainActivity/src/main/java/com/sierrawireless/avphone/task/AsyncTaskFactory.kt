@@ -20,6 +20,18 @@ class AsyncTaskFactory(private val context: Context) : IAsyncTaskFactory {
         return ProgressSyncWithAvTask(appClient, systemClient, alertRuleClient, userClient, context)
     }
 
+    override fun alarmStateTask(serverHost: String, token: String): AlarmStateTask {
+
+        val avClient = AirVantageClient(serverHost, token)
+
+        val appClient = ApplicationClient(avClient)
+        val systemClient = SystemClient(avClient)
+        val alertRuleClient = AlertRuleClient(avClient)
+        val userClient = UserClient(avClient)
+
+        return AlarmStateTask(appClient, systemClient, alertRuleClient, userClient, context)
+    }
+
 
 
     override fun updateTask(serverHost: String, token: String): UpdateTask {

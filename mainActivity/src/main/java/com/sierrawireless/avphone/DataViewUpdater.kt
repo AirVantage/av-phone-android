@@ -66,8 +66,6 @@ class DataViewUpdater(val view: View, private val activity: MainActivity) : Broa
         if (log != null) {
             logView.text = hourFormat.format(if (timestamp != null) Date(timestamp) else Date()) + " - " + log
             logView.visibility = View.VISIBLE
-        } else {
-            logView.visibility = View.GONE
         }
     }
 

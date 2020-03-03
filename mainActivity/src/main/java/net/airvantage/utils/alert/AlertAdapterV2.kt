@@ -10,6 +10,7 @@ import net.airvantage.model.alert.v2.alertrule.AlertRule
 import net.airvantage.model.alert.v2.alertrule.AttributeId
 import net.airvantage.model.alert.v2.alertrule.Condition
 import net.airvantage.model.alert.v2.alertrule.Operand
+import net.airvantage.model.alert.v2.alertstate.AlertState
 import net.airvantage.utils.Utils
 import java.io.IOException
 import java.io.InputStreamReader
@@ -25,6 +26,9 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
 
     override val prefix: String
         get() = "/api/v2/"
+
+    override val prefixV3: String
+        get() = "/api/v3/"
 
     @Throws(IOException::class, AirVantageException::class)
     override fun getAlertRuleByName(name: String, system:AvSystem): net.airvantage.model.alert.v1.AlertRule? {
@@ -69,6 +73,23 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
             Log.e(TAG, "Unable to create Alert Rule", e)
         }
 
+    }
+
+    @Throws(IOException::class, AirVantageException::class)
+    override fun getAlertState(uid: String): Boolean {
+        try {
+
+            val inp = get(alertStateUrl(uid))
+            var response = gson.fromJson(InputStreamReader(inp), AlertState::class.java)
+            if (response.count == null) {
+                return false
+            }
+            return !(response.count!!.toInt() == 0)
+
+        } catch (e: JsonIOException) {
+            Log.e(TAG, "Unable to get Alert State", e)
+        }
+        return false
     }
 
     @Throws(IOException::class, AirVantageException::class)
@@ -128,6 +149,24 @@ class AlertAdapterV2 internal constructor(server: String, accessToken: String) :
         }
         if (data != null) {
             alertRuleUrl = tmp
+        }
+
+        return tmp
+    }
+
+    @Throws(IOException::class)
+    private fun alertStateUrl(uid:String): URL {
+
+        val apiPath = "alerts/current"
+
+        val urlString = Uri.parse(buildV3Endpoint(apiPath)).toString() + "&state=true&ruleId=" + uid
+
+        val tmp: URL?
+        try {
+            tmp = URL(urlString)
+        } catch (e: MalformedURLException) {
+            Log.e(TAG, "Sure of URL?", e)
+            throw e
         }
 
         return tmp

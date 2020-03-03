@@ -17,6 +17,10 @@ class AlertRuleClient internal constructor(private val client: IAirVantageClient
         return client.getAlertRuleByName(Tools.buildAlertName(), system)
     }
 
+    override fun getAlertState(uid: String): Boolean {
+        return client.getAlertState(uid)
+    }
+
     @Throws(IOException::class, AirVantageException::class)
     override fun createAlertRule(Application: String, system: AvSystem, name:String) {
         val alertRule = AvPhoneApplication.createAlertRule(system, name)

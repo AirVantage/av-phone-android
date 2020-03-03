@@ -62,6 +62,6 @@ class AlertAdapterFactory(private val server: String, private val accessToken: S
 
     companion object {
         private const val ALERT_V1_API_PREFIX = "/api/v1/alerts/rules?size=0&access_token="
-        private const val ALERT_V2_API_PREFIX = "/api/v2/alertstates?access_token="
+        private const val ALERT_V2_API_PREFIX = "/api/v2/alertrules?access_token="
     }
 }

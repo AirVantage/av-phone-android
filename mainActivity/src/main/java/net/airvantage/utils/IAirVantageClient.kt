@@ -27,6 +27,9 @@ interface IAirVantageClient {
     fun getAlertRuleByName(name: String, system: AvSystem): AlertRule?
 
     @Throws(IOException::class, AirVantageException::class)
+    fun getAlertState(uid: String): Boolean
+
+    @Throws(IOException::class, AirVantageException::class)
     fun deleteAlertRule(alertRule: AlertRule)
 
     @Throws(IOException::class, AirVantageException::class)

@@ -249,6 +249,13 @@ class AirVantageClient(private val server: String, private val access_token: Str
         this.alertAdapter!!.createAlertRule(alertRule, application, system)
     }
 
+    @Throws(IOException::class, AirVantageException::class)
+    override fun getAlertState(uid: String): Boolean {
+        checkAlertAdapter()
+        return this.alertAdapter!!.getAlertState(uid)
+    }
+
+
 
     @Throws(IOException::class, AirVantageException::class)
     override fun updateAlertRule(alertRule: AlertRule, application: String, system: AvSystem) {

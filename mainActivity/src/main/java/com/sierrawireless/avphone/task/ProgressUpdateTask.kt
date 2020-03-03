@@ -28,7 +28,6 @@ class ProgressUpdateTask internal constructor(applicationClient: IApplicationCli
 
     override fun onPreExecute() {
 
-        Log.d("*******************", "Creareupdatetask")
         super.onPreExecute()
 
         val maxProgress = UpdateProgress.values().size
