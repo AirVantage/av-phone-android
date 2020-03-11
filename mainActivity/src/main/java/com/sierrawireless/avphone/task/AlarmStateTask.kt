@@ -71,7 +71,7 @@ open class AlarmStateTask internal constructor(private val applicationClient: IA
 
             publishProgress(AlarmStateProgress.CHECKING_ALERT_RULE)
             Log.d("SYNC", "Alert rule")
-            val alertRule = this.alertRuleClient.getAlertRule(serialNumber, system!!)
+            val alertRule = this.alertRuleClient.getAlertRule(serialNumber, system)
             if (alertRule == null) {
                 publishProgress(AlarmStateProgress.DONE)
                 return AlarmStateResult(AvError("Alert Rule not created"))

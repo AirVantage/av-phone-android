@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/av-phone-android.iml" filepath="$PROJECT_DIR$/av-phone-android.iml" group="av-phone-android" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/comcrashlyticssdkandroid_crashlytics/av-phone-android-comcrashlyticssdkandroid_crashlytics.iml" filepath="$PROJECT_DIR$/.idea/modules/comcrashlyticssdkandroid_crashlytics/av-phone-android-comcrashlyticssdkandroid_crashlytics.iml" group="av-phone-android/comcrashlyticssdkandroid_crashlytics" />
       <module fileurl="file://$PROJECT_DIR$/comcrashlyticssdkandroid_crashlytics/comcrashlyticssdkandroid_crashlytics.iml" filepath="$PROJECT_DIR$/comcrashlyticssdkandroid_crashlytics/comcrashlyticssdkandroid_crashlytics.iml" group="av-phone-android/comcrashlyticssdkandroid_crashlytics" />
       <module fileurl="file://$PROJECT_DIR$/mainActivity/mainActivity.iml" filepath="$PROJECT_DIR$/mainActivity/mainActivity.iml" group="av-phone-android/mainActivity" />
     </modules>

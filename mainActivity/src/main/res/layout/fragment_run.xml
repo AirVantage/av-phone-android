@@ -93,16 +93,14 @@
                     android:gravity="center"
                     android:text="@string/run_activate_alarm" />
 
-                <Button
-                    android:id="@+id/alarm_btn"
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/alarm_switch"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="47dp"
                     android:layout_gravity="center"
-                    android:background="@color/grey_4"
-                    android:baselineAligned="false"
-                    android:text="@string/send"
-                    android:textColor="#FFFFFF"
-                    android:textAlignment="center" />
+                    android:textOff="@string/off"
+                    android:textOn="@string/on"
+                    android:theme="@style/Switch" />
 
                 <TextView
                     android:id="@+id/alarm_log"

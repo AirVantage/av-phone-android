@@ -216,13 +216,16 @@ class MainActivity : FragmentActivity(), LoginListener, AuthenticationManager, O
         readAuthenticationFromPreferences()
 
         taskFactory = AsyncTaskFactory(this@MainActivity)
+
         if (isLogged) {
             if (user == null) {
-                syncGetUser(authentication)
+                loadMenu(false)
+            } else {
+                loadMenu(true)
             }
+        } else {
+            loadMenu(true)
         }
-
-        loadMenu(true)
 
         left_drawer.setOnItemClickListener { _, _, position, _ -> selectItem(position) }
 

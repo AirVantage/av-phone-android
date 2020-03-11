@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.widget.SwitchCompat
 import com.crashlytics.android.Crashlytics
 import com.sierrawireless.avphone.activity.AuthorizationActivity
 import com.sierrawireless.avphone.activity.MainActivity
@@ -52,38 +53,17 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
     private var timer:TimerTask? = null
 
-    // Alarm button
-    private var onAlarmClick: View.OnClickListener = View.OnClickListener {
-        if (this.monitorServiceManager!!.isServiceStarted(objectName!!)) {
-            objectsManager = ObjectsManager.getInstance()
-            val obj = objectsManager.currentObject!!
-            obj.alarm = !obj.alarm
-            if (!monitorServiceManager!!.sendAlarmEvent(obj.alarm, obj.alarmName)) {
-                obj.alarm = !obj.alarm
-            } else {
-                objectsManager.saveOnPref()
-                setAlarmButton()
-            }
-        }else{
-            (activity as Activity).alert("A run already exist for " + MainActivity.instance.startObjectName, "Alert") {
-                positiveButton("OK") {
 
-                }
-            }.show()
-        }
-    }
 
-    private fun setAlarmButton(button:Button?) {
-        val obj = objectsManager.currentObject!!
-        button?.text = if (obj.alarm) {
-            getString(R.string.cancel)
-        }else{
-            getString(R.string.reaise)
+    private fun setAlarmButton(switch:SwitchCompat?) {
+        if (switch?.isChecked != objectsManager.currentObject!!.alarm) {
+            switch?.isChecked = objectsManager.currentObject!!.alarm
         }
+
     }
 
     private fun setAlarmButton() {
-        setAlarmButton(alarm_btn)
+        setAlarmButton(alarm_switch)
     }
 
     override var errorMessageView: TextView?
@@ -205,9 +185,35 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
             }
         }
 
+        alarm_switch.tag = false
+        alarm_switch.setOnCheckedChangeListener { switchView, _ ->
+            if(switchView.isPressed) {
+                //Do some stuff
 
-        // Alarm button
-        alarm_btn.setOnClickListener(onAlarmClick)
+
+                if (this.monitorServiceManager!!.isServiceStarted(objectName!!)) {
+                    objectsManager = ObjectsManager.getInstance()
+                    val obj = objectsManager.currentObject!!
+
+                    obj.alarm = !obj.alarm
+
+                    if (!monitorServiceManager!!.sendAlarmEvent(obj.alarm, obj.alarmName)) {
+                        obj.alarm = !obj.alarm
+                    } else {
+                        objectsManager.saveOnPref()
+                        //setAlarmButton()
+                    }
+                }else{
+                    (activity as Activity).alert("A run already exist for " + MainActivity.instance.startObjectName, "Alert") {
+                        positiveButton("OK") {
+
+                        }
+                    }.show()
+                }
+            }
+        }
+
+
 
         // Make links clickable in info view.
 
@@ -245,14 +251,18 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
 
         setCustomDataLabels()
         setPhoneDataLabels()
+        val auth =  authManager!!.authentication
 
-
+        if (auth != null) {
+            alarm_switch.isEnabled = false
+            alarm_switch.isActivated = false
+            alarmState(auth.accessToken)
+        }
     }
 
     override fun onResume() {
         Crashlytics.log(Log.INFO, TAG, "On Resume Called")
         super.onResume()
-
 
         if (monitorServiceManager == null){
             // We have to restart monitorServiceManager
@@ -271,14 +281,17 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
         this.setLinkToSystem(systemUid, systemName)
        // startTimer()
         monitorServiceManager?.start()
-        val auth =  authManager!!.authentication
-
-        if (auth != null) {
-            alarmState(auth.accessToken)
-        }
+//        val auth =  authManager!!.authentication
+//
+//        if (auth != null) {
+//            alarm_switch.isEnabled = false
+//            alarm_switch.isActivated = false
+//            alarmState(auth.accessToken)
+//        }
         setAlarmButton()
         setPhoneDataLabels()
     }
+
 
     override fun onPause() {
         Crashlytics.log(Log.INFO, TAG, "on Pause Called")
@@ -336,11 +349,19 @@ open class RunFragment : AvPhoneFragment(), MonitorServiceListener, CustomLabels
                         log?.text = "Alarm on previously sent to server "
                         log?.visibility = View.VISIBLE
 
-                        val button = lView?.findViewById<Button>(R.id.alarm_btn)
-                        setAlarmButton(button)
+                        val switchCompat: SwitchCompat? = lView?.findViewById<Button>(R.id.alarm_switch) as SwitchCompat?
+                        setAlarmButton(switchCompat)
+                        switchCompat?.isEnabled = true
+                        switchCompat?.isActivated = true
                     }
 
 
+                } else {
+                    MainActivity.instance.runOnUiThread {
+                        val switchCompat: SwitchCompat? = lView?.findViewById<Button>(R.id.alarm_switch) as SwitchCompat?
+                        switchCompat?.isEnabled = true
+                        switchCompat?.isActivated = true
+                    }
                 }
             }
         }
